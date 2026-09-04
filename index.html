@@ -30,6 +30,20 @@
         content="index, follow"
     >
 
+<!-- =====================================================
+     DCF SEO + SOCIAL MEDIA SHARING
+     Added without changing the existing system
+     ===================================================== -->
+<meta name="keywords" content="DCF, Development Charity Foundation, Tanzania, NGO, Charity Tanzania">
+<meta property="og:title" content="Development Charity Foundation (DCF) Tanzania">
+<meta property="og:description" content="Official platform for Development Charity Foundation (DCF) Tanzania. Empowering communities and driving sustainable social change.">
+<meta property="og:image" content="https://dcf-website.dcf-org.workers.dev/logo.png">
+<meta property="og:url" content="https://dcf-website.dcf-org.workers.dev">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Development Charity Foundation (DCF) Tanzania">
+<meta name="twitter:description" content="Official platform for Development Charity Foundation (DCF) Tanzania.">
+<meta name="twitter:image" content="https://dcf-website.dcf-org.workers.dev/logo.png">
     <title>Development Charity Foundation | DCF</title>
 
     <!-- =====================================================
@@ -5445,6 +5459,186 @@ iframe {
 
 </style>
 
+<!-- ============================================================
+     DCF PUBLIC ANNOUNCEMENT — MOBILE READABILITY OVERRIDE
+     Additive only: existing announcement code remains unchanged.
+     ============================================================ -->
+<style>
+  #dcfEventAnnouncement {
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  #dcfEventAnnouncement .dcf-event-inner {
+    width: min(1200px, calc(100% - 30px));
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  #dcfEventAnnouncement .dcf-event-info,
+  #dcfEventAnnouncement .dcf-event-copy {
+    min-width: 0;
+  }
+  #dcfEventAnnouncement .dcf-event-title,
+  #dcfEventAnnouncement .dcf-event-meta {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+  #dcfEventAnnouncement .dcf-event-poster-thumb {
+    max-width: 54px;
+    max-height: 54px;
+  }
+  #dcfEventAnnouncement .dcf-event-actions {
+    flex-shrink: 0;
+  }
+  #dcfEventModal {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  #dcfEventModal .dcf-event-card {
+    width: min(760px, 100%);
+    box-sizing: border-box;
+  }
+  #dcfEventModal .dcf-event-card p,
+  #dcfEventModal .dcf-event-detail,
+  #dcfEventModal .dcf-event-detail span,
+  #dcfEventModal #dcfModalRequirements {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+  @media (max-width: 700px) {
+    #dcfEventAnnouncement .dcf-event-inner {
+      width: calc(100% - 16px);
+      min-height: 0;
+      padding: 10px 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 9px;
+    }
+    #dcfEventAnnouncement .dcf-event-info {
+      width: 100%;
+      display: grid;
+      grid-template-columns: auto auto minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+    }
+    #dcfEventAnnouncement .dcf-event-poster-thumb {
+      width: 44px;
+      height: 44px;
+      max-width: 44px;
+      max-height: 44px;
+      border-radius: 8px;
+    }
+    #dcfEventAnnouncement .dcf-event-badge {
+      padding: 6px 8px;
+      font-size: 9px;
+      white-space: nowrap;
+    }
+    #dcfEventAnnouncement .dcf-event-title {
+      display: block;
+      font-size: clamp(13px, 4vw, 16px);
+      line-height: 1.3;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
+    #dcfEventAnnouncement .dcf-event-meta {
+      display: block;
+      margin-top: 3px;
+      font-size: 10px;
+      line-height: 1.4;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
+    #dcfEventAnnouncement .dcf-event-actions {
+      width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 42px;
+      gap: 7px;
+    }
+    #dcfEventAnnouncement .dcf-event-join {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 10px;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+    #dcfEventAnnouncement .dcf-event-close {
+      width: 42px;
+      height: 42px;
+    }
+    #dcfEventModal {
+      padding: 10px;
+      align-items: flex-start;
+    }
+    #dcfEventModal .dcf-event-card {
+      width: 100%;
+      max-height: calc(100dvh - 20px);
+      max-height: calc(100vh - 20px);
+      margin: 0;
+      padding: 18px 13px;
+      border-radius: 15px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    #dcfEventModal .dcf-event-card h2 {
+      font-size: clamp(20px, 6vw, 25px);
+      line-height: 1.2;
+      margin-right: 40px;
+      overflow-wrap: anywhere;
+    }
+    #dcfEventModal .dcf-event-poster-wrap {
+      margin: 12px 0;
+    }
+    #dcfEventModal .dcf-event-poster {
+      max-width: 100%;
+      max-height: 55dvh;
+      max-height: 55vh;
+    }
+    #dcfEventModal .dcf-event-details {
+      grid-template-columns: 1fr;
+    }
+    #dcfEventModal .dcf-event-form {
+      grid-template-columns: 1fr;
+    }
+    #dcfEventModal .dcf-event-field.full,
+    #dcfEventModal .dcf-event-submit,
+    #dcfEventModal .dcf-event-status {
+      grid-column: auto;
+    }
+    #dcfEventModal .dcf-event-field input {
+      min-height: 44px;
+      font-size: 16px;
+    }
+    #dcfEventModal .dcf-event-submit {
+      min-height: 46px;
+    }
+  }
+  @media (max-width: 380px) {
+    #dcfEventAnnouncement .dcf-event-info {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+    #dcfEventAnnouncement .dcf-event-poster-thumb {
+      display: none !important;
+    }
+    #dcfEventAnnouncement .dcf-event-badge {
+      align-self: start;
+    }
+    #dcfEventAnnouncement .dcf-event-title {
+      font-size: 13px;
+    }
+    #dcfEventAnnouncement .dcf-event-meta {
+      font-size: 9.5px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #dcfEventAnnouncement *,
+    #dcfEventModal * {
+      transition: none !important;
+      animation: none !important;
+    }
+  }
+</style>
 </head>
 
 
