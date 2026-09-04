@@ -1,0 +1,1972 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DCF System — Audit Trail</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+tailwind.config = {
+    theme: {
+        extend: {
+            colors: {
+                'dcf-green': '#174a35',
+                'dcf-light-green': '#4C9A2A',
+                'dcf-dark-green': '#0d3022',
+                'dcf-hover': '#28723E'
+            }
+        }
+    }
+}
+</script>
+
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="../js/supabase.js"></script>
+<script src="../js/role-guard.js"></script>
+
+<style>
+
+* {
+    font-family: "Times New Roman", Times, serif !important;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+}
+
+body {
+    background: #f3f6f4;
+}
+
+/* PAGE LOADER */
+
+#page-loader {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,.96);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity .25s ease;
+}
+
+.loader-box {
+    text-align: center;
+}
+
+.spinner {
+    width: 38px;
+    height: 38px;
+    border: 4px solid #dfe8e3;
+    border-top-color: #174a35;
+    border-radius: 50%;
+    animation: spin .55s linear infinite;
+    margin: auto;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* CONTENT LOADER */
+
+.loading-spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid #e5e7eb;
+    border-top-color: #174a35;
+    border-radius: 50%;
+    animation: spin .55s linear infinite;
+}
+
+/* CARDS */
+
+.stat-card {
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0,0,0,.08);
+}
+
+/* TABLE */
+
+.table-scroll::-webkit-scrollbar {
+    height: 7px;
+}
+
+.table-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+    background: #174a35;
+    border-radius: 10px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb:hover {
+    background: #28723E;
+}
+
+.log-row {
+    transition: background .12s ease;
+}
+
+/* BUTTON */
+
+button {
+    user-select: none;
+}
+
+button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+/* PRINT */
+
+@media print {
+
+    header,
+    .no-print,
+    #page-loader {
+        display: none !important;
+    }
+
+    body {
+        background: white !important;
+    }
+
+    main {
+        padding: 0 !important;
+        max-width: none !important;
+    }
+
+    .shadow-sm,
+    .shadow-lg {
+        box-shadow: none !important;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =========================================================
+     FAST PAGE LOADER
+========================================================= -->
+
+<div id="page-loader">
+
+    <div class="loader-box">
+
+        <div class="spinner"></div>
+
+        <p class="mt-3 text-sm font-bold text-dcf-green">
+            DCF Audit Trail
+        </p>
+
+        <p class="text-xs text-gray-400 mt-1">
+            Inaunganisha database...
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header class="bg-dcf-green text-white shadow-lg sticky top-0 z-50">
+
+    <div class="max-w-[1700px] mx-auto px-4 md:px-8">
+
+        <div class="h-16 flex items-center justify-between">
+
+            <!-- BRAND -->
+
+            <div class="flex items-center gap-3">
+
+                <div class="w-10 h-10 bg-white rounded-full p-1 flex items-center justify-center shadow overflow-hidden">
+
+                    <img
+                        src="../assets/images/logo.png"
+                        alt="DCF Logo"
+                        class="w-full h-full object-contain"
+                        onerror="this.style.display='none'"
+                    >
+
+                </div>
+
+                <div>
+
+                    <h1 class="font-bold text-lg leading-tight">
+                        DCF SYSTEM
+                    </h1>
+
+                    <p class="text-[10px] text-green-200">
+                        Development Charity Foundation
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- USER + DASHBOARD -->
+
+            <div class="flex items-center gap-3">
+
+                <div class="hidden md:block text-right">
+
+                    <p
+                        id="current-user-name"
+                        class="font-bold text-sm"
+                    >
+                        Admin
+                    </p>
+
+                    <p
+                        id="current-user-email"
+                        class="text-[10px] text-green-200"
+                    >
+                        -
+                    </p>
+
+                </div>
+
+                <div
+                    id="current-user-avatar"
+                    class="w-9 h-9 rounded-full bg-green-500 flex items-center justify-center font-bold"
+                >
+                    A
+                </div>
+
+                <button
+                    type="button"
+                    onclick="goDashboard()"
+                    class="bg-white text-dcf-green hover:bg-green-50 px-4 py-2 rounded-lg text-xs font-bold transition shadow"
+                >
+
+                    <i class="fas fa-arrow-left mr-1"></i>
+
+                    Rudi Dashboard
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="max-w-[1700px] mx-auto p-4 md:p-6">
+
+    <!-- PAGE TITLE -->
+
+    <section class="mb-6">
+
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+
+            <div class="flex items-center gap-3">
+
+                <div class="w-11 h-11 rounded-xl bg-dcf-green text-white flex items-center justify-center shadow">
+
+                    <i class="fas fa-shield-alt"></i>
+
+                </div>
+
+                <div>
+
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800">
+                        Audit Trail
+                    </h2>
+
+                    <p class="text-xs text-gray-500">
+                        Kumbukumbu ya shughuli zote za mfumo.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONNECTION -->
+
+            <div
+                id="connection-status"
+                class="inline-flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-700 px-3 py-2 rounded-lg text-xs font-bold"
+            >
+
+                <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+
+                Connecting...
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         STATISTICS
+    ====================================================== -->
+
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+        <!-- TOTAL -->
+
+        <div class="stat-card bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+
+                    <p class="text-[11px] uppercase font-bold text-gray-500">
+                        Jumla ya Logs
+                    </p>
+
+                    <p
+                        id="stat-total"
+                        class="text-3xl font-bold text-gray-800 mt-1"
+                    >
+                        0
+                    </p>
+
+                </div>
+
+                <div class="w-12 h-12 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center">
+
+                    <i class="fas fa-list text-lg"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- LOGIN -->
+
+        <div class="stat-card bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+
+                    <p class="text-[11px] uppercase font-bold text-gray-500">
+                        Login
+                    </p>
+
+                    <p
+                        id="stat-login"
+                        class="text-3xl font-bold text-green-700 mt-1"
+                    >
+                        0
+                    </p>
+
+                </div>
+
+                <div class="w-12 h-12 rounded-xl bg-green-50 text-green-700 flex items-center justify-center">
+
+                    <i class="fas fa-sign-in-alt text-lg"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- USERS -->
+
+        <div class="stat-card bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+
+                    <p class="text-[11px] uppercase font-bold text-gray-500">
+                        Watumiaji
+                    </p>
+
+                    <p
+                        id="stat-users"
+                        class="text-3xl font-bold text-blue-700 mt-1"
+                    >
+                        0
+                    </p>
+
+                </div>
+
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center">
+
+                    <i class="fas fa-users text-lg"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- TODAY -->
+
+        <div class="stat-card bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+
+                    <p class="text-[11px] uppercase font-bold text-gray-500">
+                        Login Leo
+                    </p>
+
+                    <p
+                        id="stat-today"
+                        class="text-3xl font-bold text-purple-700 mt-1"
+                    >
+                        0
+                    </p>
+
+                </div>
+
+                <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
+
+                    <i class="fas fa-calendar-day text-lg"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FILTERS
+    ====================================================== -->
+
+    <section class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-5 no-print">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
+
+            <!-- SEARCH -->
+
+            <div class="xl:col-span-2 relative">
+
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
+
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Tafuta email, jina, action, module..."
+                    autocomplete="off"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 pl-9 text-xs focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-dcf-green"
+                >
+
+            </div>
+
+
+            <!-- ACTION -->
+
+            <select
+                id="action-filter"
+                class="border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-dcf-green"
+            >
+
+                <option value="">
+                    Actions Zote
+                </option>
+
+                <option value="LOGIN">
+                    LOGIN
+                </option>
+
+                <option value="LOGOUT">
+                    LOGOUT
+                </option>
+
+                <option value="INSERT">
+                    INSERT
+                </option>
+
+                <option value="UPDATE">
+                    UPDATE
+                </option>
+
+                <option value="DELETE">
+                    DELETE
+                </option>
+
+                <option value="FAILED_LOGIN">
+                    FAILED LOGIN
+                </option>
+
+            </select>
+
+
+            <!-- ROLE -->
+
+            <select
+                id="role-filter"
+                class="border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-dcf-green"
+            >
+
+                <option value="">
+                    Roles Zote
+                </option>
+
+                <option value="admin">
+                    ADMIN
+                </option>
+
+                <option value="staff">
+                    STAFF
+                </option>
+
+                <option value="auditor">
+                    AUDITOR
+                </option>
+
+                <option value="member">
+                    MEMBER
+                </option>
+
+            </select>
+
+
+            <!-- DATE -->
+
+            <select
+                id="date-filter"
+                class="border border-gray-300 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-dcf-green"
+            >
+
+                <option value="">
+                    Kipindi Chote
+                </option>
+
+                <option value="today">
+                    Leo
+                </option>
+
+                <option value="7">
+                    Siku 7
+                </option>
+
+                <option value="30">
+                    Siku 30
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- ACTION BUTTONS -->
+
+        <div class="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100">
+
+            <button
+                id="refresh-btn"
+                type="button"
+                onclick="fetchLogs()"
+                class="bg-dcf-green hover:bg-dcf-hover text-white px-4 py-2 rounded-lg text-xs font-bold transition"
+            >
+
+                <i
+                    id="refresh-icon"
+                    class="fas fa-sync-alt mr-1"
+                ></i>
+
+                Refresh
+
+            </button>
+
+
+            <button
+                type="button"
+                onclick="window.print()"
+                class="bg-gray-700 hover:bg-gray-800 text-white px-4 py-2 rounded-lg text-xs font-bold transition"
+            >
+
+                <i class="fas fa-print mr-1"></i>
+
+                Print
+
+            </button>
+
+
+            <button
+                type="button"
+                onclick="resetFilters()"
+                class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-xs font-bold transition"
+            >
+
+                <i class="fas fa-filter-circle-xmark mr-1"></i>
+
+                Clear Filters
+
+            </button>
+
+
+            <button
+                id="clear-logs-btn"
+                type="button"
+                onclick="clearAuditTrail()"
+                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition ml-auto"
+            >
+
+                <i class="fas fa-trash-alt mr-1"></i>
+
+                Safisha Audit Trail
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TABLE
+    ====================================================== -->
+
+    <section class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+
+        <!-- TABLE HEADER -->
+
+        <div class="px-5 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+
+            <div>
+
+                <h3 class="font-bold text-gray-800 text-sm">
+
+                    <i class="fas fa-history text-dcf-green mr-2"></i>
+
+                    Historia ya Mfumo
+
+                </h3>
+
+                <p class="text-[10px] text-gray-500 mt-1">
+
+                    Logs kutoka kwenye <b>dcf_audit_trail</b>.
+
+                </p>
+
+            </div>
+
+
+            <div
+                id="record-count"
+                class="text-xs font-bold text-dcf-green"
+            >
+                0 records
+            </div>
+
+        </div>
+
+
+        <!-- TABLE -->
+
+        <div class="overflow-x-auto table-scroll">
+
+            <table class="w-full text-left text-xs">
+
+                <thead class="bg-dcf-green text-white">
+
+                    <tr>
+
+                        <th class="px-4 py-3 whitespace-nowrap">
+                            #
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap">
+                            Tarehe & Muda
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap">
+                            Mtumiaji
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap">
+                            Email
+                        </th>
+
+                        <th class="px-4 py-3 text-center whitespace-nowrap">
+                            Role
+                        </th>
+
+                        <th class="px-4 py-3 text-center whitespace-nowrap">
+                            Action
+                        </th>
+
+                        <th class="px-4 py-3 whitespace-nowrap">
+                            Module
+                        </th>
+
+                        <th class="px-4 py-3 min-w-[300px]">
+                            Maelezo
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody
+                    id="logs-table-body"
+                    class="divide-y divide-gray-100"
+                >
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="py-14 text-center"
+                        >
+
+                            <div class="flex flex-col items-center">
+
+                                <div class="loading-spinner mb-3"></div>
+
+                                <p class="text-gray-500 text-xs">
+                                    Inapakia kumbukumbu...
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <div class="mt-4 flex flex-col sm:flex-row justify-between gap-2 text-[10px] text-gray-400">
+
+        <span>
+            DCF System — Audit & Security Monitoring
+        </span>
+
+        <span id="last-updated">
+            Last updated: -
+        </span>
+
+    </div>
+
+</main>
+
+
+<script>
+
+"use strict";
+
+/* =========================================================
+   GLOBAL DATA
+========================================================= */
+
+let allLogs = [];
+let filteredLogs = [];
+
+
+/* =========================================================
+   SAFE HTML
+========================================================= */
+
+function escapeHtml(value) {
+
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
+   CURRENT USER
+========================================================= */
+
+function loadCurrentUser() {
+
+    const email =
+        sessionStorage.getItem("userEmail") ||
+        sessionStorage.getItem("user_email") ||
+        sessionStorage.getItem("username") ||
+        "admin@test.com";
+
+    const role =
+        sessionStorage.getItem("userRole") ||
+        "admin";
+
+    const name =
+        sessionStorage.getItem("userName") ||
+        sessionStorage.getItem("fullName") ||
+        sessionStorage.getItem("full_name") ||
+        (
+            email.includes("@")
+                ? email.split("@")[0]
+                : email
+        );
+
+    const nameElement =
+        document.getElementById("current-user-name");
+
+    const emailElement =
+        document.getElementById("current-user-email");
+
+    const avatarElement =
+        document.getElementById("current-user-avatar");
+
+    if (nameElement) {
+        nameElement.textContent = name;
+    }
+
+    if (emailElement) {
+        emailElement.textContent =
+            email + " • " + String(role).toUpperCase();
+    }
+
+    if (avatarElement) {
+        avatarElement.textContent =
+            String(name).charAt(0).toUpperCase();
+    }
+}
+
+
+/* =========================================================
+   DATE FORMAT
+========================================================= */
+
+function formatDate(value) {
+
+    if (!value) {
+        return "-";
+    }
+
+    const date = new Date(value);
+
+    if (isNaN(date.getTime())) {
+        return escapeHtml(value);
+    }
+
+    return date.toLocaleString(
+        "sw-TZ",
+        {
+            dateStyle: "medium",
+            timeStyle: "medium"
+        }
+    );
+}
+
+
+/* =========================================================
+   ACTION BADGE
+========================================================= */
+
+function actionBadge(action) {
+
+    const value =
+        String(action || "-").toUpperCase();
+
+    const configs = {
+
+        LOGIN: [
+            "bg-green-100 text-green-700 border-green-200",
+            "fa-sign-in-alt"
+        ],
+
+        LOGOUT: [
+            "bg-gray-100 text-gray-700 border-gray-200",
+            "fa-sign-out-alt"
+        ],
+
+        INSERT: [
+            "bg-green-100 text-green-700 border-green-200",
+            "fa-plus"
+        ],
+
+        UPDATE: [
+            "bg-blue-100 text-blue-700 border-blue-200",
+            "fa-pen"
+        ],
+
+        DELETE: [
+            "bg-red-100 text-red-700 border-red-200",
+            "fa-trash"
+        ],
+
+        FAILED_LOGIN: [
+            "bg-red-100 text-red-700 border-red-200",
+            "fa-times-circle"
+        ]
+
+    };
+
+    const config =
+        configs[value] ||
+        [
+            "bg-gray-100 text-gray-700 border-gray-200",
+            "fa-circle"
+        ];
+
+    return `
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border ${config[0]} font-bold">
+
+            <i class="fas ${config[1]}"></i>
+
+            ${escapeHtml(value)}
+
+        </span>
+    `;
+}
+
+
+/* =========================================================
+   ROLE BADGE
+========================================================= */
+
+function roleBadge(role) {
+
+    const value =
+        String(role || "unknown").toLowerCase();
+
+    const roles = {
+
+        admin:
+            "bg-purple-100 text-purple-700 border-purple-200",
+
+        staff:
+            "bg-blue-100 text-blue-700 border-blue-200",
+
+        auditor:
+            "bg-orange-100 text-orange-700 border-orange-200",
+
+        member:
+            "bg-green-100 text-green-700 border-green-200"
+
+    };
+
+    const classes =
+        roles[value] ||
+        "bg-gray-100 text-gray-700 border-gray-200";
+
+    return `
+        <span class="px-2.5 py-1 rounded-full border ${classes} font-bold uppercase">
+
+            ${escapeHtml(value)}
+
+        </span>
+    `;
+}
+
+
+/* =========================================================
+   CONNECTION STATUS
+========================================================= */
+
+function updateConnection(connected, message = "") {
+
+    const element =
+        document.getElementById("connection-status");
+
+    if (!element) {
+        return;
+    }
+
+    if (connected) {
+
+        element.className =
+            "inline-flex items-center gap-2 bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-lg text-xs font-bold";
+
+        element.innerHTML = `
+            <span class="w-2 h-2 rounded-full bg-green-500"></span>
+            Supabase Connected
+        `;
+
+    } else {
+
+        element.className =
+            "inline-flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-xs font-bold";
+
+        element.innerHTML = `
+            <span class="w-2 h-2 rounded-full bg-red-500"></span>
+            ${escapeHtml(message || "Database Error")}
+        `;
+    }
+}
+
+
+/* =========================================================
+   FETCH LOGS
+========================================================= */
+
+async function fetchLogs() {
+
+    const tbody =
+        document.getElementById("logs-table-body");
+
+    const refreshBtn =
+        document.getElementById("refresh-btn");
+
+    const refreshIcon =
+        document.getElementById("refresh-icon");
+
+    if (!tbody) {
+        return;
+    }
+
+    if (refreshBtn) {
+        refreshBtn.disabled = true;
+    }
+
+    if (refreshIcon) {
+        refreshIcon.classList.add("fa-spin");
+    }
+
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="8" class="py-14 text-center">
+
+                <div class="flex flex-col items-center">
+
+                    <div class="loading-spinner mb-3"></div>
+
+                    <p class="text-gray-500 text-xs">
+                        Inapakia audit logs...
+                    </p>
+
+                </div>
+
+            </td>
+        </tr>
+    `;
+
+    try {
+
+        /* =================================================
+           VERIFY SUPABASE CLIENT
+        ================================================= */
+
+        if (
+            typeof window._supabase === "undefined" ||
+            !window._supabase
+        ) {
+
+            throw new Error(
+                "Supabase client haijapatikana. Kagua ../js/supabase.js"
+            );
+        }
+
+
+        /* =================================================
+           ONLY REAL COLUMNS FROM YOUR TABLE
+        ================================================= */
+
+        const {
+            data,
+            error
+        } = await window._supabase
+            .from("dcf_audit_trail")
+            .select(`
+                id,
+                user_email,
+                action,
+                module,
+                details,
+                created_at,
+                user_id,
+                user_name,
+                role
+            `)
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        /* =================================================
+           STORE DATA
+        ================================================= */
+
+        allLogs =
+            Array.isArray(data)
+                ? data
+                : [];
+
+        filteredLogs =
+            [...allLogs];
+
+
+        /* =================================================
+           RENDER
+        ================================================= */
+
+        renderLogs(filteredLogs);
+
+        updateStatistics(allLogs);
+
+        updateConnection(true);
+
+
+        document.getElementById(
+            "last-updated"
+        ).textContent =
+            "Last updated: " +
+            new Date().toLocaleString("sw-TZ");
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "DCF AUDIT TRAIL ERROR:",
+            error
+        );
+
+        allLogs = [];
+        filteredLogs = [];
+
+        updateConnection(
+            false,
+            "Database Error"
+        );
+
+        document.getElementById(
+            "record-count"
+        ).textContent =
+            "0 records";
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td colspan="8" class="py-14 text-center">
+
+                    <div class="text-red-500 text-3xl mb-3">
+
+                        <i class="fas fa-database"></i>
+
+                    </div>
+
+                    <p class="font-bold text-red-600 text-sm">
+                        Imeshindikana kupakia Audit Trail
+                    </p>
+
+                    <p class="text-gray-500 text-xs mt-2 max-w-2xl mx-auto">
+                        ${escapeHtml(error?.message || "Unknown database error")}
+                    </p>
+
+                    <button
+                        type="button"
+                        onclick="fetchLogs()"
+                        class="mt-4 bg-dcf-green hover:bg-dcf-hover text-white px-4 py-2 rounded-lg text-xs font-bold"
+                    >
+
+                        <i class="fas fa-sync-alt mr-1"></i>
+
+                        Jaribu Tena
+
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+    finally {
+
+        if (refreshBtn) {
+            refreshBtn.disabled = false;
+        }
+
+        if (refreshIcon) {
+            refreshIcon.classList.remove("fa-spin");
+        }
+
+    }
+}
+
+
+/* =========================================================
+   RENDER LOGS
+========================================================= */
+
+function renderLogs(logs) {
+
+    const tbody =
+        document.getElementById("logs-table-body");
+
+    const count =
+        document.getElementById("record-count");
+
+    if (!tbody) {
+        return;
+    }
+
+    const safeLogs =
+        Array.isArray(logs)
+            ? logs
+            : [];
+
+    if (count) {
+        count.textContent =
+            `${safeLogs.length} records`;
+    }
+
+
+    /* EMPTY */
+
+    if (safeLogs.length === 0) {
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td colspan="8" class="py-16 text-center">
+
+                    <div class="text-gray-300 text-4xl mb-3">
+
+                        <i class="fas fa-history"></i>
+
+                    </div>
+
+                    <p class="font-bold text-gray-600">
+                        Hakuna kumbukumbu
+                    </p>
+
+                    <p class="text-xs text-gray-400 mt-1">
+                        Hakuna audit log inayolingana na filters zako.
+                    </p>
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+    }
+
+
+    /* =====================================================
+       BUILD TABLE
+    ====================================================== */
+
+    tbody.innerHTML =
+        safeLogs.map(
+            (log, index) => {
+
+                const email =
+                    log.user_email ||
+                    "System";
+
+                const username =
+                    log.user_name ||
+                    (
+                        String(email).includes("@")
+                            ? String(email).split("@")[0]
+                            : email
+                    ) ||
+                    "System";
+
+                const role =
+                    log.role ||
+                    "unknown";
+
+                const action =
+                    log.action ||
+                    "-";
+
+                const module =
+                    log.module ||
+                    "-";
+
+                const details =
+                    log.details ||
+                    "-";
+
+                return `
+
+                    <tr class="log-row hover:bg-gray-50">
+
+                        <!-- NUMBER -->
+
+                        <td class="px-4 py-3 text-gray-400 font-mono">
+                            ${index + 1}
+                        </td>
+
+
+                        <!-- DATE -->
+
+                        <td class="px-4 py-3 whitespace-nowrap">
+
+                            <div class="font-semibold text-gray-700">
+
+                                ${formatDate(log.created_at)}
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- USER -->
+
+                        <td class="px-4 py-3">
+
+                            <div class="flex items-center gap-2">
+
+                                <div
+                                    class="w-8 h-8 rounded-full bg-dcf-green text-white flex items-center justify-center font-bold flex-shrink-0"
+                                >
+
+                                    ${escapeHtml(
+                                        String(username)
+                                            .charAt(0)
+                                            .toUpperCase()
+                                    )}
+
+                                </div>
+
+                                <div class="min-w-0">
+
+                                    <p class="font-bold text-gray-800 truncate">
+
+                                        ${escapeHtml(username)}
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <!-- EMAIL -->
+
+                        <td class="px-4 py-3">
+
+                            <span class="text-gray-700 whitespace-nowrap">
+
+                                ${escapeHtml(email)}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- ROLE -->
+
+                        <td class="px-4 py-3 text-center">
+
+                            ${roleBadge(role)}
+
+                        </td>
+
+
+                        <!-- ACTION -->
+
+                        <td class="px-4 py-3 text-center whitespace-nowrap">
+
+                            ${actionBadge(action)}
+
+                        </td>
+
+
+                        <!-- MODULE -->
+
+                        <td class="px-4 py-3">
+
+                            <span class="font-bold text-dcf-green">
+
+                                ${escapeHtml(module)}
+
+                            </span>
+
+                        </td>
+
+
+                        <!-- DETAILS -->
+
+                        <td class="px-4 py-3 text-gray-600">
+
+                            ${escapeHtml(details)}
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        )
+        .join("");
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+function updateStatistics(logs) {
+
+    const safeLogs =
+        Array.isArray(logs)
+            ? logs
+            : [];
+
+
+    /* TOTAL */
+
+    document.getElementById(
+        "stat-total"
+    ).textContent =
+        safeLogs.length;
+
+
+    /* LOGIN */
+
+    const loginLogs =
+        safeLogs.filter(
+            log =>
+                String(log.action || "")
+                    .toUpperCase() === "LOGIN"
+        );
+
+    document.getElementById(
+        "stat-login"
+    ).textContent =
+        loginLogs.length;
+
+
+    /* UNIQUE USERS */
+
+    const uniqueUsers =
+        new Set(
+            loginLogs
+                .map(
+                    log =>
+                        log.user_email ||
+                        log.user_id ||
+                        log.user_name
+                )
+                .filter(Boolean)
+        );
+
+    document.getElementById(
+        "stat-users"
+    ).textContent =
+        uniqueUsers.size;
+
+
+    /* TODAY */
+
+    const today =
+        new Date();
+
+    const todayString =
+        today.toLocaleDateString("en-CA");
+
+
+    const todayLogins =
+        loginLogs.filter(
+            log => {
+
+                if (!log.created_at) {
+                    return false;
+                }
+
+                const date =
+                    new Date(log.created_at);
+
+                if (isNaN(date.getTime())) {
+                    return false;
+                }
+
+                return (
+                    date.toLocaleDateString("en-CA") ===
+                    todayString
+                );
+
+            }
+        );
+
+
+    document.getElementById(
+        "stat-today"
+    ).textContent =
+        todayLogins.length;
+}
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+function applyFilters() {
+
+    const search =
+        document.getElementById("search-input")
+            ?.value
+            ?.trim()
+            .toLowerCase() || "";
+
+
+    const selectedAction =
+        document.getElementById("action-filter")
+            ?.value
+            ?.toLowerCase() || "";
+
+
+    const selectedRole =
+        document.getElementById("role-filter")
+            ?.value
+            ?.toLowerCase() || "";
+
+
+    const selectedDate =
+        document.getElementById("date-filter")
+            ?.value || "";
+
+
+    const now =
+        new Date();
+
+
+    filteredLogs =
+        allLogs.filter(
+            log => {
+
+                /* SEARCH */
+
+                const searchableText = [
+
+                    log.user_email,
+                    log.user_name,
+                    log.role,
+                    log.action,
+                    log.module,
+                    log.details,
+                    log.user_id
+
+                ]
+                    .filter(
+                        value =>
+                            value !== null &&
+                            value !== undefined
+                    )
+                    .join(" ")
+                    .toLowerCase();
+
+
+                const matchesSearch =
+                    !search ||
+                    searchableText.includes(search);
+
+
+                /* ACTION */
+
+                const matchesAction =
+                    !selectedAction ||
+                    String(log.action || "")
+                        .toLowerCase() ===
+                    selectedAction;
+
+
+                /* ROLE */
+
+                const matchesRole =
+                    !selectedRole ||
+                    String(log.role || "")
+                        .toLowerCase() ===
+                    selectedRole;
+
+
+                /* DATE */
+
+                let matchesDate = true;
+
+
+                if (selectedDate === "today") {
+
+                    if (!log.created_at) {
+
+                        matchesDate = false;
+
+                    } else {
+
+                        const date =
+                            new Date(log.created_at);
+
+                        matchesDate =
+                            date.toLocaleDateString("en-CA") ===
+                            now.toLocaleDateString("en-CA");
+
+                    }
+
+                }
+
+
+                if (selectedDate === "7") {
+
+                    const start =
+                        new Date();
+
+                    start.setDate(
+                        start.getDate() - 7
+                    );
+
+                    const date =
+                        new Date(log.created_at);
+
+                    matchesDate =
+                        !isNaN(date.getTime()) &&
+                        date >= start;
+
+                }
+
+
+                if (selectedDate === "30") {
+
+                    const start =
+                        new Date();
+
+                    start.setDate(
+                        start.getDate() - 30
+                    );
+
+                    const date =
+                        new Date(log.created_at);
+
+                    matchesDate =
+                        !isNaN(date.getTime()) &&
+                        date >= start;
+
+                }
+
+
+                return (
+                    matchesSearch &&
+                    matchesAction &&
+                    matchesRole &&
+                    matchesDate
+                );
+
+            }
+        );
+
+
+    renderLogs(filteredLogs);
+}
+
+
+/* =========================================================
+   RESET FILTERS
+========================================================= */
+
+function resetFilters() {
+
+    document.getElementById(
+        "search-input"
+    ).value = "";
+
+    document.getElementById(
+        "action-filter"
+    ).value = "";
+
+    document.getElementById(
+        "role-filter"
+    ).value = "";
+
+    document.getElementById(
+        "date-filter"
+    ).value = "";
+
+    filteredLogs =
+        [...allLogs];
+
+    renderLogs(filteredLogs);
+}
+
+
+/* =========================================================
+   CLEAR AUDIT TRAIL
+========================================================= */
+
+async function clearAuditTrail() {
+
+    const role =
+        String(
+            sessionStorage.getItem("userRole") || ""
+        ).toLowerCase();
+
+
+    if (role !== "admin") {
+
+        alert(
+            "ACCESS DENIED\n\n" +
+            "Ni Admin pekee anayeruhusiwa kusafisha Audit Trail."
+        );
+
+        return;
+    }
+
+
+    const confirmation =
+        prompt(
+            "TAHADHARI!\n\n" +
+            "Hii itafuta Audit Trail yote.\n\n" +
+            "Andika CLEAR kuthibitisha:"
+        );
+
+
+    if (confirmation !== "CLEAR") {
+
+        return;
+    }
+
+
+    try {
+
+        const {
+            error
+        } = await window._supabase
+            .from("dcf_audit_trail")
+            .delete()
+            .neq(
+                "id",
+                "00000000-0000-0000-0000-000000000000"
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        alert(
+            "Audit Trail yote imefutwa kikamilifu."
+        );
+
+
+        await fetchLogs();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CLEAR AUDIT ERROR:",
+            error
+        );
+
+        alert(
+            "Imeshindikana kufuta Audit Trail.\n\n" +
+            (error?.message || "Unknown error")
+        );
+    }
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function goDashboard() {
+
+    /*
+       Tunajaribu dashboard paths tofauti
+       ili button ifanye kazi hata file ikiwa
+       ndani ya folder tofauti.
+    */
+
+    const paths = [
+        "../dashboard.html",
+        "../../dashboard.html",
+        "/dashboard.html"
+    ];
+
+    /*
+       Path ya kwanza ndiyo default.
+    */
+
+    window.location.href = paths[0];
+}
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+        /* USER */
+
+        loadCurrentUser();
+
+
+        /* FILTER EVENTS */
+
+        const searchInput =
+            document.getElementById("search-input");
+
+        const actionFilter =
+            document.getElementById("action-filter");
+
+        const roleFilter =
+            document.getElementById("role-filter");
+
+        const dateFilter =
+            document.getElementById("date-filter");
+
+
+        if (searchInput) {
+
+            searchInput.addEventListener(
+                "input",
+                applyFilters
+            );
+
+        }
+
+
+        if (actionFilter) {
+
+            actionFilter.addEventListener(
+                "change",
+                applyFilters
+            );
+
+        }
+
+
+        if (roleFilter) {
+
+            roleFilter.addEventListener(
+                "change",
+                applyFilters
+            );
+
+        }
+
+
+        if (dateFilter) {
+
+            dateFilter.addEventListener(
+                "change",
+                applyFilters
+            );
+
+        }
+
+
+        /* ADMIN BUTTON */
+
+        const role =
+            String(
+                sessionStorage.getItem("userRole") || ""
+            ).toLowerCase();
+
+
+        if (role !== "admin") {
+
+            const clearButton =
+                document.getElementById(
+                    "clear-logs-btn"
+                );
+
+            if (clearButton) {
+                clearButton.style.display = "none";
+            }
+
+        }
+
+
+        /* LOAD DATA */
+
+        await fetchLogs();
+
+
+        /* REMOVE PAGE LOADER */
+
+        const pageLoader =
+            document.getElementById("page-loader");
+
+        if (pageLoader) {
+
+            pageLoader.style.opacity = "0";
+
+            setTimeout(
+                () => {
+                    pageLoader.style.display = "none";
+                },
+                250
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>

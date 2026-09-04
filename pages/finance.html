@@ -1,0 +1,3843 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+    name="theme-color"
+    content="#174a35"
+>
+
+<meta
+    name="color-scheme"
+    content="light"
+>
+
+<title>Usimamizi wa Fedha - DCF MIS</title>
+
+
+<!-- =====================================================
+     TAILWIND
+====================================================== -->
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+
+tailwind.config = {
+
+    theme: {
+
+        extend: {
+
+            colors: {
+
+                dcf: {
+
+                    dark: "#174a35",
+
+                    hover: "#0d3022",
+
+                    light: "#edf6f0"
+
+                }
+
+            }
+
+        }
+
+    }
+
+};
+
+</script>
+
+
+
+<!-- =====================================================
+     SUPABASE
+====================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="../js/supabase.js"></script>
+
+<script src="../js/role-guard.js"></script>
+
+
+
+<!-- =====================================================
+     STYLE
+====================================================== -->
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+body {
+
+    margin: 0;
+
+    font-family:
+        Inter,
+        "Segoe UI",
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: #f5f7f6;
+
+    color: #1f2937;
+
+    -webkit-text-size-adjust: 100%;
+
+    text-rendering: optimizeLegibility;
+
+}
+
+
+/* =====================================================
+   CONTENT
+====================================================== */
+
+.content {
+
+    width: min(1500px, 100%);
+
+    margin: auto;
+
+    padding-left: 28px;
+
+    padding-right: 28px;
+
+}
+
+
+/* =====================================================
+   PANELS
+====================================================== */
+
+.panel,
+.stat {
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 4px 18px rgba(15,23,42,.035);
+
+}
+
+
+.stat {
+
+    padding: 20px;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+
+}
+
+
+.stat:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 28px rgba(15,23,42,.07);
+
+}
+
+
+/* =====================================================
+   FORM
+====================================================== */
+
+.field label {
+
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    color: #475569;
+
+}
+
+
+.field input,
+.field select,
+.field textarea {
+
+    width: 100%;
+
+    min-height: 42px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 10px;
+
+    padding: 11px 12px;
+
+    font-size: 13px;
+
+    outline: none;
+
+    background: #fff;
+
+    color: #1f2937;
+
+    transition:
+        border-color .15s ease,
+        box-shadow .15s ease;
+
+}
+
+
+.field textarea {
+
+    min-height: 90px;
+
+    resize: vertical;
+
+}
+
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+
+    border-color: #174a35;
+
+    box-shadow:
+        0 0 0 3px rgba(23,74,53,.08);
+
+}
+
+
+/* =====================================================
+   BUTTON
+====================================================== */
+
+.primary-btn {
+
+    width: 100%;
+
+    border: 0;
+
+    border-radius: 10px;
+
+    padding: 12px;
+
+    background: #174a35;
+
+    color: #fff;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        transform .1s ease;
+
+}
+
+
+.primary-btn:hover {
+
+    background: #0d3022;
+
+}
+
+
+.primary-btn:active {
+
+    transform: scale(.99);
+
+}
+
+
+.primary-btn:disabled {
+
+    opacity: .6;
+
+    cursor: not-allowed;
+
+}
+
+
+/* =====================================================
+   TABS
+====================================================== */
+
+.tab {
+
+    padding: 16px 24px;
+
+    border: 0;
+
+    background: #f8faf9;
+
+    color: #64748b;
+
+    font-size: 13px;
+
+    font-weight: 900;
+
+    cursor: pointer;
+
+    border-bottom: 3px solid transparent;
+
+    transition:
+        background .2s ease,
+        color .2s ease;
+
+}
+
+
+.tab.active-income {
+
+    background: #edf8f1;
+
+    color: #18733e;
+
+    border-color: #18733e;
+
+}
+
+
+.tab.active-expense {
+
+    background: #fff3f2;
+
+    color: #b42318;
+
+    border-color: #b42318;
+
+}
+
+
+/* =====================================================
+   TABLE
+====================================================== */
+
+.table-wrap {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    overflow-y: hidden;
+
+    -webkit-overflow-scrolling: touch;
+
+}
+
+
+table {
+
+    width: 100%;
+
+    min-width: 1050px;
+
+    border-collapse: collapse;
+
+}
+
+
+th,
+td {
+
+    vertical-align: middle;
+
+}
+
+
+tbody tr {
+
+    transition:
+        background .15s ease;
+
+}
+
+
+tbody tr:hover {
+
+    background: #f8faf9;
+
+}
+
+
+/* =====================================================
+   BADGES
+====================================================== */
+
+.badge-income {
+
+    background: #e9f7ef;
+
+    color: #18733e;
+
+}
+
+
+.badge-expense {
+
+    background: #fceeee;
+
+    color: #b42318;
+
+}
+
+
+/* =====================================================
+   NOTICE
+====================================================== */
+
+.notice {
+
+    border-radius: 12px;
+
+    padding: 11px 13px;
+
+    font-size: 12px;
+
+    display: none;
+
+}
+
+
+.notice.show {
+
+    display: block;
+
+}
+
+
+/* =====================================================
+   MODAL
+====================================================== */
+
+.modal-bg {
+
+    background:
+        rgba(15,23,42,.48);
+
+    -webkit-backdrop-filter: blur(3px);
+
+    backdrop-filter: blur(3px);
+
+}
+
+
+/* =====================================================
+   ACTION BUTTON
+====================================================== */
+
+.btn-delete {
+
+    cursor: pointer;
+
+    border: 0;
+
+    background: transparent;
+
+}
+
+
+.btn-delete:disabled {
+
+    opacity: .5;
+
+    cursor: not-allowed;
+
+}
+
+
+/* =====================================================
+   PRINT TITLE
+====================================================== */
+
+.print-header {
+
+    display: none;
+
+}
+
+
+/* =====================================================
+   RESPONSIVE
+====================================================== */
+
+@media (max-width: 1000px) {
+
+    .content {
+
+        padding-left: 18px;
+
+        padding-right: 18px;
+
+    }
+
+}
+
+
+@media (max-width: 640px) {
+
+    .content {
+
+        padding-left: 12px;
+
+        padding-right: 12px;
+
+    }
+
+
+    .header-inner {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        padding-top: 18px;
+
+        padding-bottom: 18px;
+
+    }
+
+
+    .header-actions {
+
+        width: 100%;
+
+        display: grid;
+
+        grid-template-columns: 1fr 1fr;
+
+    }
+
+
+    .header-actions button {
+
+        width: 100%;
+
+    }
+
+
+    .tab {
+
+        padding: 14px 8px;
+
+        font-size: 10px;
+
+    }
+
+
+    .table-wrap {
+
+        border-radius: 0;
+
+    }
+
+
+    .stat {
+
+        padding: 16px;
+
+    }
+
+
+    .panel {
+
+        border-radius: 14px;
+
+    }
+
+}
+
+
+/* =====================================================
+   PRINT
+====================================================== */
+
+@page {
+
+    size: A4 portrait;
+
+    margin: 12mm;
+
+}
+
+
+@media print {
+
+    html,
+    body {
+
+        width: 100% !important;
+
+        min-width: 0 !important;
+
+        background: #fff !important;
+
+        color: #000 !important;
+
+        font-size: 10px !important;
+
+    }
+
+
+    body {
+
+        -webkit-print-color-adjust: exact !important;
+
+        print-color-adjust: exact !important;
+
+    }
+
+
+    .no-print,
+    .form-panel,
+    .header-actions,
+    .action-column,
+    .tabs,
+    #deleteModal,
+    #incomeSearch,
+    #incomeFilter,
+    #expenseSearch,
+    #expenseFilter {
+
+        display: none !important;
+
+    }
+
+
+    .content {
+
+        width: 100% !important;
+
+        max-width: 100% !important;
+
+        padding: 0 !important;
+
+        margin: 0 !important;
+
+    }
+
+
+    .panel,
+    .stat {
+
+        box-shadow: none !important;
+
+        border: 1px solid #d1d5db !important;
+
+        border-radius: 0 !important;
+
+    }
+
+
+    .print-header {
+
+        display: block !important;
+
+        text-align: center;
+
+        margin-bottom: 14px;
+
+        padding-bottom: 10px;
+
+        border-bottom: 2px solid #174a35;
+
+    }
+
+
+    .print-header h1 {
+
+        margin: 0;
+
+        font-size: 20px;
+
+        font-weight: 800;
+
+        color: #174a35 !important;
+
+    }
+
+
+    .print-header p {
+
+        margin: 3px 0;
+
+        font-size: 11px;
+
+        color: #555 !important;
+
+    }
+
+
+    #incomePanel,
+    #expensePanel {
+
+        display: block !important;
+
+        width: 100% !important;
+
+    }
+
+
+    #expensePanel {
+
+        margin-top: 20px !important;
+
+    }
+
+
+    #incomePanel > .panel,
+    #expensePanel > .panel {
+
+        width: 100% !important;
+
+        border: 0 !important;
+
+    }
+
+
+    .table-wrap {
+
+        overflow: visible !important;
+
+        width: 100% !important;
+
+    }
+
+
+    table {
+
+        width: 100% !important;
+
+        min-width: 0 !important;
+
+        table-layout: fixed !important;
+
+        font-size: 8px !important;
+
+    }
+
+
+    th,
+    td {
+
+        padding: 5px !important;
+
+        word-break: break-word !important;
+
+        overflow-wrap: anywhere !important;
+
+    }
+
+
+    th {
+
+        background: #174a35 !important;
+
+        color: #fff !important;
+
+    }
+
+
+    tbody tr {
+
+        page-break-inside: avoid;
+
+        break-inside: avoid;
+
+    }
+
+
+    .stat {
+
+        display: inline-block !important;
+
+        width: 32% !important;
+
+        vertical-align: top;
+
+        margin-right: 1%;
+
+        padding: 10px !important;
+
+    }
+
+
+    .stat:last-child {
+
+        margin-right: 0;
+
+    }
+
+
+    .stat h2 {
+
+        font-size: 12px !important;
+
+    }
+
+
+    .stat p {
+
+        font-size: 8px !important;
+
+    }
+
+
+    #successNotice,
+    #errorNotice {
+
+        display: none !important;
+
+    }
+
+
+    #incomeCount,
+    #expenseCount {
+
+        font-size: 8px !important;
+
+    }
+
+
+    .badge-income,
+    .badge-expense {
+
+        padding: 2px 4px !important;
+
+        font-size: 7px !important;
+
+    }
+
+
+    /* Print only active tab */
+
+    body.print-income-only #expensePanel {
+
+        display: none !important;
+
+    }
+
+
+    body.print-income-only #incomePanel {
+
+        display: block !important;
+
+    }
+
+
+    body.print-expense-only #incomePanel {
+
+        display: none !important;
+
+    }
+
+
+    body.print-expense-only #expensePanel {
+
+        display: block !important;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+
+<body
+    data-allowed-roles="admin,staff,auditor"
+>
+
+
+<!-- =====================================================
+     HEADER
+====================================================== -->
+
+<header class="bg-white border-b border-slate-200 no-print">
+
+<div class="content">
+
+<div
+    class="header-inner min-h-[82px] flex items-center justify-between gap-5"
+>
+
+<div class="flex items-center gap-4">
+
+<div
+    class="w-1 h-11 rounded-full bg-dcf-dark"
+></div>
+
+
+<div>
+
+<div
+    class="text-[11px] uppercase tracking-wider text-slate-400 font-bold"
+>
+    DCF MIS SYSTEM
+</div>
+
+
+<h1
+    class="text-xl md:text-2xl font-extrabold text-dcf-dark"
+>
+    Usimamizi wa Fedha
+</h1>
+
+
+<p class="text-xs text-slate-500 mt-1">
+
+    Mfumo wa kitaalamu wa usimamizi wa mapato,
+    manunuzi na matumizi
+
+</p>
+
+</div>
+
+</div>
+
+
+
+<div class="header-actions no-print flex gap-2">
+
+<button
+    type="button"
+    id="printBtn"
+    class="px-4 py-2.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold"
+>
+
+    🖨 Print
+
+</button>
+
+
+<button
+    type="button"
+    id="dashboardBtn"
+    class="px-4 py-2.5 rounded-lg bg-dcf-dark hover:bg-dcf-hover text-white text-xs font-bold"
+>
+
+    ← Rudi Dashboard
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</header>
+
+
+
+<!-- =====================================================
+     PRINT HEADER
+====================================================== -->
+
+<div class="print-header">
+
+<h1>
+    DEVELOPMENT CHARITY FOUNDATION
+</h1>
+
+<p>
+    DCF MIS SYSTEM — USIMAMIZI WA FEDHA
+</p>
+
+<p id="printDate"></p>
+
+</div>
+
+
+
+<!-- =====================================================
+     MAIN
+====================================================== -->
+
+<main class="content py-7">
+
+
+<!-- =====================================================
+     SUMMARY
+====================================================== -->
+
+<section
+    class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"
+>
+
+<div class="stat">
+
+<p
+    class="text-[11px] uppercase tracking-wide text-slate-400 font-bold"
+>
+    Jumla ya Mapato
+</p>
+
+<h2
+    id="totalIncome"
+    class="text-xl font-extrabold text-green-700 mt-2"
+>
+    0 TZS
+</h2>
+
+</div>
+
+
+
+<div class="stat">
+
+<p
+    class="text-[11px] uppercase tracking-wide text-slate-400 font-bold"
+>
+    Jumla ya Manunuzi & Matumizi
+</p>
+
+<h2
+    id="totalExpense"
+    class="text-xl font-extrabold text-red-600 mt-2"
+>
+    0 TZS
+</h2>
+
+</div>
+
+
+
+<div class="stat">
+
+<p
+    class="text-[11px] uppercase tracking-wide text-slate-400 font-bold"
+>
+    Salio la Taasisi
+</p>
+
+<h2
+    id="totalBalance"
+    class="text-xl font-extrabold text-dcf-dark mt-2"
+>
+    0 TZS
+</h2>
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================================
+     NOTICES
+====================================================== -->
+
+<div
+    id="successNotice"
+    class="notice bg-green-50 border border-green-200 text-green-800 mb-4"
+></div>
+
+
+<div
+    id="errorNotice"
+    class="notice bg-red-50 border border-red-200 text-red-700 mb-4"
+></div>
+
+
+
+<!-- =====================================================
+     TABS
+====================================================== -->
+
+<section
+    class="panel overflow-hidden mb-5 tabs no-print"
+>
+
+<div
+    class="grid grid-cols-2 border-b border-slate-200"
+>
+
+<button
+    id="incomeTab"
+    class="tab active-income"
+    type="button"
+>
+    ↑ MAPATO
+</button>
+
+
+<button
+    id="expenseTab"
+    class="tab"
+    type="button"
+>
+    ↓ MANUNUZI & MATUMIZI
+</button>
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================================
+     INCOME
+====================================================== -->
+
+<section
+    id="incomePanel"
+    class="grid grid-cols-1 lg:grid-cols-[430px_minmax(0,1fr)] gap-5 items-start"
+>
+
+
+<!-- FORM -->
+
+<div class="panel form-panel overflow-hidden">
+
+<div
+    class="px-5 py-4 border-b border-slate-100"
+>
+
+<h2 class="text-sm font-extrabold text-slate-800">
+    Sajili Mapato
+</h2>
+
+<p class="text-[11px] text-slate-400 mt-1">
+    Rekodi chanzo na taarifa kamili ya mapato
+</p>
+
+</div>
+
+
+
+<form
+    id="incomeForm"
+    class="p-5 space-y-4"
+>
+
+
+<div class="field">
+
+<label for="incomeSource">
+    Chanzo cha Mapato
+</label>
+
+<input
+    id="incomeSource"
+    placeholder="Mf. Grant, Donation, Membership"
+    required
+>
+
+</div>
+
+
+
+<div class="grid grid-cols-2 gap-3">
+
+<div class="field">
+
+<label for="incomeCategory">
+    Aina
+</label>
+
+<select id="incomeCategory">
+
+<option>Grant</option>
+
+<option>Donation</option>
+
+<option>Membership</option>
+
+<option>Project Income</option>
+
+<option>Other</option>
+
+</select>
+
+</div>
+
+
+
+<div class="field">
+
+<label for="incomeMethod">
+    Njia ya Malipo
+</label>
+
+<select id="incomeMethod">
+
+<option>Bank Transfer</option>
+
+<option>Mobile Money</option>
+
+<option>Cash</option>
+
+<option>Cheque</option>
+
+<option>Other</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+
+<div class="field">
+
+<label for="incomeReference">
+    Reference / Receipt No.
+</label>
+
+<input
+    id="incomeReference"
+    placeholder="Mf. DCF-REC-2026-0001"
+>
+
+</div>
+
+
+
+<div class="field">
+
+<label for="incomeAmount">
+    Kiasi (TZS)
+</label>
+
+<input
+    type="number"
+    id="incomeAmount"
+    min="1"
+    step="0.01"
+    placeholder="0.00"
+    required
+>
+
+</div>
+
+
+
+<div class="field">
+
+<label for="incomeDate">
+    Tarehe ya Mapato
+</label>
+
+<input
+    type="date"
+    id="incomeDate"
+    required
+>
+
+</div>
+
+
+
+<div class="field">
+
+<label for="incomeDescription">
+    Maelezo
+</label>
+
+<textarea
+    id="incomeDescription"
+    rows="3"
+    placeholder="Maelezo ya mapato..."
+></textarea>
+
+</div>
+
+
+
+<button
+    type="submit"
+    data-action="create"
+    class="primary-btn"
+>
+
+    Hifadhi Mapato
+
+</button>
+
+</form>
+
+</div>
+
+
+
+<!-- INCOME TABLE -->
+
+<div
+    class="panel min-w-0 overflow-hidden"
+>
+
+<div
+    class="px-5 py-4 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3"
+>
+
+<div>
+
+<h2 class="text-sm font-extrabold text-slate-800">
+    Rekodi za Mapato
+</h2>
+
+<p class="text-[11px] text-slate-400 mt-1">
+    Historia ya mapato yaliyopokelewa
+</p>
+
+</div>
+
+
+
+<div class="no-print flex gap-2">
+
+<input
+    id="incomeSearch"
+    placeholder="Tafuta mapato..."
+    class="border border-slate-300 rounded-lg px-3 py-2 text-xs outline-none w-full sm:w-auto"
+>
+
+
+<select
+    id="incomeFilter"
+    class="border border-slate-300 rounded-lg px-3 py-2 text-xs"
+>
+
+<option value="all">
+    Aina zote
+</option>
+
+<option>Grant</option>
+
+<option>Donation</option>
+
+<option>Membership</option>
+
+<option>Project Income</option>
+
+<option>Other</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr
+    class="bg-slate-50 border-b border-slate-100 text-[10px] uppercase tracking-wide text-slate-400"
+>
+
+<th class="text-left px-4 py-3">
+    Reference
+</th>
+
+<th class="text-left px-4 py-3">
+    Chanzo
+</th>
+
+<th class="text-left px-4 py-3">
+    Aina
+</th>
+
+<th class="text-left px-4 py-3">
+    Njia
+</th>
+
+<th class="text-left px-4 py-3">
+    Kiasi
+</th>
+
+<th class="text-left px-4 py-3">
+    Tarehe
+</th>
+
+<th class="text-left px-4 py-3">
+    Maelezo
+</th>
+
+<th class="text-center px-4 py-3 action-column">
+    Action
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="incomeTable"></tbody>
+
+</table>
+
+</div>
+
+
+
+<div
+    class="px-5 py-3 border-t border-slate-100 bg-slate-50"
+>
+
+<span
+    id="incomeCount"
+    class="text-[11px] text-slate-400"
+>
+    Mapato: 0
+</span>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- =====================================================
+     EXPENSE
+====================================================== -->
+
+<section
+    id="expensePanel"
+    class="hidden grid grid-cols-1 lg:grid-cols-[430px_minmax(0,1fr)] gap-5 items-start"
+>
+
+
+<!-- FORM -->
+
+<div class="panel form-panel overflow-hidden">
+
+<div
+    class="px-5 py-4 border-b border-slate-100"
+>
+
+<h2 class="text-sm font-extrabold text-slate-800">
+    Sajili Manunuzi & Matumizi
+</h2>
+
+<p class="text-[11px] text-slate-400 mt-1">
+    Rekodi matumizi ya taasisi kwa usahihi
+</p>
+
+</div>
+
+
+
+<form
+    id="expenseForm"
+    class="p-5 space-y-4"
+>
+
+
+<div class="field">
+
+<label for="expenseName">
+    Jina la Manunuzi / Matumizi
+</label>
+
+<input
+    id="expenseName"
+    placeholder="Mf. Computer, Office Rent, Transport"
+    required
+>
+
+</div>
+
+
+
+<div class="grid grid-cols-2 gap-3">
+
+<div class="field">
+
+<label for="expenseCategory">
+    Category
+</label>
+
+<select id="expenseCategory">
+
+<option>Office</option>
+
+<option>Transport</option>
+
+<option>Food</option>
+
+<option>Equipment</option>
+
+<option>Rent</option>
+
+<option>Utilities</option>
+
+<option>Project</option>
+
+<option>Other</option>
+
+</select>
+
+</div>
+
+
+
+<div class="field">
+
+<label for="expenseMethod">
+    Njia ya Malipo
+</label>
+
+<select id="expenseMethod">
+
+<option>Bank Transfer</option>
+
+<option>Mobile Money</option>
+
+<option>Cash</option>
+
+<option>Cheque</option>
+
+<option>Other</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+
+<div class="field">
+
+<label for="expenseReference">
+    Reference / Invoice No.
+</label>
+
+<input
+    id="expenseReference"
+    placeholder="Mf. INV-2026-0001"
+>
+
+</div>
+
+
+
+<div class="field">
+
+<label for="expenseAmount">
+    Kiasi (TZS)
+</label>
+
+<input
+    type="number"
+    id="expenseAmount"
+    min="1"
+    step="0.01"
+    placeholder="0.00"
+    required
+>
+
+</div>
+
+
+
+<div class="field">
+
+<label for="expenseDate">
+    Tarehe ya Matumizi
+</label>
+
+<input
+    type="date"
+    id="expenseDate"
+    required
+>
+
+</div>
+
+
+
+<div class="field">
+
+<label for="expenseDescription">
+    Maelezo
+</label>
+
+<textarea
+    id="expenseDescription"
+    rows="3"
+    placeholder="Maelezo ya manunuzi au matumizi..."
+></textarea>
+
+</div>
+
+
+
+<button
+    type="submit"
+    data-action="create"
+    class="primary-btn"
+>
+
+    Hifadhi Matumizi
+
+</button>
+
+</form>
+
+</div>
+
+
+
+<!-- EXPENSE TABLE -->
+
+<div
+    class="panel min-w-0 overflow-hidden"
+>
+
+<div
+    class="px-5 py-4 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3"
+>
+
+<div>
+
+<h2 class="text-sm font-extrabold text-slate-800">
+    Rekodi za Manunuzi & Matumizi
+</h2>
+
+<p class="text-[11px] text-slate-400 mt-1">
+    Historia ya matumizi ya taasisi
+</p>
+
+</div>
+
+
+
+<div class="no-print flex gap-2">
+
+<input
+    id="expenseSearch"
+    placeholder="Tafuta matumizi..."
+    class="border border-slate-300 rounded-lg px-3 py-2 text-xs outline-none w-full sm:w-auto"
+>
+
+
+<select
+    id="expenseFilter"
+    class="border border-slate-300 rounded-lg px-3 py-2 text-xs"
+>
+
+<option value="all">
+    Category zote
+</option>
+
+<option>Office</option>
+
+<option>Transport</option>
+
+<option>Food</option>
+
+<option>Equipment</option>
+
+<option>Rent</option>
+
+<option>Utilities</option>
+
+<option>Project</option>
+
+<option>Other</option>
+
+</select>
+
+</div>
+
+</div>
+
+
+
+<div class="table-wrap">
+
+<table>
+
+<thead>
+
+<tr
+    class="bg-slate-50 border-b border-slate-100 text-[10px] uppercase tracking-wide text-slate-400"
+>
+
+<th class="text-left px-4 py-3">
+    Reference
+</th>
+
+<th class="text-left px-4 py-3">
+    Manunuzi / Matumizi
+</th>
+
+<th class="text-left px-4 py-3">
+    Category
+</th>
+
+<th class="text-left px-4 py-3">
+    Njia
+</th>
+
+<th class="text-left px-4 py-3">
+    Kiasi
+</th>
+
+<th class="text-left px-4 py-3">
+    Tarehe
+</th>
+
+<th class="text-left px-4 py-3">
+    Maelezo
+</th>
+
+<th class="text-center px-4 py-3 action-column">
+    Action
+</th>
+
+</tr>
+
+</thead>
+
+
+<tbody id="expenseTable"></tbody>
+
+</table>
+
+</div>
+
+
+
+<div
+    class="px-5 py-3 border-t border-slate-100 bg-slate-50"
+>
+
+<span
+    id="expenseCount"
+    class="text-[11px] text-slate-400"
+>
+    Matumizi: 0
+</span>
+
+</div>
+
+</div>
+
+</section>
+
+</main>
+
+
+
+<!-- =====================================================
+     DELETE MODAL
+====================================================== -->
+
+<div
+    id="deleteModal"
+    class="hidden fixed inset-0 z-50 modal-bg items-center justify-center p-4"
+>
+
+<div
+    class="bg-white rounded-2xl shadow-xl w-full max-w-sm"
+>
+
+<div class="p-5">
+
+<div class="flex gap-3">
+
+<div
+    class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center font-bold"
+>
+    !
+</div>
+
+
+<div>
+
+<h3
+    class="font-extrabold text-sm text-slate-800"
+>
+    Futa Rekodi
+</h3>
+
+
+<p
+    id="deleteMessage"
+    class="text-xs text-slate-500 mt-1"
+>
+    Una uhakika unataka kufuta rekodi hii?
+</p>
+
+</div>
+
+</div>
+
+
+
+<div
+    class="flex justify-end gap-2 mt-6"
+>
+
+<button
+    type="button"
+    id="cancelDeleteBtn"
+    class="px-4 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-bold"
+>
+
+    Ghairi
+
+</button>
+
+
+<button
+    type="button"
+    id="confirmDeleteBtn"
+    class="btn-delete px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-xs font-bold"
+>
+
+    Futa
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
+
+<script>
+
+"use strict";
+
+
+/* =====================================================
+   GLOBAL VARIABLES
+====================================================== */
+
+let incomeData = [];
+
+let expenseData = [];
+
+let deleteTarget = null;
+
+let currentTab = "income";
+
+
+/* =====================================================
+   HELPER
+====================================================== */
+
+function $(id) {
+
+    return document.getElementById(id);
+
+}
+
+
+function money(value) {
+
+    return Number(value || 0)
+        .toLocaleString(
+            "en-TZ",
+            {
+                maximumFractionDigits: 2
+            }
+        ) + " TZS";
+
+}
+
+
+function esc(value) {
+
+    return String(value ?? "")
+
+        .replace(/&/g, "&amp;")
+
+        .replace(/</g, "&lt;")
+
+        .replace(/>/g, "&gt;")
+
+        .replace(/"/g, "&quot;")
+
+        .replace(/'/g, "&#039;");
+
+}
+
+
+function today() {
+
+    const d = new Date();
+
+    return (
+
+        d.getFullYear() +
+
+        "-" +
+
+        String(
+            d.getMonth() + 1
+        ).padStart(2, "0") +
+
+        "-" +
+
+        String(
+            d.getDate()
+        ).padStart(2, "0")
+
+    );
+
+}
+
+
+function setDates() {
+
+    if ($("incomeDate") && !$("incomeDate").value) {
+
+        $("incomeDate").value =
+            today();
+
+    }
+
+
+    if ($("expenseDate") && !$("expenseDate").value) {
+
+        $("expenseDate").value =
+            today();
+
+    }
+
+}
+
+
+function ref(prefix) {
+
+    return (
+
+        prefix +
+
+        "-" +
+
+        new Date().getFullYear() +
+
+        "-" +
+
+        Date.now()
+            .toString()
+            .slice(-6)
+
+    );
+
+}
+
+
+/* =====================================================
+   NOTICE
+====================================================== */
+
+function notice(type, message) {
+
+    const success =
+        $("successNotice");
+
+    const error =
+        $("errorNotice");
+
+
+    success.classList.remove("show");
+
+    error.classList.remove("show");
+
+
+    const target =
+        type === "success"
+            ? success
+            : error;
+
+
+    target.textContent =
+        message;
+
+
+    target.classList.add("show");
+
+
+    window.setTimeout(
+        function () {
+
+            success.classList.remove("show");
+
+            error.classList.remove("show");
+
+        },
+        4500
+    );
+
+}
+
+
+/* =====================================================
+   TAB
+====================================================== */
+
+function switchFinanceTab(tab) {
+
+    currentTab = tab;
+
+
+    $("incomePanel")
+        .classList.toggle(
+            "hidden",
+            tab !== "income"
+        );
+
+
+    $("expensePanel")
+        .classList.toggle(
+            "hidden",
+            tab !== "expense"
+        );
+
+
+    $("incomeTab").className =
+        "tab " +
+        (
+            tab === "income"
+                ? "active-income"
+                : ""
+        );
+
+
+    $("expenseTab").className =
+        "tab " +
+        (
+            tab === "expense"
+                ? "active-expense"
+                : ""
+        );
+
+}
+
+
+/* =====================================================
+   NORMALIZE
+====================================================== */
+
+function normalizeIncome(row) {
+
+    return {
+
+        id:
+            row.id,
+
+        source:
+            "finance_transactions",
+
+        reference:
+            row.reference_no ||
+            "—",
+
+        name:
+            row.category ||
+            "—",
+
+        category:
+            row.category ||
+            "Other",
+
+        method:
+            row.payment_method ||
+            "—",
+
+        amount:
+            Number(
+                row.amount || 0
+            ),
+
+        date:
+            row.transaction_date ||
+            row.created_at ||
+            "",
+
+        description:
+            row.description ||
+            ""
+
+    };
+
+}
+
+
+function normalizeExpense(row) {
+
+    return {
+
+        id:
+            row.id,
+
+        source:
+            "expenses",
+
+        reference:
+            row.reference_no ||
+            "—",
+
+        name:
+            row.expense_name ||
+            "—",
+
+        category:
+            row.category ||
+            "Other",
+
+        method:
+            row.payment_method ||
+            "—",
+
+        amount:
+            Number(
+                row.amount || 0
+            ),
+
+        date:
+            row.expense_date ||
+            row.created_at ||
+            "",
+
+        description:
+            row.notes ||
+            ""
+
+    };
+
+}
+
+
+/* =====================================================
+   LOAD FINANCE
+====================================================== */
+
+async function loadFinance() {
+
+    if (
+        typeof _supabase === "undefined" ||
+        !_supabase
+    ) {
+
+        notice(
+            "error",
+            "Supabase haijaanzishwa vizuri."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const results =
+            await Promise.all([
+
+                _supabase
+                    .from(
+                        "finance_transactions"
+                    )
+                    .select(
+                        "id,transaction_type,amount,category,reference_no,payment_method,transaction_date,description,created_at"
+                    )
+                    .eq(
+                        "transaction_type",
+                        "Income"
+                    )
+                    .order(
+                        "transaction_date",
+                        {
+                            ascending: false
+                        }
+                    ),
+
+
+                _supabase
+                    .from(
+                        "expenses"
+                    )
+                    .select(
+                        "id,expense_name,amount,category,payment_method,reference_no,expense_date,notes,created_at"
+                    )
+                    .order(
+                        "expense_date",
+                        {
+                            ascending: false
+                        }
+                    )
+
+            ]);
+
+
+        const incomeResult =
+            results[0];
+
+        const expenseResult =
+            results[1];
+
+
+        if (
+            incomeResult.error
+        ) {
+
+            throw incomeResult.error;
+
+        }
+
+
+        if (
+            expenseResult.error
+        ) {
+
+            throw expenseResult.error;
+
+        }
+
+
+        incomeData =
+            (
+                incomeResult.data ||
+                []
+            )
+            .map(
+                normalizeIncome
+            );
+
+
+        expenseData =
+            (
+                expenseResult.data ||
+                []
+            )
+            .map(
+                normalizeExpense
+            );
+
+
+        updateSummary();
+
+        renderIncome(
+            incomeData
+        );
+
+        renderExpense(
+            expenseData
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "LOAD FINANCE ERROR:",
+            error
+        );
+
+
+        notice(
+            "error",
+            "Imeshindikana kupakia taarifa za fedha: " +
+            (
+                error.message ||
+                "Unknown error"
+            )
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   SUMMARY
+====================================================== */
+
+function updateSummary() {
+
+    const income =
+        incomeData.reduce(
+            function (
+                total,
+                item
+            ) {
+
+                return total +
+                    item.amount;
+
+            },
+            0
+        );
+
+
+    const expense =
+        expenseData.reduce(
+            function (
+                total,
+                item
+            ) {
+
+                return total +
+                    item.amount;
+
+            },
+            0
+        );
+
+
+    const balance =
+        income -
+        expense;
+
+
+    $("totalIncome")
+        .textContent =
+        money(income);
+
+
+    $("totalExpense")
+        .textContent =
+        money(expense);
+
+
+    $("totalBalance")
+        .textContent =
+        money(balance);
+
+
+    $("totalBalance")
+        .className =
+        "text-xl font-extrabold mt-2 " +
+        (
+            balance < 0
+                ? "text-red-600"
+                : "text-dcf-dark"
+        );
+
+}
+
+
+/* =====================================================
+   RENDER INCOME
+====================================================== */
+
+function renderIncome(data) {
+
+    $("incomeCount")
+        .textContent =
+        "Mapato: " +
+        data.length;
+
+
+    if (!data.length) {
+
+        $("incomeTable")
+            .innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="8"
+                        class="py-12 text-center text-slate-400 text-xs"
+                    >
+
+                        Hakuna rekodi za mapato
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        applyPermissions();
+
+        return;
+
+    }
+
+
+    $("incomeTable")
+        .innerHTML =
+        data
+            .map(
+                function (item) {
+
+                    return `
+
+                    <tr
+                        class="border-b border-slate-100"
+                    >
+
+                        <td
+                            class="px-4 py-3 text-xs font-bold"
+                        >
+                            ${esc(item.reference)}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-xs font-bold text-slate-700"
+                        >
+                            ${esc(item.name)}
+                        </td>
+
+
+                        <td class="px-4 py-3">
+
+                            <span
+                                class="inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold badge-income"
+                            >
+                                ${esc(item.category)}
+                            </span>
+
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-xs text-slate-500"
+                        >
+                            ${esc(item.method)}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-xs font-extrabold text-green-700 whitespace-nowrap"
+                        >
+                            ${money(item.amount)}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-xs text-slate-500"
+                        >
+                            ${esc(item.date)}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-xs text-slate-500 max-w-[240px]"
+                        >
+                            ${esc(item.description || "—")}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-center action-column"
+                        >
+
+                            <button
+                                type="button"
+                                class="btn-delete text-red-600 hover:text-red-800 text-xs font-bold"
+                                data-delete-id="${esc(item.id)}"
+                                data-delete-source="${esc(item.source)}"
+                                data-delete-name="${esc(item.name)}"
+                            >
+                                Futa
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+
+    attachDeleteButtons();
+
+    applyPermissions();
+
+}
+
+
+/* =====================================================
+   RENDER EXPENSE
+====================================================== */
+
+function renderExpense(data) {
+
+    $("expenseCount")
+        .textContent =
+        "Matumizi: " +
+        data.length;
+
+
+    if (!data.length) {
+
+        $("expenseTable")
+            .innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="8"
+                        class="py-12 text-center text-slate-400 text-xs"
+                    >
+
+                        Hakuna rekodi za matumizi
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        applyPermissions();
+
+        return;
+
+    }
+
+
+    $("expenseTable")
+        .innerHTML =
+        data
+            .map(
+                function (item) {
+
+                    return `
+
+                    <tr
+                        class="border-b border-slate-100"
+                    >
+
+                        <td
+                            class="px-4 py-3 text-xs font-bold"
+                        >
+                            ${esc(item.reference)}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-xs font-bold text-slate-700"
+                        >
+                            ${esc(item.name)}
+                        </td>
+
+
+                        <td class="px-4 py-3">
+
+                            <span
+                                class="inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold badge-expense"
+                            >
+                                ${esc(item.category)}
+                            </span>
+
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-xs text-slate-500"
+                        >
+                            ${esc(item.method)}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-xs font-extrabold text-red-600 whitespace-nowrap"
+                        >
+                            ${money(item.amount)}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-xs text-slate-500"
+                        >
+                            ${esc(item.date)}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-xs text-slate-500 max-w-[240px]"
+                        >
+                            ${esc(item.description || "—")}
+                        </td>
+
+
+                        <td
+                            class="px-4 py-3 text-center action-column"
+                        >
+
+                            <button
+                                type="button"
+                                class="btn-delete text-red-600 hover:text-red-800 text-xs font-bold"
+                                data-delete-id="${esc(item.id)}"
+                                data-delete-source="${esc(item.source)}"
+                                data-delete-name="${esc(item.name)}"
+                            >
+                                Futa
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+
+    attachDeleteButtons();
+
+    applyPermissions();
+
+}
+
+
+/* =====================================================
+   DELETE BUTTON EVENTS
+====================================================== */
+
+function attachDeleteButtons() {
+
+    document
+        .querySelectorAll(
+            ".btn-delete[data-delete-id]"
+        )
+        .forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        const id =
+                            this.dataset.deleteId;
+
+                        const source =
+                            this.dataset.deleteSource;
+
+                        const name =
+                            this.dataset.deleteName ||
+                            "rekodi hii";
+
+
+                        askDelete(
+                            id,
+                            source,
+                            name
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   FILTER INCOME
+====================================================== */
+
+function filterIncome() {
+
+    const query =
+        (
+            $("incomeSearch")
+                .value ||
+            ""
+        )
+        .toLowerCase()
+        .trim();
+
+
+    const filter =
+        $("incomeFilter")
+            .value;
+
+
+    const filtered =
+        incomeData.filter(
+            function (item) {
+
+                const text =
+
+                    (
+                        item.name +
+                        " " +
+                        item.category +
+                        " " +
+                        item.reference +
+                        " " +
+                        item.description
+                    )
+                    .toLowerCase();
+
+
+                return (
+
+                    (
+                        !query ||
+                        text.includes(query)
+                    )
+
+                    &&
+
+                    (
+                        filter === "all" ||
+                        item.category === filter
+                    )
+
+                );
+
+            }
+        );
+
+
+    renderIncome(
+        filtered
+    );
+
+}
+
+
+/* =====================================================
+   FILTER EXPENSE
+====================================================== */
+
+function filterExpense() {
+
+    const query =
+        (
+            $("expenseSearch")
+                .value ||
+            ""
+        )
+        .toLowerCase()
+        .trim();
+
+
+    const filter =
+        $("expenseFilter")
+            .value;
+
+
+    const filtered =
+        expenseData.filter(
+            function (item) {
+
+                const text =
+
+                    (
+                        item.name +
+                        " " +
+                        item.category +
+                        " " +
+                        item.reference +
+                        " " +
+                        item.description
+                    )
+                    .toLowerCase();
+
+
+                return (
+
+                    (
+                        !query ||
+                        text.includes(query)
+                    )
+
+                    &&
+
+                    (
+                        filter === "all" ||
+                        item.category === filter
+                    )
+
+                );
+
+            }
+        );
+
+
+    renderExpense(
+        filtered
+    );
+
+}
+
+
+/* =====================================================
+   SAVE INCOME
+====================================================== */
+
+async function saveIncome(event) {
+
+    event.preventDefault();
+
+
+    const form =
+        event.target;
+
+
+    const button =
+        form.querySelector(
+            'button[type="submit"]'
+        );
+
+
+    const originalText =
+        button.innerText;
+
+
+    const name =
+        $("incomeSource")
+            .value
+            .trim();
+
+
+    const category =
+        $("incomeCategory")
+            .value;
+
+
+    const method =
+        $("incomeMethod")
+            .value;
+
+
+    const reference =
+        $("incomeReference")
+            .value
+            .trim() ||
+        ref("DCF-REC");
+
+
+    const amount =
+        Number(
+            $("incomeAmount")
+                .value
+        );
+
+
+    const date =
+        $("incomeDate")
+            .value;
+
+
+    const description =
+        $("incomeDescription")
+            .value
+            .trim();
+
+
+    if (
+        !name ||
+        amount <= 0 ||
+        !date
+    ) {
+
+        notice(
+            "error",
+            "Jaza taarifa muhimu kwa usahihi."
+        );
+
+        return;
+
+    }
+
+
+    button.disabled = true;
+
+    button.innerText =
+        "Inahifadhi...";
+
+
+    try {
+
+        const {
+            error
+        } =
+            await _supabase
+                .from(
+                    "finance_transactions"
+                )
+                .insert([
+
+                    {
+
+                        transaction_type:
+                            "Income",
+
+                        amount:
+                            amount,
+
+                        category:
+                            category,
+
+                        payment_method:
+                            method,
+
+                        reference_no:
+                            reference,
+
+                        transaction_date:
+                            date,
+
+                        description:
+                            description ||
+                            null
+
+                    }
+
+                ]);
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        form.reset();
+
+        setDates();
+
+
+        notice(
+            "success",
+            "Mapato yamehifadhiwa kikamilifu."
+        );
+
+
+        await loadFinance();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "SAVE INCOME ERROR:",
+            error
+        );
+
+
+        notice(
+            "error",
+            "Kosa la kuhifadhi mapato: " +
+            (
+                error.message ||
+                "Unknown error"
+            )
+        );
+
+    }
+
+    finally {
+
+        button.disabled = false;
+
+        button.innerText =
+            originalText;
+
+    }
+
+}
+
+
+/* =====================================================
+   SAVE EXPENSE
+====================================================== */
+
+async function saveExpense(event) {
+
+    event.preventDefault();
+
+
+    const form =
+        event.target;
+
+
+    const button =
+        form.querySelector(
+            'button[type="submit"]'
+        );
+
+
+    const originalText =
+        button.innerText;
+
+
+    const name =
+        $("expenseName")
+            .value
+            .trim();
+
+
+    const category =
+        $("expenseCategory")
+            .value;
+
+
+    const method =
+        $("expenseMethod")
+            .value;
+
+
+    const reference =
+        $("expenseReference")
+            .value
+            .trim() ||
+        ref("DCF-INV");
+
+
+    const amount =
+        Number(
+            $("expenseAmount")
+                .value
+        );
+
+
+    const date =
+        $("expenseDate")
+            .value;
+
+
+    const description =
+        $("expenseDescription")
+            .value
+            .trim();
+
+
+    if (
+        !name ||
+        amount <= 0 ||
+        !date
+    ) {
+
+        notice(
+            "error",
+            "Jaza taarifa muhimu kwa usahihi."
+        );
+
+        return;
+
+    }
+
+
+    button.disabled = true;
+
+    button.innerText =
+        "Inahifadhi...";
+
+
+    try {
+
+        const {
+            error
+        } =
+            await _supabase
+                .from(
+                    "expenses"
+                )
+                .insert([
+
+                    {
+
+                        expense_name:
+                            name,
+
+                        amount:
+                            amount,
+
+                        category:
+                            category,
+
+                        payment_method:
+                            method,
+
+                        reference_no:
+                            reference,
+
+                        expense_date:
+                            date,
+
+                        notes:
+                            description ||
+                            null
+
+                    }
+
+                ]);
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        form.reset();
+
+        setDates();
+
+
+        notice(
+            "success",
+            "Manunuzi/matumizi yamehifadhiwa kikamilifu."
+        );
+
+
+        await loadFinance();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "SAVE EXPENSE ERROR:",
+            error
+        );
+
+
+        notice(
+            "error",
+            "Kosa la kuhifadhi matumizi: " +
+            (
+                error.message ||
+                "Unknown error"
+            )
+        );
+
+    }
+
+    finally {
+
+        button.disabled = false;
+
+        button.innerText =
+            originalText;
+
+    }
+
+}
+
+
+/* =====================================================
+   ASK DELETE
+====================================================== */
+
+function askDelete(
+    id,
+    source,
+    name
+) {
+
+    const role =
+        (
+            sessionStorage
+                .getItem(
+                    "userRole"
+                ) ||
+            ""
+        )
+        .toLowerCase()
+        .trim();
+
+
+    if (
+        role !== "admin"
+    ) {
+
+        notice(
+            "error",
+            "Admin pekee ndiye anayeruhusiwa kufuta rekodi."
+        );
+
+        return;
+
+    }
+
+
+    if (!id || !source) {
+
+        notice(
+            "error",
+            "Rekodi hii haina ID sahihi."
+        );
+
+        return;
+
+    }
+
+
+    deleteTarget = {
+
+        id:
+            String(id),
+
+        source:
+            String(source),
+
+        name:
+            String(name || "rekodi hii")
+
+    };
+
+
+    $("deleteMessage")
+        .textContent =
+        `Una uhakika unataka kufuta "${deleteTarget.name}"?`;
+
+
+    $("deleteModal")
+        .classList
+        .remove("hidden");
+
+
+    $("deleteModal")
+        .classList
+        .add("flex");
+
+}
+
+
+/* =====================================================
+   CLOSE DELETE
+====================================================== */
+
+function closeDeleteModal() {
+
+    deleteTarget = null;
+
+
+    $("deleteModal")
+        .classList
+        .add("hidden");
+
+
+    $("deleteModal")
+        .classList
+        .remove("flex");
+
+}
+
+
+/* =====================================================
+   CONFIRM DELETE
+====================================================== */
+
+async function confirmDelete() {
+
+    if (!deleteTarget) {
+
+        return;
+
+    }
+
+
+    const button =
+        $("confirmDeleteBtn");
+
+
+    const originalText =
+        button.innerText;
+
+
+    button.disabled = true;
+
+    button.innerText =
+        "Inafuta...";
+
+
+    try {
+
+        const {
+
+            error
+
+        } =
+            await _supabase
+
+                .from(
+                    deleteTarget.source
+                )
+
+                .delete()
+
+                .eq(
+                    "id",
+                    deleteTarget.id
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        closeDeleteModal();
+
+
+        notice(
+            "success",
+            "Rekodi imefutwa kikamilifu."
+        );
+
+
+        await loadFinance();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "DELETE ERROR:",
+            error
+        );
+
+
+        notice(
+            "error",
+            "Kosa la kufuta rekodi: " +
+            (
+                error.message ||
+                "Supabase imekataa DELETE."
+            )
+        );
+
+    }
+
+    finally {
+
+        button.disabled = false;
+
+        button.innerText =
+            originalText;
+
+    }
+
+}
+
+
+/* =====================================================
+   PERMISSIONS
+====================================================== */
+
+function applyPermissions() {
+
+    const role =
+        (
+            sessionStorage
+                .getItem(
+                    "userRole"
+                ) ||
+            ""
+        )
+        .toLowerCase()
+        .trim();
+
+
+    /*
+     * AUDITOR
+     */
+
+    if (
+        role === "auditor"
+    ) {
+
+        document
+            .querySelectorAll(
+                '[data-action="create"]'
+            )
+            .forEach(
+                function (element) {
+
+                    element.style.display =
+                        "none";
+
+                }
+            );
+
+
+        document
+            .querySelectorAll(
+                ".action-column"
+            )
+            .forEach(
+                function (element) {
+
+                    element.style.display =
+                        "none";
+
+                }
+            );
+
+
+        document
+            .querySelectorAll(
+                ".form-panel input, .form-panel select, .form-panel textarea"
+            )
+            .forEach(
+                function (element) {
+
+                    element.disabled =
+                        true;
+
+                }
+            );
+
+    }
+
+
+    /*
+     * STAFF
+     */
+
+    if (
+        role === "staff"
+    ) {
+
+        document
+            .querySelectorAll(
+                ".btn-delete"
+            )
+            .forEach(
+                function (element) {
+
+                    element.style.display =
+                        "none";
+
+                }
+            );
+
+    }
+
+
+    /*
+     * ADMIN
+     */
+
+    if (
+        role === "admin"
+    ) {
+
+        document
+            .querySelectorAll(
+                ".btn-delete"
+            )
+            .forEach(
+                function (element) {
+
+                    element.style.display =
+                        "";
+
+                }
+            );
+
+    }
+
+}
+
+
+/* =====================================================
+   PRINT
+====================================================== */
+
+function printFinance() {
+
+    const now =
+        new Date();
+
+
+    $("printDate")
+        .textContent =
+        "Tarehe ya kuchapisha: " +
+        now.toLocaleDateString(
+            "en-GB"
+        ) +
+        " " +
+        now.toLocaleTimeString(
+            "en-GB",
+            {
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
+
+
+    /*
+     * Print reports zote mbili.
+     * Hii inahakikisha taarifa za mapato
+     * na matumizi zote zinapatikana.
+     */
+
+    document.body
+        .classList
+        .remove(
+            "print-income-only"
+        );
+
+
+    document.body
+        .classList
+        .remove(
+            "print-expense-only"
+        );
+
+
+    window.setTimeout(
+        function () {
+
+            window.print();
+
+        },
+        50
+    );
+
+}
+
+
+/* =====================================================
+   PRINT CLEANUP
+====================================================== */
+
+window.addEventListener(
+    "afterprint",
+    function () {
+
+        document.body
+            .classList
+            .remove(
+                "print-income-only"
+            );
+
+
+        document.body
+            .classList
+            .remove(
+                "print-expense-only"
+            );
+
+    }
+);
+
+
+/* =====================================================
+   EVENTS
+====================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+        /*
+         * LOGIN CHECK
+         */
+
+        const logged =
+            sessionStorage
+                .getItem(
+                    "userLoggedIn"
+                );
+
+
+        const role =
+            (
+                sessionStorage
+                    .getItem(
+                        "userRole"
+                    ) ||
+                ""
+            )
+            .toLowerCase()
+            .trim();
+
+
+        if (
+            !logged ||
+            !role
+        ) {
+
+            window.location.href =
+                "../login.html";
+
+            return;
+
+        }
+
+
+        if (
+            ![
+                "admin",
+                "staff",
+                "auditor"
+            ]
+            .includes(
+                role
+            )
+        ) {
+
+            window.location.href =
+                "../dashboard.html";
+
+            return;
+
+        }
+
+
+        /*
+         * DATES
+         */
+
+        setDates();
+
+
+        /*
+         * TABS
+         */
+
+        $("incomeTab")
+            .addEventListener(
+                "click",
+                function () {
+
+                    switchFinanceTab(
+                        "income"
+                    );
+
+                }
+            );
+
+
+        $("expenseTab")
+            .addEventListener(
+                "click",
+                function () {
+
+                    switchFinanceTab(
+                        "expense"
+                    );
+
+                }
+            );
+
+
+        /*
+         * FORMS
+         */
+
+        $("incomeForm")
+            .addEventListener(
+                "submit",
+                saveIncome
+            );
+
+
+        $("expenseForm")
+            .addEventListener(
+                "submit",
+                saveExpense
+            );
+
+
+        /*
+         * SEARCH
+         */
+
+        $("incomeSearch")
+            .addEventListener(
+                "input",
+                filterIncome
+            );
+
+
+        $("incomeFilter")
+            .addEventListener(
+                "change",
+                filterIncome
+            );
+
+
+        $("expenseSearch")
+            .addEventListener(
+                "input",
+                filterExpense
+            );
+
+
+        $("expenseFilter")
+            .addEventListener(
+                "change",
+                filterExpense
+            );
+
+
+        /*
+         * PRINT
+         */
+
+        $("printBtn")
+            .addEventListener(
+                "click",
+                printFinance
+            );
+
+
+        /*
+         * DASHBOARD
+         */
+
+        $("dashboardBtn")
+            .addEventListener(
+                "click",
+                function () {
+
+                    window.location.href =
+                        "../dashboard.html";
+
+                }
+            );
+
+
+        /*
+         * DELETE
+         */
+
+        $("confirmDeleteBtn")
+            .addEventListener(
+                "click",
+                confirmDelete
+            );
+
+
+        $("cancelDeleteBtn")
+            .addEventListener(
+                "click",
+                closeDeleteModal
+            );
+
+
+        /*
+         * MODAL OUTSIDE CLICK
+         */
+
+        $("deleteModal")
+            .addEventListener(
+                "click",
+                function (event) {
+
+                    if (
+                        event.target ===
+                        $("deleteModal")
+                    ) {
+
+                        closeDeleteModal();
+
+                    }
+
+                }
+            );
+
+
+        /*
+         * ESC
+         */
+
+        document
+            .addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (
+                        event.key ===
+                        "Escape"
+                    ) {
+
+                        closeDeleteModal();
+
+                    }
+
+                }
+            );
+
+
+        /*
+         * PERMISSIONS
+         */
+
+        applyPermissions();
+
+
+        /*
+         * LOAD DATA
+         */
+
+        await loadFinance();
+
+    }
+);
+
+</script>
+
+
+
+<!-- =====================================================
+     I18N
+====================================================== -->
+
+<script src="../js/i18n.js"></script>
+
+</body>
+
+</html>

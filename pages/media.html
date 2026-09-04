@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DCF | Media Gallery</title>
+
+<!-- Supabase JS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- TUS client for resumable, chunked uploads -->
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@3.0.0/dist/tus.min.js"></script>
+
+<style>
+/* =========================================================
+   EXISTING STYLES (unchanged – only added new upload styles)
+========================================================= */
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Inter,Arial,sans-serif;background:#f4f7f5;color:#17231d;}
+
+/* topbar */
+.topbar{height:74px;background:#fff;border-bottom:1px solid #e1e8e4;display:flex;align-items:center;justify-content:space-between;padding:0 6%;position:sticky;top:0;z-index:100;}
+.brand{display:flex;align-items:center;gap:12px;}
+.logo{width:44px;height:44px;background:#075b3b;color:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;}
+.brand-title{font-size:16px;font-weight:750;}
+.brand-subtitle{color:#7b8580;font-size:11px;}
+.top-actions{display:flex;align-items:center;gap:15px;}
+.back{color:#075b3b;text-decoration:none;font-size:13px;font-weight:700;}
+.back:hover{text-decoration:underline;}
+
+/* page */
+.page{width:90%;max-width:1250px;margin:40px auto 70px;}
+.page-header{margin-bottom:25px;}
+.page-header span{color:#075b3b;font-size:11px;font-weight:800;letter-spacing:2px;}
+.page-header h1{font-size:34px;margin-top:8px;}
+.page-header p{color:#758079;margin-top:8px;font-size:13px;}
+
+/* card */
+.card{background:#fff;border:1px solid #e1e8e4;border-radius:17px;padding:30px;box-shadow:0 10px 30px rgba(0,0,0,.04);margin-bottom:25px;}
+
+/* loading */
+#loadingBox{text-align:center;padding:70px 20px;}
+.loading-icon{font-size:45px;margin-bottom:15px;}
+#loadingBox h2{font-size:20px;}
+#loadingBox p{color:#758079;margin-top:8px;font-size:13px;}
+
+/* error */
+#errorBox{display:none;text-align:center;padding:70px 20px;}
+#errorBox .icon{font-size:50px;margin-bottom:15px;}
+#errorBox h2{color:#8f2f2f;}
+#errorBox p{color:#758079;margin-top:8px;font-size:13px;}
+
+/* library header */
+.library-header{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:22px;}
+.library-title{display:flex;flex-direction:column;gap:6px;}
+.library-title h2{font-size:23px;}
+.library-title p{color:#7b8580;font-size:12px;}
+.library-actions{display:flex;gap:10px;}
+.small-btn{border:1px solid #dce4df;background:#fff;color:#075b3b;padding:10px 14px;border-radius:8px;font-size:12px;font-weight:750;cursor:pointer;}
+.small-btn:hover{background:#f1f7f3;}
+
+/* folders */
+.folder-browser{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.folder-btn{border:1px solid #dce4df;background:#f8faf9;border-radius:10px;padding:10px 14px;cursor:pointer;font-size:12px;font-weight:750;color:#46544d;display:flex;align-items:center;gap:7px;}
+.folder-btn:hover{background:#edf5f0;}
+.folder-btn.active{background:#075b3b;color:#fff;border-color:#075b3b;}
+.folder-count{opacity:.7;}
+
+/* search & sort */
+.library-tools{display:grid;grid-template-columns:1fr 180px;gap:12px;margin-bottom:20px;}
+.library-tools input,.library-tools select{width:100%;border:1px solid #dce4df;border-radius:9px;padding:12px 13px;outline:none;font-family:inherit;font-size:13px;background:#f9fbfa;}
+.library-tools input:focus,.library-tools select:focus{border-color:#075b3b;box-shadow:0 0 0 3px rgba(7,91,59,.08);}
+
+/* stats */
+.library-stats{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:12px 15px;border:1px solid #e1e8e4;background:#f7faf8;border-radius:10px;margin-bottom:20px;}
+.library-stats span{font-size:12px;color:#66736d;}
+.library-stats strong{color:#075b3b;}
+
+/* media grid */
+.media-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:17px;}
+.media-card{border:1px solid #e0e7e3;border-radius:13px;overflow:hidden;background:#fff;transition:.2s;}
+.media-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.08);}
+
+/* media image/video area */
+.media-image{height:200px;background:#edf2ef;position:relative;overflow:hidden;cursor:pointer;}
+.media-image img{width:100%;height:100%;object-fit:cover;display:block;transition:.3s;}
+.media-card:hover .media-image img{transform:scale(1.04);}
+.media-image video{width:100%;height:100%;object-fit:cover;display:block;background:#111;transition:.3s;}
+.media-card:hover .media-image video{transform:scale(1.02);}
+.media-image video::-webkit-media-controls{z-index:20;}
+.video-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.08),rgba(0,0,0,.22));transition:.2s;}
+.media-card:hover .video-overlay{background:linear-gradient(to bottom,rgba(0,0,0,.02),rgba(0,0,0,.32));}
+.video-play-icon{width:58px;height:58px;border-radius:50%;background:rgba(7,91,59,.94);color:#fff;display:flex;align-items:center;justify-content:center;font-size:25px;padding-left:3px;box-shadow:0 8px 25px rgba(0,0,0,.25);transition:.2s;}
+.media-card:hover .video-play-icon{transform:scale(1.08);}
+.media-type-badge{position:absolute;top:9px;right:9px;background:rgba(0,0,0,.78);color:#fff;border-radius:6px;padding:5px 8px;font-size:10px;font-weight:800;z-index:3;}
+.media-badge{position:absolute;top:9px;left:9px;background:rgba(4,60,40,.9);color:#fff;border-radius:6px;padding:5px 8px;font-size:10px;font-weight:750;z-index:4;}
+
+/* media content */
+.media-content{padding:13px;}
+.media-title{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.media-description{color:#7b8580;font-size:11px;margin-top:5px;min-height:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.media-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:12px;}
+.media-action{border:1px solid #dce4df;background:#fff;padding:9px 5px;border-radius:7px;cursor:pointer;font-size:10px;font-weight:750;color:#34423b;}
+.media-action:hover{background:#f1f7f3;}
+.media-action.open{background:#075b3b;color:#fff;border-color:#075b3b;}
+.media-action.download{background:#edf6f1;color:#075b3b;border-color:#cfe1d7;}
+.media-meta{margin-top:10px;display:flex;justify-content:space-between;font-size:9px;color:#89938e;}
+
+/* empty */
+.empty-library{text-align:center;padding:65px 20px;border:2px dashed #dce5df;border-radius:13px;background:#fafcfb;}
+.empty-library .empty-icon{font-size:45px;margin-bottom:12px;}
+.empty-library h3{font-size:17px;}
+.empty-library p{color:#7b8580;font-size:12px;margin-top:7px;}
+
+/* pagination */
+.pagination{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:25px;}
+.page-btn{border:1px solid #dce4df;background:#fff;color:#46544d;min-width:36px;height:36px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:750;}
+.page-btn:hover{background:#edf5f0;}
+.page-btn.active{background:#075b3b;color:#fff;border-color:#075b3b;}
+.page-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* modal (gallery preview) */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+.modal.show{display:flex;}
+.modal-box{width:100%;max-width:900px;max-height:92vh;overflow:auto;background:#fff;border-radius:15px;padding:20px;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}
+.modal-header h3{font-size:17px;}
+.close-modal{width:35px;height:35px;border:none;background:#edf1ef;border-radius:50%;cursor:pointer;font-size:18px;}
+.modal-image{width:100%;max-height:65vh;object-fit:contain;background:#f3f5f4;border-radius:10px;}
+.modal-video{width:100%;max-height:70vh;background:#000;border-radius:10px;display:block;}
+.modal-image.hide-media{display:none;}
+.modal-video.hide-media{display:none;}
+.modal-url{margin-top:15px;display:flex;gap:8px;}
+.modal-url input{flex:1;width:100%;border:1px solid #dce4df;border-radius:9px;padding:12px;font-family:monospace;font-size:11px;}
+.modal-actions{display:flex;gap:10px;margin-top:15px;}
+.modal-action{flex:1;border:none;border-radius:9px;padding:12px;cursor:pointer;font-size:12px;font-weight:800;}
+.modal-download{background:#075b3b;color:#fff;}
+.modal-copy{background:#edf1ef;color:#34423b;}
+
+/* toast */
+.toast{position:fixed;right:25px;bottom:25px;z-index:2000;min-width:250px;max-width:400px;padding:14px 17px;border-radius:10px;color:#fff;background:#075b3b;box-shadow:0 10px 30px rgba(0,0,0,.2);font-size:12px;font-weight:700;transform:translateY(120px);opacity:0;pointer-events:none;transition:.3s;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.error{background:#a93232;}
+
+/* footer */
+footer{background:#043c28;color:#fff;text-align:center;padding:27px;font-size:12px;}
+
+/* responsive */
+@media(max-width:1050px){.media-grid{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:800px){.media-grid{grid-template-columns:repeat(2,1fr);}.library-header{flex-direction:column;}}
+@media(max-width:700px){.topbar{padding:0 20px;}.brand-title{font-size:13px;}.brand-subtitle{display:none;}.page{width:94%;margin-top:25px;}.card{padding:20px;}.library-tools{grid-template-columns:1fr;}.media-grid{grid-template-columns:1fr;}.media-image{height:240px;}.media-actions{grid-template-columns:1fr 1fr 1fr;}.library-stats{flex-direction:column;align-items:flex-start;}.modal-actions{flex-direction:column;}}
+@media(max-width:420px){.media-actions{grid-template-columns:1fr;}.topbar{height:65px;}.logo{width:38px;height:38px;}.page-header h1{font-size:28px;}}
+@media(max-width:700px){.media-image video{pointer-events:auto;}}
+.media-image.video-playing .video-play-icon{opacity:0;transform:scale(.8);}
+.media-image.video-playing .video-overlay{background:transparent;}
+.media-unavailable{height:100%;display:flex;align-items:center;justify-content:center;color:#89938e;font-size:12px;text-align:center;padding:20px;}
+.modal-video-note{margin-top:8px;color:#7b8580;font-size:11px;text-align:center;}
+
+/* =========================================================
+   NEW UPLOAD STYLES
+========================================================= */
+
+.upload-btn{
+  background:#075b3b;
+  color:#fff;
+  border:none;
+  padding:10px 18px;
+  border-radius:8px;
+  font-weight:750;
+  font-size:13px;
+  cursor:pointer;
+}
+.upload-btn:hover{background:#064d30;}
+.upload-modal .modal-box{max-width:600px;}
+.upload-dropzone{
+  border:2px dashed #dce4df;
+  border-radius:12px;
+  padding:40px;
+  text-align:center;
+  color:#7b8580;
+  margin-bottom:15px;
+  transition:.2s;
+  cursor:pointer;
+}
+.upload-dropzone.dragover{
+  border-color:#075b3b;
+  background:#e6f5ed;
+}
+.upload-progress-bar{
+  width:100%;
+  height:8px;
+  background:#edf2ef;
+  border-radius:4px;
+  overflow:hidden;
+  margin:12px 0;
+}
+.upload-progress-bar .fill{
+  height:100%;
+  background:#075b3b;
+  width:0%;
+  transition:width .3s;
+}
+.upload-speed{
+  font-size:11px;
+  color:#758079;
+  text-align:right;
+}
+.upload-status{
+  margin-top:8px;
+  font-size:13px;
+  font-weight:700;
+}
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     TOP BAR (added Upload button)
+========================================================= -->
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">DCCF</div>
+    <div>
+      <div class="brand-title">Development Charity Foundation</div>
+      <div class="brand-subtitle">Media Gallery</div>
+    </div>
+  </div>
+  <div class="top-actions">
+    <button class="upload-btn" onclick="openUploadModal()">⬆ Upload Media</button>
+    <a href="../dashboard.html" class="back">← Dashboard</a>
+  </div>
+</header>
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+<main class="page">
+
+  <div class="page-header">
+    <span>DCCF MEDIA</span>
+    <h1>Photo Gallery</h1>
+    <p>Tazama, cheza na pakua picha pamoja na video za matukio, miradi na shughuli za Development Charity Foundation.</p>
+  </div>
+
+  <!-- Loading -->
+  <div id="loadingBox" class="card">
+    <div class="loading-icon">⏳</div>
+    <h2>Inapakia Media Gallery...</h2>
+    <p>Tafadhali subiri kidogo.</p>
+  </div>
+
+  <!-- Error -->
+  <div id="errorBox" class="card">
+    <div class="icon">⚠️</div>
+    <h2>Imeshindikana Kupakia Picha</h2>
+    <p id="errorDesc">Kuna tatizo wakati wa kupakia media.</p>
+    <br>
+    <button class="small-btn" onclick="loadPublicMedia()">↻ Jaribu Tena</button>
+  </div>
+
+  <!-- Media Area -->
+  <div id="mediaArea" style="display:none;">
+    <div class="card">
+      <div class="library-header">
+        <div class="library-title">
+          <h2>🖼️ Media Gallery</h2>
+          <p>Picha na video zilizochapishwa rasmi na DCCF.</p>
+        </div>
+        <div class="library-actions">
+          <button class="small-btn" onclick="loadPublicMedia()">↻ Refresh</button>
+        </div>
+      </div>
+
+      <div id="folderBrowser" class="folder-browser"></div>
+
+      <div class="library-tools">
+        <input type="search" id="mediaSearch" placeholder="🔍 Tafuta picha, video, title, folder...">
+        <select id="sortFilter">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="az">A - Z</option>
+          <option value="za">Z - A</option>
+        </select>
+      </div>
+
+      <div class="library-stats">
+        <span>Showing: <strong id="showingCount">0</strong></span>
+        <span>Total Media: <strong id="libraryTotal">0</strong></span>
+      </div>
+
+      <div id="mediaGrid" class="media-grid"></div>
+
+      <div id="emptyLibrary" class="empty-library" style="display:none;">
+        <div class="empty-icon">🖼️</div>
+        <h3>Hakuna media zilizopatikana</h3>
+        <p>Hakuna media zinazolingana na utafutaji wako.</p>
+      </div>
+
+      <div id="pagination" class="pagination"></div>
+    </div>
+  </div>
+</main>
+
+<!-- =========================================================
+     GALLERY MODAL (unchanged)
+========================================================= -->
+<div id="imageModal" class="modal" onclick="closeImageModal(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 id="modalTitle">Media Preview</h3>
+      <button class="close-modal" onclick="closeImageModal()">×</button>
+    </div>
+    <img id="modalImage" class="modal-image" src="" alt="Preview">
+    <video id="modalVideo" class="modal-video hide-media" controls playsinline preload="metadata">Your browser does not support video playback.</video>
+    <div id="modalVideoNote" class="modal-video-note" style="display:none;">▶ Tumia controls za video kucheza, kusimamisha, kuongeza sauti au kwenda fullscreen.</div>
+    <div class="modal-url"><input id="modalUrl" readonly></div>
+    <div class="modal-actions">
+      <button class="modal-action modal-download" onclick="downloadModalImage()">⬇ Download</button>
+      <button class="modal-action modal-copy" onclick="copyModalUrl()">🔗 Copy Link</button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     UPLOAD MODAL (NEW)
+========================================================= -->
+<div id="uploadModal" class="modal upload-modal" onclick="if(event.target===this) closeUploadModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>⬆ Upload Media</h3>
+      <button class="close-modal" onclick="closeUploadModal()">×</button>
+    </div>
+    <div>
+      <div class="upload-dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+        <div style="font-size:32px;">📁</div>
+        <p><strong>Bonyeza au Buruta faili hapa</strong></p>
+        <p style="font-size:12px; margin-top:4px;">Inakubali picha (jpg, png) na video (mp4, webm, mov) hadi GB 6</p>
+      </div>
+      <input type="file" id="fileInput" accept="image/*,video/*" style="display:none;">
+      <div class="field" style="margin-bottom:10px;">
+        <label style="font-weight:700;font-size:12px;">Title *</label>
+        <input class="input" id="uploadTitle" placeholder="Enter media title" style="width:100%;padding:10px;border:1px solid #dce4df;border-radius:8px;font-size:13px;">
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label style="font-weight:700;font-size:12px;">Category / Folder</label>
+        <input class="input" id="uploadCategory" placeholder="e.g. Events, Projects" style="width:100%;padding:10px;border:1px solid #dce4df;border-radius:8px;font-size:13px;">
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label style="font-weight:700;font-size:12px;">Description</label>
+        <textarea class="input" id="uploadDescription" rows="2" placeholder="Brief description..." style="width:100%;padding:10px;border:1px solid #dce4df;border-radius:8px;font-size:13px;resize:vertical;"></textarea>
+      </div>
+
+      <!-- Progress -->
+      <div class="upload-progress-bar"><div class="fill" id="uploadProgressFill"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#758079;">
+        <span id="uploadStatus">Tayari</span>
+        <span id="uploadSpeed">0 KB/s</span>
+      </div>
+      <div id="uploadCompleteMsg" style="display:none;margin-top:8px;color:#075b3b;font-weight:700;">✓ Upload imekamilika!</div>
+
+      <button id="uploadSubmitBtn" class="upload-btn" style="width:100%;margin-top:14px;" onclick="startUpload()">⬆ Anza Upload</button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
+<div id="toast" class="toast"></div>
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+<footer>
+  <strong>Development Charity Foundation (DCCF)</strong><br>
+  Their Smile • Our Happiness
+</footer>
+
+<script>
+/* =========================================================
+   EXISTING GALLERY CODE (unchanged)
+========================================================= */
+
+const SUPABASE_URL = 'https://fcjvvfbaqnaohbtbljui.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_iSG3Vea2d4Fq1evF2fvbnw_0ri5huMQ';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let allMedia = [];
+let filteredMedia = [];
+let currentFolder = 'ALL';
+let currentPage = 1;
+const MEDIA_PER_PAGE = 24;
+let currentModalUrl = '';
+let currentModalTitle = '';
+let toastTimer = null;
+
+function escapeHtml(value){if(value===null||value===undefined)return '';return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
+function safeFileName(name){return String(name||'DCCF-Media').replace(/[^a-zA-Z0-9._-]/g,'_');}
+function getMediaType(item){const explicitType=String(item.media_type||item.file_type||item.mime_type||'').toLowerCase();if(explicitType.includes('video')||explicitType.startsWith('video/'))return'video';const url=item.image_url||item.download_url||'';const cleanUrl=url.split('?')[0].split('#')[0].toLowerCase();const videoExtensions=['.mp4','.webm','.ogg','.mov','.m4v','.avi'];return videoExtensions.some(ext=>cleanUrl.endsWith(ext))?'video':'image';}
+async function loadPublicMedia(){const loading=document.getElementById('loadingBox');const errorBox=document.getElementById('errorBox');const mediaArea=document.getElementById('mediaArea');const grid=document.getElementById('mediaGrid');const empty=document.getElementById('emptyLibrary');loading.style.display='block';errorBox.style.display='none';mediaArea.style.display='none';grid.innerHTML='';empty.style.display='none';try{const{data,error}=await supabaseClient.from('media').select('*').eq('status','Published').order('created_at',{ascending:false});if(error)throw error;allMedia=data||[];document.getElementById('libraryTotal').textContent=allMedia.length;currentFolder='ALL';currentPage=1;buildFolderBrowser();applyMediaFilters();loading.style.display='none';errorBox.style.display='none';mediaArea.style.display='block';}catch(error){console.error('PUBLIC MEDIA ERROR:',error);loading.style.display='none';mediaArea.style.display='none';errorBox.style.display='block';document.getElementById('errorDesc').textContent=error.message||'Kuna tatizo wakati wa kupakia media.';}}
+function buildFolderBrowser(){const browser=document.getElementById('folderBrowser');browser.innerHTML='';const allButton=document.createElement('button');allButton.className='folder-btn '+(currentFolder==='ALL'?'active':'');allButton.innerHTML='🗂️ All Media <span class="folder-count">('+allMedia.length+')</span>';allButton.onclick=function(){currentFolder='ALL';currentPage=1;buildFolderBrowser();applyMediaFilters();};browser.appendChild(allButton);const folderMap={};allMedia.forEach(item=>{const category=item.category||'Other';if(!folderMap[category])folderMap[category]=0;folderMap[category]++;});Object.keys(folderMap).sort().forEach(category=>{const button=document.createElement('button');button.className='folder-btn '+(currentFolder===category?'active':'');button.innerHTML='📁 '+escapeHtml(category)+' <span class="folder-count">('+folderMap[category]+')</span>';button.onclick=function(){currentFolder=category;currentPage=1;buildFolderBrowser();applyMediaFilters();};browser.appendChild(button);});}
+document.getElementById('mediaSearch').addEventListener('input',function(){currentPage=1;applyMediaFilters();});
+document.getElementById('sortFilter').addEventListener('change',function(){currentPage=1;applyMediaFilters();});
+function applyMediaFilters(){const search=document.getElementById('mediaSearch').value.trim().toLowerCase();const sort=document.getElementById('sortFilter').value;filteredMedia=allMedia.filter(item=>{const category=item.category||'Other';const matchesFolder=currentFolder==='ALL'||category===currentFolder;const searchableText=((item.title||'')+' '+(item.category||'')+' '+(item.description||'')+' '+(item.media_type||'')+' '+(item.file_type||'')).toLowerCase();const matchesSearch=!search||searchableText.includes(search);return matchesFolder&&matchesSearch;});if(sort==='newest'){filteredMedia.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));}if(sort==='oldest'){filteredMedia.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));}if(sort==='az'){filteredMedia.sort((a,b)=>String(a.title||'').localeCompare(String(b.title||'')));}if(sort==='za'){filteredMedia.sort((a,b)=>String(b.title||'').localeCompare(String(a.title||'')));}renderMedia();}
+function renderMedia(){const grid=document.getElementById('mediaGrid');const empty=document.getElementById('emptyLibrary');const pagination=document.getElementById('pagination');grid.innerHTML='';pagination.innerHTML='';document.getElementById('showingCount').textContent=filteredMedia.length;document.getElementById('libraryTotal').textContent=allMedia.length;if(filteredMedia.length===0){empty.style.display='block';return;}empty.style.display='none';const totalPages=Math.ceil(filteredMedia.length/MEDIA_PER_PAGE);if(currentPage>totalPages)currentPage=totalPages;const start=(currentPage-1)*MEDIA_PER_PAGE;const end=start+MEDIA_PER_PAGE;const pageItems=filteredMedia.slice(start,end);pageItems.forEach(item=>{grid.appendChild(createMediaCard(item));});renderPagination(totalPages);setupVideoHoverPlayback();}
+function createMediaCard(item){const card=document.createElement('div');card.className='media-card';const url=item.image_url||item.download_url||'';const title=item.title||'Untitled Media';const category=item.category||'Other';const description=item.description||'';const date=item.created_at?formatDate(item.created_at):'';const mediaType=getMediaType(item);const encodedUrl=encodeURIComponent(url);const encodedTitle=encodeURIComponent(title);let previewHTML='';if(mediaType==='video'){previewHTML=`
+            <div class="media-image" data-video-container="true" data-video-url="${escapeHtml(url)}" onclick="handleVideoCardClick(event,'${encodedUrl}','${encodedTitle}')">
+                <video class="gallery-video" src="${escapeHtml(url)}" muted playsinline preload="metadata" controls poster="" onerror="handleVideoError(this)"></video>
+                <div class="video-overlay"><div class="video-play-icon">▶</div></div>
+                <div class="media-badge">📁 ${escapeHtml(category)}</div>
+                <div class="media-type-badge">🎬 VIDEO</div>
+            </div>
+        `;}else{previewHTML=`
+            <div class="media-image" onclick="openMedia('${encodedUrl}','${encodedTitle}','image')">
+                <img src="${escapeHtml(url)}" alt="${escapeHtml(title)}" loading="lazy" onerror="handleImageError(this)">
+                <div class="media-badge">📁 ${escapeHtml(category)}</div>
+                <div class="media-type-badge">🖼️ PHOTO</div>
+            </div>
+        `;}card.innerHTML=`
+        ${previewHTML}
+        <div class="media-content">
+            <div class="media-title" title="${escapeHtml(title)}">${escapeHtml(title)}</div>
+            <div class="media-description">${escapeHtml(description)}</div>
+            <div class="media-actions">
+                <button class="media-action open" onclick="openMedia('${encodedUrl}','${encodedTitle}','${mediaType}')">${mediaType==='video'?'▶ Play':'👁 View'}</button>
+                <button class="media-action download" onclick="downloadMedia('${encodedUrl}','${encodedTitle}','${mediaType}')">⬇ Download</button>
+                <button class="media-action" onclick="copyMediaLink('${encodedUrl}')">🔗 Copy</button>
+            </div>
+            <div class="media-meta">
+                <span>${escapeHtml(date)}</span>
+                <span>Published • ${mediaType==='video'?'Video':'Photo'}</span>
+            </div>
+        </div>
+    `;return card;}
+function handleVideoCardClick(event,encodedUrl,encodedTitle){if(event.target&&(event.target.tagName==='VIDEO'||event.target.closest('video'))){return;}openMedia(encodedUrl,encodedTitle,'video');}
+function setupVideoHoverPlayback(){const containers=document.querySelectorAll('[data-video-container="true"]');containers.forEach(container=>{const video=container.querySelector('.gallery-video');if(!video)return;container.addEventListener('mouseenter',async function(){try{video.muted=true;await video.play();container.classList.add('video-playing');}catch(error){console.log('Video autoplay blocked:',error);}});container.addEventListener('mouseleave',function(){try{video.pause();video.currentTime=0;container.classList.remove('video-playing');}catch(error){console.log('VIDEO PAUSE ERROR:',error);}});video.addEventListener('play',function(){container.classList.add('video-playing');});video.addEventListener('pause',function(){container.classList.remove('video-playing');});});}
+function handleVideoError(video){console.error('VIDEO PREVIEW ERROR:',video.src);const container=video.closest('.media-image');if(!container)return;video.style.display='none';const message=document.createElement('div');message.className='media-unavailable';message.innerHTML='🎬<br><br>Video haipatikani<br><small>Bonyeza View kujaribu tena.</small>';container.appendChild(message);}
+function handleImageError(image){image.style.display='none';const container=image.closest('.media-image');if(!container)return;const message=document.createElement('div');message.className='media-unavailable';message.textContent='Image unavailable';container.appendChild(message);}
+function formatDate(dateString){try{const date=new Date(dateString);return date.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});}catch(error){return'';}}
+function renderPagination(totalPages){const pagination=document.getElementById('pagination');if(totalPages<=1)return;const previous=document.createElement('button');previous.className='page-btn';previous.textContent='‹';previous.disabled=currentPage===1;previous.onclick=function(){if(currentPage>1){currentPage--;renderMedia();window.scrollTo({top:0,behavior:'smooth'});}};pagination.appendChild(previous);const maxButtons=7;let startPage=Math.max(1,currentPage-3);let endPage=Math.min(totalPages,startPage+maxButtons-1);if(endPage-startPage+1<maxButtons){startPage=Math.max(1,endPage-maxButtons+1);}for(let i=startPage;i<=endPage;i++){const button=document.createElement('button');button.className='page-btn '+(i===currentPage?'active':'');button.textContent=i;button.onclick=function(){currentPage=i;renderMedia();window.scrollTo({top:0,behavior:'smooth'});};pagination.appendChild(button);}const next=document.createElement('button');next.className='page-btn';next.textContent='›';next.disabled=currentPage===totalPages;next.onclick=function(){if(currentPage<totalPages){currentPage++;renderMedia();window.scrollTo({top:0,behavior:'smooth'});}};pagination.appendChild(next);}
+function openMedia(encodedUrl,encodedTitle,mediaType='image'){const url=decodeURIComponent(encodedUrl);const title=decodeURIComponent(encodedTitle);currentModalUrl=url;currentModalTitle=title;const modal=document.getElementById('imageModal');const image=document.getElementById('modalImage');const video=document.getElementById('modalVideo');const videoNote=document.getElementById('modalVideoNote');const modalTitle=document.getElementById('modalTitle');const modalUrl=document.getElementById('modalUrl');modalTitle.textContent=title;modalUrl.value=url;if(mediaType==='video'){image.src='';image.classList.add('hide-media');video.classList.remove('hide-media');videoNote.style.display='block';video.pause();video.removeAttribute('src');video.load();video.src=url;video.controls=true;video.playsInline=true;video.muted=false;video.load();}else{video.pause();video.removeAttribute('src');video.load();video.classList.add('hide-media');videoNote.style.display='none';image.classList.remove('hide-media');image.src=url;}modal.classList.add('show');}
+function openImage(encodedUrl,encodedTitle){openMedia(encodedUrl,encodedTitle,'image');}
+function closeImageModal(event){if(event&&event.target&&event.target.id!=='imageModal'){return;}const video=document.getElementById('modalVideo');video.pause();video.removeAttribute('src');video.load();document.getElementById('modalImage').src='';document.getElementById('imageModal').classList.remove('show');}
+async function downloadMedia(encodedUrl,encodedTitle,mediaType='image'){const url=decodeURIComponent(encodedUrl);const title=decodeURIComponent(encodedTitle);if(!url){showToast('Link ya media haipo.',true);return;}try{showToast('⏳ Inatayarisha download...');const response=await fetch(url);if(!response.ok)throw new Error('Media haikupatikana.');const blob=await response.blob();const blobUrl=URL.createObjectURL(blob);const link=document.createElement('a');link.href=blobUrl;let extension=mediaType==='video'?'mp4':'jpg';if(blob.type&&blob.type.includes('/')){const possibleExtension=blob.type.split('/')[1];if(possibleExtension&&possibleExtension.length<10){extension=possibleExtension.replace('jpeg','jpg').replace('quicktime','mov');}}link.download=safeFileName(title)+'.'+extension;document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(blobUrl);showToast(mediaType==='video'?'✓ Video imeanza kudownload.':'✓ Picha imeanza kudownload.');}catch(error){console.error('DOWNLOAD MEDIA ERROR:',error);try{const link=document.createElement('a');link.href=url;link.target='_blank';link.rel='noopener';link.click();showToast(mediaType==='video'?'Video imefunguliwa. Bonyeza Download kwenye browser.':'Picha imefunguliwa. Bonyeza Download/Save kwenye browser.');}catch(openError){window.open(url,'_blank');}}}
+function downloadImage(encodedUrl,encodedTitle){downloadMedia(encodedUrl,encodedTitle,'image');}
+function downloadModalImage(){if(!currentModalUrl){showToast('Hakuna media ya kudownload.',true);return;}const video=document.getElementById('modalVideo');const isVideo=!video.classList.contains('hide-media');downloadMedia(encodeURIComponent(currentModalUrl),encodeURIComponent(currentModalTitle),isVideo?'video':'image');}
+async function copyMediaLink(encodedUrl){const url=decodeURIComponent(encodedUrl);if(!url){showToast('Link haipo.',true);return;}try{await navigator.clipboard.writeText(url);showToast('✓ Media link imenakiliwa.');}catch(error){const temp=document.createElement('textarea');temp.value=url;temp.style.position='fixed';temp.style.opacity='0';document.body.appendChild(temp);temp.select();document.execCommand('copy');temp.remove();showToast('✓ Media link imenakiliwa.');}}
+function copyImageLink(encodedUrl){copyMediaLink(encodedUrl);}
+function copyModalUrl(){const url=document.getElementById('modalUrl').value;copyMediaLink(encodeURIComponent(url));}
+document.addEventListener('keydown',function(event){if(event.key==='Escape'){closeImageModal();}});
+document.addEventListener('visibilitychange',function(){if(document.hidden){const video=document.getElementById('modalVideo');if(video){video.pause();}document.querySelectorAll('.gallery-video').forEach(item=>{item.pause();});}});
+function showToast(message,isError=false){const toast=document.getElementById('toast');toast.textContent=message;toast.classList.toggle('error',isError);toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){toast.classList.remove('show');},3500);}
+document.addEventListener('DOMContentLoaded',function(){loadPublicMedia();});
+
+/* =========================================================
+   NEW UPLOAD FUNCTIONALITY (using TUS for large files)
+========================================================= */
+
+let uploadFile = null;
+let uploadInProgress = false;
+
+function openUploadModal(){
+  document.getElementById('uploadModal').classList.add('show');
+  document.getElementById('uploadStatus').textContent='Tayari';
+  document.getElementById('uploadSpeed').textContent='0 KB/s';
+  document.getElementById('uploadProgressFill').style.width='0%';
+  document.getElementById('uploadCompleteMsg').style.display='none';
+  document.getElementById('uploadSubmitBtn').disabled=false;
+  document.getElementById('uploadTitle').value='';
+  document.getElementById('uploadCategory').value='';
+  document.getElementById('uploadDescription').value='';
+  uploadFile = null;
+}
+
+function closeUploadModal(){
+  document.getElementById('uploadModal').classList.remove('show');
+  if(uploadInProgress) return;
+  // Reset
+}
+
+// File input and drag-drop
+const fileInput = document.getElementById('fileInput');
+const dropzone = document.getElementById('dropzone');
+
+fileInput.addEventListener('change', function(){
+  if(this.files.length){
+    uploadFile = this.files[0];
+    dropzone.innerHTML = `<div style="font-size:20px;">📄</div><p><strong>${escapeHtml(uploadFile.name)}</strong><br>${(uploadFile.size/1024/1024).toFixed(1)} MB</p>`;
+    document.getElementById('uploadSubmitBtn').disabled = false;
+  }
+});
+
+dropzone.addEventListener('dragover', function(e){
+  e.preventDefault();
+  this.classList.add('dragover');
+});
+dropzone.addEventListener('dragleave', function(e){
+  e.preventDefault();
+  this.classList.remove('dragover');
+});
+dropzone.addEventListener('drop', function(e){
+  e.preventDefault();
+  this.classList.remove('dragover');
+  if(e.dataTransfer.files.length){
+    uploadFile = e.dataTransfer.files[0];
+    fileInput.files = e.dataTransfer.files;
+    dropzone.innerHTML = `<div style="font-size:20px;">📄</div><p><strong>${escapeHtml(uploadFile.name)}</strong><br>${(uploadFile.size/1024/1024).toFixed(1)} MB</p>`;
+    document.getElementById('uploadSubmitBtn').disabled = false;
+  }
+});
+
+async function startUpload(){
+  if(uploadInProgress) return;
+  if(!uploadFile){
+    showToast('Tafadhali chagua faili.', true);
+    return;
+  }
+  const title = document.getElementById('uploadTitle').value.trim();
+  if(!title){
+    showToast('Tafadhali weka Title.', true);
+    return;
+  }
+  const category = document.getElementById('uploadCategory').value.trim() || 'Other';
+  const description = document.getElementById('uploadDescription').value.trim();
+
+  uploadInProgress = true;
+  const btn = document.getElementById('uploadSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Inapakia...';
+
+  const progressFill = document.getElementById('uploadProgressFill');
+  const statusEl = document.getElementById('uploadStatus');
+  const speedEl = document.getElementById('uploadSpeed');
+
+  const file = uploadFile;
+  const fileExt = file.name.split('.').pop() || 'jpg';
+  const fileName = `${Date.now()}_${title.replace(/[^a-zA-Z0-9]/g,'_')}.${fileExt}`;
+  const filePath = `public/${fileName}`; // storage path
+
+  // Determine media type
+  const isVideo = file.type.startsWith('video/');
+  const mediaType = isVideo ? 'video' : 'image';
+
+  try{
+    // 1. Upload to Supabase Storage using TUS (resumable, chunked)
+    const uploadUrl = `${SUPABASE_URL}/storage/v1/upload/resumable`;
+    const headers = {
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'x-upsert': 'true'
+    };
+
+    // We'll use tus-js-client
+    const upload = new tus.Upload(file, {
+      endpoint: uploadUrl,
+      headers: headers,
+      chunkSize: 50 * 1024 * 1024, // 50MB chunks
+      metadata: {
+        filename: fileName,
+        bucketName: 'media'  // assuming bucket name is 'media'
+      },
+      uploadDataDuringCreation: false,
+      removeFingerprintOnSuccess: true,
+      parallelUploads: 6, // up to 6 concurrent chunks for speed
+      onProgress: (bytesUploaded, bytesTotal) => {
+        const percent = (bytesUploaded / bytesTotal) * 100;
+        progressFill.style.width = percent + '%';
+        statusEl.textContent = `${(bytesUploaded/1024/1024).toFixed(1)} MB / ${(bytesTotal/1024/1024).toFixed(1)} MB`;
+        // Speed calculation (approximate)
+        if(this._lastTime && this._lastBytes){
+          const dt = (Date.now() - this._lastTime) / 1000;
+          const db = bytesUploaded - this._lastBytes;
+          const speed = db / dt; // bytes per second
+          speedEl.textContent = (speed / 1024).toFixed(1) + ' KB/s';
+        }
+        this._lastTime = Date.now();
+        this._lastBytes = bytesUploaded;
+      },
+      onSuccess: async () => {
+        // Upload finished
+        statusEl.textContent = '✓ Upload imekamilika!';
+        speedEl.textContent = '---';
+        progressFill.style.width = '100%';
+        document.getElementById('uploadCompleteMsg').style.display = 'block';
+
+        // 2. Insert record into media table
+        const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/media/${fileName}`;
+        const { error: insertError } = await supabaseClient
+          .from('media')
+          .insert([
+            {
+              title: title,
+              category: category,
+              description: description,
+              image_url: publicUrl,
+              download_url: publicUrl,
+              media_type: mediaType,
+              file_type: file.type || (isVideo ? 'video/mp4' : 'image/jpeg'),
+              status: 'Published',
+              created_at: new Date().toISOString()
+            }
+          ]);
+
+        if(insertError){
+          console.error('Insert error:', insertError);
+          showToast('Faili imeupload lakini kuna tatizo la kuhifadhi metadata. Tafadhali wasiliana na Admin.', true);
+        } else {
+          showToast('✓ Media imeupload na kuhifadhiwa!');
+          // Refresh gallery
+          loadPublicMedia();
+        }
+        uploadInProgress = false;
+        btn.disabled = false;
+        btn.textContent = '⬆ Anza Upload';
+        setTimeout(closeUploadModal, 2000);
+      },
+      onError: (error) => {
+        console.error('Upload error:', error);
+        showToast('Upload imeshindikana: ' + error.message, true);
+        uploadInProgress = false;
+        btn.disabled = false;
+        btn.textContent = '⬆ Anza Upload';
+        statusEl.textContent = 'Imeshindikana';
+      }
+    });
+
+    // Start the upload
+    upload.start();
+
+  } catch(error){
+    console.error('UPLOAD ERROR:', error);
+    showToast('Upload imeshindikana: ' + error.message, true);
+    uploadInProgress = false;
+    btn.disabled = false;
+    btn.textContent = '⬆ Anza Upload';
+  }
+}
+
+</script>
+</body>
+</html>

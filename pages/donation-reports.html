@@ -1,0 +1,3079 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Ripoti za Michango - DCF MIS</title>
+
+    <script>
+        protectPage(['admin', 'staff']);
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dcf: {
+                            green: '#174a35',
+                            dark: '#0d3022',
+                            light: '#eaf4ee',
+                            hover: '#236b4d'
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+<script src="../js/role-guard.js"></script>
+    <!-- QR CODE -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Times New Roman", Times, serif;
+        }
+
+        body {
+            background: #f5f7f6;
+            color: #1f2937;
+        }
+
+        .app-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(0,0,0,.04);
+        }
+
+        .input {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 14px;
+            outline: none;
+            background: #fff;
+        }
+
+        .input:focus {
+            border-color: #174a35;
+            box-shadow: 0 0 0 3px rgba(23,74,53,.08);
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 9px 14px;
+            font-weight: bold;
+            font-size: 13px;
+            transition: .2s;
+        }
+
+        .btn-green {
+            background: #174a35;
+            color: #fff;
+        }
+
+        .btn-green:hover {
+            background: #0d3022;
+        }
+
+        .btn-light {
+            background: #edf4ef;
+            color: #174a35;
+        }
+
+        .btn-light:hover {
+            background: #dcebe1;
+        }
+
+        .modal {
+            background: rgba(0,0,0,.55);
+            backdrop-filter: blur(3px);
+        }
+
+        .secret-code {
+            font-family: monospace !important;
+            letter-spacing: 1.5px;
+        }
+
+        @media print {
+            body {
+                background: white !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            #printArea {
+                display: none !important;
+            }
+
+            .print-table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .print-table th,
+            .print-table td {
+                border: 1px solid #999;
+                padding: 6px;
+                font-size: 11px;
+            }
+
+            .print-table th {
+                background: #eee !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen"
+data-allowed-roles="admin,staff,auditor">
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header class="no-print bg-white border-b border-gray-200 sticky top-0 z-40">
+
+    <div class="max-w-7xl mx-auto px-4 md:px-6">
+
+        <div class="h-[74px] flex items-center justify-between gap-4">
+
+            <div class="flex items-center gap-3">
+
+                <a href="../dashboard.html"
+                   class="w-10 h-10 rounded-lg bg-dcf-green text-white flex items-center justify-center hover:bg-dcf-dark transition"
+                   title="Rudi Dashboard">
+
+                    <i class="fas fa-arrow-left"></i>
+
+                </a>
+
+                <div class="w-10 h-10 rounded-lg bg-dcf-light flex items-center justify-center overflow-hidden">
+
+                    <img src="../assets/images/logo.png"
+                         alt="DCF"
+                         class="w-full h-full object-contain"
+                         onerror="this.style.display='none';">
+
+                </div>
+
+                <div>
+                    <h1 class="font-bold text-lg text-gray-800">
+                        Ripoti za Michango
+                    </h1>
+
+                    <p class="text-xs text-gray-500">
+                        DCF Management Information System
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="flex items-center gap-2">
+
+                <button onclick="openDonationModal()"
+                        class="btn btn-green flex items-center gap-2">
+
+                    <i class="fas fa-plus"></i>
+
+                    <span class="hidden sm:inline">
+                        Ongeza Mchango
+                    </span>
+
+                    <span class="sm:hidden">
+                        Ongeza
+                    </span>
+
+                </button>
+
+                <button onclick="printReport()"
+                        class="btn btn-light flex items-center gap-2"
+                        title="Chapisha risiti 4 kwa A4">
+
+                    <i class="fas fa-receipt"></i>
+
+                    <span class="hidden sm:inline">
+                        Print Risiti
+                    </span>
+
+                    <span class="sm:hidden">
+                        Risiti
+                    </span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="max-w-7xl mx-auto px-4 md:px-6 py-6">
+
+    <!-- PAGE TITLE -->
+
+    <div class="no-print flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+        <div>
+
+            <p class="text-xs uppercase tracking-widest text-dcf-green font-bold mb-1">
+                FEDHA
+            </p>
+
+            <h2 class="text-2xl font-bold text-gray-800">
+                Usimamizi wa Michango
+            </h2>
+
+            <p class="text-sm text-gray-500 mt-1">
+                Sajili, thibitisha, tafuta na chapisha taarifa za michango.
+            </p>
+
+        </div>
+
+        <div class="text-xs text-gray-500">
+            <i class="fas fa-calendar mr-1"></i>
+            <span id="todayDate"></span>
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SUMMARY
+    ====================================================== -->
+
+    <section class="no-print grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+        <div class="app-card p-5">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase">
+                        Jumla ya Michango
+                    </p>
+
+                    <h3 id="totalAmount"
+                        class="text-xl md:text-2xl font-bold text-dcf-green mt-2">
+                        TZS 0
+                    </h3>
+                </div>
+
+                <div class="w-11 h-11 rounded-xl bg-green-100 text-dcf-green flex items-center justify-center">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="app-card p-5">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase">
+                        Miamala
+                    </p>
+
+                    <h3 id="totalCount"
+                        class="text-xl md:text-2xl font-bold text-gray-800 mt-2">
+                        0
+                    </h3>
+                </div>
+
+                <div class="w-11 h-11 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center">
+                    <i class="fas fa-receipt"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="app-card p-5">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase">
+                        Wastani
+                    </p>
+
+                    <h3 id="averageAmount"
+                        class="text-xl md:text-2xl font-bold text-gray-800 mt-2">
+                        TZS 0
+                    </h3>
+                </div>
+
+                <div class="w-11 h-11 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="app-card p-5">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase">
+                        Hali
+                    </p>
+
+                    <h3 class="text-xl font-bold text-green-700 mt-2">
+                        <i class="fas fa-circle text-[9px]"></i>
+                        Mfumo Hai
+                    </h3>
+                </div>
+
+                <div class="w-11 h-11 rounded-xl bg-gray-100 text-gray-700 flex items-center justify-center">
+                    <i class="fas fa-database"></i>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FILTER / SEARCH
+    ====================================================== -->
+
+    <section class="app-card p-4 md:p-5 mb-6 no-print">
+
+        <div class="flex items-center justify-between mb-4">
+
+            <div>
+                <h3 class="font-bold text-gray-800">
+                    Tafuta & Chuja
+                </h3>
+
+                <p class="text-xs text-gray-500">
+                    Tumia vigezo hivi kupata mchango unaohitaji.
+                </p>
+            </div>
+
+            <button onclick="resetFilters()"
+                    class="text-xs text-dcf-green font-bold hover:underline">
+                Safisha Filters
+            </button>
+
+        </div>
+
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+
+            <div class="lg:col-span-2 relative">
+
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400 text-sm"></i>
+
+                <input id="searchInput"
+                       type="text"
+                       placeholder="Tafuta jina, risiti au secret code..."
+                       class="input pl-9"
+                       oninput="applyFilters()">
+
+            </div>
+
+
+            <div>
+
+                <input id="startDate"
+                       type="date"
+                       class="input"
+                       onchange="applyFilters()">
+
+            </div>
+
+
+            <div>
+
+                <input id="endDate"
+                       type="date"
+                       class="input"
+                       onchange="applyFilters()">
+
+            </div>
+
+
+            <div>
+
+                <select id="typeFilter"
+                        class="input"
+                        onchange="applyFilters()">
+
+                    <option value="ALL">
+                        Aina Zote
+                    </option>
+
+                    <option value="Ada ya Uanachama">
+                        Ada ya Uanachama
+                    </option>
+
+                    <option value="Michango ya Mradi">
+                        Michango ya Mradi
+                    </option>
+
+                    <option value="Sadaka/Hiyari">
+                        Sadaka / Hiyari
+                    </option>
+
+                    <option value="Nyinginezo">
+                        Nyinginezo
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         TABLE
+    ====================================================== -->
+
+    <section id="printArea" class="app-card overflow-hidden">
+
+        <!-- PRINT HEADER -->
+
+        <div class="hidden print:block text-center p-5 border-b">
+
+            <h1 class="text-2xl font-bold text-dcf-green">
+                DEVELOPMENT CHARITY FOUNDATION
+            </h1>
+
+            <p class="font-bold">
+                DCF MANAGEMENT INFORMATION SYSTEM
+            </p>
+
+            <p class="text-sm">
+                RIPOTI RASMI YA MICHANGO
+            </p>
+
+            <p class="text-xs mt-2">
+                Tarehe: <span id="printDate"></span>
+            </p>
+
+        </div>
+
+
+        <div class="p-4 border-b bg-gray-50 no-print">
+
+            <div class="flex items-center justify-between">
+
+                <div>
+
+                    <h3 class="font-bold text-gray-800">
+                        Orodha ya Michango
+                    </h3>
+
+                    <p class="text-xs text-gray-500">
+                        Kila mchango una risiti yake. Bonyeza
+                        <b>Print Risiti</b> kupata risiti 4 kwenye A4 moja,
+                        kila moja ikiwa na QR Code yake.
+                    </p>
+
+                </div>
+
+                <span id="resultCount"
+                      class="text-xs bg-dcf-light text-dcf-green px-3 py-1 rounded-full font-bold">
+                    0
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="overflow-x-auto">
+
+            <table class="w-full text-sm print-table">
+
+                <thead>
+
+                    <tr class="bg-gray-100 border-b">
+
+                        <th class="p-3 text-left border">
+                            Na.
+                        </th>
+
+                        <th class="p-3 text-left border">
+                            Risiti
+                        </th>
+
+                        <th class="p-3 text-left border">
+                            Mchangiaji
+                        </th>
+
+                        <th class="p-3 text-left border">
+                            Aina
+                        </th>
+
+                        <th class="p-3 text-left border">
+                            Njia
+                        </th>
+
+                        <th class="p-3 text-left border">
+                            Tarehe
+                        </th>
+
+                        <th class="p-3 text-right border">
+                            Kiasi
+                        </th>
+
+                        <th class="p-3 text-center border no-print">
+                            QR / Code
+                        </th>
+
+                        <th class="p-3 text-center border no-print">
+                            Kitendo
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="reportTable">
+
+                    <tr>
+
+                        <td colspan="9"
+                            class="p-10 text-center text-gray-500">
+
+                            <i class="fas fa-spinner fa-spin mr-2"></i>
+                            Inapakia taarifa...
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+
+                <tfoot>
+
+                    <tr class="bg-gray-100 font-bold">
+
+                        <td colspan="6"
+                            class="p-3 text-right border uppercase">
+
+                            Jumla Kuu:
+
+                        </td>
+
+                        <td id="footerTotal"
+                            class="p-3 text-right border text-dcf-green">
+
+                            TZS 0
+
+                        </td>
+
+                        <td colspan="2"
+                            class="border no-print">
+                        </td>
+
+                    </tr>
+
+                </tfoot>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================================================
+     ADD DONATION MODAL
+========================================================= -->
+
+<div id="donationModal"
+     class="modal fixed inset-0 hidden z-50 items-center justify-center p-4">
+
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[95vh] overflow-y-auto">
+
+        <div class="sticky top-0 bg-dcf-green text-white p-4 flex items-center justify-between">
+
+            <div>
+
+                <h3 class="font-bold text-lg">
+                    Ongeza Mchango
+                </h3>
+
+                <p class="text-xs text-green-100">
+                    Sajili taarifa mpya ya mchango
+                </p>
+
+            </div>
+
+            <button onclick="closeDonationModal()"
+                    class="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/20">
+
+                <i class="fas fa-times"></i>
+
+            </button>
+
+        </div>
+
+
+        <form id="donationForm"
+              class="p-5 space-y-4">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <div>
+
+                    <label class="block text-xs font-bold mb-1">
+                        Jina la Mchangiaji *
+                    </label>
+
+                    <input id="donorName"
+                           required
+                           class="input"
+                           placeholder="Mfano: Isaya Emmanuel">
+
+                </div>
+
+
+                <div>
+
+                    <label class="block text-xs font-bold mb-1">
+                        Namba ya Simu
+                    </label>
+
+                    <input id="donorPhone"
+                           class="input"
+                           placeholder="07XXXXXXXX">
+
+                </div>
+
+
+                <div>
+
+                    <label class="block text-xs font-bold mb-1">
+                        Aina ya Mchango *
+                    </label>
+
+                    <select id="donationType"
+                            required
+                            class="input">
+
+                        <option value="">
+                            Chagua aina
+                        </option>
+
+                        <option value="Ada ya Uanachama">
+                            Ada ya Uanachama
+                        </option>
+
+                        <option value="Michango ya Mradi">
+                            Michango ya Mradi
+                        </option>
+
+                        <option value="Sadaka/Hiyari">
+                            Sadaka / Hiyari
+                        </option>
+
+                        <option value="Nyinginezo">
+                            Nyinginezo
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <label class="block text-xs font-bold mb-1">
+                        Njia ya Malipo *
+                    </label>
+
+                    <select id="paymentMethod"
+                            required
+                            class="input">
+
+                        <option value="">
+                            Chagua njia
+                        </option>
+
+                        <option value="Cash">
+                            Taslimu
+                        </option>
+
+                        <option value="M-Pesa">
+                            M-Pesa / Simu
+                        </option>
+
+                        <option value="Bank">
+                            Benki
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <label class="block text-xs font-bold mb-1">
+                        Kiasi (TZS) *
+                    </label>
+
+                    <input id="donationAmount"
+                           type="number"
+                           min="1"
+                           required
+                           class="input"
+                           placeholder="0">
+
+                </div>
+
+
+                <div>
+
+                    <label class="block text-xs font-bold mb-1">
+                        Tarehe ya Mchango *
+                    </label>
+
+                    <input id="donationDate"
+                           type="date"
+                           required
+                           class="input">
+
+                </div>
+
+
+                <div class="md:col-span-2">
+
+                    <label class="block text-xs font-bold mb-1">
+                        Maelezo
+                    </label>
+
+                    <textarea id="donationDescription"
+                              rows="3"
+                              class="input"
+                              placeholder="Maelezo ya ziada kuhusu mchango..."></textarea>
+
+                </div>
+
+            </div>
+
+
+            <!-- SECRET CODE PREVIEW -->
+
+            <div class="bg-gray-50 border rounded-xl p-4">
+
+                <div class="flex items-center justify-between gap-4">
+
+                    <div>
+
+                        <p class="text-xs font-bold text-gray-500 uppercase">
+                            Secret Code
+                        </p>
+
+                        <p id="newSecretPreview"
+                           class="secret-code text-dcf-green font-bold mt-1">
+                            Itatengenezwa baada ya kuhifadhi
+                        </p>
+
+                    </div>
+
+                    <i class="fas fa-lock text-dcf-green text-xl"></i>
+
+                </div>
+
+            </div>
+
+
+            <div class="flex justify-end gap-2 pt-3 border-t">
+
+                <button type="button"
+                        onclick="closeDonationModal()"
+                        class="btn bg-gray-200 text-gray-700">
+
+                    Ghairi
+
+                </button>
+
+                <button type="submit"
+                        id="saveDonationBtn"
+                        class="btn btn-green flex items-center gap-2">
+
+                    <i class="fas fa-save"></i>
+                    Hifadhi Mchango
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     DONATION VIEW MODAL
+========================================================= -->
+
+<div id="viewModal"
+     class="modal fixed inset-0 hidden z-50 items-center justify-center p-4">
+
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+
+        <div class="bg-dcf-green text-white p-4 flex justify-between">
+
+            <div>
+
+                <h3 class="font-bold">
+                    Taarifa za Mchango
+                </h3>
+
+                <p class="text-xs text-green-100">
+                    Donation Verification
+                </p>
+
+            </div>
+
+            <button onclick="closeViewModal()"
+                    class="text-xl">
+
+                &times;
+
+            </button>
+
+        </div>
+
+
+        <div class="p-5">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                <div class="space-y-3">
+
+                    <div>
+                        <p class="text-xs text-gray-500">Mchangiaji</p>
+                        <p id="viewDonor"
+                           class="font-bold text-gray-800">
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-gray-500">Receipt No</p>
+                        <p id="viewReceipt"
+                           class="font-bold text-dcf-green">
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-gray-500">Aina ya Mchango</p>
+                        <p id="viewType"
+                           class="font-bold">
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-gray-500">Njia ya Malipo</p>
+                        <p id="viewMethod"
+                           class="font-bold">
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-gray-500">Tarehe</p>
+                        <p id="viewDate"
+                           class="font-bold">
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-gray-500">Kiasi</p>
+                        <p id="viewAmount"
+                           class="font-bold text-xl text-dcf-green">
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-gray-500">Maelezo</p>
+                        <p id="viewNotes" class="font-bold text-gray-700 whitespace-pre-wrap">-</p>
+                    </div>
+
+                    <div>
+                        <p class="text-xs text-gray-500">
+                            Secret Code
+                        </p>
+
+                        <div class="bg-gray-100 rounded-lg p-3">
+
+                            <span id="viewSecret"
+                                  class="secret-code font-bold text-dcf-green">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="flex flex-col items-center justify-center">
+
+                    <div id="qrContainer"
+                         class="bg-white p-3 border rounded-xl">
+                    </div>
+
+                    <p class="text-xs text-gray-500 mt-2 text-center">
+                        Scan QR Code kuthibitisha taarifa
+                    </p>
+
+                    <button onclick="printSingleDonation()"
+                            class="btn btn-green mt-4 flex items-center gap-2">
+
+                        <i class="fas fa-print"></i>
+                        Print Mchango
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     IMAGE MODAL
+========================================================= -->
+
+<div id="imageModal"
+     class="modal fixed inset-0 hidden z-[60] items-center justify-center p-4">
+
+    <div class="bg-white rounded-xl max-w-lg w-full overflow-hidden">
+
+        <div class="bg-dcf-green text-white p-3 flex justify-between">
+
+            <h3 class="font-bold">
+                Picha / Risiti
+            </h3>
+
+            <button onclick="closeImageModal()"
+                    class="text-xl">
+
+                &times;
+
+            </button>
+
+        </div>
+
+        <div class="p-4 text-center">
+
+            <img id="modalImage"
+                 src=""
+                 class="max-h-[500px] mx-auto object-contain rounded border">
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     UPLOAD MODAL
+========================================================= -->
+
+<div id="uploadModal"
+     class="modal fixed inset-0 hidden z-50 items-center justify-center p-4">
+
+    <div class="bg-white rounded-xl w-full max-w-md shadow-2xl">
+
+        <div class="bg-dcf-green text-white p-4 flex justify-between">
+
+            <h3 class="font-bold">
+                Upload Risiti / Picha
+            </h3>
+
+            <button onclick="closeUploadModal()"
+                    class="text-xl">
+
+                &times;
+
+            </button>
+
+        </div>
+
+
+        <form id="uploadForm"
+              class="p-5 space-y-4">
+
+            <input type="hidden" id="uploadDonationId">
+
+            <input type="file"
+                   id="photoInput"
+                   accept="image/*"
+                   required
+                   class="input"
+                   onchange="previewImage(event)">
+
+            <div id="uploadPreview"
+                 class="hidden text-center">
+
+                <img id="previewImage"
+                     class="max-h-48 mx-auto object-contain rounded border">
+
+            </div>
+
+            <button type="submit"
+                    id="uploadBtn"
+                    class="btn btn-green w-full">
+
+                Hifadhi Picha
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+let allDonations = [];
+let filteredDonations = [];
+let selectedDonation = null;
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+const today = new Date();
+
+document.getElementById("todayDate").innerText =
+    today.toLocaleDateString("sw-TZ", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+    });
+
+document.getElementById("donationDate").value =
+    today.toISOString().split("T")[0];
+
+document.getElementById("printDate").innerText =
+    today.toLocaleDateString("sw-TZ");
+
+
+/* =========================================================
+   SECRET CODE
+========================================================= */
+
+function generateSecretCode() {
+
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+    let result = "DCF-";
+
+    for (let i = 0; i < 4; i++) {
+
+        if (i > 0) result += "-";
+
+        for (let j = 0; j < 4; j++) {
+
+            result += chars.charAt(
+                Math.floor(Math.random() * chars.length)
+            );
+
+        }
+    }
+
+    return result;
+}
+
+
+/* =========================================================
+   RECEIPT NUMBER
+========================================================= */
+
+function generateReceiptNumber() {
+
+    const now = new Date();
+
+    const year = now.getFullYear();
+
+    const random = Math.floor(
+        100000 + Math.random() * 900000
+    );
+
+    return `DCF-${year}-${random}`;
+
+}
+
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+function openDonationModal() {
+
+    document.getElementById("donationModal").classList.remove("hidden");
+    document.getElementById("donationModal").classList.add("flex");
+
+}
+
+function closeDonationModal() {
+
+    document.getElementById("donationModal").classList.add("hidden");
+    document.getElementById("donationModal").classList.remove("flex");
+
+}
+
+
+/* =========================================================
+   LOAD DATA
+========================================================= */
+
+async function loadReportData() {
+
+    const tbody = document.getElementById("reportTable");
+
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="9"
+                class="p-10 text-center text-gray-500">
+                <i class="fas fa-spinner fa-spin mr-2"></i>
+                Inapakia taarifa...
+            </td>
+        </tr>
+    `;
+
+    try {
+
+        const { data, error } = await _supabase
+            .from("donations")
+            .select("*")
+            .order("donation_date", {
+                ascending: false
+            });
+
+        if (error) throw error;
+
+        allDonations = data || [];
+
+        applyFilters();
+
+    } catch (error) {
+
+        console.error(error);
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="9"
+                    class="p-10 text-center text-red-600 font-bold">
+
+                    Imeshindikana kupakia data.<br>
+
+                    <small>${escapeHtml(error.message)}</small>
+
+                </td>
+            </tr>
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+function applyFilters() {
+
+    const search =
+        document.getElementById("searchInput")
+            .value
+            .trim()
+            .toLowerCase();
+
+    const startDate =
+        document.getElementById("startDate").value;
+
+    const endDate =
+        document.getElementById("endDate").value;
+
+    const type =
+        document.getElementById("typeFilter").value;
+
+
+    filteredDonations = allDonations.filter(d => {
+
+        const searchMatch =
+            !search ||
+            String(d.donor_name || "")
+                .toLowerCase()
+                .includes(search) ||
+
+            String(d.receipt_no || "")
+                .toLowerCase()
+                .includes(search) ||
+
+            String(d.secret_code || "")
+                .toLowerCase()
+                .includes(search);
+
+
+        const dateMatch =
+            (!startDate ||
+             String(d.donation_date) >= startDate) &&
+
+            (!endDate ||
+             String(d.donation_date) <= endDate);
+
+
+        const typeMatch =
+            type === "ALL" ||
+            d.donation_type === type;
+
+
+        return searchMatch &&
+               dateMatch &&
+               typeMatch;
+
+    });
+
+
+    renderReport(filteredDonations);
+
+}
+
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function renderReport(data) {
+
+    const tbody =
+        document.getElementById("reportTable");
+
+    let total = 0;
+
+
+    document.getElementById("resultCount").innerText =
+        `${data.length} Miamala`;
+
+
+    if (!data.length) {
+
+        tbody.innerHTML = `
+            <tr>
+
+                <td colspan="9"
+                    class="p-10 text-center text-gray-500">
+
+                    <div class="text-3xl mb-2">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+
+                    Hakuna mchango unaolingana na utafutaji wako.
+
+                </td>
+
+            </tr>
+        `;
+
+        updateSummary(0, 0);
+
+        return;
+
+    }
+
+
+    tbody.innerHTML = data.map((d, index) => {
+
+        const amount =
+            Number(d.amount) || 0;
+
+        total += amount;
+
+
+        const badge =
+            d.donation_type === "Ada ya Uanachama"
+
+                ? "bg-blue-100 text-blue-700"
+
+                : d.donation_type === "Michango ya Mradi"
+
+                ? "bg-green-100 text-green-700"
+
+                : "bg-gray-100 text-gray-700";
+
+
+        const photo =
+            d.donor_photo
+
+            ? `
+                <button
+                    onclick="openImageModal('${escapeAttr(d.donor_photo)}')"
+                    class="w-9 h-9 rounded-full overflow-hidden border-2 border-dcf-green mx-auto">
+
+                    <img src="${escapeAttr(d.donor_photo)}"
+                         class="w-full h-full object-cover">
+
+                </button>
+              `
+
+            : `
+                <span class="text-gray-300">
+                    <i class="fas fa-user-circle text-xl"></i>
+                </span>
+              `;
+
+
+        return `
+
+            <tr class="hover:bg-gray-50 border-b">
+
+                <td class="p-3 border text-center font-bold text-gray-500">
+                    ${index + 1}
+                </td>
+
+
+                <td class="p-3 border">
+
+                    <div class="font-bold text-dcf-green">
+                        ${escapeHtml(d.receipt_no || "-")}
+                    </div>
+
+                </td>
+
+
+                <td class="p-3 border">
+
+                    <div class="flex items-center gap-2">
+
+                        ${photo}
+
+                        <div>
+
+                            <div class="font-bold text-gray-800">
+                                ${escapeHtml(d.donor_name || "-")}
+                            </div>
+
+                            <div class="text-[11px] text-gray-400">
+                                ${escapeHtml(d.donor_phone || "")}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </td>
+
+
+                <td class="p-3 border">
+
+                    <span class="${badge}
+                                 px-2 py-1
+                                 rounded-full
+                                 text-[11px]
+                                 font-bold">
+
+                        ${escapeHtml(d.donation_type || "-")}
+
+                    </span>
+
+                </td>
+
+
+                <td class="p-3 border">
+                    ${escapeHtml(d.payment_method || "-")}
+                </td>
+
+
+                <td class="p-3 border">
+                    ${escapeHtml(d.donation_date || "-")}
+                </td>
+
+
+                <td class="p-3 border text-right">
+
+                    <span class="font-bold text-gray-900">
+                        TZS ${amount.toLocaleString()}
+                    </span>
+
+                </td>
+
+
+                <!-- QR -->
+
+                <td class="p-3 border text-center no-print">
+
+                    <button
+                        onclick="viewDonation('${d.id}')"
+                        class="inline-flex flex-col items-center">
+
+                        <div id="qr-mini-${d.id}"
+                             class="w-[52px] h-[52px] overflow-hidden bg-white border rounded p-1">
+                        </div>
+
+                        <span class="secret-code text-[8px] text-dcf-green mt-1">
+                            ${escapeHtml(d.secret_code || "N/A")}
+                        </span>
+
+                    </button>
+
+                </td>
+
+
+                <!-- ACTIONS -->
+
+                <td class="p-3 border no-print">
+
+                    <div class="flex items-center justify-center gap-1">
+
+                        <button
+                            onclick="viewDonation('${d.id}')"
+                            title="View"
+                            class="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-700 hover:text-white">
+
+                            <i class="fas fa-eye"></i>
+
+                        </button>
+
+
+                        <button
+                            onclick="openUploadModal('${d.id}')"
+                            title="Upload"
+                            class="w-8 h-8 rounded-lg bg-green-50 text-dcf-green hover:bg-dcf-green hover:text-white">
+
+                            <i class="fas fa-camera"></i>
+
+                        </button>
+
+
+                        <button
+                            onclick="deleteDonation('${d.id}')"
+                            data-action="delete"
+                            class="btn-delete w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white">
+
+                            <i class="fas fa-trash"></i>
+
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+        `;
+
+    }).join("");
+
+
+    /* CREATE MINI QR */
+
+    data.forEach(d => {
+
+        const container =
+            document.getElementById(`qr-mini-${d.id}`);
+
+        if (!container) return;
+
+        createQR(container, d);
+
+    });
+
+
+    updateSummary(total, data.length);
+
+}
+
+
+/* =========================================================
+   SUMMARY
+========================================================= */
+
+function updateSummary(total, count) {
+
+    document.getElementById("totalAmount").innerText =
+        `TZS ${total.toLocaleString()}`;
+
+    document.getElementById("footerTotal").innerText =
+        `TZS ${total.toLocaleString()}`;
+
+    document.getElementById("totalCount").innerText =
+        count.toLocaleString();
+
+    const average =
+        count > 0 ? total / count : 0;
+
+    document.getElementById("averageAmount").innerText =
+        `TZS ${Math.round(average).toLocaleString()}`;
+
+}
+
+
+/* =========================================================
+   CREATE QR
+========================================================= */
+
+function createQR(container, donation) {
+
+    container.innerHTML = "";
+
+    const url =
+        new URL(
+            "donation-view.html",
+            window.location.href
+        );
+
+    url.searchParams.set(
+        "id",
+        donation.id
+    );
+
+    if (donation.secret_code) {
+
+        url.searchParams.set(
+            "code",
+            donation.secret_code
+        );
+
+    }
+
+
+    new QRCode(container, {
+
+        text: url.toString(),
+
+        width: 44,
+
+        height: 44,
+
+        colorDark: "#174a35",
+
+        colorLight: "#ffffff",
+
+        correctLevel: QRCode.CorrectLevel.M
+
+    });
+
+}
+
+
+/* =========================================================
+   VIEW DONATION
+========================================================= */
+
+function viewDonation(id) {
+
+    const donation =
+        allDonations.find(d => String(d.id) === String(id));
+
+    if (!donation) return;
+
+    selectedDonation = donation;
+
+
+    document.getElementById("viewDonor").innerText =
+        donation.donor_name || "-";
+
+    document.getElementById("viewReceipt").innerText =
+        donation.receipt_no || "-";
+
+    document.getElementById("viewType").innerText =
+        donation.donation_type || "-";
+
+    document.getElementById("viewMethod").innerText =
+        donation.payment_method || "-";
+
+    document.getElementById("viewDate").innerText =
+        donation.donation_date || "-";
+
+    document.getElementById("viewAmount").innerText =
+        `TZS ${(Number(donation.amount) || 0).toLocaleString()}`;
+
+    const viewNotes = document.getElementById("viewNotes");
+    if (viewNotes) {
+        viewNotes.innerText = donation.notes || "-";
+    }
+
+    document.getElementById("viewSecret").innerText =
+        donation.secret_code || "-";
+
+
+    const qrContainer =
+        document.getElementById("qrContainer");
+
+    createQR(qrContainer, donation);
+
+
+    document.getElementById("viewModal")
+        .classList.remove("hidden");
+
+    document.getElementById("viewModal")
+        .classList.add("flex");
+
+}
+
+
+function closeViewModal() {
+
+    document.getElementById("viewModal")
+        .classList.add("hidden");
+
+    document.getElementById("viewModal")
+        .classList.remove("flex");
+
+}
+
+
+/* =========================================================
+   SAVE DONATION
+========================================================= */
+
+document.getElementById("donationForm")
+    .addEventListener("submit", async function(e) {
+
+        e.preventDefault();
+
+
+        const button =
+            document.getElementById("saveDonationBtn");
+
+
+        button.disabled = true;
+
+        button.innerHTML = `
+            <i class="fas fa-spinner fa-spin"></i>
+            Inahifadhi...
+        `;
+
+
+        const donorName =
+            document.getElementById("donorName").value.trim();
+
+        const donorPhone =
+            document.getElementById("donorPhone").value.trim();
+
+        const donationType =
+            document.getElementById("donationType").value;
+
+        const paymentMethod =
+            document.getElementById("paymentMethod").value;
+
+        const amount =
+            Number(document.getElementById("donationAmount").value);
+
+        const donationDate =
+            document.getElementById("donationDate").value;
+
+        if (!donorName || !donationType || !paymentMethod || !amount || amount <= 0 || !donationDate) {
+            alert("Tafadhali jaza taarifa zote muhimu kabla ya kuhifadhi.");
+            button.disabled = false;
+            button.innerHTML = `
+                <i class="fas fa-save"></i>
+                Hifadhi Mchango
+            `;
+            return;
+        }
+
+        const secretCode =
+            generateSecretCode();
+
+        const receiptNo =
+            generateReceiptNumber();
+
+
+        const payload = {
+
+            donor_name: donorName,
+            donor_phone: donorPhone,
+            donation_type: donationType,
+            payment_method: paymentMethod,
+            amount: amount,
+            donation_date: donationDate,
+
+            notes:
+                document.getElementById("donationDescription").value.trim(),
+
+            receipt_no:
+                receiptNo,
+
+            secret_code:
+                secretCode
+
+        };
+
+
+        try {
+
+            const { data, error } =
+                await _supabase
+                    .from("donations")
+                    .insert([payload])
+                    .select()
+                    .single();
+
+
+            if (error) throw error;
+
+
+            closeDonationModal();
+
+
+            this.reset();
+
+
+            document.getElementById("donationDate").value =
+                new Date().toISOString().split("T")[0];
+
+
+            alert(
+                `Mchango umehifadhiwa!\n\n` +
+                `Receipt: ${receiptNo}\n` +
+                `Secret Code: ${secretCode}`
+            );
+
+
+            await loadReportData();
+
+
+            if (data) {
+
+                viewDonation(data.id);
+
+            }
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            let message = error?.message || "Hitilafu isiyojulikana.";
+
+            if (error?.code === "PGRST204") {
+                message += "\n\nInaonekana database schema bado haijasasishwa. Endesha SQL ya migration niliyokupa.";
+            }
+
+            alert(
+                "Imeshindikana kuhifadhi mchango:\n" +
+                message
+            );
+
+        } finally {
+
+            button.disabled = false;
+
+            button.innerHTML = `
+                <i class="fas fa-save"></i>
+                Hifadhi Mchango
+            `;
+
+        }
+
+    });
+
+
+/* =========================================================
+   DELETE
+========================================================= */
+
+async function deleteDonation(id) {
+
+    const role =
+        sessionStorage.getItem("userRole");
+
+
+    if (role !== "admin") {
+
+        alert(
+            "Huna ruhusa ya kufuta mchango. Admin pekee ndiye anayeruhusiwa."
+        );
+
+        return;
+
+    }
+
+
+    const donation =
+        allDonations.find(
+            d => String(d.id) === String(id)
+        );
+
+
+    if (!donation) return;
+
+
+    const confirmed =
+        confirm(
+            `Una uhakika unataka kufuta mchango wa "${donation.donor_name}"?\n\n` +
+            `Receipt: ${donation.receipt_no}\n` +
+            `Kiasi: TZS ${Number(donation.amount || 0).toLocaleString()}`
+        );
+
+
+    if (!confirmed) return;
+
+
+    try {
+
+        const { error } =
+            await _supabase
+                .from("donations")
+                .delete()
+                .eq("id", id);
+
+
+        if (error) throw error;
+
+
+        alert("Mchango umefutwa kikamilifu.");
+
+        await loadReportData();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Imeshindikana kufuta mchango:\n" +
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   UPLOAD
+========================================================= */
+
+function openUploadModal(id) {
+
+    document.getElementById("uploadDonationId").value =
+        id;
+
+    document.getElementById("photoInput").value =
+        "";
+
+    document.getElementById("uploadPreview")
+        .classList.add("hidden");
+
+
+    document.getElementById("uploadModal")
+        .classList.remove("hidden");
+
+    document.getElementById("uploadModal")
+        .classList.add("flex");
+
+}
+
+
+function closeUploadModal() {
+
+    document.getElementById("uploadModal")
+        .classList.add("hidden");
+
+    document.getElementById("uploadModal")
+        .classList.remove("flex");
+
+}
+
+
+function previewImage(event) {
+
+    const file =
+        event.target.files[0];
+
+    if (!file) return;
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload = function(e) {
+
+        document.getElementById("previewImage").src =
+            e.target.result;
+
+        document.getElementById("uploadPreview")
+            .classList.remove("hidden");
+
+    };
+
+
+    reader.readAsDataURL(file);
+
+}
+
+
+document.getElementById("uploadForm")
+    .addEventListener("submit", async function(e) {
+
+        e.preventDefault();
+
+
+        const id =
+            document.getElementById("uploadDonationId").value;
+
+        const file =
+            document.getElementById("photoInput").files[0];
+
+        const button =
+            document.getElementById("uploadBtn");
+
+
+        if (!file) return;
+
+
+        button.disabled = true;
+
+        button.innerText = "Inahifadhi...";
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload = async function(e) {
+
+            try {
+
+                const { error } =
+                    await _supabase
+                        .from("donations")
+                        .update({
+                            donor_photo: e.target.result
+                        })
+                        .eq("id", id);
+
+
+                if (error) throw error;
+
+
+                alert("Picha imehifadhiwa.");
+
+                closeUploadModal();
+
+                await loadReportData();
+
+
+            } catch (error) {
+
+                alert(
+                    "Imeshindikana kuhifadhi picha:\n" +
+                    error.message
+                );
+
+            } finally {
+
+                button.disabled = false;
+
+                button.innerText =
+                    "Hifadhi Picha";
+
+            }
+
+        };
+
+
+        reader.readAsDataURL(file);
+
+    });
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+function openImageModal(url) {
+
+    document.getElementById("modalImage").src =
+        url;
+
+    document.getElementById("imageModal")
+        .classList.remove("hidden");
+
+    document.getElementById("imageModal")
+        .classList.add("flex");
+
+}
+
+
+function closeImageModal() {
+
+    document.getElementById("imageModal")
+        .classList.add("hidden");
+
+    document.getElementById("imageModal")
+        .classList.remove("flex");
+
+}
+
+
+/* =========================================================
+   PRINT REPORT
+========================================================= */
+
+function printReport() {
+
+    /* =========================================================
+       PRINT RECEIPTS — 4 PER A4
+       IMPORTANT: QR library is loaded dynamically AFTER the
+       print window is created. This avoids breaking the main
+       page JavaScript with a nested closing script tag.
+    ========================================================= */
+
+    if (!filteredDonations || filteredDonations.length === 0) {
+        alert("Hakuna risiti za kuchapisha.");
+        return;
+    }
+
+    const printWindow = window.open(
+        "",
+        "_blank",
+        "width=1100,height=850"
+    );
+
+    if (!printWindow) {
+        alert(
+            "Browser imezuia Print Window. Ruhusu pop-ups kisha ujaribu tena."
+        );
+        return;
+    }
+
+    const logoUrl = new URL(
+        "../assets/images/logo.png",
+        window.location.href
+    ).href;
+
+    const baseUrl = window.location.href;
+    const qrItems = [];
+    const pages = [];
+
+    for (let i = 0; i < filteredDonations.length; i += 4) {
+
+        const group = filteredDonations.slice(i, i + 4);
+
+        const cards = group.map((d, cardIndex) => {
+
+            const amount = Number(d.amount) || 0;
+            const qrId = `receipt-qr-${i + cardIndex}`;
+
+            qrItems.push({
+                qrId: qrId,
+                id: d.id,
+                secret: d.secret_code || ""
+            });
+
+            return `
+                <article class="receipt-card">
+
+                    <div class="receipt-top">
+
+                        <div class="brand">
+
+                            <img
+                                src="${escapeAttr(logoUrl)}"
+                                class="logo"
+                                alt="DCF">
+
+                            <div class="brand-text">
+                                <div class="org">
+                                    DEVELOPMENT CHARITY FOUNDATION
+                                </div>
+
+                                <div class="system">
+                                    DCF MANAGEMENT INFORMATION SYSTEM
+                                </div>
+
+                                <div class="title">
+                                    RISITI YA MCHANGO
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="receipt-number">
+                            <span>RECEIPT NO.</span>
+                            <strong>
+                                ${escapeHtml(d.receipt_no || "-")}
+                            </strong>
+                        </div>
+
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <div class="receipt-body">
+
+                        <div class="details">
+
+                            <div class="detail-row">
+                                <span>Mchangiaji</span>
+                                <strong>${escapeHtml(d.donor_name || "-")}</strong>
+                            </div>
+
+                            <div class="detail-row">
+                                <span>Simu</span>
+                                <strong>${escapeHtml(d.donor_phone || "-")}</strong>
+                            </div>
+
+                            <div class="detail-row">
+                                <span>Aina ya Mchango</span>
+                                <strong>${escapeHtml(d.donation_type || "-")}</strong>
+                            </div>
+
+                            <div class="detail-row">
+                                <span>Njia ya Malipo</span>
+                                <strong>${escapeHtml(d.payment_method || "-")}</strong>
+                            </div>
+
+                            <div class="detail-row">
+                                <span>Tarehe</span>
+                                <strong>${escapeHtml(d.donation_date || "-")}</strong>
+                            </div>
+
+                            <div class="amount-row">
+                                <span>KIASI</span>
+                                <strong>TZS ${amount.toLocaleString()}</strong>
+                            </div>
+
+                            <div class="notes">
+                                <span>Maelezo</span>
+                                <p>${escapeHtml(d.notes || "-")}</p>
+                            </div>
+
+                        </div>
+
+                        <div class="verification">
+
+                            <div id="${qrId}" class="qr-box"></div>
+
+                            <div class="scan-text">
+                                SCAN TO VERIFY
+                            </div>
+
+                            <div class="secret-label">
+                                SECRET CODE
+                            </div>
+
+                            <div class="secret">
+                                ${escapeHtml(d.secret_code || "-")}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="receipt-bottom">
+
+                        <div>
+                            <strong>Asante kwa mchango wako.</strong>
+                            <span>Their Smile, Our Happiness.</span>
+                        </div>
+
+                        <div class="official">
+                            DCF OFFICIAL RECEIPT
+                        </div>
+
+                    </div>
+
+                </article>
+            `;
+
+        }).join("");
+
+        pages.push(`
+            <section class="a4-page">
+                <div class="page-grid">
+                    ${cards}
+                </div>
+            </section>
+        `);
+    }
+
+    printWindow.document.open();
+
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="sw">
+        <head>
+            <meta charset="UTF-8">
+            <title>DCF Official Donation Receipts</title>
+
+            <style>
+                @page {
+                    size: A4 portrait;
+                    margin: 0;
+                }
+
+                * {
+                    box-sizing: border-box;
+                    font-family: "Times New Roman", Times, serif;
+                }
+
+                html,
+                body {
+                    margin: 0;
+                    padding: 0;
+                    background: #fff;
+                    color: #17201b;
+                }
+
+                .a4-page {
+                    width: 210mm;
+                    height: 297mm;
+                    padding: 7mm;
+                    page-break-after: always;
+                    break-after: page;
+                    overflow: hidden;
+                }
+
+                .a4-page:last-child {
+                    page-break-after: auto;
+                    break-after: auto;
+                }
+
+                .page-grid {
+                    width: 100%;
+                    height: 100%;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    grid-template-rows: 1fr 1fr;
+                    gap: 4mm;
+                }
+
+                .receipt-card {
+                    width: 100%;
+                    height: 100%;
+                    min-height: 0;
+                    border: 1.1px solid #174a35;
+                    border-radius: 2.5mm;
+                    background: #fff;
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                    position: relative;
+                }
+
+                .receipt-card::after {
+                    content: "";
+                    position: absolute;
+                    inset: 1.5mm;
+                    border: .35px solid #c7d8ce;
+                    border-radius: 1.8mm;
+                    pointer-events: none;
+                }
+
+                .receipt-top {
+                    min-height: 25mm;
+                    padding: 4mm 4.5mm 3mm;
+                    display: flex;
+                    align-items: flex-start;
+                    justify-content: space-between;
+                    gap: 3mm;
+                    background: #f7faf8;
+                }
+
+                .brand {
+                    display: flex;
+                    align-items: center;
+                    gap: 2.5mm;
+                    min-width: 0;
+                }
+
+                .logo {
+                    width: 13mm;
+                    height: 13mm;
+                    object-fit: contain;
+                    flex: 0 0 auto;
+                }
+
+                .brand-text {
+                    min-width: 0;
+                }
+
+                .org {
+                    font-weight: 900;
+                    color: #174a35;
+                    font-size: 9.2pt;
+                    line-height: 1.05;
+                }
+
+                .system {
+                    color: #52635a;
+                    font-size: 6.8pt;
+                    margin-top: 1mm;
+                }
+
+                .title {
+                    color: #174a35;
+                    font-weight: 900;
+                    font-size: 9pt;
+                    margin-top: 1.5mm;
+                    letter-spacing: .35px;
+                }
+
+                .receipt-number {
+                    text-align: right;
+                    flex: 0 0 auto;
+                    padding-left: 2mm;
+                }
+
+                .receipt-number span {
+                    display: block;
+                    color: #69766f;
+                    font-size: 5.8pt;
+                    font-weight: bold;
+                }
+
+                .receipt-number strong {
+                    display: block;
+                    color: #174a35;
+                    font-size: 7.7pt;
+                    margin-top: 1mm;
+                    white-space: nowrap;
+                }
+
+                .divider {
+                    height: 1px;
+                    background: #174a35;
+                    margin: 0 4.5mm;
+                }
+
+                .receipt-body {
+                    flex: 1;
+                    min-height: 0;
+                    padding: 3.5mm 4.5mm 2mm;
+                    display: grid;
+                    grid-template-columns: 1fr 31mm;
+                    gap: 3mm;
+                }
+
+                .details {
+                    min-width: 0;
+                }
+
+                .detail-row {
+                    display: grid;
+                    grid-template-columns: 31mm 1fr;
+                    gap: 2mm;
+                    padding: 1.45mm 0;
+                    border-bottom: .35px solid #e5ebe7;
+                    font-size: 7.2pt;
+                    line-height: 1.1;
+                }
+
+                .detail-row span {
+                    color: #68756e;
+                }
+
+                .detail-row strong {
+                    color: #1e2b24;
+                    text-align: right;
+                    overflow-wrap: anywhere;
+                }
+
+                .amount-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-top: 2.5mm;
+                    padding: 2.5mm;
+                    border: 1px solid #174a35;
+                    border-radius: 1.5mm;
+                    background: #edf5f0;
+                    color: #174a35;
+                    font-size: 7.4pt;
+                    font-weight: bold;
+                }
+
+                .amount-row strong {
+                    font-size: 11pt;
+                }
+
+                .notes {
+                    margin-top: 2mm;
+                    font-size: 6.5pt;
+                }
+
+                .notes span {
+                    color: #68756e;
+                    font-weight: bold;
+                }
+
+                .notes p {
+                    margin: 1mm 0 0;
+                    line-height: 1.15;
+                    max-height: 8mm;
+                    overflow: hidden;
+                }
+
+                .verification {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    text-align: center;
+                    border-left: .5px dashed #b7c8be;
+                    padding-left: 3mm;
+                    min-width: 0;
+                }
+
+                .qr-box {
+                    width: 26mm;
+                    height: 26mm;
+                    padding: 1mm;
+                    border: .7px solid #174a35;
+                    background: #fff;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+
+                .qr-box img,
+                .qr-box canvas {
+                    max-width: 100%;
+                    max-height: 100%;
+                }
+
+                .scan-text {
+                    color: #174a35;
+                    font-weight: bold;
+                    font-size: 5.6pt;
+                    margin-top: 1.5mm;
+                    letter-spacing: .5px;
+                }
+
+                .secret-label {
+                    color: #69766f;
+                    font-size: 5.5pt;
+                    font-weight: bold;
+                    margin-top: 2mm;
+                }
+
+                .secret {
+                    color: #174a35;
+                    font-family: "Courier New", monospace !important;
+                    font-weight: 900;
+                    font-size: 6.1pt;
+                    letter-spacing: .5px;
+                    line-height: 1.2;
+                    word-break: break-all;
+                    margin-top: .8mm;
+                }
+
+                .receipt-bottom {
+                    min-height: 13mm;
+                    padding: 2.5mm 4.5mm;
+                    border-top: .5px solid #d8e2dc;
+                    background: #fbfcfb;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 3mm;
+                    font-size: 6pt;
+                }
+
+                .receipt-bottom strong {
+                    display: block;
+                    color: #174a35;
+                    font-size: 6.8pt;
+                }
+
+                .receipt-bottom span {
+                    display: block;
+                    color: #69766f;
+                    margin-top: .7mm;
+                    font-style: italic;
+                }
+
+                .official {
+                    color: #174a35;
+                    font-weight: bold;
+                    font-size: 5.5pt;
+                    text-align: right;
+                    white-space: nowrap;
+                }
+            </style>
+        </head>
+        <body>
+            ${pages.join("")}
+        </body>
+        </html>
+    `);
+
+    printWindow.document.close();
+
+    // Load QRCode library without inserting a literal closing script tag
+    // into this page's source code.
+    const qrScript = printWindow.document.createElement("script");
+    qrScript.src = "https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js";
+    qrScript.onload = function() {
+
+        qrItems.forEach(item => {
+
+            const container =
+                printWindow.document.getElementById(item.qrId);
+
+            if (!container) return;
+
+            const qrUrl = new URL(
+                "donation-view.html",
+                baseUrl
+            );
+
+            qrUrl.searchParams.set("id", item.id);
+
+            if (item.secret) {
+                qrUrl.searchParams.set("code", item.secret);
+            }
+
+            new printWindow.QRCode(container, {
+                text: qrUrl.toString(),
+                width: 190,
+                height: 190,
+                colorDark: "#174a35",
+                colorLight: "#ffffff",
+                correctLevel: printWindow.QRCode.CorrectLevel.M
+            });
+        });
+
+        setTimeout(() => {
+            printWindow.focus();
+            printWindow.print();
+        }, 900);
+    };
+
+    qrScript.onerror = function() {
+        alert(
+            "QR Code library haijapakia. Hakikisha internet ipo kisha jaribu tena."
+        );
+    };
+
+    printWindow.document.head.appendChild(qrScript);
+}
+
+/* =========================================================
+   PRINT SINGLE DONATION
+========================================================= */
+
+function printSingleDonation() {
+
+    if (!selectedDonation) return;
+
+
+    const d = selectedDonation;
+
+
+    const qrUrl =
+        new URL(
+            "donation-view.html",
+            window.location.href
+        );
+
+    qrUrl.searchParams.set("id", d.id);
+
+    qrUrl.searchParams.set(
+        "code",
+        d.secret_code || ""
+    );
+
+
+    const printWindow =
+        window.open(
+            "",
+            "_blank",
+            "width=850,height=700"
+        );
+
+
+    printWindow.document.write(`
+
+        <!DOCTYPE html>
+
+        <html>
+
+        <head>
+
+            <title>
+                Receipt ${escapeHtml(d.receipt_no || "")}
+            </title>
+
+            <style>
+
+                * {
+                    box-sizing:border-box;
+                    font-family:"Times New Roman",serif;
+                }
+
+                body {
+                    padding:35px;
+                    color:#222;
+                }
+
+                .header {
+                    text-align:center;
+                    border-bottom:2px solid #174a35;
+                    padding-bottom:15px;
+                    margin-bottom:25px;
+                }
+
+                .header h1 {
+                    color:#174a35;
+                    margin:0;
+                    font-size:24px;
+                }
+
+                .header p {
+                    margin:5px;
+                }
+
+                .receipt {
+                    max-width:700px;
+                    margin:auto;
+                    border:1px solid #ccc;
+                    padding:25px;
+                }
+
+                .row {
+                    display:flex;
+                    justify-content:space-between;
+                    border-bottom:1px solid #eee;
+                    padding:10px 0;
+                }
+
+                .label {
+                    color:#666;
+                }
+
+                .value {
+                    font-weight:bold;
+                }
+
+                .amount {
+                    color:#174a35;
+                    font-size:22px;
+                }
+
+                .secret {
+                    background:#f1f5f2;
+                    padding:12px;
+                    font-family:monospace;
+                    letter-spacing:2px;
+                    font-weight:bold;
+                    text-align:center;
+                }
+
+                .qr {
+                    text-align:center;
+                    margin-top:25px;
+                }
+
+                .footer {
+                    text-align:center;
+                    margin-top:30px;
+                    font-size:11px;
+                    color:#777;
+                }
+
+            </style>
+
+        </head>
+
+        <body>
+
+            <div class="receipt">
+
+                <div class="header">
+
+                    <h1>
+                        DEVELOPMENT CHARITY FOUNDATION
+                    </h1>
+
+                    <p>
+                        DCF MANAGEMENT INFORMATION SYSTEM
+                    </p>
+
+                    <p>
+                        RISITI YA MCHANGO
+                    </p>
+
+                </div>
+
+
+                <div class="row">
+
+                    <span class="label">
+                        Receipt No
+                    </span>
+
+                    <span class="value">
+                        ${escapeHtml(d.receipt_no || "-")}
+                    </span>
+
+                </div>
+
+
+                <div class="row">
+
+                    <span class="label">
+                        Mchangiaji
+                    </span>
+
+                    <span class="value">
+                        ${escapeHtml(d.donor_name || "-")}
+                    </span>
+
+                </div>
+
+
+                <div class="row">
+
+                    <span class="label">
+                        Aina ya Mchango
+                    </span>
+
+                    <span class="value">
+                        ${escapeHtml(d.donation_type || "-")}
+                    </span>
+
+                </div>
+
+
+                <div class="row">
+
+                    <span class="label">
+                        Njia ya Malipo
+                    </span>
+
+                    <span class="value">
+                        ${escapeHtml(d.payment_method || "-")}
+                    </span>
+
+                </div>
+
+
+                <div class="row">
+
+                    <span class="label">
+                        Tarehe
+                    </span>
+
+                    <span class="value">
+                        ${escapeHtml(d.donation_date || "-")}
+                    </span>
+
+                </div>
+
+
+                <div class="row">
+
+                    <span class="label">
+                        Kiasi
+                    </span>
+
+                    <span class="value amount">
+                        TZS ${(Number(d.amount) || 0).toLocaleString()}
+                    </span>
+
+                </div>
+
+
+                <div style="margin-top:20px">
+
+                    <p class="label">
+                        SECRET CODE
+                    </p>
+
+                    <div class="secret">
+                        ${escapeHtml(d.secret_code || "-")}
+                    </div>
+
+                </div>
+
+
+                <div class="qr">
+
+                    <div id="qrPrint"></div>
+
+                    <p>
+                        Scan QR Code kuthibitisha taarifa
+                    </p>
+
+                </div>
+
+
+                <div class="footer">
+
+                    <p>
+                        Hati hii imetengenezwa na DCF MIS.
+                    </p>
+
+                    <p>
+                        ${new Date().toLocaleString("sw-TZ")}
+                    </p>
+
+                </div>
+
+            </div>
+
+        </body>
+
+        </html>
+
+    `);
+
+
+    printWindow.document.close();
+
+
+    setTimeout(() => {
+
+        new QRCode(
+            printWindow.document.getElementById("qrPrint"),
+            {
+                text: qrUrl.toString(),
+                width: 150,
+                height: 150,
+                colorDark: "#174a35",
+                colorLight: "#ffffff"
+            }
+        );
+
+        setTimeout(() => {
+
+            printWindow.focus();
+
+            printWindow.print();
+
+            printWindow.close();
+
+        }, 400);
+
+    }, 300);
+
+}
+
+
+/* =========================================================
+   RESET FILTERS
+========================================================= */
+
+function resetFilters() {
+
+    document.getElementById("searchInput").value = "";
+
+    document.getElementById("startDate").value = "";
+
+    document.getElementById("endDate").value = "";
+
+    document.getElementById("typeFilter").value = "ALL";
+
+    applyFilters();
+
+}
+
+
+/* =========================================================
+   SECURITY / HTML ESCAPE
+========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+function escapeAttr(value) {
+
+    return escapeHtml(value);
+
+}
+
+
+/* =========================================================
+   ROLE PERMISSIONS
+========================================================= */
+
+function applyPermissions() {
+
+    const role =
+        sessionStorage.getItem("userRole");
+
+
+    if (role === "staff" || role === "auditor") {
+
+        document
+            .querySelectorAll(".btn-delete")
+            .forEach(btn => {
+
+                btn.style.display = "none";
+
+            });
+
+    }
+
+
+    if (role === "auditor") {
+
+        document
+            .querySelectorAll(
+                '[data-action="create"], .btn-delete'
+            )
+            .forEach(btn => {
+
+                btn.style.display = "none";
+
+            });
+
+
+        const addButton =
+            document.querySelector(
+                'button[onclick="openDonationModal()"]'
+            );
+
+        if (addButton) {
+
+            addButton.style.display = "none";
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   CLOSE MODALS WHEN CLICKING OUTSIDE
+========================================================= */
+
+document.addEventListener("click", function(e) {
+
+    const donationModal =
+        document.getElementById("donationModal");
+
+    const viewModal =
+        document.getElementById("viewModal");
+
+    const uploadModal =
+        document.getElementById("uploadModal");
+
+    const imageModal =
+        document.getElementById("imageModal");
+
+
+    if (e.target === donationModal)
+        closeDonationModal();
+
+    if (e.target === viewModal)
+        closeViewModal();
+
+    if (e.target === uploadModal)
+        closeUploadModal();
+
+    if (e.target === imageModal)
+        closeImageModal();
+
+});
+
+
+/* =========================================================
+   INIT
+   NOTE: donations table must contain:
+   receipt_no, donor_name, donor_phone, donation_type, amount,
+   payment_method, donation_date, notes, secret_code, donor_photo
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        const loggedIn =
+            sessionStorage.getItem("userLoggedIn");
+
+        const role =
+            sessionStorage.getItem("userRole");
+
+
+        if (!loggedIn || !role) {
+
+            window.location.href =
+                "../login.html";
+
+            return;
+
+        }
+
+
+        applyPermissions();
+
+        await loadReportData();
+
+    }
+);
+
+</script>
+<script src="js/i18n.js"></script>
+</body>
+</html>
+<script src="../js/role-guard.js"></script>

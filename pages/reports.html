@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ripoti za Mfumo - DCF</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SheetJS kwa ajili ya Pakua Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .print-card {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen"
+data-allowed-roles="admin,staff,auditor">
+
+    <div class="max-w-7xl mx-auto p-4 md:p-6">
+        
+        <!-- HEADER YA UKURASA -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 pb-4 border-b border-slate-200 gap-4 no-print">
+            <div>
+                <h1 class="text-2xl font-bold text-emerald-800 flex items-center gap-2">
+                    <i class="fas fa-file-invoice text-emerald-600"></i>
+                    Kituo cha Ripoti
+                </h1>
+                <p class="text-sm text-slate-500">Chagua aina ya taarifa, chuja kulingana na tarehe, kisha pakua au chapisha.</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg shadow-sm transition flex items-center gap-2 text-sm cursor-pointer">
+                    <i class="fas fa-file-excel"></i> Pakua Excel
+                </button>
+                <button onclick="printReport()" class="bg-slate-800 hover:bg-slate-900 text-white font-medium px-4 py-2 rounded-lg shadow-sm transition flex items-center gap-2 text-sm cursor-pointer">
+                    <i class="fas fa-print"></i> Chapisha / PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- SEHEMU YA CHUJIO (FILTERS CARD) -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 mb-6 no-print">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                
+                <!-- 1. CHAGUA AINA YA RIPOTI -->
+                <div>
+                    <label for="reportTypeSelect" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                        Aina ya Ripoti
+                    </label>
+                    <select id="reportTypeSelect" onchange="switchReportCategory()" class="w-full bg-slate-50 border border-slate-300 text-slate-700 text-sm rounded-lg p-2.5 focus:ring-emerald-500 focus:border-emerald-500 font-medium">
+                        <option value="projects">📂 Taarifa za Miradi</option>
+                        <option value="members">👥 Taarifa za Wanachama</option>
+                        <option value="financials">💰 Taarifa za Fedha</option>
+                        <option value="audit">🛡️ Kumbukumbu za Mfumo (Audit Logs)</option>
+                    </select>
+                </div>
+
+                <!-- 2. TAREHE YA ANZHIA -->
+                <div>
+                    <label for="startDate" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                        Kuanzia Tarehe
+                    </label>
+                    <input type="date" id="startDate" class="w-full bg-slate-50 border border-slate-300 text-slate-700 text-sm rounded-lg p-2.5 focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+
+                <!-- 3. TAREHE YA MWISHO -->
+                <div>
+                    <label for="endDate" class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">
+                        Hadi Tarehe
+                    </label>
+                    <input type="date" id="endDate" class="w-full bg-slate-50 border border-slate-300 text-slate-700 text-sm rounded-lg p-2.5 focus:ring-emerald-500 focus:border-emerald-500">
+                </div>
+
+                <!-- 4. BATANI YA CHUJA NA UWEKE UPYA -->
+                <div class="flex gap-2">
+                    <button onclick="filterCurrentReport()" class="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white font-medium p-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fas fa-filter"></i> Chuja
+                    </button>
+                    <button onclick="resetFilters()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium p-2.5 rounded-lg text-sm transition title='Weka upya' cursor-pointer">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SEHEMU YA RIPOTI INAYOCHAPISHWA (PRINT CARD) -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 print-card">
+            
+            <!-- KICHWA CHA RIPOTI WAKATI WA KUPRINT -->
+            <div class="text-center pb-6 mb-6 border-b border-slate-200">
+                <h2 class="text-xl font-bold text-slate-900 uppercase tracking-wide">Development Charity Foundation (DCF)</h2>
+                <h3 id="activeReportTitle" class="text-lg font-semibold text-emerald-700 mt-1">TAARIFA ZA MIRADI</h3>
+                <p id="reportDateRangeText" class="text-xs text-slate-500 mt-1">Tarehe ya Kuandaliwa: <span id="generatedDate"></span></p>
+            </div>
+
+            <!-- MEZA YA KULETA TAARIFA -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead id="reportTableHeader" class="bg-slate-100 text-slate-700 text-xs font-bold uppercase tracking-wider border-b border-slate-200">
+                        <!-- Vichwa vya Meza vitaingia hapa kwa JS -->
+                    </thead>
+                    <tbody id="reportTableBody" class="divide-y divide-slate-200 text-sm">
+                        <!-- Data za meza zitaingia hapa kwa JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- FOOTER YA KUSAINIA WAKATI WA KUPRINT -->
+            <div class="hidden print:flex justify-between items-end mt-16 pt-8 border-t border-slate-300 text-xs text-slate-600">
+                <div>
+                    <p>Muda wa Kuandaa: <span class="font-semibold" id="printTime"></span></p>
+                    <p>Aliyeandaa: <span class="font-semibold" id="printUser"></span></p>
+                </div>
+                <div class="text-center">
+                    <div class="w-48 border-b border-slate-400 mb-1"></div>
+                    <p class="font-semibold">Sahihi ya Msimamizi</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- SCRIPT YA MFUMO WA RIPOTI -->
+    <script>
+        // Taarifa za Mfano (Kama localStorage haina data)
+        const mockData = {
+            projects: [
+                { id: "PRJ-01", name: "Ujenzi wa Kisima Gairo", category: "Maji & Usafi", budget: "TSH 15,000,000", status: "Inaendelea", date: "2026-05-10" },
+                { id: "PRJ-02", name: "Msaada wa Vifaa vya Shule Morogoro", category: "Elimu", budget: "TSH 8,500,000", status: "Imekamilika", date: "2026-06-20" },
+                { id: "PRJ-03", name: "Uwezeshaji Wanawake Kiasilimia", category: "Uchumi", budget: "TSH 12,000,000", status: "Inasubiri", date: "2026-08-01" }
+            ],
+            members: [
+                { id: "MEM-001", name: "Juma Said", role: "Mwanachama Kawaida", phone: "+255 712 345 678", location: "Morogoro", joinDate: "2026-01-15" },
+                { id: "MEM-002", name: "Aisha Bakari", role: "Kiongozi wa Kanda", phone: "+255 754 987 654", location: "Gairo", joinDate: "2026-03-22" },
+                { id: "MEM-003", name: "Emmanuel John", role: "Mwanachama Kawaida", phone: "+255 688 112 233", location: "Kilosa", joinDate: "2026-07-10" }
+            ],
+            financials: [
+                { id: "TRX-101", type: "Mapato", title: "Michango ya Wanachama", amount: "TSH 4,500,000", reference: "CRDB-9921", date: "2026-08-02" },
+                { id: "TRX-102", type: "Matumizi", title: "Manunuzi ya Bati za Shule", amount: "TSH 2,100,000", reference: "NMB-4401", date: "2026-08-05" },
+                { id: "TRX-103", type: "Mapato", title: "Ruzuku kutoka Mfadhili", amount: "TSH 20,000,000", reference: "BOT-8812", date: "2026-08-12" }
+            ]
+        };
+
+        let currentActiveData = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('generatedDate').textContent = new Date().toLocaleDateString('sw-TZ', { year: 'numeric', month: 'long', day: 'numeric' });
+            switchReportCategory();
+        });
+
+        // Function ya kubadilisha aina ya Ripoti
+        function switchReportCategory() {
+            const category = document.getElementById('reportTypeSelect').value;
+            const header = document.getElementById('reportTableHeader');
+            const title = document.getElementById('activeReportTitle');
+
+            if (category === 'projects') {
+                title.textContent = "TAARIFA ZA MIRADI";
+                header.innerHTML = `
+                    <tr>
+                        <th class="p-3">Namba ya Mradi</th>
+                        <th class="p-3">Jina la Mradi</th>
+                        <th class="p-3">Aina / Sekta</th>
+                        <th class="p-3">Bajeti</th>
+                        <th class="p-3">Hali (Status)</th>
+                        <th class="p-3">Tarehe</th>
+                    </tr>`;
+                const savedProjects = JSON.parse(localStorage.getItem('dcfProjects')) || mockData.projects;
+                currentActiveData = savedProjects;
+                renderProjectsTable(savedProjects);
+
+            } else if (category === 'members') {
+                title.textContent = "TAARIFA ZA WANACHAMA";
+                header.innerHTML = `
+                    <tr>
+                        <th class="p-3">ID ya Mwanachama</th>
+                        <th class="p-3">Jina Kamili</th>
+                        <th class="p-3">Wadhifa</th>
+                        <th class="p-3">Simu</th>
+                        <th class="p-3">Eneo / Wilaya</th>
+                        <th class="p-3">Tarehe ya Kujiunga</th>
+                    </tr>`;
+                const savedMembers = JSON.parse(localStorage.getItem('dcfMembers')) || mockData.members;
+                currentActiveData = savedMembers;
+                renderMembersTable(savedMembers);
+
+            } else if (category === 'financials') {
+                title.textContent = "TAARIFA ZA FEDHA NA MICHANGO";
+                header.innerHTML = `
+                    <tr>
+                        <th class="p-3">Kumbukumbu</th>
+                        <th class="p-3">Aina</th>
+                        <th class="p-3">Maelezo</th>
+                        <th class="p-3">Kiasi</th>
+                        <th class="p-3">Namba ya Muamala</th>
+                        <th class="p-3">Tarehe</th>
+                    </tr>`;
+                const savedFinancials = JSON.parse(localStorage.getItem('dcfFinancials')) || mockData.financials;
+                currentActiveData = savedFinancials;
+                renderFinancialsTable(savedFinancials);
+
+            } else if (category === 'audit') {
+                title.textContent = "KUMBUKUMBU ZA MFUMO (AUDIT LOGS)";
+                header.innerHTML = `
+                    <tr>
+                        <th class="p-3">Tarehe & Muda</th>
+                        <th class="p-3">Mtumiaji</th>
+                        <th class="p-3">Wadhifa</th>
+                        <th class="p-3">Kitendo</th>
+                        <th class="p-3">Maelezo</th>
+                    </tr>`;
+                const savedAudit = JSON.parse(localStorage.getItem('systemAuditLogs')) || [];
+                currentActiveData = savedAudit;
+                renderAuditTable(savedAudit);
+            }
+        }
+
+        // --- RENDER TABLES ---
+        function renderProjectsTable(data) {
+            const body = document.getElementById('reportTableBody');
+            if(data.length === 0) { body.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">Hakuna kumbukumbu za miradi.</td></tr>`; return; }
+            body.innerHTML = data.map(item => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 font-mono text-xs font-semibold text-emerald-700">${item.id}</td>
+                    <td class="p-3 font-medium text-slate-800">${item.name}</td>
+                    <td class="p-3 text-slate-600">${item.category}</td>
+                    <td class="p-3 font-semibold text-slate-800">${item.budget}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-1 text-xs rounded-full font-semibold ${item.status === 'Imekamilika' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                            ${item.status}
+                        </span>
+                    </td>
+                    <td class="p-3 text-slate-500 text-xs">${item.date}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderMembersTable(data) {
+            const body = document.getElementById('reportTableBody');
+            if(data.length === 0) { body.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">Hakuna taarifa za wanachama.</td></tr>`; return; }
+            body.innerHTML = data.map(item => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 font-mono text-xs font-semibold text-blue-700">${item.id}</td>
+                    <td class="p-3 font-medium text-slate-800">${item.name}</td>
+                    <td class="p-3 text-slate-600">${item.role}</td>
+                    <td class="p-3 text-slate-600">${item.phone}</td>
+                    <td class="p-3 text-slate-600">${item.location}</td>
+                    <td class="p-3 text-slate-500 text-xs">${item.joinDate}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderFinancialsTable(data) {
+            const body = document.getElementById('reportTableBody');
+            if(data.length === 0) { body.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-500">Hakuna taarifa za fedha.</td></tr>`; return; }
+            body.innerHTML = data.map(item => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 font-mono text-xs text-slate-500">${item.id}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 text-xs font-bold rounded ${item.type === 'Mapato' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                            ${item.type}
+                        </span>
+                    </td>
+                    <td class="p-3 font-medium text-slate-800">${item.title}</td>
+                    <td class="p-3 font-bold ${item.type === 'Mapato' ? 'text-emerald-700' : 'text-rose-700'}">${item.amount}</td>
+                    <td class="p-3 font-mono text-xs text-slate-600">${item.reference}</td>
+                    <td class="p-3 text-slate-500 text-xs">${item.date}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAuditTable(data) {
+            const body = document.getElementById('reportTableBody');
+            if(data.length === 0) { body.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Hakuna kumbukumbu za mfumo.</td></tr>`; return; }
+            body.innerHTML = data.map(item => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 font-mono text-xs text-slate-500">${item.timestamp}</td>
+                    <td class="p-3 font-medium text-slate-800">${item.user}</td>
+                    <td class="p-3 text-xs"><span class="bg-slate-100 px-2 py-1 rounded font-bold">${item.role}</span></td>
+                    <td class="p-3 text-emerald-700 font-medium text-xs">${item.action}</td>
+                    <td class="p-3 text-slate-600 text-xs">${item.details}</td>
+                </tr>
+            `).join('');
+        }
+
+        // --- FILTER FUNCTION ---
+        function filterCurrentReport() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const category = document.getElementById('reportTypeSelect').value;
+
+            if (!startDate && !endDate) return;
+
+            const filtered = currentActiveData.filter(item => {
+                const itemDate = item.date || item.joinDate || (item.timestamp ? item.timestamp.split(',')[0] : '');
+                return (!startDate || itemDate >= startDate) && (!endDate || itemDate <= endDate);
+            });
+
+            if (category === 'projects') renderProjectsTable(filtered);
+            else if (category === 'members') renderMembersTable(filtered);
+            else if (category === 'financials') renderFinancialsTable(filtered);
+            else if (category === 'audit') renderAuditTable(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            switchReportCategory();
+        }
+
+        // --- EXPORT TO EXCEL ---
+        function exportToExcel() {
+            if (currentActiveData.length === 0) {
+                alert('Hakuna taarifa za kupakua!');
+                return;
+            }
+            const category = document.getElementById('reportTypeSelect').value;
+            const worksheet = XLSX.utils.json_to_sheet(currentActiveData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, category.toUpperCase());
+            XLSX.writeFile(workbook, `DCF_Ripoti_${category}_${new Date().toISOString().split('T')[0]}.xlsx`);
+        }
+
+        // --- PRINT FUNCTION ---
+        function printReport() {
+            document.getElementById('printTime').textContent = new Date().toLocaleString('sw-TZ');
+            document.getElementById('printUser').textContent = sessionStorage.getItem('username') || 'Msimamizi Wa Mfumo';
+            window.print();
+        }
+    </script>
+    <script src="js/i18n.js"></script>
+</body>
+</html>

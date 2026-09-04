@@ -1,0 +1,5631 @@
+﻿<!DOCTYPE html>
+<html lang="sw">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>DCF | Management Information System</title>
+
+
+    <!-- =====================================================
+         TAILWIND CSS
+    ====================================================== -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+
+        tailwind.config = {
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        dcf: {
+
+                            50: '#f1f7f4',
+                            100: '#dcece4',
+                            200: '#bdd9cb',
+                            300: '#91bea9',
+                            400: '#619d82',
+                            500: '#3f8265',
+                            600: '#2d684f',
+                            700: '#24543f',
+                            800: '#1d4434',
+                            900: '#17382b',
+                            950: '#0d241c'
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        };
+
+    </script>
+
+
+    <!-- =====================================================
+         INTER FONT
+    ====================================================== -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+
+    <!-- =====================================================
+         ROBOTO FALLBACK
+    ====================================================== -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+
+    <!-- =====================================================
+         FONT AWESOME
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+    <!-- =====================================================
+         SUPABASE
+    ====================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="js/supabase.js"></script>
+
+
+    <!-- =====================================================
+         CUSTOM CSS
+    ====================================================== -->
+
+    <style>
+
+        * {
+
+            font-family:
+                "Inter",
+                "Roboto",
+                Arial,
+                sans-serif;
+
+            box-sizing: border-box;
+
+        }
+
+
+        html,
+        body {
+
+            margin: 0;
+            padding: 0;
+            height: 100%;
+
+        }
+
+
+        body {
+
+            background: #f4f6f5;
+            color: #1f2937;
+
+        }
+
+
+        /* =====================================================
+           SCROLLBAR
+        ====================================================== */
+
+        ::-webkit-scrollbar {
+
+            width: 7px;
+            height: 7px;
+
+        }
+
+
+        ::-webkit-scrollbar-track {
+
+            background: #edf1ef;
+
+        }
+
+
+        ::-webkit-scrollbar-thumb {
+
+            background: #aab8b1;
+            border-radius: 8px;
+
+        }
+
+
+        ::-webkit-scrollbar-thumb:hover {
+
+            background: #6f8379;
+
+        }
+
+
+        /* =====================================================
+           SIDEBAR SCROLL
+        ====================================================== */
+
+        .sidebar-scroll {
+
+            scrollbar-width: thin;
+
+            scrollbar-color:
+                rgba(255,255,255,.22)
+                transparent;
+
+        }
+
+
+        /* =====================================================
+           SIDEBAR LINKS
+        ====================================================== */
+
+        .sidebar-link {
+
+            position: relative;
+
+            transition:
+                background-color .18s ease,
+                color .18s ease,
+                padding-left .18s ease;
+
+        }
+
+
+        .sidebar-link:hover {
+
+            background: rgba(255,255,255,.08);
+
+            color: #ffffff;
+
+            padding-left: 15px;
+
+        }
+
+
+        .sidebar-link.active {
+
+            background: #285c46;
+
+            color: #ffffff;
+
+            border-left: 3px solid #9bc4ad;
+
+            padding-left: 13px;
+
+        }
+
+
+        .sidebar-link i {
+
+            width: 17px;
+
+            text-align: center;
+
+        }
+
+
+        /* =====================================================
+           PREMIUM LOGO
+        ====================================================== */
+
+        .brand-logo {
+
+            transition:
+                transform .3s ease,
+                box-shadow .3s ease;
+
+        }
+
+
+        .brand-logo:hover {
+
+            transform: scale(1.05);
+
+            box-shadow:
+                0 10px 25px
+                rgba(0,0,0,.25);
+
+        }
+
+
+        /* =====================================================
+           DASHBOARD CARDS
+        ====================================================== */
+
+        .dashboard-card {
+
+            background: #ffffff;
+
+            border: 1px solid #dfe5e2;
+
+            box-shadow:
+                0 2px 8px
+                rgba(22, 40, 32, .045);
+
+            transition:
+                border-color .18s ease,
+                box-shadow .18s ease;
+
+        }
+
+
+        .dashboard-card:hover {
+
+            border-color: #c5d4cc;
+
+            box-shadow:
+                0 5px 14px
+                rgba(22, 40, 32, .07);
+
+        }
+
+
+        .kpi-card {
+
+            transition:
+                transform .18s ease,
+                box-shadow .18s ease;
+
+        }
+
+
+        .kpi-card:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 7px 18px
+                rgba(22, 40, 32, .08);
+
+        }
+
+
+        /* =====================================================
+           TABLE
+        ====================================================== */
+
+        .data-table th {
+
+            background: #f0f3f2;
+
+            color: #34443d;
+
+            font-weight: 700;
+
+        }
+
+
+        .data-table tbody tr:hover {
+
+            background: #f8faf9;
+
+        }
+
+
+        /* =====================================================
+           PROFILE IMAGE
+        ====================================================== */
+
+        .profile-image {
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+
+        }
+
+
+        /* =====================================================
+           LOADER
+        ====================================================== */
+
+        .loader {
+
+            width: 17px;
+            height: 17px;
+
+            border: 2px solid #d6e3dd;
+
+            border-top-color: #24543f;
+
+            border-radius: 50%;
+
+            animation:
+                spin .7s linear infinite;
+
+            display: inline-block;
+
+        }
+
+
+        @keyframes spin {
+
+            to {
+
+                transform: rotate(360deg);
+
+            }
+
+        }
+
+
+        /* =====================================================
+           MOBILE SIDEBAR
+        ====================================================== */
+
+        @media (max-width: 767px) {
+
+            .mobile-sidebar {
+
+                position: fixed;
+
+                top: 0;
+                left: 0;
+                bottom: 0;
+
+                z-index: 50;
+
+                transform:
+                    translateX(-100%);
+
+                transition:
+                    transform .22s ease;
+
+            }
+
+
+            .mobile-sidebar.open {
+
+                transform:
+                    translateX(0);
+
+            }
+
+        }
+
+
+        /* =====================================================
+           LOGO WATERMARK / WELCOME
+        ====================================================== */
+
+        .welcome-logo {
+
+            width: 68px;
+            height: 68px;
+
+            background: white;
+
+            border-radius: 50%;
+
+            padding: 6px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 8px 22px
+                rgba(0,0,0,.15);
+
+            flex-shrink: 0;
+
+        }
+
+
+        .welcome-logo img {
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: contain;
+
+        }
+
+
+        /* =====================================================
+           GLOBAL SEARCH
+        ====================================================== */
+
+        .search-wrapper {
+
+            position: relative;
+
+        }
+
+
+        #globalSearch {
+
+            font-family:
+                "Inter",
+                "Roboto",
+                Arial,
+                sans-serif;
+
+        }
+
+
+        .search-results {
+
+            position: absolute;
+
+            top: calc(100% + 7px);
+
+            right: 0;
+
+            width: 360px;
+
+            max-width: 90vw;
+
+            background: #ffffff;
+
+            border: 1px solid #dfe5e2;
+
+            border-radius: 8px;
+
+            box-shadow:
+                0 15px 35px
+                rgba(0,0,0,.12);
+
+            overflow: hidden;
+
+            z-index: 100;
+
+            display: none;
+
+        }
+
+
+        .search-results.show {
+
+            display: block;
+
+        }
+
+
+        .search-result-header {
+
+            padding: 10px 12px;
+
+            background: #f5f8f6;
+
+            border-bottom: 1px solid #e5ebe8;
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: .06em;
+
+            color: #61736b;
+
+        }
+
+
+        .search-result-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            width: 100%;
+
+            padding: 11px 12px;
+
+            text-align: left;
+
+            border: 0;
+
+            background: #ffffff;
+
+            cursor: pointer;
+
+            transition:
+                background .15s ease;
+
+        }
+
+
+        .search-result-item:hover {
+
+            background: #f1f7f4;
+
+        }
+
+
+        .search-result-icon {
+
+            width: 34px;
+            height: 34px;
+
+            flex-shrink: 0;
+
+            border-radius: 7px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+        }
+
+
+        .search-result-content {
+
+            min-width: 0;
+
+            flex: 1;
+
+        }
+
+
+        .search-result-title {
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            color: #1f2937;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+        }
+
+
+        .search-result-description {
+
+            margin-top: 2px;
+
+            font-size: 10px;
+
+            color: #6b7280;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+        }
+
+
+        .search-result-type {
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+            color: #2d684f;
+
+            background: #edf7f1;
+
+            border: 1px solid #d5e9de;
+
+            padding: 3px 6px;
+
+            border-radius: 20px;
+
+            flex-shrink: 0;
+
+        }
+
+
+        .search-empty {
+
+            padding: 22px 15px;
+
+            text-align: center;
+
+            color: #6b7280;
+
+            font-size: 11px;
+
+        }
+
+
+        .search-loading {
+
+            padding: 16px;
+
+            text-align: center;
+
+            color: #6b7280;
+
+            font-size: 11px;
+
+        }
+
+
+        @media (max-width: 767px) {
+
+            .search-results {
+
+                right: -45px;
+
+                width: 330px;
+
+            }
+
+        }
+
+    
+
+/* =========================================================
+   MEMBER VIEW-ONLY UI
+========================================================= */
+.member-view-only .member-management-section,
+.member-view-only .finance-section,
+.member-view-only .administration-section,
+.member-view-only .users-section,
+.member-view-only .inventory-section {
+    display: none !important;
+}
+
+.member-view-only a[href*="add-member.html"],
+.member-view-only a[href*="my-profile.html"] {
+    display: none !important;
+}
+
+</style>
+
+</head>
+
+
+<body class="overflow-hidden">
+
+
+<!-- =========================================================
+     MOBILE OVERLAY
+========================================================= -->
+
+<div
+    id="sidebar-overlay"
+    class="fixed inset-0 bg-black/45 z-40 hidden md:hidden">
+</div>
+
+
+<!-- =========================================================
+     APPLICATION
+========================================================= -->
+
+<div class="flex h-screen">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside
+        id="sidebar"
+        class="mobile-sidebar md:relative md:translate-x-0
+               w-[260px] bg-dcf-900 text-white
+               flex flex-col flex-shrink-0 shadow-xl">
+
+
+        <!-- BRAND -->
+
+        <div
+            class="h-[78px] px-4
+                   bg-dcf-950
+                   border-b border-white/10
+                   flex items-center">
+
+            <div class="flex items-center gap-3 w-full">
+
+                <div
+                    class="brand-logo
+                           w-12 h-12
+                           rounded-full
+                           bg-white
+                           p-1.5
+                           flex items-center
+                           justify-center
+                           overflow-hidden
+                           flex-shrink-0
+                           shadow-lg
+                           ring-2
+                           ring-dcf-400/20">
+
+                    <img
+                        src="assets/images/logo.png"
+                        alt="Development Charity Foundation Logo"
+                        class="w-full h-full object-contain"
+                        onerror="this.style.display='none';">
+
+                </div>
+
+
+                <div class="min-w-0">
+
+                    <h1
+                        class="text-[15px]
+                               font-bold
+                               text-white
+                               truncate">
+
+                        DCF MIS
+
+                    </h1>
+
+
+                    <p
+                        class="text-[10px]
+                               text-dcf-300
+                               truncate">
+
+                        Development Charity Foundation
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <div
+            class="flex-1
+                   overflow-y-auto
+                   sidebar-scroll
+                   px-3
+                   py-5">
+
+            <nav
+                class="text-[13px]
+                       space-y-6">
+
+
+                <!-- MAIN -->
+
+                <section>
+
+                    <p
+                        class="px-2 mb-2
+                               text-[10px]
+                               uppercase
+                               tracking-wider
+                               font-bold
+                               text-dcf-300">
+
+                        MAIN
+
+                    </p>
+
+
+                    <a
+                        href="dashboard.html"
+                        class="sidebar-link active
+                               flex items-center
+                               gap-3
+                               px-3 py-2.5">
+
+                        <i class="fas fa-chart-pie"></i>
+
+                        <span>Dashboard</span>
+
+                    </a>
+
+                </section>
+
+
+                <!-- MEMBERS -->
+
+                <section
+                    id="member-management-section">
+
+                    <p
+                        class="px-2 mb-2
+                               text-[10px]
+                               uppercase
+                               tracking-wider
+                               font-bold
+                               text-dcf-300">
+
+                        JAMII & WANACHAMA
+
+                    </p>
+
+
+                    <div class="space-y-1">
+
+                        <a
+                            href="pages/members.html"
+                            class="sidebar-link admin-member-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-users"></i>
+
+                            <span>Wanachama</span>
+
+                        </a>
+
+
+                        <a
+                            href="pages/members-list.html"
+                            class="sidebar-link admin-member-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-address-book"></i>
+
+                            <span>Orodha ya Wanachama</span>
+
+                        </a>
+
+
+                        <a
+                            href="pages/add-member.html"
+                            class="sidebar-link admin-member-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-user-plus"></i>
+
+                            <span>Ongeza Mwanachama</span>
+
+                        </a>
+
+
+                        <a
+                            href="pages/volunteers.html"
+                            class="sidebar-link admin-member-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-hands-helping"></i>
+
+                            <span>Wajitolea</span>
+
+                        </a>
+
+
+                        <a
+                            href="pages/beneficiaries.html"
+                            class="sidebar-link admin-member-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-hand-holding-heart"></i>
+
+                            <span>Wafaidika</span>
+
+                        </a>
+
+
+                        <a
+                            href="pages/attendance.html"
+                            class="sidebar-link admin-member-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-clipboard-check"></i>
+
+                            <span>Mahudhurio</span>
+
+                        </a>
+
+                    </div>
+
+                </section>
+
+
+                <!-- PROJECTS -->
+
+                <section id="projects-section">
+
+                    <p
+                        class="px-2 mb-2
+                               text-[10px]
+                               uppercase
+                               tracking-wider
+                               font-bold
+                               text-dcf-300">
+
+                        MIRADI & MATUKIO
+
+                    </p>
+
+
+                    <div class="space-y-1">
+
+                        <a
+                            href="pages/projects.html"
+                            class="sidebar-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-folder"></i>
+
+                            <span>Miradi</span>
+
+                        </a>
+
+
+                        <a
+                            href="pages/activities.html"
+                            class="sidebar-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-calendar-alt"></i>
+
+                            <span>Shughuli</span>
+
+                        </a>
+
+
+                        <a
+                            href="pages/media.html"
+                            class="sidebar-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-images"></i>
+
+                            <span>Photo Gallery</span>
+
+                        </a>
+
+
+                        <a
+                            href="pages/add-media.html"
+                            class="sidebar-link admin-only-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-plus-circle"></i>
+
+                            <span>Add Photo</span>
+
+                        </a>
+
+
+                        <a
+                            href="pages/certificate.html"
+                            class="sidebar-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-certificate"></i>
+
+                            <span>Certificates</span>
+
+                        </a>
+
+                    </div>
+
+                </section>
+
+
+                <!-- FINANCE -->
+
+                <section id="finance-section">
+
+                    <p
+                        class="px-2 mb-2
+                               text-[10px]
+                               uppercase
+                               tracking-wider
+                               font-bold
+                               text-dcf-300">
+
+                        FEDHA & USIMAMIZI
+
+                    </p>
+
+
+                    <div class="space-y-1">
+
+                        <a
+                            href="pages/donation.html"
+                            class="sidebar-link admin-finance-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-hand-holding-usd"></i>
+
+                            <span>Michango</span>
+
+                        </a>
+
+
+                        <a
+                            href="pages/donation-reports.html"
+                            class="sidebar-link admin-finance-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-file-invoice-dollar"></i>
+
+                            <span>Ripoti za Michango</span>
+
+                        </a>
+
+
+                        <a
+                            href="pages/finance.html"
+                            class="sidebar-link admin-finance-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-coins"></i>
+
+                            <span>Mfumo wa Fedha</span>
+
+                        </a>
+
+                    </div>
+
+                </section>
+
+
+                <!-- ADMIN -->
+
+                <section id="administration-section">
+
+                    <p
+                        class="px-2 mb-2
+                               text-[10px]
+                               uppercase
+                               tracking-wider
+                               font-bold
+                               text-dcf-300">
+
+                        UTAWALA
+
+                    </p>
+
+
+                    <div class="space-y-1">
+
+                        <a
+                            href="pages/inventory.html"
+                            class="sidebar-link admin-only-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-boxes"></i>
+
+                            <span>Stoo</span>
+
+                        </a>
+
+
+                        <a
+                            href="pages/users.html"
+                            class="sidebar-link admin-only-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-user-cog"></i>
+
+                            <span>Watumiaji</span>
+
+                        </a>
+
+
+                        <a
+                            href="pages/audit-logs.html"
+                            class="sidebar-link admin-only-link
+                                   flex items-center gap-3 px-3 py-2">
+
+                            <i class="fas fa-history"></i>
+
+                            <span>Kumbukumbu</span>
+
+                        </a>
+
+                    </div>
+
+                </section>
+
+            </nav>
+
+        </div>
+
+
+        <!-- USER AREA -->
+
+        <div
+            class="p-3
+                   bg-dcf-950
+                   border-t border-white/10">
+
+            <div class="flex items-center gap-3">
+
+                <div
+                    id="userAvatar"
+                    class="w-9 h-9
+                           rounded-full
+                           bg-dcf-600
+                           border border-dcf-300
+                           flex items-center
+                           justify-center
+                           overflow-hidden
+                           text-white
+                           font-bold
+                           text-sm
+                           flex-shrink-0">
+
+                    U
+
+                </div>
+
+
+                <div class="min-w-0 flex-1">
+
+                    <p
+                        id="sidebarUserName"
+                        class="text-[13px]
+                               font-bold
+                               text-white
+                               truncate">
+
+                        Mtumiaji
+
+                    </p>
+
+
+                    <p
+                        id="sidebarUserRole"
+                        class="text-[10px]
+                               text-dcf-300
+                               truncate">
+
+                        Inapakia...
+
+                    </p>
+
+                </div>
+
+
+                <button
+                    id="logoutButton"
+                    onclick="handleLogout()"
+                    title="Logout"
+                    class="w-8 h-8
+                           flex items-center
+                           justify-center
+                           text-red-300
+                           hover:bg-red-600
+                           hover:text-white
+                           transition">
+
+                    <i class="fas fa-sign-out-alt"></i>
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN AREA
+    ====================================================== -->
+
+    <div
+        class="flex-1
+               min-w-0
+               flex flex-col">
+
+
+        <!-- TOP HEADER -->
+
+        <header
+            class="h-[72px]
+                   bg-white
+                   border-b border-gray-200
+                   flex items-center
+                   justify-between
+                   px-4 md:px-7
+                   flex-shrink-0">
+
+
+            <!-- LEFT HEADER -->
+
+            <div class="flex items-center gap-4">
+
+                <button
+                    id="mobile-menu-btn"
+                    class="md:hidden
+                           w-9 h-9
+                           border border-gray-200
+                           text-dcf-800
+                           flex items-center
+                           justify-center">
+
+                    <i class="fas fa-bars"></i>
+
+                </button>
+
+
+                <a
+                    id="returnDashboardButton"
+                    href="dashboard.html"
+                    class="hidden sm:inline-flex
+                           items-center gap-2
+                           px-3 py-2
+                           rounded-md
+                           border border-dcf-200
+                           bg-dcf-50
+                           text-dcf-700
+                           text-xs font-bold
+                           hover:bg-dcf-700
+                           hover:text-white
+                           hover:border-dcf-700
+                           transition">
+
+                    <i class="fas fa-arrow-left"></i>
+
+                    Dashboard
+
+                </a>
+
+
+                <div>
+
+                    <h2
+                        class="text-base md:text-xl
+                               font-bold
+                               text-gray-800">
+
+                        Dashboard
+
+                    </h2>
+
+
+                    <p
+                        class="text-[11px]
+                               text-gray-500">
+
+                        Development Charity Foundation
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT HEADER -->
+
+            <div class="flex items-center gap-3">
+
+                <div
+                    class="hidden lg:block
+                           text-right
+                           mr-2">
+
+                    <p
+                        id="current-date"
+                        class="text-[11px]
+                               font-bold
+                               text-gray-700">
+
+                        --
+
+                    </p>
+
+
+                    <p
+                        id="current-time"
+                        class="text-[10px]
+                               text-gray-500">
+
+                        --
+
+                    </p>
+
+                </div>
+
+
+                <!-- =================================================
+                     IMPROVED GLOBAL SEARCH
+                ================================================== -->
+
+                <div class="search-wrapper hidden md:block">
+
+                    <input
+                        id="globalSearch"
+                        type="search"
+                        autocomplete="off"
+                        placeholder="Tafuta mwanachama, mradi..."
+                        class="w-48 lg:w-72
+                               h-9
+                               rounded-md
+                               border border-gray-300
+                               bg-gray-50
+                               pl-9 pr-9
+                               text-xs
+                               focus:outline-none
+                               focus:border-dcf-600
+                               focus:bg-white">
+
+
+                    <i
+                        class="fas fa-search
+                               absolute
+                               left-3 top-3
+                               text-gray-400
+                               text-xs">
+                    </i>
+
+
+                    <button
+                        id="clearSearchButton"
+                        type="button"
+                        class="hidden
+                               absolute
+                               right-2 top-2
+                               w-5 h-5
+                               text-gray-400
+                               hover:text-gray-700">
+
+                        <i class="fas fa-times text-[10px]"></i>
+
+                    </button>
+
+
+                    <!-- SEARCH RESULTS -->
+
+                    <div
+                        id="searchResults"
+                        class="search-results">
+
+                    </div>
+
+                </div>
+
+
+                <!-- REFRESH -->
+
+                <button
+                    id="refreshButton"
+                    onclick="refreshDashboard()"
+                    title="Refresh Dashboard"
+                    class="w-9 h-9
+                           border border-gray-200
+                           bg-white
+                           text-gray-600
+                           hover:text-dcf-700
+                           hover:border-dcf-300
+                           flex items-center
+                           justify-center
+                           transition">
+
+                    <i
+                        class="fas fa-sync-alt"
+                        id="refreshIcon">
+                    </i>
+
+                </button>
+
+
+                <!-- NOTIFICATION -->
+
+                <button
+                    class="relative
+                           w-9 h-9
+                           border border-gray-200
+                           text-gray-600
+                           hover:text-dcf-700
+                           flex items-center
+                           justify-center">
+
+                    <i class="fas fa-bell"></i>
+
+                    <span
+                        class="absolute
+                               top-1.5 right-1.5
+                               w-2 h-2
+                               bg-red-500
+                               rounded-full
+                               border border-white">
+                    </span>
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- =====================================================
+             CONTENT
+        ====================================================== -->
+
+        <main
+            class="flex-1
+                   overflow-y-auto
+                   bg-[#f4f6f5]
+                   p-4 md:p-7">
+
+
+            <!-- WELCOME -->
+
+            <section
+                class="bg-dcf-800
+                       text-white
+                       border border-dcf-700
+                       shadow-sm
+                       mb-6">
+
+                <div
+                    class="p-5 md:p-6
+                           flex flex-col
+                           md:flex-row
+                           md:items-center
+                           md:justify-between
+                           gap-5">
+
+                    <div class="flex items-center gap-4">
+
+                        <div class="welcome-logo">
+
+                            <img
+                                src="assets/images/logo.png"
+                                alt="DCF Logo"
+                                onerror="this.style.display='none';">
+
+                        </div>
+
+
+                        <div>
+
+                            <p
+                                class="text-[10px]
+                                       uppercase
+                                       tracking-widest
+                                       text-dcf-300
+                                       font-bold
+                                       mb-1">
+
+                                DCF MANAGEMENT INFORMATION SYSTEM
+
+                            </p>
+
+
+                            <h1
+                                id="welcome-title"
+                                class="text-xl md:text-2xl
+                                       font-bold">
+
+                                Karibu kwenye Dashboard
+
+                            </h1>
+
+
+                            <p
+                                id="welcome-description"
+                                class="text-sm
+                                       text-dcf-100
+                                       mt-1">
+
+                                Muhtasari wa taarifa,
+                                shughuli na mwenendo wa taasisi.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="flex gap-2">
+
+                        <a
+                            href="pages/add-member.html"
+                            id="dashboard-add-member"
+                            class="inline-flex
+                                   items-center
+                                   gap-2
+                                   bg-white
+                                   text-dcf-800
+                                   px-4 py-2.5
+                                   text-xs
+                                   font-bold
+                                   hover:bg-dcf-50
+                                   transition">
+
+                            <i class="fas fa-user-plus"></i>
+
+                            Sajili Mwanachama
+
+                        </a>
+
+
+                        <a
+                            href="pages/my-profile.html"
+                            id="member-profile-button"
+                            class="hidden
+                                   items-center
+                                   gap-2
+                                   bg-white
+                                   text-dcf-800
+                                   px-4 py-2.5
+                                   text-xs
+                                   font-bold">
+
+                            <i class="fas fa-user"></i>
+
+                            Wasifu Wangu
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- MEMBER PROFILE -->
+
+            <section
+                id="member-profile-card"
+                class="hidden dashboard-card mb-6">
+
+                <div
+                    class="p-5
+                           flex flex-col
+                           md:flex-row
+                           md:items-center
+                           gap-5">
+
+                    <div
+                        class="w-20 h-20
+                               bg-dcf-50
+                               border border-dcf-200
+                               overflow-hidden
+                               flex-shrink-0">
+
+                        <img
+                            id="member-profile-picture"
+                            class="profile-image hidden"
+                            alt="Profile">
+
+
+                        <div
+                            id="member-profile-placeholder"
+                            class="w-full h-full
+                                   flex items-center
+                                   justify-center
+                                   text-2xl
+                                   font-bold
+                                   text-dcf-700">
+
+                            U
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="flex-1">
+
+                        <p
+                            class="text-[10px]
+                                   uppercase
+                                   tracking-wider
+                                   text-gray-500
+                                   font-bold">
+
+                            WASIFU WANGU
+
+                        </p>
+
+
+                        <h3
+                            id="member-profile-name"
+                            class="text-lg
+                                   font-bold
+                                   text-gray-800">
+
+                            Mwanachama
+
+                        </h3>
+
+
+                        <p
+                            id="member-profile-email"
+                            class="text-xs
+                                   text-gray-500">
+
+                            -
+
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="pages/my-profile.html"
+                        class="inline-flex
+                               items-center
+                               gap-2
+                               bg-dcf-700
+                               hover:bg-dcf-800
+                               text-white
+                               px-4 py-2
+                               text-xs
+                               font-bold">
+
+                        <i class="fas fa-edit"></i>
+
+                        Hariri Wasifu
+
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <!-- KPI -->
+
+            <section class="mb-7">
+
+                <div
+                    class="flex items-center
+                           justify-between
+                           mb-3">
+
+                    <div>
+
+                        <h3
+                            class="text-sm
+                                   font-bold
+                                   text-gray-800">
+
+                            Muhtasari wa Mfumo
+
+                        </h3>
+
+
+                        <p
+                            class="text-[11px]
+                                   text-gray-500">
+
+                            Taarifa zilizopo kwenye mfumo kwa sasa
+
+                        </p>
+
+                    </div>
+
+
+                    <span
+                        class="text-[10px]
+                               text-gray-500">
+
+                        Updated automatically
+
+                    </span>
+
+                </div>
+
+
+                <div
+                    class="grid
+                           grid-cols-1
+                           sm:grid-cols-2
+                           xl:grid-cols-4
+                           gap-4">
+
+
+                    <!-- MEMBERS -->
+
+                    <div class="dashboard-card kpi-card p-5">
+
+                        <div
+                            class="flex
+                                   items-start
+                                   justify-between">
+
+                            <div>
+
+                                <p
+                                    class="text-[10px]
+                                           uppercase
+                                           tracking-wider
+                                           font-bold
+                                           text-gray-500">
+
+                                    Wanachama
+
+                                </p>
+
+
+                                <h4
+                                    id="total-members"
+                                    class="text-2xl
+                                           font-bold
+                                           text-gray-900
+                                           mt-2">
+
+                                    --
+
+                                </h4>
+
+
+                                <p
+                                    class="text-[10px]
+                                           text-gray-500
+                                           mt-1">
+
+                                    Jumla iliyosajiliwa
+
+                                </p>
+
+                            </div>
+
+
+                            <div
+                                class="w-10 h-10
+                                       bg-dcf-100
+                                       text-dcf-700
+                                       flex items-center
+                                       justify-center">
+
+                                <i class="fas fa-users"></i>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- PROJECTS -->
+
+                    <div class="dashboard-card kpi-card p-5">
+
+                        <div
+                            class="flex
+                                   items-start
+                                   justify-between">
+
+                            <div>
+
+                                <p
+                                    class="text-[10px]
+                                           uppercase
+                                           tracking-wider
+                                           font-bold
+                                           text-gray-500">
+
+                                    Miradi
+
+                                </p>
+
+
+                                <h4
+                                    id="active-projects"
+                                    class="text-2xl
+                                           font-bold
+                                           text-gray-900
+                                           mt-2">
+
+                                    --
+
+                                </h4>
+
+
+                                <p
+                                    class="text-[10px]
+                                           text-gray-500
+                                           mt-1">
+
+                                    Miradi inayoendelea
+
+                                </p>
+
+                            </div>
+
+
+                            <div
+                                class="w-10 h-10
+                                       bg-blue-50
+                                       text-blue-700
+                                       flex items-center
+                                       justify-center">
+
+                                <i class="fas fa-project-diagram"></i>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- DONATIONS -->
+
+                    <div class="dashboard-card kpi-card p-5">
+
+                        <div
+                            class="flex
+                                   items-start
+                                   justify-between">
+
+                            <div>
+
+                                <p
+                                    class="text-[10px]
+                                           uppercase
+                                           tracking-wider
+                                           font-bold
+                                           text-gray-500">
+
+                                    Michango
+
+                                </p>
+
+
+                                <h4
+                                    id="total-donations"
+                                    class="text-xl
+                                           font-bold
+                                           text-emerald-700
+                                           mt-2">
+
+                                    TSH --
+
+                                </h4>
+
+
+                                <p
+                                    class="text-[10px]
+                                           text-gray-500
+                                           mt-1">
+
+                                    Jumla ya fedha
+
+                                </p>
+
+                            </div>
+
+
+                            <div
+                                class="w-10 h-10
+                                       bg-emerald-50
+                                       text-emerald-700
+                                       flex items-center
+                                       justify-center">
+
+                                <i class="fas fa-coins"></i>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BENEFICIARIES -->
+
+                    <div class="dashboard-card kpi-card p-5">
+
+                        <div
+                            class="flex
+                                   items-start
+                                   justify-between">
+
+                            <div>
+
+                                <p
+                                    class="text-[10px]
+                                           uppercase
+                                           tracking-wider
+                                           font-bold
+                                           text-gray-500">
+
+                                    Wafaidika
+
+                                </p>
+
+
+                                <h4
+                                    id="total-beneficiaries"
+                                    class="text-2xl
+                                           font-bold
+                                           text-gray-900
+                                           mt-2">
+
+                                    --
+
+                                </h4>
+
+
+                                <p
+                                    class="text-[10px]
+                                           text-gray-500
+                                           mt-1">
+
+                                    Waliosajiliwa
+
+                                </p>
+
+                            </div>
+
+
+                            <div
+                                class="w-10 h-10
+                                       bg-amber-50
+                                       text-amber-700
+                                       flex items-center
+                                       justify-center">
+
+                                <i class="fas fa-hand-holding-heart"></i>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- MEMBER INFORMATION -->
+
+            <section
+                id="member-information"
+                class="hidden
+                       grid
+                       grid-cols-1
+                       md:grid-cols-3
+                       gap-4
+                       mb-7">
+
+
+                <a
+                    href="pages/projects.html"
+                    class="dashboard-card
+                           p-5
+                           hover:border-dcf-400
+                           transition">
+
+                    <div
+                        class="flex
+                               justify-between
+                               items-center">
+
+                        <div>
+
+                            <p
+                                class="text-[10px]
+                                       uppercase
+                                       text-gray-500
+                                       font-bold">
+
+                                TAARIFA
+
+                            </p>
+
+
+                            <h3
+                                class="text-lg
+                                       font-bold
+                                       mt-1">
+
+                                Miradi
+
+                            </h3>
+
+
+                            <p
+                                class="text-xs
+                                       text-gray-500
+                                       mt-1">
+
+                                Angalia miradi ya DCF
+
+                            </p>
+
+                        </div>
+
+
+                        <i
+                            class="fas fa-folder
+                                   text-2xl
+                                   text-blue-700">
+                        </i>
+
+                    </div>
+
+                </a>
+
+
+                <a
+                    href="pages/activities.html"
+                    class="dashboard-card
+                           p-5
+                           hover:border-dcf-400
+                           transition">
+
+                    <div
+                        class="flex
+                               justify-between
+                               items-center">
+
+                        <div>
+
+                            <p
+                                class="text-[10px]
+                                       uppercase
+                                       text-gray-500
+                                       font-bold">
+
+                                TAARIFA
+
+                            </p>
+
+
+                            <h3
+                                class="text-lg
+                                       font-bold
+                                       mt-1">
+
+                                Shughuli
+
+                            </h3>
+
+
+                            <p
+                                class="text-xs
+                                       text-gray-500
+                                       mt-1">
+
+                                Angalia shughuli za DCF
+
+                            </p>
+
+                        </div>
+
+
+                        <i
+                            class="fas fa-calendar-alt
+                                   text-2xl
+                                   text-dcf-700">
+                        </i>
+
+                    </div>
+
+                </a>
+
+
+                <a
+                    href="pages/media.html"
+                    class="dashboard-card
+                           p-5
+                           hover:border-dcf-400
+                           transition">
+
+                    <div
+                        class="flex
+                               justify-between
+                               items-center">
+
+                        <div>
+
+                            <p
+                                class="text-[10px]
+                                       uppercase
+                                       text-gray-500
+                                       font-bold">
+
+                                TAARIFA
+
+                            </p>
+
+
+                            <h3
+                                class="text-lg
+                                       font-bold
+                                       mt-1">
+
+                                Photo Gallery
+
+                            </h3>
+
+
+                            <p
+                                class="text-xs
+                                       text-gray-500
+                                       mt-1">
+
+                                Angalia picha za DCF
+
+                            </p>
+
+                        </div>
+
+
+                        <i
+                            class="fas fa-images
+                                   text-2xl
+                                   text-purple-700">
+                        </i>
+
+                    </div>
+
+                </a>
+
+            </section>
+
+
+            <!-- LOWER CONTENT -->
+
+            <div
+                class="grid
+                       grid-cols-1
+                       xl:grid-cols-3
+                       gap-5">
+
+
+                <!-- RECENT ACTIVITIES -->
+
+                <section
+                    class="xl:col-span-2
+                           dashboard-card">
+
+                    <div
+                        class="px-5 py-4
+                               border-b
+                               border-gray-200
+                               flex items-center
+                               justify-between">
+
+                        <div>
+
+                            <h3
+                                class="text-sm
+                                       font-bold
+                                       text-gray-800">
+
+                                Shughuli za Hivi Karibuni
+
+                            </h3>
+
+
+                            <p
+                                class="text-[10px]
+                                       text-gray-500
+                                       mt-0.5">
+
+                                Shughuli tano za mwisho zilizorekodiwa
+
+                            </p>
+
+                        </div>
+
+
+                        <a
+                            href="pages/activities.html"
+                            class="text-xs
+                                   font-bold
+                                   text-dcf-700
+                                   hover:text-dcf-900">
+
+                            Ona Zote
+
+                            <i class="fas fa-arrow-right ml-1"></i>
+
+                        </a>
+
+                    </div>
+
+
+                    <div class="overflow-x-auto">
+
+                        <table
+                            class="w-full
+                                   data-table
+                                   text-xs">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th
+                                        class="text-left
+                                               px-5 py-3
+                                               border-b">
+
+                                        Shughuli
+
+                                    </th>
+
+
+                                    <th
+                                        class="text-left
+                                               px-4 py-3
+                                               border-b">
+
+                                        Tarehe
+
+                                    </th>
+
+
+                                    <th
+                                        class="text-left
+                                               px-4 py-3
+                                               border-b">
+
+                                        Mahali
+
+                                    </th>
+
+
+                                    <th
+                                        class="text-center
+                                               px-4 py-3
+                                               border-b">
+
+                                        Hali
+
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody
+                                id="activities-table-body">
+
+                                <tr>
+
+                                    <td
+                                        colspan="4"
+                                        class="px-5 py-10
+                                               text-center
+                                               text-gray-500">
+
+                                        <span class="loader"></span>
+
+                                        <span class="ml-2">
+                                            Inapakia taarifa...
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+
+                <!-- QUICK ACTIONS -->
+
+                <section class="dashboard-card">
+
+                    <div
+                        class="px-5 py-4
+                               border-b
+                               border-gray-200">
+
+                        <h3
+                            class="text-sm
+                                   font-bold
+                                   text-gray-800">
+
+                            Njia za Mkato
+
+                        </h3>
+
+
+                        <p
+                            class="text-[10px]
+                                   text-gray-500
+                                   mt-0.5">
+
+                            Vitendo vinavyotumika mara kwa mara
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="p-4 space-y-2">
+
+
+                        <a
+                            href="pages/add-member.html"
+                            id="quick-add-member"
+                            class="quick-link
+                                   flex items-center
+                                   justify-between
+                                   border border-gray-200
+                                   px-3 py-3
+                                   hover:border-dcf-400
+                                   hover:bg-dcf-50
+                                   transition">
+
+                            <span
+                                class="flex items-center
+                                       gap-3
+                                       text-xs
+                                       font-bold">
+
+                                <i
+                                    class="fas fa-user-plus
+                                           text-dcf-700">
+                                </i>
+
+                                Sajili Mwanachama
+
+                            </span>
+
+
+                            <i
+                                class="fas fa-chevron-right
+                                       text-[9px]
+                                       text-gray-400">
+                            </i>
+
+                        </a>
+
+
+                        <a
+                            href="pages/donation.html"
+                            class="quick-link admin-finance-link
+                                   flex items-center
+                                   justify-between
+                                   border border-gray-200
+                                   px-3 py-3
+                                   hover:border-dcf-400
+                                   hover:bg-dcf-50
+                                   transition">
+
+                            <span
+                                class="flex items-center
+                                       gap-3
+                                       text-xs
+                                       font-bold">
+
+                                <i
+                                    class="fas fa-hand-holding-usd
+                                           text-dcf-700">
+                                </i>
+
+                                Ingiza Mchango
+
+                            </span>
+
+
+                            <i
+                                class="fas fa-chevron-right
+                                       text-[9px]
+                                       text-gray-400">
+                            </i>
+
+                        </a>
+
+
+                        <a
+                            href="pages/attendance.html"
+                            class="quick-link admin-member-link
+                                   flex items-center
+                                   justify-between
+                                   border border-gray-200
+                                   px-3 py-3
+                                   hover:border-dcf-400
+                                   hover:bg-dcf-50
+                                   transition">
+
+                            <span
+                                class="flex items-center
+                                       gap-3
+                                       text-xs
+                                       font-bold">
+
+                                <i
+                                    class="fas fa-clipboard-check
+                                           text-dcf-700">
+                                </i>
+
+                                Sajili Mahudhurio
+
+                            </span>
+
+
+                            <i
+                                class="fas fa-chevron-right
+                                       text-[9px]
+                                       text-gray-400">
+                            </i>
+
+                        </a>
+
+
+                        <a
+                            href="pages/inventory.html"
+                            class="quick-link admin-only-link
+                                   flex items-center
+                                   justify-between
+                                   border border-gray-200
+                                   px-3 py-3
+                                   hover:border-dcf-400
+                                   hover:bg-dcf-50
+                                   transition">
+
+                            <span
+                                class="flex items-center
+                                       gap-3
+                                       text-xs
+                                       font-bold">
+
+                                <i
+                                    class="fas fa-boxes
+                                           text-dcf-700">
+                                </i>
+
+                                Usimamizi wa Stoo
+
+                            </span>
+
+
+                            <i
+                                class="fas fa-chevron-right
+                                       text-[9px]
+                                       text-gray-400">
+                            </i>
+
+                        </a>
+
+
+                        <a
+                            href="pages/media.html"
+                            class="quick-link
+                                   flex items-center
+                                   justify-between
+                                   border border-gray-200
+                                   px-3 py-3
+                                   hover:border-dcf-400
+                                   hover:bg-dcf-50
+                                   transition">
+
+                            <span
+                                class="flex items-center
+                                       gap-3
+                                       text-xs
+                                       font-bold">
+
+                                <i
+                                    class="fas fa-images
+                                           text-dcf-700">
+                                </i>
+
+                                Photo Gallery
+
+                            </span>
+
+
+                            <i
+                                class="fas fa-chevron-right
+                                       text-[9px]
+                                       text-gray-400">
+                            </i>
+
+                        </a>
+
+
+                        <a
+                            href="pages/certificate.html"
+                            class="quick-link
+                                   flex items-center
+                                   justify-between
+                                   border border-gray-200
+                                   px-3 py-3
+                                   hover:border-dcf-400
+                                   hover:bg-dcf-50
+                                   transition">
+
+                            <span
+                                class="flex items-center
+                                       gap-3
+                                       text-xs
+                                       font-bold">
+
+                                <i
+                                    class="fas fa-certificate
+                                           text-dcf-700">
+                                </i>
+
+                                Certificates
+
+                            </span>
+
+
+                            <i
+                                class="fas fa-chevron-right
+                                       text-[9px]
+                                       text-gray-400">
+                            </i>
+
+                        </a>
+
+
+                        <a
+                            href="pages/audit-logs.html"
+                            class="quick-link admin-only-link
+                                   flex items-center
+                                   justify-between
+                                   border border-gray-200
+                                   px-3 py-3
+                                   hover:border-dcf-400
+                                   hover:bg-dcf-50
+                                   transition">
+
+                            <span
+                                class="flex items-center
+                                       gap-3
+                                       text-xs
+                                       font-bold">
+
+                                <i
+                                    class="fas fa-history
+                                           text-dcf-700">
+                                </i>
+
+                                Kumbukumbu za Mfumo
+
+                            </span>
+
+
+                            <i
+                                class="fas fa-chevron-right
+                                       text-[9px]
+                                       text-gray-400">
+                            </i>
+
+                        </a>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+
+            <!-- FOOTER -->
+
+            <footer
+                class="mt-7
+                       pt-4
+                       border-t
+                       border-gray-200
+                       flex flex-col
+                       md:flex-row
+                       md:items-center
+                       md:justify-between
+                       gap-2">
+
+                <p
+                    class="text-[10px]
+                           text-gray-500">
+
+                    Development Charity Foundation
+
+                </p>
+
+
+                <p
+                    class="text-[10px]
+                           text-gray-500">
+
+                    DCF MIS Version 1.0 Â© 2026
+
+                </p>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script>
+
+
+/* =========================================================
+   GLOBAL VARIABLES
+========================================================= */
+
+let currentUser = null;
+
+let currentProfile = null;
+
+
+/*
+=========================================================
+SEARCH CACHE
+=========================================================
+*/
+
+let searchMembers = [];
+
+let searchProjects = [];
+
+let searchDataLoaded = false;
+
+let searchLoading = false;
+
+
+/* =========================================================
+   MOBILE SIDEBAR
+========================================================= */
+
+const menuBtn =
+    document.getElementById(
+        "mobile-menu-btn"
+    );
+
+
+const sidebar =
+    document.getElementById(
+        "sidebar"
+    );
+
+
+const overlay =
+    document.getElementById(
+        "sidebar-overlay"
+    );
+
+
+function openSidebar() {
+
+    if (!sidebar || !overlay) return;
+
+    sidebar.classList.add("open");
+
+    overlay.classList.remove("hidden");
+
+}
+
+
+function closeSidebar() {
+
+    if (!sidebar || !overlay) return;
+
+    sidebar.classList.remove("open");
+
+    overlay.classList.add("hidden");
+
+}
+
+
+if (menuBtn) {
+
+    menuBtn.addEventListener(
+        "click",
+        openSidebar
+    );
+
+}
+
+
+if (overlay) {
+
+    overlay.addEventListener(
+        "click",
+        closeSidebar
+    );
+
+}
+
+
+/* =========================================================
+   RETURN DASHBOARD BUTTON
+========================================================= */
+
+function setupReturnDashboardButton() {
+
+    const button =
+        document.getElementById(
+            "returnDashboardButton"
+        );
+
+    if (!button) return;
+
+
+    const currentPage =
+        window.location.pathname
+            .split("/")
+            .pop()
+            .toLowerCase();
+
+
+    if (
+        currentPage ===
+        "dashboard.html"
+        ||
+        currentPage === ""
+    ) {
+
+        button.style.display =
+            "none";
+
+    }
+
+}
+
+
+/* =========================================================
+   AUTHENTICATION
+========================================================= */
+
+async function checkAuthentication() {
+
+    try {
+
+        if (
+            typeof _supabase ===
+                "undefined"
+            ||
+            !_supabase
+        ) {
+
+            console.error(
+                "Supabase client haijapatikana."
+            );
+
+            window.location.href =
+                "login.html";
+
+            return null;
+
+        }
+
+
+        const {
+            data,
+            error
+        } =
+            await _supabase.auth.getSession();
+
+
+        if (
+            error
+            ||
+            !data
+            ||
+            !data.session
+            ||
+            !data.session.user
+        ) {
+
+            window.location.href =
+                "login.html";
+
+            return null;
+
+        }
+
+
+        currentUser =
+            data.session.user;
+
+
+        return currentUser;
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Authentication Error:",
+            error
+        );
+
+
+        window.location.href =
+            "login.html";
+
+
+        return null;
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function handleLogout() {
+
+    const button =
+        document.getElementById(
+            "logoutButton"
+        );
+
+
+    try {
+
+        if (button) {
+
+            button.disabled = true;
+
+            button.innerHTML =
+                '<span class="loader"></span>';
+
+        }
+
+
+        const {
+            error
+        } =
+            await _supabase.auth.signOut();
+
+
+        if (error) {
+
+            console.error(
+                "Logout Error:",
+                error
+            );
+
+
+            alert(
+                "Imeshindikana kutoka kwenye mfumo. Tafadhali jaribu tena."
+            );
+
+
+            if (button) {
+
+                button.disabled =
+                    false;
+
+                button.innerHTML =
+                    '<i class="fas fa-sign-out-alt"></i>';
+
+            }
+
+
+            return;
+
+        }
+
+
+        window.location.replace(
+            "login.html"
+        );
+
+    }
+
+
+    catch (error) {
+
+        console.error(error);
+
+
+        alert(
+            "Kuna tatizo wakati wa kutoka kwenye mfumo."
+        );
+
+
+        if (button) {
+
+            button.disabled =
+                false;
+
+            button.innerHTML =
+                '<i class="fas fa-sign-out-alt"></i>';
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD USER PROFILE
+========================================================= */
+
+async function loadUserProfile(user) {
+
+    try {
+
+        const {
+            data: profile,
+            error
+        } =
+            await _supabase
+                .from("profiles")
+                .select("*")
+                .eq("id", user.id)
+                .maybeSingle();
+
+
+        if (error) {
+
+            console.error(
+                "Profile Error:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        currentProfile =
+            profile || {};
+
+
+        const role =
+            profile?.role ||
+            "member";
+
+
+        const roleTitles = {
+
+            admin:
+                "Administrator",
+
+            staff:
+                "Staff",
+
+            auditor:
+                "Auditor",
+
+            member:
+                "Mwanachama"
+
+        };
+
+
+        const name =
+            profile?.full_name
+            ||
+            profile?.name
+            ||
+            user.email?.split("@")[0]
+            ||
+            "Mtumiaji";
+
+
+        const email =
+            user.email ||
+            "-";
+
+
+        let profilePicture =
+            profile?.avatar_url
+            ||
+            profile?.profile_picture
+            ||
+            profile?.photo_url
+            ||
+            profile?.image_url
+            ||
+            profile?.picture_url
+            ||
+            profile?.avatar
+            ||
+            null;
+
+
+        if (!profilePicture) {
+
+            try {
+
+                const {
+                    data: member
+                } =
+                    await _supabase
+                        .from("members")
+                        .select("*")
+                        .eq("user_id", user.id)
+                        .maybeSingle();
+
+
+                if (member) {
+
+                    profilePicture =
+                        member.avatar_url
+                        ||
+                        member.profile_picture
+                        ||
+                        member.photo_url
+                        ||
+                        member.image_url
+                        ||
+                        member.picture_url
+                        ||
+                        member.avatar
+                        ||
+                        null;
+
+                }
+
+            }
+
+
+            catch (error) {
+
+                console.log(
+                    "Member profile lookup skipped."
+                );
+
+            }
+
+        }
+
+
+        const nameElement =
+            document.getElementById(
+                "sidebarUserName"
+            );
+
+
+        const roleElement =
+            document.getElementById(
+                "sidebarUserRole"
+            );
+
+
+        const avatar =
+            document.getElementById(
+                "userAvatar"
+            );
+
+
+        if (nameElement) {
+
+            nameElement.textContent =
+                name;
+
+        }
+
+
+        if (roleElement) {
+
+            roleElement.textContent =
+                roleTitles[role]
+                ||
+                role;
+
+        }
+
+
+        if (
+            avatar
+            &&
+            profilePicture
+        ) {
+
+            avatar.innerHTML = "";
+
+
+            const image =
+                document.createElement(
+                    "img"
+                );
+
+
+            image.src =
+                profilePicture;
+
+
+            image.alt =
+                "Profile";
+
+
+            image.className =
+                "profile-image";
+
+
+            image.onerror =
+                function() {
+
+                    avatar.textContent =
+                        getInitial(name);
+
+                };
+
+
+            avatar.appendChild(
+                image
+            );
+
+        }
+
+
+        else if (avatar) {
+
+            avatar.textContent =
+                getInitial(name);
+
+        }
+
+
+        if (
+            role ===
+            "member"
+        ) {
+
+            showMemberDashboard(
+                name,
+                email,
+                profilePicture
+            );
+
+        }
+
+
+        applyRolePermissions(
+            role
+        );
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Profile loading error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   MEMBER DASHBOARD - VIEW ONLY
+========================================================= */
+function showMemberDashboard(name, email, profilePicture) {
+
+    const profileCard = document.getElementById("member-profile-card");
+    const memberInformation = document.getElementById("member-information");
+
+    if (profileCard) profileCard.classList.remove("hidden");
+    if (memberInformation) memberInformation.classList.remove("hidden");
+
+    const profileName = document.getElementById("member-profile-name");
+    const profileEmail = document.getElementById("member-profile-email");
+
+    if (profileName) profileName.textContent = name;
+    if (profileEmail) profileEmail.textContent = email;
+
+    const image = document.getElementById("member-profile-picture");
+    const placeholder = document.getElementById("member-profile-placeholder");
+
+    if (image && profilePicture) {
+        image.src = profilePicture;
+        image.classList.remove("hidden");
+        if (placeholder) placeholder.classList.add("hidden");
+    }
+
+    /* MEMBER IS VIEW-ONLY: hide registration/profile/edit controls */
+    [
+        "member-profile-button",
+        "dashboard-add-member",
+        "quick-add-member",
+        "add-member-button",
+        "register-member-button",
+        "member-register-button",
+        "memberRegistrationButton",
+        "start-registration"
+    ].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = "none";
+            el.classList.add("hidden");
+        }
+    });
+
+    document.querySelectorAll('a[href*="add-member.html"], a[href*="my-profile.html"]').forEach(el => {
+        el.style.display = "none";
+        el.classList.add("hidden");
+    });
+
+    const welcomeTitle = document.getElementById("welcome-title");
+    const welcomeDescription = document.getElementById("welcome-description");
+
+    if (welcomeTitle) welcomeTitle.textContent = "Karibu, " + name;
+    if (welcomeDescription) {
+        welcomeDescription.textContent =
+            "Unaweza kuona taarifa za DCF, miradi, shughuli na picha. Akaunti yako ni ya kuangalia taarifa tu.";
+    }
+
+    document.body.classList.add("member-view-only");
+}
+
+
+/* =========================================================
+   ROLE PERMISSIONS
+========================================================= */
+function applyRolePermissions(role) {
+
+    role = String(role || "member").trim().toLowerCase();
+
+    /* Always start by hiding management-only controls. */
+    document.querySelectorAll(
+        ".admin-member-link, .admin-finance-link, .admin-only-link, .staff-only-link, .management-only-link, .restricted-link"
+    ).forEach(link => {
+        link.style.display = "none";
+    });
+
+    if (role === "admin") {
+        document.querySelectorAll(
+            ".admin-member-link, .admin-finance-link, .admin-only-link, .staff-only-link, .management-only-link"
+        ).forEach(link => link.style.display = "");
+        return;
+    }
+
+    if (role === "staff") {
+        document.querySelectorAll(".staff-only-link").forEach(link => link.style.display = "");
+        hideLinksByHref(["users.html", "audit-logs.html"]);
+        hideRestrictedSections(["users-section", "administration-section"]);
+        return;
+    }
+
+    if (role === "auditor") {
+        hideLinksByHref([
+            "users.html",
+            "add-member.html",
+            "add-media.html",
+            "donation.html",
+            "donations.html",
+            "finance.html",
+            "payments.html",
+            "inventory.html",
+            "add-inventory.html",
+            "administration.html",
+            "settings.html"
+        ]);
+        hideRestrictedSections(["member-management-section", "finance-section", "administration-section", "inventory-section"]);
+        return;
+    }
+
+    /* MEMBER: view-only dashboard. */
+    if (role === "member") {
+        applyMemberViewOnly();
+    }
+}
+
+
+/* =========================================================
+   MEMBER VIEW-ONLY ACCESS
+========================================================= */
+function applyMemberViewOnly() {
+
+    const restrictedPages = [
+        "members.html",
+        "members-list.html",
+        "add-member.html",
+        "volunteers.html",
+        "beneficiaries.html",
+        "attendance.html",
+        "users.html",
+        "add-media.html",
+        "donation.html",
+        "donations.html",
+        "finance.html",
+        "payments.html",
+        "inventory.html",
+        "add-inventory.html",
+        "administration.html",
+        "settings.html",
+        "audit-logs.html",
+        "manage.html",
+        "reports-management.html"
+    ];
+
+    hideLinksByHref(restrictedPages);
+
+    document.querySelectorAll(
+        ".admin-member-link, .admin-finance-link, .admin-only-link, .staff-only-link, .management-only-link, .restricted-link"
+    ).forEach(link => {
+        link.style.display = "none";
+        link.classList.add("hidden");
+    });
+
+    hideRestrictedSections([
+        "member-management-section",
+        "finance-section",
+        "administration-section",
+        "users-section",
+        "audit-section",
+        "inventory-section"
+    ]);
+
+    /* Hide every known registration/profile-management button. */
+    [
+        "dashboard-add-member",
+        "quick-add-member",
+        "add-member-button",
+        "register-member-button",
+        "member-register-button",
+        "memberRegistrationButton",
+        "start-registration",
+        "member-profile-button"
+    ].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.style.display = "none";
+            el.classList.add("hidden");
+        }
+    });
+
+    document.querySelectorAll('a[href*="add-member.html"], a[href*="my-profile.html"]').forEach(el => {
+        el.style.display = "none";
+        el.classList.add("hidden");
+    });
+
+    /* Hide management actions by their labels. */
+    document.querySelectorAll("a, button").forEach(el => {
+        const text = String(el.textContent || "").trim().toLowerCase();
+        if (
+            text.includes("sajili mwanachama") ||
+            text.includes("ongeza mwanachama") ||
+            text.includes("register member") ||
+            text.includes("add member") ||
+            text === "hariri" ||
+            text === "edit" ||
+            text === "delete" ||
+            text === "futa"
+        ) {
+            el.style.display = "none";
+        }
+    });
+
+    document.body.classList.add("member-view-only");
+    cleanupEmptySections();
+}
+
+
+function hideRestrictedSections(ids) {
+    ids.forEach(id => {
+        const section = document.getElementById(id);
+        if (section) section.style.display = "none";
+    });
+}
+
+
+/* =========================================================
+   HIDE LINKS
+========================================================= */
+function hideLinksByHref(list) {
+    list.forEach(filename => {
+        document.querySelectorAll(`a[href*="${filename}"]`).forEach(link => {
+            link.style.display = "none";
+            link.classList.add("hidden");
+        });
+    });
+}
+
+
+/* =========================================================
+   CLEAN EMPTY SIDEBAR SECTIONS
+========================================================= */
+function cleanupEmptySections() {
+    document.querySelectorAll("nav section").forEach(section => {
+        const links = Array.from(section.querySelectorAll("a"));
+        const visibleLinks = links.filter(link => {
+            const style = window.getComputedStyle(link);
+            return style.display !== "none" && !link.classList.contains("hidden");
+        });
+        if (links.length > 0 && visibleLinks.length === 0) {
+            section.style.display = "none";
+        }
+    });
+}
+
+
+/* =========================================================
+   MEMBER PAGE GUARD
+   NOTE: This protects pages that use this same dashboard script.
+========================================================= */
+async function enforceMemberAccess() {
+    try {
+        if (typeof _supabase === "undefined" || !_supabase) return;
+
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (!session || !session.user) return;
+
+        const { data: profile, error } = await _supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", session.user.id)
+            .maybeSingle();
+
+        if (error) {
+            console.error("Member access check error:", error);
+            return;
+        }
+
+        const role = String(profile?.role || "member").toLowerCase();
+        if (role !== "member") return;
+
+        const currentPage = window.location.pathname.split("/").pop().toLowerCase();
+        const restrictedPages = [
+            "members.html",
+            "members-list.html",
+            "add-member.html",
+            "volunteers.html",
+            "beneficiaries.html",
+            "attendance.html",
+            "users.html",
+            "add-media.html",
+            "donation.html",
+            "donations.html",
+            "finance.html",
+            "payments.html",
+            "inventory.html",
+            "add-inventory.html",
+            "administration.html",
+            "settings.html",
+            "audit-logs.html"
+        ];
+
+        if (restrictedPages.includes(currentPage)) {
+            const dashboardPath = window.location.pathname.includes("/pages/")
+                ? "../dashboard.html"
+                : "dashboard.html";
+            window.location.replace(dashboardPath);
+        }
+    } catch (error) {
+        console.error("Member access enforcement error:", error);
+    }
+}
+
+
+/* =========================================================
+   MEMBER REGISTRATION STATUS
+   Once a dcf_members record exists for the logged-in user,
+   the registration controls stay hidden.
+========================================================= */
+async function checkMemberRegistrationStatus() {
+    try {
+        if (typeof _supabase === "undefined" || !_supabase || !currentUser) return false;
+
+        const { data: member, error } = await _supabase
+            .from("members")
+            .select("id,user_id")
+            .eq("user_id", currentUser.id)
+            .maybeSingle();
+
+        if (error) {
+            console.error("Member registration status error:", error);
+            return false;
+        }
+
+        if (member) {
+            [
+                "dashboard-add-member",
+                "quick-add-member",
+                "add-member-button",
+                "register-member-button",
+                "member-register-button",
+                "memberRegistrationButton",
+                "start-registration",
+                "member-profile-button"
+            ].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.style.display = "none";
+                    el.classList.add("hidden");
+                }
+            });
+
+            document.querySelectorAll('a[href*="add-member.html"], a[href*="my-profile.html"]').forEach(el => {
+                el.style.display = "none";
+                el.classList.add("hidden");
+            });
+
+            return true;
+        }
+
+        return false;
+    } catch (error) {
+        console.error("Registration status error:", error);
+        return false;
+    }
+}
+
+
+/* =========================================================
+   DASHBOARD METRICS
+========================================================= */
+
+async function loadDashboardMetrics() {
+
+    try {
+
+        /* MEMBERS */
+
+        const {
+            count: memberCount,
+            error: memberError
+        } =
+            await _supabase
+                .from("members")
+                .select("*", {
+                    count: "exact",
+                    head: true
+                });
+
+
+        setText(
+            "total-members",
+            !memberError
+            &&
+            memberCount !== null
+                ?
+                memberCount.toLocaleString()
+                :
+                "0"
+        );
+
+
+        /* PROJECTS */
+
+        const {
+            count: projectCount,
+            error: projectError
+        } =
+            await _supabase
+                .from("dcf_projects")
+                .select("*", {
+                    count: "exact",
+                    head: true
+                })
+                .eq(
+                    "status",
+                    "Active"
+                );
+
+
+        setText(
+            "active-projects",
+            !projectError
+            &&
+            projectCount !== null
+                ?
+                projectCount.toLocaleString()
+                :
+                "0"
+        );
+
+
+        /* DONATIONS */
+
+        const {
+            data: donations,
+            error: donationError
+        } =
+            await _supabase
+                .from("donations")
+                .select("amount");
+
+
+        let totalDonation =
+            0;
+
+
+        if (
+            !donationError
+            &&
+            Array.isArray(
+                donations
+            )
+        ) {
+
+            totalDonation =
+                donations.reduce(
+                    (
+                        sum,
+                        item
+                    ) =>
+                        sum +
+                        Number(
+                            item.amount ||
+                            0
+                        ),
+                    0
+                );
+
+        }
+
+
+        setText(
+            "total-donations",
+            "TSH " +
+            totalDonation.toLocaleString(
+                "en-TZ"
+            )
+        );
+
+
+        /* BENEFICIARIES */
+
+        const {
+            count: beneficiaryCount,
+            error: beneficiaryError
+        } =
+            await _supabase
+                .from("beneficiaries")
+                .select("*", {
+                    count: "exact",
+                    head: true
+                });
+
+
+        setText(
+            "total-beneficiaries",
+            !beneficiaryError
+            &&
+            beneficiaryCount !== null
+                ?
+                beneficiaryCount.toLocaleString()
+                :
+                "0"
+        );
+
+
+        await loadRecentActivities();
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Dashboard metrics error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RECENT ACTIVITIES
+========================================================= */
+
+async function loadRecentActivities() {
+
+    const tableBody =
+        document.getElementById(
+            "activities-table-body"
+        );
+
+
+    if (!tableBody) return;
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await _supabase
+                .from("dcf_activities")
+                .select(
+                    "title, activity_date, location, status"
+                )
+                .order(
+                    "activity_date",
+                    {
+                        ascending: false
+                    }
+                )
+                .limit(5);
+
+
+        if (error) {
+
+            console.error(
+                "Activities Error:",
+                error
+            );
+
+
+            showActivityEmpty(
+                "Imeshindikana kupakia shughuli."
+            );
+
+
+            return;
+
+        }
+
+
+        if (
+            !data
+            ||
+            data.length === 0
+        ) {
+
+            showActivityEmpty(
+                "Hakuna shughuli iliyorekodiwa bado."
+            );
+
+
+            return;
+
+        }
+
+
+        tableBody.innerHTML =
+            "";
+
+
+        data.forEach(
+            activity => {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.className =
+                    "border-b border-gray-100";
+
+
+                const status =
+                    getActivityStatus(
+                        activity.status
+                    );
+
+
+                row.innerHTML = `
+
+                    <td class="px-5 py-3.5
+                               font-bold
+                               text-gray-800">
+
+                        ${escapeHtml(
+                            activity.title ||
+                            "-"
+                        )}
+
+                    </td>
+
+
+                    <td class="px-4 py-3.5
+                               text-gray-600">
+
+                        ${escapeHtml(
+                            formatDate(
+                                activity.activity_date
+                            )
+                        )}
+
+                    </td>
+
+
+                    <td class="px-4 py-3.5
+                               text-gray-600">
+
+                        ${escapeHtml(
+                            activity.location ||
+                            "-"
+                        )}
+
+                    </td>
+
+
+                    <td class="px-4 py-3.5
+                               text-center">
+
+                        <span
+                            class="
+                                inline-block
+                                px-2 py-1
+                                border
+                                text-[10px]
+                                font-bold
+                                ${status.className}
+                            ">
+
+                            ${escapeHtml(
+                                status.label
+                            )}
+
+                        </span>
+
+                    </td>
+
+                `;
+
+
+                tableBody.appendChild(
+                    row
+                );
+
+            }
+        );
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Activities Exception:",
+            error
+        );
+
+
+        showActivityEmpty(
+            "Kuna tatizo la kupakia taarifa."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   ACTIVITY STATUS
+========================================================= */
+
+function getActivityStatus(status) {
+
+    const value =
+        String(
+            status ||
+            "Scheduled"
+        ).toLowerCase();
+
+
+    if (
+        value ===
+        "completed"
+        ||
+        value ===
+        "complete"
+    ) {
+
+        return {
+
+            label:
+                "Imekamilika",
+
+            className:
+                "bg-green-50 text-green-700 border-green-200"
+
+        };
+
+    }
+
+
+    if (
+        value ===
+        "ongoing"
+        ||
+        value ===
+        "in progress"
+    ) {
+
+        return {
+
+            label:
+                "Inaendelea",
+
+            className:
+                "bg-blue-50 text-blue-700 border-blue-200"
+
+        };
+
+    }
+
+
+    if (
+        value ===
+        "cancelled"
+        ||
+        value ===
+        "canceled"
+    ) {
+
+        return {
+
+            label:
+                "Imeghairiwa",
+
+            className:
+                "bg-red-50 text-red-700 border-red-200"
+
+        };
+
+    }
+
+
+    return {
+
+        label:
+            status ||
+            "Imepangwa",
+
+        className:
+            "bg-amber-50 text-amber-700 border-amber-200"
+
+    };
+
+}
+
+
+/* =========================================================
+   EMPTY ACTIVITY
+========================================================= */
+
+function showActivityEmpty(message) {
+
+    const tableBody =
+        document.getElementById(
+            "activities-table-body"
+        );
+
+
+    if (!tableBody) return;
+
+
+    tableBody.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="4"
+                class="px-5 py-10
+                       text-center
+                       text-gray-500">
+
+                <i
+                    class="fas fa-inbox
+                           text-xl
+                           text-gray-300
+                           mb-2">
+                </i>
+
+
+                <div>
+
+                    ${escapeHtml(
+                        message
+                    )}
+
+                </div>
+
+            </td>
+
+        </tr>
+
+    `;
+
+}
+
+
+/* =========================================================
+   REFRESH DASHBOARD
+========================================================= */
+
+async function refreshDashboard() {
+
+    const button =
+        document.getElementById(
+            "refreshButton"
+        );
+
+
+    const icon =
+        document.getElementById(
+            "refreshIcon"
+        );
+
+
+    if (button) {
+
+        button.disabled =
+            true;
+
+    }
+
+
+    if (icon) {
+
+        icon.classList.add(
+            "fa-spin"
+        );
+
+    }
+
+
+    try {
+
+        searchDataLoaded =
+            false;
+
+        await loadDashboardMetrics();
+
+    }
+
+
+    finally {
+
+        if (icon) {
+
+            icon.classList.remove(
+                "fa-spin"
+            );
+
+        }
+
+
+        if (button) {
+
+            button.disabled =
+                false;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   DATE & TIME
+========================================================= */
+
+function updateDateTime() {
+
+    const now =
+        new Date();
+
+
+    const date =
+        now.toLocaleDateString(
+            "sw-TZ",
+            {
+                weekday: "long",
+                day: "2-digit",
+                month: "long",
+                year: "numeric"
+            }
+        );
+
+
+    const time =
+        now.toLocaleTimeString(
+            "sw-TZ",
+            {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            }
+        );
+
+
+    setText(
+        "current-date",
+        date
+    );
+
+
+    setText(
+        "current-time",
+        time
+    );
+
+}
+
+
+updateDateTime();
+
+
+setInterval(
+    updateDateTime,
+    1000
+);
+
+
+/* =========================================================
+   IMPROVED GLOBAL SEARCH
+========================================================= */
+
+
+/*
+    Hapa tunapakia data kutoka:
+
+    1. dcf_members
+    2. dcf_projects
+
+    Kisha search inafanyika kwenye browser.
+
+    Hii inasaidia hata kama columns zako
+    zinatofautiana kidogo.
+*/
+
+
+async function loadSearchData() {
+
+    if (searchDataLoaded) {
+
+        return;
+
+    }
+
+
+    if (searchLoading) {
+
+        return;
+
+    }
+
+
+    searchLoading = true;
+
+
+    try {
+
+        /*
+        =====================================================
+        MEMBERS
+        =====================================================
+        */
+
+        const {
+            data: members,
+            error: membersError
+        } =
+            await _supabase
+                .from("members")
+                .select("*")
+                .limit(1000);
+
+
+        if (membersError) {
+
+            console.error(
+                "Search Members Error:",
+                membersError
+            );
+
+            searchMembers = [];
+
+        }
+
+        else {
+
+            searchMembers =
+                Array.isArray(members)
+                    ?
+                    members
+                    :
+                    [];
+
+        }
+
+
+        /*
+        =====================================================
+        PROJECTS
+        =====================================================
+        */
+
+        const {
+            data: projects,
+            error: projectsError
+        } =
+            await _supabase
+                .from("dcf_projects")
+                .select("*")
+                .limit(1000);
+
+
+        if (projectsError) {
+
+            console.error(
+                "Search Projects Error:",
+                projectsError
+            );
+
+            searchProjects = [];
+
+        }
+
+        else {
+
+            searchProjects =
+                Array.isArray(projects)
+                    ?
+                    projects
+                    :
+                    [];
+
+        }
+
+
+        searchDataLoaded =
+            true;
+
+    }
+
+
+    catch (error) {
+
+        console.error(
+            "Search data loading error:",
+            error
+        );
+
+    }
+
+
+    finally {
+
+        searchLoading = false;
+
+    }
+
+}
+
+
+/* =========================================================
+   GET MEMBER DISPLAY NAME
+========================================================= */
+
+function getMemberName(member) {
+
+    if (!member) {
+
+        return "Mwanachama";
+
+    }
+
+
+    const fullName =
+        member.full_name
+        ||
+        member.name
+        ||
+        member.member_name;
+
+
+    if (fullName) {
+
+        return String(
+            fullName
+        );
+
+    }
+
+
+    const parts = [
+
+        member.first_name,
+
+        member.middle_name,
+
+        member.last_name
+
+    ]
+        .filter(Boolean)
+        .join(" ");
+
+
+    if (parts) {
+
+        return parts;
+
+    }
+
+
+    return (
+        member.member_no
+        ||
+        member.membership_no
+        ||
+        member.email
+        ||
+        "Mwanachama"
+    );
+
+}
+
+
+/* =========================================================
+   GET PROJECT DISPLAY NAME
+========================================================= */
+
+function getProjectName(project) {
+
+    if (!project) {
+
+        return "Mradi";
+
+    }
+
+
+    return (
+        project.name
+        ||
+        project.project_name
+        ||
+        project.title
+        ||
+        project.project_title
+        ||
+        project.code
+        ||
+        "Mradi"
+    );
+
+}
+
+
+/* =========================================================
+   CREATE SEARCHABLE TEXT
+========================================================= */
+
+function objectSearchText(object) {
+
+    if (!object) {
+
+        return "";
+
+    }
+
+
+    return Object
+        .entries(object)
+        .map(
+            ([key, value]) => {
+
+                if (
+                    value === null
+                    ||
+                    value === undefined
+                ) {
+
+                    return "";
+
+                }
+
+
+                return (
+                    String(key) +
+                    " " +
+                    String(value)
+                );
+
+            }
+        )
+        .join(" ")
+        .toLowerCase();
+
+}
+
+
+/* =========================================================
+   SEARCH DATABASE
+========================================================= */
+
+async function performGlobalSearch(query) {
+
+    const resultsBox =
+        document.getElementById(
+            "searchResults"
+        );
+
+
+    if (!resultsBox) return;
+
+
+    const cleanQuery =
+        String(
+            query ||
+            ""
+        )
+            .trim()
+            .toLowerCase();
+
+
+    if (!cleanQuery) {
+
+        hideSearchResults();
+
+        return;
+
+    }
+
+
+    showSearchLoading();
+
+
+    await loadSearchData();
+
+
+    const results = [];
+
+
+    /*
+    =========================================================
+    SEARCH MEMBERS
+    =========================================================
+    */
+
+    searchMembers.forEach(
+        member => {
+
+            const text =
+                objectSearchText(
+                    member
+                );
+
+
+            if (
+                text.includes(
+                    cleanQuery
+                )
+            ) {
+
+                results.push({
+
+                    type:
+                        "member",
+
+                    title:
+                        getMemberName(
+                            member
+                        ),
+
+                    description:
+                        member.email
+                        ||
+                        member.phone
+                        ||
+                        member.member_no
+                        ||
+                        member.membership_no
+                        ||
+                        "Taarifa ya mwanachama",
+
+                    data:
+                        member
+
+                });
+
+            }
+
+        }
+    );
+
+
+    /*
+    =========================================================
+    SEARCH PROJECTS
+    =========================================================
+    */
+
+    searchProjects.forEach(
+        project => {
+
+            const text =
+                objectSearchText(
+                    project
+                );
+
+
+            if (
+                text.includes(
+                    cleanQuery
+                )
+            ) {
+
+                results.push({
+
+                    type:
+                        "project",
+
+                    title:
+                        getProjectName(
+                            project
+                        ),
+
+                    description:
+                        project.description
+                        ||
+                        project.location
+                        ||
+                        project.status
+                        ||
+                        "Taarifa ya mradi",
+
+                    data:
+                        project
+
+                });
+
+            }
+
+        }
+    );
+
+
+    /*
+    =========================================================
+    SIDEBAR MENU SEARCH
+    =========================================================
+    */
+
+    const sidebarLinks =
+        Array.from(
+            document.querySelectorAll(
+                ".sidebar-link"
+            )
+        );
+
+
+    sidebarLinks.forEach(
+        link => {
+
+            const text =
+                link.textContent
+                    .trim();
+
+
+            if (
+                text
+                    .toLowerCase()
+                    .includes(
+                        cleanQuery
+                    )
+            ) {
+
+                results.push({
+
+                    type:
+                        "menu",
+
+                    title:
+                        text,
+
+                    description:
+                        "Fungua ukurasa huu",
+
+                    href:
+                        link.href
+
+                });
+
+            }
+
+        }
+    );
+
+
+    renderSearchResults(
+        results.slice(
+            0,
+            15
+        ),
+        cleanQuery
+    );
+
+}
+
+
+/* =========================================================
+   RENDER SEARCH RESULTS
+========================================================= */
+
+function renderSearchResults(
+    results,
+    query
+) {
+
+    const resultsBox =
+        document.getElementById(
+            "searchResults"
+        );
+
+
+    if (!resultsBox) return;
+
+
+    resultsBox.innerHTML =
+        "";
+
+
+    resultsBox.classList.add(
+        "show"
+    );
+
+
+    if (
+        !results
+        ||
+        results.length === 0
+    ) {
+
+        resultsBox.innerHTML = `
+
+            <div class="search-empty">
+
+                <i class="fas fa-search
+                          text-gray-300
+                          text-xl
+                          mb-2">
+                </i>
+
+                <div class="font-bold">
+                    Hakuna matokeo
+                </div>
+
+                <div class="mt-1">
+                    Hakuna taarifa inayolingana na
+                    "${escapeHtml(query)}"
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    const databaseResults =
+        results.filter(
+            item =>
+                item.type !==
+                "menu"
+        );
+
+
+    const menuResults =
+        results.filter(
+            item =>
+                item.type ===
+                "menu"
+        );
+
+
+    if (
+        databaseResults.length > 0
+    ) {
+
+        const header =
+            document.createElement(
+                "div"
+            );
+
+
+        header.className =
+            "search-result-header";
+
+
+        header.textContent =
+            "Taarifa za Mfumo";
+
+
+        resultsBox.appendChild(
+            header
+        );
+
+
+        databaseResults.forEach(
+            result => {
+
+                resultsBox.appendChild(
+                    createSearchResultElement(
+                        result
+                    )
+                );
+
+            }
+        );
+
+    }
+
+
+    if (
+        menuResults.length > 0
+    ) {
+
+        const header =
+            document.createElement(
+                "div"
+            );
+
+
+        header.className =
+            "search-result-header";
+
+
+        header.textContent =
+            "Menu";
+
+
+        resultsBox.appendChild(
+            header
+        );
+
+
+        menuResults.forEach(
+            result => {
+
+                resultsBox.appendChild(
+                    createSearchResultElement(
+                        result
+                    )
+                );
+
+            }
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CREATE SEARCH RESULT
+========================================================= */
+
+function createSearchResultElement(
+    result
+) {
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+
+    button.type =
+        "button";
+
+
+    button.className =
+        "search-result-item";
+
+
+    let icon =
+        "fa-search";
+
+
+    let iconClass =
+        "bg-gray-100 text-gray-600";
+
+
+    let typeLabel =
+        "Taarifa";
+
+
+    if (
+        result.type ===
+        "member"
+    ) {
+
+        icon =
+            "fa-user";
+
+
+        iconClass =
+            "bg-dcf-100 text-dcf-700";
+
+
+        typeLabel =
+            "Mwanachama";
+
+    }
+
+
+    else if (
+        result.type ===
+        "project"
+    ) {
+
+        icon =
+            "fa-folder";
+
+
+        iconClass =
+            "bg-blue-50 text-blue-700";
+
+
+        typeLabel =
+            "Mradi";
+
+    }
+
+
+    else if (
+        result.type ===
+        "menu"
+    ) {
+
+        icon =
+            "fa-bars";
+
+
+        iconClass =
+            "bg-gray-100 text-gray-700";
+
+
+        typeLabel =
+            "Menu";
+
+    }
+
+
+    button.innerHTML = `
+
+        <span
+            class="
+                search-result-icon
+                ${iconClass}
+            ">
+
+            <i class="fas ${icon} text-xs"></i>
+
+        </span>
+
+
+        <span
+            class="search-result-content">
+
+            <span
+                class="search-result-title">
+
+                ${escapeHtml(
+                    result.title
+                )}
+
+            </span>
+
+
+            <span
+                class="search-result-description">
+
+                ${escapeHtml(
+                    result.description
+                )}
+
+            </span>
+
+        </span>
+
+
+        <span
+            class="search-result-type">
+
+            ${typeLabel}
+
+        </span>
+
+    `;
+
+
+    button.addEventListener(
+        "click",
+        function() {
+
+            openSearchResult(
+                result
+            );
+
+        }
+    );
+
+
+    return button;
+
+}
+
+
+/* =========================================================
+   OPEN SEARCH RESULT
+========================================================= */
+
+function openSearchResult(
+    result
+) {
+
+    hideSearchResults();
+
+
+    if (
+        result.type ===
+        "menu"
+    ) {
+
+        if (result.href) {
+
+            window.location.href =
+                result.href;
+
+        }
+
+        return;
+
+    }
+
+
+    if (
+        result.type ===
+        "member"
+    ) {
+
+        const member =
+            result.data;
+
+
+        /*
+        Kama members-list.html ndiyo
+        ukurasa wa kuonyesha wanachama,
+        tunaenda huko na search parameter.
+        */
+
+        const memberId =
+            member.id
+            ||
+            member.member_id
+            ||
+            member.MemberID
+            ||
+            "";
+
+
+        const memberNo =
+            member.member_no
+            ||
+            member.membership_no
+            ||
+            "";
+
+
+        const params =
+            new URLSearchParams();
+
+
+        if (memberId) {
+
+            params.set(
+                "id",
+                memberId
+            );
+
+        }
+
+
+        if (memberNo) {
+
+            params.set(
+                "member_no",
+                memberNo
+            );
+
+        }
+
+
+        window.location.href =
+            "pages/members-list.html" +
+            (
+                params.toString()
+                    ?
+                    "?" +
+                    params.toString()
+                    :
+                    ""
+            );
+
+
+        return;
+
+    }
+
+
+    if (
+        result.type ===
+        "project"
+    ) {
+
+        const project =
+            result.data;
+
+
+        const projectId =
+            project.id
+            ||
+            project.project_id
+            ||
+            project.ProjectID
+            ||
+            "";
+
+
+        const params =
+            new URLSearchParams();
+
+
+        if (projectId) {
+
+            params.set(
+                "id",
+                projectId
+            );
+
+        }
+
+
+        window.location.href =
+            "pages/projects.html" +
+            (
+                params.toString()
+                    ?
+                    "?" +
+                    params.toString()
+                    :
+                    ""
+            );
+
+    }
+
+}
+
+
+/* =========================================================
+   SEARCH LOADING
+========================================================= */
+
+function showSearchLoading() {
+
+    const resultsBox =
+        document.getElementById(
+            "searchResults"
+        );
+
+
+    if (!resultsBox) return;
+
+
+    resultsBox.innerHTML = `
+
+        <div class="search-loading">
+
+            <span class="loader"></span>
+
+            <span class="ml-2">
+                Inatafuta kwenye mfumo...
+            </span>
+
+        </div>
+
+    `;
+
+
+    resultsBox.classList.add(
+        "show"
+    );
+
+}
+
+
+/* =========================================================
+   HIDE SEARCH RESULTS
+========================================================= */
+
+function hideSearchResults() {
+
+    const resultsBox =
+        document.getElementById(
+            "searchResults"
+        );
+
+
+    if (resultsBox) {
+
+        resultsBox.classList.remove(
+            "show"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   SEARCH INPUT EVENTS
+========================================================= */
+
+const searchInput =
+    document.getElementById(
+        "globalSearch"
+    );
+
+
+const clearSearchButton =
+    document.getElementById(
+        "clearSearchButton"
+    );
+
+
+if (searchInput) {
+
+    /*
+    ---------------------------------------------------------
+    LIVE SEARCH
+    ---------------------------------------------------------
+    */
+
+    searchInput.addEventListener(
+        "input",
+        function() {
+
+            const query =
+                this.value.trim();
+
+
+            if (clearSearchButton) {
+
+                if (query) {
+
+                    clearSearchButton.classList.remove(
+                        "hidden"
+                    );
+
+                }
+
+                else {
+
+                    clearSearchButton.classList.add(
+                        "hidden"
+                    );
+
+                }
+
+            }
+
+
+            if (!query) {
+
+                hideSearchResults();
+
+                return;
+
+            }
+
+
+            performGlobalSearch(
+                query
+            );
+
+        }
+    );
+
+
+    /*
+    ---------------------------------------------------------
+    ENTER
+    ---------------------------------------------------------
+    */
+
+    searchInput.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key ===
+                "Escape"
+            ) {
+
+                hideSearchResults();
+
+                return;
+
+            }
+
+
+            if (
+                event.key !==
+                "Enter"
+            ) {
+
+                return;
+
+            }
+
+
+            const query =
+                this.value.trim();
+
+
+            if (!query) {
+
+                return;
+
+            }
+
+
+            /*
+            Kama result ya kwanza ipo,
+            fungua moja kwa moja.
+            */
+
+            const resultsBox =
+                document.getElementById(
+                    "searchResults"
+                );
+
+
+            if (
+                resultsBox
+                &&
+                resultsBox.classList.contains(
+                    "show"
+                )
+            ) {
+
+                const firstResult =
+                    resultsBox.querySelector(
+                        ".search-result-item"
+                    );
+
+
+                if (firstResult) {
+
+                    firstResult.click();
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+if (clearSearchButton) {
+
+    clearSearchButton.addEventListener(
+        "click",
+        function() {
+
+            if (searchInput) {
+
+                searchInput.value =
+                    "";
+
+                searchInput.focus();
+
+            }
+
+
+            this.classList.add(
+                "hidden"
+            );
+
+
+            hideSearchResults();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CLOSE SEARCH WHEN CLICKING OUTSIDE
+========================================================= */
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        const wrapper =
+            document.querySelector(
+                ".search-wrapper"
+            );
+
+
+        if (
+            wrapper
+            &&
+            !wrapper.contains(
+                event.target
+            )
+        ) {
+
+            hideSearchResults();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   ACTIVE SIDEBAR LINK
+========================================================= */
+
+function markCurrentPage() {
+
+    const current =
+        window.location.pathname
+            .split("/")
+            .pop();
+
+
+    document
+        .querySelectorAll(
+            ".sidebar-link"
+        )
+        .forEach(
+            link => {
+
+                const href =
+                    link.getAttribute(
+                        "href"
+                    );
+
+
+                if (!href) return;
+
+
+                const linkPage =
+                    href
+                        .split("/")
+                        .pop();
+
+
+                if (
+                    linkPage ===
+                    current
+                    &&
+                    linkPage !==
+                    "dashboard.html"
+                ) {
+
+                    link.classList.add(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function setText(
+    id,
+    value
+) {
+
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    if (element) {
+
+        element.textContent =
+            value;
+
+    }
+
+}
+
+
+function getInitial(name) {
+
+    if (!name) {
+
+        return "U";
+
+    }
+
+
+    return String(name)
+        .trim()
+        .charAt(0)
+        .toUpperCase();
+
+}
+
+
+function formatDate(
+    dateString
+) {
+
+    if (!dateString) {
+
+        return "-";
+
+    }
+
+
+    const date =
+        new Date(
+            dateString
+        );
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return dateString;
+
+    }
+
+
+    return date.toLocaleDateString(
+        "sw-TZ",
+        {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+function escapeHtml(value) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        setupReturnDashboardButton();
+
+        markCurrentPage();
+
+
+        const user =
+            await checkAuthentication();
+
+
+        if (!user) {
+
+            return;
+
+        }
+
+
+        await loadUserProfile(
+            user
+        );
+
+
+        /* MEMBER = VIEW ONLY */
+        if (String(currentProfile?.role || "member").toLowerCase() === "member") {
+            await checkMemberRegistrationStatus();
+            applyMemberViewOnly();
+        }
+
+
+        await enforceMemberAccess();
+
+
+        await loadDashboardMetrics();
+
+
+        cleanupEmptySections();
+
+
+        /*
+        =====================================================
+        PRELOAD SEARCH DATA
+        =====================================================
+
+        Tunapakia members/projects mapema ili search
+        iwe fast wakati mtumiaji anapoandika.
+        */
+
+        loadSearchData();
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>

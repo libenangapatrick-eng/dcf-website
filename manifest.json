@@ -1,0 +1,123 @@
+{
+  "name": "Development Charity Foundation - DCF Online System",
+  "short_name": "DCF System",
+  "description": "Development Charity Foundation Online Management System for members, activities, beneficiaries, donations, finance, certificates, reports and administration.",
+  "id": "./index.html",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#071b35",
+  "theme_color": "#d4af37",
+  "lang": "en-TZ",
+  "dir": "ltr",
+
+  "categories": [
+    "business",
+    "productivity",
+    "organization"
+  ],
+
+  "icons": [
+    {
+      "src": "./assets/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Open DCF Dashboard",
+      "url": "./dashboard.html",
+      "icons": [
+        {
+          "src": "./assets/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+
+    {
+      "name": "Certificates",
+      "short_name": "Certificates",
+      "description": "Manage DCF certificates",
+      "url": "./pages/certificates.html",
+      "icons": [
+        {
+          "src": "./assets/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+
+    {
+      "name": "Members",
+      "short_name": "Members",
+      "description": "Manage DCF members",
+      "url": "./pages/members-list.html",
+      "icons": [
+        {
+          "src": "./assets/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+
+    {
+      "name": "Donations",
+      "short_name": "Donations",
+      "description": "Manage donations",
+      "url": "./pages/donations.html",
+      "icons": [
+        {
+          "src": "./assets/icons/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+
+  "prefer_related_applications": false
+}

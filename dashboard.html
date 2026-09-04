@@ -1,0 +1,1734 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DCF | Management Information System</title>
+
+<!-- ===================================================== TAILWIND CSS ====================================================== -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        dcf: {
+          50: '#f1f7f4', 100: '#dcece4', 200: '#bdd9cb', 300: '#91bea9', 400: '#619d82',
+          500: '#3f8265', 600: '#2d684f', 700: '#24543f', 800: '#1d4434', 900: '#17382b', 950: '#0d241c'
+        }
+      }
+    }
+  }
+};
+</script>
+
+<!-- ===================================================== INTER FONT ====================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- ===================================================== ROBOTO FALLBACK ====================================================== -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+<!-- ===================================================== FONT AWESOME ====================================================== -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- ===================================================== SUPABASE ====================================================== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/role-guard.js"></script>
+
+<!-- ===================================================== CUSTOM CSS ====================================================== -->
+<style>
+* { font-family: "Inter", "Roboto", Arial, sans-serif; box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+body { background: #f4f6f5; color: #1f2937; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: #edf1ef; }
+::-webkit-scrollbar-thumb { background: #aab8b1; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #6f8379; }
+
+/* SIDEBAR SCROLL */
+.sidebar-scroll { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.22) transparent; }
+
+/* SIDEBAR LINKS */
+.sidebar-link { position: relative; transition: background-color .18s ease, color .18s ease, padding-left .18s ease; }
+.sidebar-link:hover { background: rgba(255,255,255,.08); color: #ffffff; padding-left: 15px; }
+.sidebar-link.active { background: #285c46; color: #ffffff; border-left: 3px solid #9bc4ad; padding-left: 13px; }
+.sidebar-link i { width: 17px; text-align: center; }
+
+/* PREMIUM LOGO */
+.brand-logo { transition: transform .3s ease, box-shadow .3s ease; }
+.brand-logo:hover { transform: scale(1.05); box-shadow: 0 10px 25px rgba(0,0,0,.25); }
+
+/* DASHBOARD CARDS */
+.dashboard-card { background: #ffffff; border: 1px solid #dfe5e2; box-shadow: 0 2px 8px rgba(22, 40, 32, .045); transition: border-color .18s ease, box-shadow .18s ease; }
+.dashboard-card:hover { border-color: #c5d4cc; box-shadow: 0 5px 14px rgba(22, 40, 32, .07); }
+.kpi-card { transition: transform .18s ease, box-shadow .18s ease; }
+.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 7px 18px rgba(22, 40, 32, .08); }
+
+/* TABLE */
+.data-table th { background: #f0f3f2; color: #34443d; font-weight: 700; }
+.data-table tbody tr:hover { background: #f8faf9; }
+
+/* PROFILE IMAGE */
+.profile-image { width: 100%; height: 100%; object-fit: cover; }
+
+/* LOADER */
+.loader { width: 17px; height: 17px; border: 2px solid #d6e3dd; border-top-color: #24543f; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* MOBILE SIDEBAR */
+@media (max-width: 767px) {
+  .mobile-sidebar { position: fixed; top: 0; left: 0; bottom: 0; z-index: 50; transform: translateX(-100%); transition: transform .22s ease; }
+  .mobile-sidebar.open { transform: translateX(0); }
+}
+
+/* LOGO WATERMARK / WELCOME */
+.welcome-logo { width: 68px; height: 68px; background: white; border-radius: 50%; padding: 6px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 8px 22px rgba(0,0,0,.15); flex-shrink: 0; }
+.welcome-logo img { width: 100%; height: 100%; object-fit: contain; }
+
+/* GLOBAL SEARCH */
+.search-wrapper { position: relative; }
+#globalSearch { font-family: "Inter", "Roboto", Arial, sans-serif; }
+.search-results { position: absolute; top: calc(100% + 7px); right: 0; width: 360px; max-width: 90vw; background: #ffffff; border: 1px solid #dfe5e2; border-radius: 8px; box-shadow: 0 15px 35px rgba(0,0,0,.12); overflow: hidden; z-index: 100; display: none; }
+.search-results.show { display: block; }
+.search-result-header { padding: 10px 12px; background: #f5f8f6; border-bottom: 1px solid #e5ebe8; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #61736b; }
+.search-result-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 11px 12px; text-align: left; border: 0; background: #ffffff; cursor: pointer; transition: background .15s ease; }
+.search-result-item:hover { background: #f1f7f4; }
+.search-result-icon { width: 34px; height: 34px; flex-shrink: 0; border-radius: 7px; display: flex; align-items: center; justify-content: center; }
+.search-result-content { min-width: 0; flex: 1; }
+.search-result-title { font-size: 12px; font-weight: 700; color: #1f2937; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-result-description { margin-top: 2px; font-size: 10px; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-result-type { font-size: 9px; font-weight: 700; color: #2d684f; background: #edf7f1; border: 1px solid #d5e9de; padding: 3px 6px; border-radius: 20px; flex-shrink: 0; }
+.search-empty { padding: 22px 15px; text-align: center; color: #6b7280; font-size: 11px; }
+.search-loading { padding: 16px; text-align: center; color: #6b7280; font-size: 11px; }
+@media (max-width: 767px) { .search-results { right: -45px; width: 330px; } }
+
+/* MEMBER VIEW-ONLY UI */
+.member-view-only .member-management-section,
+.member-view-only .finance-section,
+.member-view-only .administration-section,
+.member-view-only .users-section,
+.member-view-only .inventory-section { display: none !important; }
+.member-view-only a[href*="add-member.html"] { display: none !important; }
+
+/* DCF INTERNATIONAL EXECUTIVE UI ENHANCEMENT */
+:root{
+  --dcf-deep:#0d241c; --dcf-dark:#17382b; --dcf-primary:#24543f; --dcf-primary-2:#2d684f;
+  --dcf-soft:#f1f7f4; --dcf-border:#dfe7e2; --dcf-text:#17221d; --dcf-muted:#66756e; --dcf-white:#ffffff;
+  --shadow-sm:0 4px 16px rgba(13,36,28,.055); --shadow-md:0 12px 30px rgba(13,36,28,.085); --radius:14px;
+}
+body{ background: radial-gradient(circle at 85% 0%, rgba(63,130,101,.07), transparent 28%), linear-gradient(180deg,#f7f9f8 0%,#f1f5f3 100%); color:var(--dcf-text); }
+#sidebar{ width:276px !important; box-shadow:12px 0 35px rgba(13,36,28,.10) !important; border-right:1px solid rgba(255,255,255,.07); }
+#sidebar > div:first-child{ height:88px !important; background: linear-gradient(145deg,#0d241c,#17382b 65%,#24543f) !important; }
+.brand-logo{ width:50px !important; height:50px !important; border:1px solid rgba(255,255,255,.28); box-shadow:0 8px 24px rgba(0,0,0,.20) !important; }
+.sidebar-link{ border-radius:9px; margin:2px 0; min-height:39px; }
+.sidebar-link.active{ background:linear-gradient(90deg,#2d684f,#24543f) !important; border-left:3px solid #b7d8c7 !important; box-shadow:0 5px 16px rgba(0,0,0,.10); }
+.sidebar-link:hover{ border-radius:9px; }
+header{ height:78px !important; background:rgba(255,255,255,.94) !important; backdrop-filter:blur(14px); border-bottom:1px solid #e5ebe8 !important; box-shadow:0 2px 12px rgba(13,36,28,.035); }
+#globalSearch{ height:42px !important; width:310px !important; border-radius:10px !important; background:#f7f9f8 !important; border-color:#dce5e0 !important; padding-left:42px !important; }
+#globalSearch:focus{ box-shadow:0 0 0 4px rgba(45,104,79,.09); }
+#refreshButton, header button{ border-radius:10px !important; }
+main{ background: radial-gradient(circle at 100% 0%,rgba(45,104,79,.045),transparent 22%), #f4f7f5 !important; padding:26px !important; }
+main > section:first-child{ position:relative; overflow:hidden; border:0 !important; border-radius:18px !important; margin-bottom:20px !important; background: radial-gradient(circle at 90% 15%,rgba(255,255,255,.12),transparent 22%), linear-gradient(125deg,#0d241c 0%,#17382b 48%,#2d684f 100%) !important; box-shadow:var(--shadow-md) !important; }
+main > section:first-child::after{ content:""; position:absolute; width:240px; height:240px; right:-100px; bottom:-150px; border:1px solid rgba(255,255,255,.12); border-radius:50%; box-shadow:0 0 0 30px rgba(255,255,255,.025),0 0 0 60px rgba(255,255,255,.02); pointer-events:none; }
+main > section:first-child > div{ min-height:172px; padding:30px !important; position:relative; z-index:1; }
+.welcome-logo{ width:78px !important; height:78px !important; border:4px solid rgba(255,255,255,.20); box-shadow:0 12px 30px rgba(0,0,0,.20) !important; }
+#welcome-title{ font-size:clamp(24px,3vw,34px) !important; letter-spacing:-.035em; line-height:1.12; }
+#welcome-description{ max-width:690px; font-size:13px !important; line-height:1.7; }
+#dashboard-add-member, #member-profile-button{ border-radius:10px !important; min-height:42px; box-shadow:0 8px 18px rgba(0,0,0,.12); }
+.dcf-executive-ribbon{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:-2px 0 22px; }
+.dcf-ribbon-item{ background:rgba(255,255,255,.96); border:1px solid var(--dcf-border); border-radius:12px; padding:13px 15px; box-shadow:var(--shadow-sm); display:flex; align-items:center; gap:11px; min-width:0; }
+.dcf-ribbon-icon{ width:36px; height:36px; border-radius:10px; background:var(--dcf-soft); color:var(--dcf-primary); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.dcf-ribbon-label{ font-size:9px; text-transform:uppercase; letter-spacing:.09em; font-weight:800; color:#74837c; }
+.dcf-ribbon-value{ margin-top:2px; font-size:12px; font-weight:800; color:#1b2922; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.dashboard-card{ border:1px solid var(--dcf-border) !important; border-radius:14px !important; box-shadow:var(--shadow-sm) !important; overflow:hidden; }
+.dashboard-card:hover{ border-color:#c8d8d0 !important; box-shadow:var(--shadow-md) !important; }
+.kpi-card{ position:relative; min-height:154px; padding:21px !important; background: linear-gradient(145deg,#fff 0%,#fbfdfc 100%) !important; }
+.kpi-card::after{ content:""; position:absolute; right:-30px; bottom:-45px; width:110px; height:110px; border-radius:50%; background:rgba(45,104,79,.035); pointer-events:none; }
+.kpi-card h4{ font-size:30px !important; letter-spacing:-.04em; }
+.kpi-card .w-10{ width:46px !important; height:46px !important; border-radius:12px; box-shadow:0 7px 16px rgba(13,36,28,.07); }
+main h3{ letter-spacing:-.015em; }
+#member-profile-card{ border-radius:14px !important; background:linear-gradient(135deg,#fff,#f8fbf9) !important; }
+#member-information .dashboard-card{ min-height:120px; }
+.data-table{ border-collapse:separate; border-spacing:0; }
+.data-table thead th{ background:#f3f6f4 !important; color:#52625a !important; font-size:10px !important; text-transform:uppercase; letter-spacing:.065em; padding-top:13px !important; padding-bottom:13px !important; }
+.data-table tbody td{ font-size:12px; }
+.data-table tbody tr{ transition:background .15s ease,transform .15s ease; }
+.data-table tbody tr:hover{ background:#f8fbf9 !important; }
+.quick-link{ border-radius:10px !important; min-height:52px; background:#fff !important; }
+.quick-link:hover{ transform:translateX(2px); box-shadow:0 5px 14px rgba(13,36,28,.055); }
+footer{ opacity:.9; }
+.search-results{ border-radius:12px !important; box-shadow:0 18px 42px rgba(13,36,28,.16) !important; }
+.loader{ vertical-align:middle; }
+::-webkit-scrollbar{ width:8px; height:8px; }
+::-webkit-scrollbar-thumb{ background:#a8b9b0; border-radius:20px; }
+@media (max-width:1023px){ #sidebar{ width:276px !important; } .dcf-executive-ribbon{ grid-template-columns:repeat(2,minmax(0,1fr)); } #globalSearch{ width:250px !important; } }
+@media (max-width:767px){
+  main{ padding:14px !important; }
+  header{ height:66px !important; padding-left:12px !important; padding-right:12px !important; }
+  #globalSearch{ width:calc(100vw - 100px) !important; }
+  main > section:first-child > div{ min-height:0; padding:22px !important; }
+  .welcome-logo{ width:58px !important; height:58px !important; }
+  #welcome-title{ font-size:24px !important; }
+  .dcf-executive-ribbon{ grid-template-columns:1fr; gap:9px; }
+  .dcf-ribbon-item{ padding:11px 13px; }
+  .kpi-card{ min-height:138px; }
+}
+@media (max-width:430px){
+  #globalSearch{ display:none !important; }
+  main > section:first-child > div{ padding:18px !important; }
+  #dashboard-add-member, #member-profile-button{ width:100%; justify-content:center; }
+}
+
+/* DCF DASHBOARD FINAL LAYOUT POLISH */
+main{ width:100%; max-width:none; }
+main > section, main > .dcf-executive-ribbon, main > .grid, main > footer{ width:100%; }
+main > section:first-child{ min-height:172px; }
+main > section:first-child > div{ max-width:1500px; margin:0 auto; }
+.dcf-executive-ribbon{ max-width:1500px; margin-left:auto; margin-right:auto; }
+#member-profile-card{ max-width:1500px; margin-left:auto; margin-right:auto; }
+main > section.mb-7{ max-width:1500px; margin-left:auto; margin-right:auto; }
+.kpi-card{ min-width:0; display:flex; flex-direction:column; justify-content:center; }
+.kpi-card h4{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#member-information{ max-width:1500px; margin-left:auto; margin-right:auto; }
+main > .grid.grid-cols-1.xl\:grid-cols-3{ max-width:1500px; margin-left:auto; margin-right:auto; align-items:start; }
+main > .grid.grid-cols-1.xl\:grid-cols-3 > section:first-child{ min-width:0; }
+main > .grid.grid-cols-1.xl\:grid-cols-3 > section:first-child .overflow-x-auto{ scrollbar-width:thin; }
+main > .grid.grid-cols-1.xl\:grid-cols-3 > section:last-child{ min-width:0; }
+.quick-link{ position:relative; overflow:hidden; }
+.quick-link i{ flex-shrink:0; }
+.data-table{ min-width:620px; }
+.data-table tbody td{ vertical-align:middle; }
+header{ position:relative; z-index:20; }
+header > div{ min-width:0; }
+.search-results{ z-index:200; }
+#sidebar nav section > p{ user-select:none; }
+#sidebar .sidebar-link{ min-width:0; }
+#sidebar .sidebar-link span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#sidebar > div:last-child{ flex-shrink:0; }
+main > footer{ max-width:1500px; margin-left:auto; margin-right:auto; }
+@media (min-width:1440px){ main{ padding-left:32px !important; padding-right:32px !important; } .dcf-executive-ribbon{ gap:14px; } .kpi-card{ min-height:160px; } }
+@media (max-width:1199px){ main > .grid.grid-cols-1.xl\:grid-cols-3{ align-items:stretch; } }
+@media (max-width:767px){
+  main{ overflow-x:hidden; }
+  .dcf-executive-ribbon{ width:100%; }
+  .kpi-card{ min-height:132px; }
+  main > .grid.grid-cols-1.xl\:grid-cols-3{ gap:14px; }
+  .data-table{ min-width:600px; }
+  main > footer{ padding-bottom:8px; }
+}
+@media (max-width:430px){
+  main{ padding-left:12px !important; padding-right:12px !important; }
+  .dcf-ribbon-item{ min-height:58px; }
+  .kpi-card{ min-height:126px; }
+  .data-table{ min-width:580px; }
+}
+
+/* DASHBOARD FINANCE SUMMARY */
+.finance-summary-card{ background:#fff; border:1px solid var(--dcf-border,#dfe7e2); border-radius:12px; padding:16px; display:flex; align-items:center; gap:13px; min-width:0; box-shadow:0 4px 14px rgba(13,36,28,.045); }
+.finance-summary-icon{ width:42px; height:42px; border-radius:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.finance-summary-label{ font-size:9px; text-transform:uppercase; letter-spacing:.08em; font-weight:800; color:#74837c; }
+.finance-summary-value{ margin-top:3px; font-size:19px; line-height:1.2; font-weight:800; letter-spacing:-.025em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.finance-summary-note{ margin-top:3px; font-size:9px; color:#7a8781; }
+@media (max-width:767px){ .finance-summary-card{padding:14px;} .finance-summary-value{font-size:17px;} }
+
+/* DCF COMPACT INSTITUTIONAL DASHBOARD */
+:root{ --compact-radius:8px; --compact-border:#d9e2de; --compact-shadow:0 2px 8px rgba(13,36,28,.045); }
+main{ padding:18px 22px !important; }
+.dashboard-card{ border-radius:var(--compact-radius) !important; box-shadow:var(--compact-shadow) !important; }
+.dashboard-card:hover{ box-shadow:0 4px 12px rgba(13,36,28,.065) !important; }
+main > section:first-child{ min-height:0 !important; border-radius:10px !important; margin-bottom:14px !important; }
+main > section:first-child > div{ min-height:0 !important; padding:18px 20px !important; gap:14px !important; }
+.welcome-logo{ width:54px !important; height:54px !important; }
+#welcome-title{ font-size:22px !important; }
+#welcome-description{ font-size:11px !important; line-height:1.5 !important; }
+#dashboard-add-member, #member-profile-button{ min-height:34px !important; padding:8px 12px !important; border-radius:7px !important; }
+.dcf-executive-ribbon{ gap:8px !important; margin-bottom:14px !important; }
+.dcf-ribbon-item{ min-height:48px !important; padding:8px 10px !important; border-radius:8px !important; gap:8px !important; }
+.dcf-ribbon-icon{ width:30px !important; height:30px !important; border-radius:7px !important; }
+.dcf-ribbon-label{font-size:8px !important;}
+.dcf-ribbon-value{font-size:10px !important;}
+.kpi-card{ min-height:82px !important; padding:12px 14px !important; justify-content:center !important; border-radius:8px !important; }
+.kpi-card h4{ font-size:21px !important; margin-top:4px !important; line-height:1.1 !important; }
+.kpi-card .w-10{ width:34px !important; height:34px !important; border-radius:8px !important; box-shadow:none !important; }
+.kpi-card p{ line-height:1.25 !important; }
+main > section.mb-7{ margin-bottom:16px !important; }
+main > section.mb-7 > div:first-child{ margin-bottom:8px !important; }
+main > section.mb-7 .grid{ gap:9px !important; }
+#dashboard-finance-summary{ margin-bottom:16px !important; }
+#dashboard-finance-summary > div{ padding:14px !important; }
+#dashboard-finance-summary .grid{ gap:9px !important; }
+.finance-summary-card{ min-height:68px !important; padding:10px 12px !important; gap:9px !important; border-radius:8px !important; box-shadow:var(--compact-shadow) !important; }
+.finance-summary-icon{ width:32px !important; height:32px !important; border-radius:7px !important; }
+.finance-summary-value{ font-size:16px !important; }
+.finance-summary-note{font-size:8px !important;}
+#member-profile-card{ margin-bottom:14px !important; }
+#member-profile-card > div{ padding:14px !important; gap:12px !important; }
+#member-profile-card .w-20{ width:58px !important; height:58px !important; }
+#member-information{ gap:9px !important; margin-bottom:16px !important; }
+#member-information .dashboard-card{ min-height:78px !important; padding:12px 14px !important; }
+#member-information h3{ font-size:15px !important; }
+#member-information i.text-2xl{ font-size:18px !important; }
+main > .grid.grid-cols-1.xl\:grid-cols-3{ gap:12px !important; }
+main > .grid.grid-cols-1.xl\:grid-cols-3 > section{ border-radius:8px !important; }
+main > .grid.grid-cols-1.xl\:grid-cols-3 > section > div:first-child{ padding:12px 14px !important; }
+.quick-link{ min-height:42px !important; padding:9px 11px !important; border-radius:7px !important; }
+header{ height:64px !important; }
+#sidebar > div:first-child{ height:72px !important; }
+.brand-logo{ width:42px !important; height:42px !important; }
+.sidebar-link{ min-height:34px !important; }
+@media (max-width:1023px){ .kpi-card{min-height:78px !important;} }
+@media (max-width:767px){
+  main{padding:12px !important;}
+  main > section:first-child > div{padding:14px !important;}
+  .dcf-executive-ribbon{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+  .dcf-ribbon-item{min-height:44px !important;}
+  .kpi-card{min-height:74px !important;padding:11px 12px !important;}
+  .kpi-card h4{font-size:19px !important;}
+  .finance-summary-card{min-height:62px !important;}
+  #member-information .dashboard-card{min-height:72px !important;}
+}
+@media (max-width:430px){
+  .dcf-executive-ribbon{grid-template-columns:1fr !important;}
+  .dcf-ribbon-item{min-height:42px !important;}
+  .kpi-card{min-height:70px !important;}
+}
+
+/* TICKET BOOKING DASHBOARD MODULE */
+#ticket-booking-module{ display:none; width:100%; max-width:1500px; margin:0 auto; }
+#ticket-booking-module.ticket-module-active{ display:block; }
+#ticket-booking-frame{ width:100%; height:calc(100vh - 118px); min-height:680px; border:1px solid var(--dcf-border,#dfe7e2); border-radius:10px; background:#fff; box-shadow:0 2px 8px rgba(13,36,28,.045); display:block; }
+.ticket-module-toolbar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px; padding:8px 10px; background:#fff; border:1px solid var(--dcf-border,#dfe7e2); border-radius:8px; }
+.ticket-module-title{ display:flex; align-items:center; gap:8px; font-size:12px; font-weight:800; color:#17382b; }
+.ticket-module-back{ border:1px solid #d9e2de; background:#f7f9f8; color:#24543f; padding:7px 10px; border-radius:7px; font-size:10px; font-weight:800; cursor:pointer; }
+.ticket-module-back:hover{ background:#f1f7f4; }
+body.ticket-module-open main{ overflow-y:auto; }
+@media(max-width:767px){
+  #ticket-booking-frame{ height:calc(100vh - 145px); min-height:600px; }
+  .ticket-module-toolbar{ padding:7px 8px; }
+}
+
+/* EVENTS DASHBOARD MODULE — mirrors Ticket Booking */
+#events-module{display:none;width:100%;max-width:1500px;margin:0 auto;}
+#events-module.events-module-active{display:block;}
+#events-module-frame{width:100%;height:calc(100vh - 118px);min-height:680px;border:1px solid var(--dcf-border,#dfe7e2);border-radius:10px;background:#fff;box-shadow:0 2px 8px rgba(13,36,28,.045);display:block;}
+body.events-module-open main{overflow-y:auto;}
+@media(max-width:767px){#events-module-frame{height:calc(100vh - 145px);min-height:600px;}}
+</style>
+</head>
+
+<body data-allowed-roles="admin,staff,auditor">
+
+<!-- MOBILE OVERLAY -->
+<div id="sidebar-overlay" class="fixed inset-0 bg-black/45 z-40 hidden md:hidden"></div>
+
+<!-- APPLICATION -->
+<div class="flex h-screen">
+
+<!-- SIDEBAR -->
+<aside id="sidebar" class="mobile-sidebar md:relative md:translate-x-0 w-[260px] bg-dcf-900 text-white flex flex-col flex-shrink-0 shadow-xl">
+
+  <!-- BRAND -->
+  <div class="h-[78px] px-4 bg-dcf-950 border-b border-white/10 flex items-center">
+    <div class="flex items-center gap-3 w-full">
+      <div class="brand-logo w-12 h-12 rounded-full bg-white p-1.5 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-lg ring-2 ring-dcf-400/20">
+        <img src="images/dcf-logo.png" alt="Development Charity Foundation Logo" class="w-full h-full object-contain" loading="lazy" onerror="this.style.display='none';">
+      </div>
+      <div class="min-w-0">
+        <h1 class="text-[15px] font-bold text-white truncate">DCF MIS</h1>
+        <p class="text-[10px] text-dcf-300 truncate">Development Charity Foundation</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION -->
+  <div class="flex-1 overflow-y-auto sidebar-scroll px-3 py-5">
+    <nav class="text-[13px] space-y-6">
+
+      <!-- MAIN -->
+      <section>
+        <p class="px-2 mb-2 text-[10px] uppercase tracking-wider font-bold text-dcf-300">MAIN</p>
+        <a href="dashboard.html" class="sidebar-link active flex items-center gap-3 px-3 py-2.5">
+          <i class="fas fa-chart-pie"></i><span>Dashboard</span>
+        </a>
+        <a href="pages/member-portal.html" class="sidebar-link member-portal-link flex items-center gap-3 px-3 py-2">
+          <i class="fas fa-id-card"></i><span>Member Portal</span>
+        </a>
+      </section>
+
+      <!-- MEMBERS -->
+      <section id="member-management-section">
+        <p class="px-2 mb-2 text-[10px] uppercase tracking-wider font-bold text-dcf-300">COMMUNITY & MEMBERS</p>
+        <div class="space-y-1">
+          <a href="pages/members.html" class="sidebar-link admin-member-link flex items-center gap-3 px-3 py-2"><i class="fas fa-users"></i><span>Members</span></a>
+          <a href="pages/members-list.html" class="sidebar-link admin-member-link flex items-center gap-3 px-3 py-2"><i class="fas fa-address-book"></i><span>Member List</span></a>
+          <a href="pages/add-member.html" class="sidebar-link admin-member-link flex items-center gap-3 px-3 py-2"><i class="fas fa-user-plus"></i><span>Add Member</span></a>
+          <a href="pages/volunteers.html" class="sidebar-link admin-member-link flex items-center gap-3 px-3 py-2"><i class="fas fa-hands-helping"></i><span>Volunteers</span></a>
+          <a href="pages/beneficiaries.html" class="sidebar-link admin-member-link flex items-center gap-3 px-3 py-2"><i class="fas fa-hand-holding-heart"></i><span>Beneficiaries</span></a>
+          <a href="pages/attendance.html" class="sidebar-link admin-member-link flex items-center gap-3 px-3 py-2"><i class="fas fa-clipboard-check"></i><span>Attendance</span></a>
+        </div>
+      </section>
+
+      <!-- PROJECTS -->
+      <section id="projects-section">
+        <p class="px-2 mb-2 text-[10px] uppercase tracking-wider font-bold text-dcf-300">PROJECTS & EVENTS</p>
+        <div class="space-y-1">
+          <a href="pages/projects.html" class="sidebar-link flex items-center gap-3 px-3 py-2"><i class="fas fa-folder"></i><span>Projects</span></a>
+          <a href="pages/activities.html" class="sidebar-link flex items-center gap-3 px-3 py-2"><i class="fas fa-calendar-alt"></i><span>Activities</span></a>
+          <a href="pages/media.html" class="sidebar-link flex items-center gap-3 px-3 py-2"><i class="fas fa-images"></i><span>Photo Gallery</span></a>
+          <a href="pages/add-media.html" class="sidebar-link admin-only-link flex items-center gap-3 px-3 py-2"><i class="fas fa-plus-circle"></i><span>Add Photo</span></a>
+          <a href="pages/certificate.html" class="sidebar-link flex items-center gap-3 px-3 py-2"><i class="fas fa-certificate"></i><span>Certificates</span></a>
+          <a href="pages/ticket-booking.html" class="sidebar-link flex items-center gap-3 px-3 py-2"><i class="fas fa-ticket-alt"></i><span>Ticket Booking</span></a>
+          <a href="pages/events.html" class="sidebar-link flex items-center gap-3 px-3 py-2" id="eventsDashboardLink"><i class="fas fa-calendar-check"></i><span>Events</span></a>
+        </div>
+      </section>
+
+      <!-- FINANCE -->
+      <section id="finance-section">
+        <p class="px-2 mb-2 text-[10px] uppercase tracking-wider font-bold text-dcf-300">FINANCE & MANAGEMENT</p>
+        <div class="space-y-1">
+          <a href="pages/donation.html" class="sidebar-link admin-finance-link flex items-center gap-3 px-3 py-2"><i class="fas fa-hand-holding-usd"></i><span>Donations</span></a>
+          <a href="pages/donation-reports.html" class="sidebar-link admin-finance-link flex items-center gap-3 px-3 py-2"><i class="fas fa-file-invoice-dollar"></i><span>Donation Reports</span></a>
+          <a href="pages/finance.html" class="sidebar-link admin-finance-link flex items-center gap-3 px-3 py-2"><i class="fas fa-coins"></i><span>Finance System</span></a>
+        </div>
+      </section>
+
+      <!-- ADMIN -->
+      <section id="administration-section">
+        <p class="px-2 mb-2 text-[10px] uppercase tracking-wider font-bold text-dcf-300">ADMINISTRATION</p>
+        <div class="space-y-1">
+          <a href="pages/inventory.html" class="sidebar-link admin-only-link flex items-center gap-3 px-3 py-2"><i class="fas fa-boxes"></i><span>Inventory</span></a>
+          <a href="pages/users.html" class="sidebar-link admin-only-link flex items-center gap-3 px-3 py-2"><i class="fas fa-user-cog"></i><span>Users</span></a>
+          <a href="pages/audit-logs.html" class="sidebar-link admin-only-link flex items-center gap-3 px-3 py-2"><i class="fas fa-history"></i><span>Audit Logs</span></a>
+        </div>
+      </section>
+
+    </nav>
+  </div>
+
+  <!-- USER AREA -->
+  <div class="p-3 bg-dcf-950 border-t border-white/10">
+    <div class="flex items-center gap-3">
+      <div id="userAvatar" class="w-9 h-9 rounded-full bg-dcf-600 border border-dcf-300 flex items-center justify-center overflow-hidden text-white font-bold text-sm flex-shrink-0">U</div>
+      <div class="min-w-0 flex-1">
+        <p id="sidebarUserName" class="text-[13px] font-bold text-white truncate">User</p>
+        <p id="sidebarUserRole" class="text-[10px] text-dcf-300 truncate">Loading...</p>
+      </div>
+      <button id="logoutButton" onclick="handleLogout()" title="Logout" class="w-8 h-8 flex items-center justify-center text-red-300 hover:bg-red-600 hover:text-white transition"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN AREA -->
+<div class="flex-1 min-w-0 flex flex-col">
+
+  <!-- TOP HEADER -->
+  <header class="h-[72px] bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-7 flex-shrink-0">
+
+    <div class="flex items-center gap-4">
+      <button id="mobile-menu-btn" class="md:hidden w-9 h-9 border border-gray-200 text-dcf-800 flex items-center justify-center"><i class="fas fa-bars"></i></button>
+      <a id="returnDashboardButton" href="dashboard.html" class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-md border border-dcf-200 bg-dcf-50 text-dcf-700 text-xs font-bold hover:bg-dcf-700 hover:text-white hover:border-dcf-700 transition"><i class="fas fa-arrow-left"></i> Dashboard</a>
+      <div>
+        <h2 class="text-base md:text-xl font-bold text-gray-800">Dashboard</h2>
+        <p class="text-[11px] text-gray-500">Development Charity Foundation</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <div class="hidden lg:block text-right mr-2">
+        <p id="current-date" class="text-[11px] font-bold text-gray-700">--</p>
+        <p id="current-time" class="text-[10px] text-gray-500">--</p>
+      </div>
+
+      <div class="search-wrapper hidden md:block">
+        <input id="globalSearch" type="search" autocomplete="off" placeholder="Search members, projects..." class="w-48 lg:w-72 h-9 rounded-md border border-gray-300 bg-gray-50 pl-9 pr-9 text-xs focus:outline-none focus:border-dcf-600 focus:bg-white">
+        <i class="fas fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
+        <button id="clearSearchButton" type="button" class="hidden absolute right-2 top-2 w-5 h-5 text-gray-400 hover:text-gray-700"><i class="fas fa-times text-[10px]"></i></button>
+        <div id="searchResults" class="search-results"></div>
+      </div>
+
+      <button id="refreshButton" onclick="refreshDashboard()" title="Refresh Dashboard" class="w-9 h-9 border border-gray-200 bg-white text-gray-600 hover:text-dcf-700 hover:border-dcf-300 flex items-center justify-center transition"><i class="fas fa-sync-alt" id="refreshIcon"></i></button>
+
+      <button class="relative w-9 h-9 border border-gray-200 text-gray-600 hover:text-dcf-700 flex items-center justify-center">
+        <i class="fas fa-bell"></i>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="flex-1 overflow-y-auto bg-[#f4f6f5] p-4 md:p-7">
+
+    <!-- WELCOME -->
+    <section class="bg-dcf-800 text-white border border-dcf-700 shadow-sm mb-6">
+      <div class="p-5 md:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+        <div class="flex items-center gap-4">
+          <div class="welcome-logo"><img src="images/dcf-logo.png" alt="DCF Logo" loading="lazy" onerror="this.style.display='none';"></div>
+          <div>
+            <p class="text-[10px] uppercase tracking-widest text-dcf-300 font-bold mb-1">DCF MANAGEMENT INFORMATION SYSTEM</p>
+            <h1 id="welcome-title" class="text-xl md:text-2xl font-bold">Welcome to the Dashboard</h1>
+            <p id="welcome-description" class="text-sm text-dcf-100 mt-1">Muhtasari wa taarifa, shughuli na mwenendo wa taasisi.</p>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <a href="pages/add-member.html" id="dashboard-add-member" class="inline-flex items-center gap-2 bg-white text-dcf-800 px-4 py-2.5 text-xs font-bold hover:bg-dcf-50 transition"><i class="fas fa-user-plus"></i> Register Member</a>
+          <a href="pages/my-profile.html" id="member-profile-button" class="hidden items-center gap-2 bg-white text-dcf-800 px-4 py-2.5 text-xs font-bold"><i class="fas fa-user"></i> My Profile</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXECUTIVE STATUS RIBBON -->
+    <section class="dcf-executive-ribbon" aria-label="System Overview">
+      <div class="dcf-ribbon-item"><div class="dcf-ribbon-icon"><i class="fas fa-chart-line"></i></div><div class="min-w-0"><div class="dcf-ribbon-label">Overview</div><div class="dcf-ribbon-value">Executive Overview</div></div></div>
+      <div class="dcf-ribbon-item"><div class="dcf-ribbon-icon"><i class="fas fa-database"></i></div><div class="min-w-0"><div class="dcf-ribbon-label">Data</div><div class="dcf-ribbon-value">Live Data</div></div></div>
+      <div class="dcf-ribbon-item"><div class="dcf-ribbon-icon"><i class="fas fa-user-shield"></i></div><div class="min-w-0"><div class="dcf-ribbon-label">Access</div><div class="dcf-ribbon-value">Role controlled</div></div></div>
+      <div class="dcf-ribbon-item"><div class="dcf-ribbon-icon"><i class="fas fa-sync-alt"></i></div><div class="min-w-0"><div class="dcf-ribbon-label">Sync</div><div class="dcf-ribbon-value">Auto refresh enabled</div></div></div>
+    </section>
+
+    <!-- MEMBER PROFILE -->
+    <section id="member-profile-card" class="hidden dashboard-card mb-6">
+      <div class="p-5 flex flex-col md:flex-row md:items-center gap-5">
+        <div class="w-20 h-20 bg-dcf-50 border border-dcf-200 overflow-hidden flex-shrink-0">
+          <img id="member-profile-picture" class="profile-image hidden" alt="Profile">
+          <div id="member-profile-placeholder" class="w-full h-full flex items-center justify-center text-2xl font-bold text-dcf-700">U</div>
+        </div>
+        <div class="flex-1">
+          <p class="text-[10px] uppercase tracking-wider text-gray-500 font-bold">WASIFU WANGU</p>
+          <h3 id="member-profile-name" class="text-lg font-bold text-gray-800">Member</h3>
+          <p id="member-profile-email" class="text-xs text-gray-500">-</p>
+        </div>
+        <a href="pages/my-profile.html" class="inline-flex items-center gap-2 bg-dcf-700 hover:bg-dcf-800 text-white px-4 py-2 text-xs font-bold"><i class="fas fa-edit"></i> Edit Profile</a>
+      </div>
+    </section>
+
+    <!-- KPI -->
+    <section class="mb-7">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h3 class="text-sm font-bold text-gray-800">System Overview</h3>
+          <p class="text-[11px] text-gray-500">Current information available in the system</p>
+        </div>
+        <span class="text-[10px] text-gray-500">Information is updated automatically</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+
+        <div class="dashboard-card kpi-card p-5">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-[10px] uppercase tracking-wider font-bold text-gray-500">Members</p>
+              <h4 id="total-members" class="text-2xl font-bold text-gray-900 mt-2">--</h4>
+              <p class="text-[10px] text-gray-500 mt-1">Total registered</p>
+            </div>
+            <div class="w-10 h-10 bg-dcf-100 text-dcf-700 flex items-center justify-center"><i class="fas fa-users"></i></div>
+          </div>
+        </div>
+
+        <div class="dashboard-card kpi-card p-5">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-[10px] uppercase tracking-wider font-bold text-gray-500">Projects</p>
+              <h4 id="active-projects" class="text-2xl font-bold text-gray-900 mt-2">--</h4>
+              <p class="text-[10px] text-gray-500 mt-1">Projects inayoendelea</p>
+            </div>
+            <div class="w-10 h-10 bg-blue-50 text-blue-700 flex items-center justify-center"><i class="fas fa-project-diagram"></i></div>
+          </div>
+        </div>
+
+        <div class="dashboard-card kpi-card p-5">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-[10px] uppercase tracking-wider font-bold text-gray-500">Donations</p>
+              <h4 id="total-donations" class="text-xl font-bold text-emerald-700 mt-2">TSH --</h4>
+              <p class="text-[10px] text-gray-500 mt-1">Total funds</p>
+            </div>
+            <div class="w-10 h-10 bg-emerald-50 text-emerald-700 flex items-center justify-center"><i class="fas fa-coins"></i></div>
+          </div>
+        </div>
+
+        <div class="dashboard-card kpi-card p-5">
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-[10px] uppercase tracking-wider font-bold text-gray-500">Beneficiaries</p>
+              <h4 id="total-beneficiaries" class="text-2xl font-bold text-gray-900 mt-2">--</h4>
+              <p class="text-[10px] text-gray-500 mt-1">Registered</p>
+            </div>
+            <div class="w-10 h-10 bg-amber-50 text-amber-700 flex items-center justify-center"><i class="fas fa-hand-holding-heart"></i></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FINANCE SUMMARY -->
+    <section id="dashboard-finance-summary" class="dashboard-card mb-7 hidden" aria-label="Financial Summary">
+      <div class="p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+          <div>
+            <h3 class="text-sm font-bold text-gray-800">Financial Summary</h3>
+            <p class="text-[11px] text-gray-500 mt-1">Total income, expenses, and balance from finance_transactions.</p>
+          </div>
+          <span id="finance-dashboard-status" class="inline-flex items-center gap-2 text-[10px] font-bold text-gray-500">
+            <span class="w-2 h-2 rounded-full bg-gray-300"></span> Loading...
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="finance-summary-card">
+            <div class="finance-summary-icon bg-emerald-50 text-emerald-700"><i class="fas fa-arrow-down"></i></div>
+            <div class="min-w-0">
+              <p class="finance-summary-label">Income</p>
+              <h4 id="dashboard-total-income" class="finance-summary-value text-emerald-700">TSH --</h4>
+              <p class="finance-summary-note">Total income</p>
+            </div>
+          </div>
+          <div class="finance-summary-card">
+            <div class="finance-summary-icon bg-red-50 text-red-700"><i class="fas fa-arrow-up"></i></div>
+            <div class="min-w-0">
+              <p class="finance-summary-label">Expenses</p>
+              <h4 id="dashboard-total-expense" class="finance-summary-value text-red-700">TSH --</h4>
+              <p class="finance-summary-note">Total expenses</p>
+            </div>
+          </div>
+          <div class="finance-summary-card">
+            <div class="finance-summary-icon bg-dcf-50 text-dcf-700"><i class="fas fa-wallet"></i></div>
+            <div class="min-w-0">
+              <p class="finance-summary-label">Balance</p>
+              <h4 id="dashboard-total-balance" class="finance-summary-value text-dcf-700">TSH --</h4>
+              <p class="finance-summary-note">Income ukitoa matumizi</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MEMBER INFORMATION -->
+    <section id="member-information" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4 mb-7">
+      <a href="pages/projects.html" class="dashboard-card p-5 hover:border-dcf-400 transition">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-[10px] uppercase text-gray-500 font-bold">INFORMATION</p>
+            <h3 class="text-lg font-bold mt-1">Projects</h3>
+            <p class="text-xs text-gray-500 mt-1">View DCF projects</p>
+          </div>
+          <i class="fas fa-folder text-2xl text-blue-700"></i>
+        </div>
+      </a>
+      <a href="pages/activities.html" class="dashboard-card p-5 hover:border-dcf-400 transition">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-[10px] uppercase text-gray-500 font-bold">INFORMATION</p>
+            <h3 class="text-lg font-bold mt-1">Activities</h3>
+            <p class="text-xs text-gray-500 mt-1">View DCF activities</p>
+          </div>
+          <i class="fas fa-calendar-alt text-2xl text-dcf-700"></i>
+        </div>
+      </a>
+      <a href="pages/media.html" class="dashboard-card p-5 hover:border-dcf-400 transition">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-[10px] uppercase text-gray-500 font-bold">INFORMATION</p>
+            <h3 class="text-lg font-bold mt-1">Photo Gallery</h3>
+            <p class="text-xs text-gray-500 mt-1">View DCF photos</p>
+          </div>
+          <i class="fas fa-images text-2xl text-purple-700"></i>
+        </div>
+      </a>
+    </section>
+
+    <!-- LOWER CONTENT -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+
+      <!-- RECENT ACTIVITIES -->
+      <section class="xl:col-span-2 dashboard-card">
+        <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-gray-800">Activities za Hivi Karibuni</h3>
+            <p class="text-[10px] text-gray-500 mt-0.5">Activities tano za mwisho zilizorekodiwa</p>
+          </div>
+          <a href="pages/activities.html" class="text-xs font-bold text-dcf-700 hover:text-dcf-900">View All <i class="fas fa-arrow-right ml-1"></i></a>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full data-table text-xs">
+            <thead>
+              <tr>
+                <th class="text-left px-5 py-3 border-b">Activities</th>
+                <th class="text-left px-4 py-3 border-b">Date</th>
+                <th class="text-left px-4 py-3 border-b">Location</th>
+                <th class="text-center px-4 py-3 border-b">Status</th>
+              </tr>
+            </thead>
+            <tbody id="activities-table-body">
+              <tr><td colspan="4" class="px-5 py-10 text-center text-gray-500"><span class="loader"></span><span class="ml-2">Loading information...</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- QUICK ACTIONS -->
+      <section class="dashboard-card">
+        <div class="px-5 py-4 border-b border-gray-200">
+          <h3 class="text-sm font-bold text-gray-800">Quick Actions</h3>
+          <p class="text-[10px] text-gray-500 mt-0.5">Frequently used actions</p>
+        </div>
+        <div class="p-4 space-y-2">
+          <a href="pages/add-member.html" id="quick-add-member" class="quick-link flex items-center justify-between border border-gray-200 px-3 py-3 hover:border-dcf-400 hover:bg-dcf-50 transition"><span class="flex items-center gap-3 text-xs font-bold"><i class="fas fa-user-plus text-dcf-700"></i> Register Member</span><i class="fas fa-chevron-right text-[9px] text-gray-400"></i></a>
+          <a href="pages/donation.html" class="quick-link admin-finance-link flex items-center justify-between border border-gray-200 px-3 py-3 hover:border-dcf-400 hover:bg-dcf-50 transition"><span class="flex items-center gap-3 text-xs font-bold"><i class="fas fa-hand-holding-usd text-dcf-700"></i> Record Donation</span><i class="fas fa-chevron-right text-[9px] text-gray-400"></i></a>
+          <a href="pages/attendance.html" class="quick-link admin-member-link flex items-center justify-between border border-gray-200 px-3 py-3 hover:border-dcf-400 hover:bg-dcf-50 transition"><span class="flex items-center gap-3 text-xs font-bold"><i class="fas fa-clipboard-check text-dcf-700"></i> Sajili Attendance</span><i class="fas fa-chevron-right text-[9px] text-gray-400"></i></a>
+          <a href="pages/inventory.html" class="quick-link admin-only-link flex items-center justify-between border border-gray-200 px-3 py-3 hover:border-dcf-400 hover:bg-dcf-50 transition"><span class="flex items-center gap-3 text-xs font-bold"><i class="fas fa-boxes text-dcf-700"></i> Inventory Management</span><i class="fas fa-chevron-right text-[9px] text-gray-400"></i></a>
+          <a href="pages/media.html" class="quick-link flex items-center justify-between border border-gray-200 px-3 py-3 hover:border-dcf-400 hover:bg-dcf-50 transition"><span class="flex items-center gap-3 text-xs font-bold"><i class="fas fa-images text-dcf-700"></i> Photo Gallery</span><i class="fas fa-chevron-right text-[9px] text-gray-400"></i></a>
+          <a href="pages/certificate.html" class="quick-link flex items-center justify-between border border-gray-200 px-3 py-3 hover:border-dcf-400 hover:bg-dcf-50 transition"><span class="flex items-center gap-3 text-xs font-bold"><i class="fas fa-certificate text-dcf-700"></i> Certificates</span><i class="fas fa-chevron-right text-[9px] text-gray-400"></i></a>
+          <a href="pages/audit-logs.html" class="quick-link admin-only-link flex items-center justify-between border border-gray-200 px-3 py-3 hover:border-dcf-400 hover:bg-dcf-50 transition"><span class="flex items-center gap-3 text-xs font-bold"><i class="fas fa-history text-dcf-700"></i> System Audit Logs</span><i class="fas fa-chevron-right text-[9px] text-gray-400"></i></a>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="mt-7 pt-4 border-t border-gray-200 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+      <p class="text-[10px] text-gray-500">Development Charity Foundation</p>
+      <p class="text-[10px] text-gray-500">DCF MIS Version 1.0 © 2026</p>
+    </footer>
+
+    <!-- TICKET BOOKING — DASHBOARD MODULE -->
+    <section id="ticket-booking-module" aria-label="Ticket Booking Module">
+      <div class="ticket-module-toolbar">
+        <div class="ticket-module-title"><i class="fas fa-ticket-alt"></i><span>Ticket Booking</span></div>
+        <button type="button" id="ticket-module-back" class="ticket-module-back"><i class="fas fa-arrow-left"></i> Dashboard</button>
+      </div>
+      <iframe id="ticket-booking-frame" title="Ticket Booking" src="about:blank" loading="lazy" referrerpolicy="same-origin"></iframe>
+    </section>
+
+    <!-- EVENTS — DASHBOARD MODULE -->
+    <section id="events-module" aria-label="Events Module">
+      <div class="ticket-module-toolbar">
+        <div class="ticket-module-title"><i class="fas fa-calendar-check"></i><span>Events</span></div>
+        <button type="button" id="events-module-back" class="ticket-module-back"><i class="fas fa-arrow-left"></i> Dashboard</button>
+      </div>
+      <iframe id="events-module-frame" title="Events" src="about:blank" loading="lazy" referrerpolicy="same-origin"></iframe>
+    </section>
+  </main>
+
+</div>
+</div>
+
+<!-- ========================================================= JAVASCRIPT ========================================================= -->
+<script>
+
+/* GLOBAL VARIABLES */
+let currentUser = null;
+let currentProfile = null;
+
+/* SEARCH CACHE */
+let searchMembers = [];
+let searchProjects = [];
+let searchDataLoaded = false;
+let searchLoading = false;
+
+/* MOBILE SIDEBAR */
+const menuBtn = document.getElementById("mobile-menu-btn");
+const sidebar = document.getElementById("sidebar");
+const overlay = document.getElementById("sidebar-overlay");
+
+function openSidebar() {
+  if (!sidebar || !overlay) return;
+  sidebar.classList.add("open");
+  overlay.classList.remove("hidden");
+}
+function closeSidebar() {
+  if (!sidebar || !overlay) return;
+  sidebar.classList.remove("open");
+  overlay.classList.add("hidden");
+}
+if (menuBtn) menuBtn.addEventListener("click", openSidebar);
+if (overlay) overlay.addEventListener("click", closeSidebar);
+
+/* RETURN DASHBOARD BUTTON */
+function setupReturnDashboardButton() {
+  const button = document.getElementById("returnDashboardButton");
+  if (!button) return;
+  const currentPage = window.location.pathname.split("/").pop().toLowerCase();
+  if (currentPage === "dashboard.html" || currentPage === "") {
+    button.style.display = "none";
+  }
+}
+
+/* AUTHENTICATION */
+async function checkAuthentication() {
+  try {
+    if (typeof _supabase === "undefined" || !_supabase) {
+      console.error("Supabase client haijapatikana.");
+      window.location.href = "login.html";
+      return null;
+    }
+    const { data, error } = await _supabase.auth.getSession();
+    if (error || !data || !data.session || !data.session.user) {
+      window.location.href = "login.html";
+      return null;
+    }
+    currentUser = data.session.user;
+    return currentUser;
+  } catch (error) {
+    console.error("Authentication Error:", error);
+    window.location.href = "login.html";
+    return null;
+  }
+}
+
+/* LOGOUT */
+async function handleLogout() {
+  const button = document.getElementById("logoutButton");
+  try {
+    if (button) { button.disabled = true; button.innerHTML = '<span class="loader"></span>'; }
+    const { error } = await _supabase.auth.signOut();
+    if (error) {
+      console.error("Logout Error:", error);
+      alert("Imeshindikana kutoka kwenye mfumo. Tafadhali jaribu tena.");
+      if (button) { button.disabled = false; button.innerHTML = '<i class="fas fa-sign-out-alt"></i>'; }
+      return;
+    }
+    window.location.replace("login.html");
+  } catch (error) {
+    console.error(error);
+    alert("Kuna tatizo wakati wa kutoka kwenye mfumo.");
+    if (button) { button.disabled = false; button.innerHTML = '<i class="fas fa-sign-out-alt"></i>'; }
+  }
+}
+
+/* LOAD USER PROFILE */
+async function loadUserProfile(user) {
+  try {
+    const { data: profile, error } = await _supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+    if (error) { console.error("Profile Error:", error); return; }
+
+    currentProfile = profile || {};
+    const role = profile?.role || "member";
+    const roleTitles = { admin: "Administrator", staff: "Staff", auditor: "Auditor", member: "Member" };
+    const name = profile?.full_name || profile?.name || user.email?.split("@")[0] || "User";
+    const email = user.email || "-";
+
+    let profilePicture = profile?.avatar_url || profile?.profile_picture || profile?.photo_url || profile?.image_url || profile?.picture_url || profile?.avatar || null;
+
+    if (!profilePicture) {
+      try {
+        const { data: member } = await _supabase.from("members").select("*").eq("email", user.email).maybeSingle();
+        if (member) {
+          profilePicture = member.avatar_url || member.profile_picture || member.photo_url || member.image_url || member.picture_url || member.avatar || null;
+        }
+      } catch (error) {
+        console.log("Member profile lookup skipped.");
+      }
+    }
+
+    const nameElement = document.getElementById("sidebarUserName");
+    const roleElement = document.getElementById("sidebarUserRole");
+    const avatar = document.getElementById("userAvatar");
+
+    if (nameElement) nameElement.textContent = name;
+    if (roleElement) roleElement.textContent = roleTitles[role] || role;
+
+    if (avatar && profilePicture) {
+      avatar.innerHTML = "";
+      const image = document.createElement("img");
+      image.src = profilePicture;
+      image.alt = "Profile";
+      image.className = "profile-image";
+      image.loading = "lazy";
+      image.onerror = function () { avatar.textContent = getInitial(name); };
+      avatar.appendChild(image);
+    } else if (avatar) {
+      avatar.textContent = getInitial(name);
+    }
+
+    if (role === "member") showMemberDashboard(name, email, profilePicture);
+
+    applyRolePermissions(role);
+  } catch (error) {
+    console.error("Profile loading error:", error);
+  }
+}
+
+/* MEMBER DASHBOARD - VIEW ONLY */
+function showMemberDashboard(name, email, profilePicture) {
+  const profileCard = document.getElementById("member-profile-card");
+  const memberInformation = document.getElementById("member-information");
+  if (profileCard) profileCard.classList.remove("hidden");
+  if (memberInformation) memberInformation.classList.remove("hidden");
+
+  const profileName = document.getElementById("member-profile-name");
+  const profileEmail = document.getElementById("member-profile-email");
+  if (profileName) profileName.textContent = name;
+  if (profileEmail) profileEmail.textContent = email;
+
+  const image = document.getElementById("member-profile-picture");
+  const placeholder = document.getElementById("member-profile-placeholder");
+  if (image && profilePicture) {
+    image.src = profilePicture;
+    image.classList.remove("hidden");
+    if (placeholder) placeholder.classList.add("hidden");
+  }
+
+  [
+    "member-profile-button", "dashboard-add-member", "quick-add-member",
+    "add-member-button", "register-member-button", "member-register-button",
+    "memberRegistrationButton", "start-registration"
+  ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display = "none"; el.classList.add("hidden"); }
+  });
+
+  document.querySelectorAll('a[href*="add-member.html"]').forEach(el => {
+    el.style.display = "none";
+    el.classList.add("hidden");
+  });
+
+  const welcomeTitle = document.getElementById("welcome-title");
+  const welcomeDescription = document.getElementById("welcome-description");
+  if (welcomeTitle) welcomeTitle.textContent = "Karibu, " + name;
+  if (welcomeDescription) {
+    welcomeDescription.textContent = "Unaweza kuona taarifa za DCF, miradi, shughuli na picha. Akaunti yako ni ya kuangalia taarifa tu.";
+  }
+
+  document.body.classList.add("member-view-only");
+}
+
+/* ROLE PERMISSIONS */
+function applyRolePermissions(role) {
+  role = String(role || "member").trim().toLowerCase();
+
+  document.querySelectorAll(".admin-member-link, .admin-finance-link, .admin-only-link, .staff-only-link, .management-only-link, .restricted-link").forEach(link => {
+    link.style.display = "none";
+  });
+
+  if (role === "admin") {
+    document.querySelectorAll(".admin-member-link, .admin-finance-link, .admin-only-link, .staff-only-link, .management-only-link").forEach(link => link.style.display = "");
+    return;
+  }
+
+  if (role === "staff") {
+    document.querySelectorAll(".staff-only-link").forEach(link => link.style.display = "");
+    hideLinksByHref(["users.html", "audit-logs.html"]);
+    hideRestrictedSections(["users-section", "administration-section"]);
+    return;
+  }
+
+  if (role === "auditor") {
+    hideLinksByHref([
+      "users.html", "add-member.html", "add-media.html", "donation.html", "donations.html",
+      "finance.html", "payments.html", "inventory.html", "add-inventory.html",
+      "administration.html", "settings.html"
+    ]);
+    hideRestrictedSections(["member-management-section", "finance-section", "administration-section", "inventory-section"]);
+    return;
+  }
+
+  if (role === "member") applyMemberViewOnly();
+}
+
+/* MEMBER VIEW-ONLY ACCESS */
+function applyMemberViewOnly() {
+  const restrictedPages = [
+    "members.html", "members-list.html", "add-member.html", "volunteers.html",
+    "beneficiaries.html", "attendance.html", "users.html", "add-media.html",
+    "donation.html", "donations.html", "finance.html", "payments.html",
+    "inventory.html", "add-inventory.html", "administration.html", "settings.html",
+    "audit-logs.html", "manage.html", "reports-management.html"
+  ];
+
+  hideLinksByHref(restrictedPages);
+
+  document.querySelectorAll(".admin-member-link, .admin-finance-link, .admin-only-link, .staff-only-link, .management-only-link, .restricted-link").forEach(link => {
+    link.style.display = "none";
+    link.classList.add("hidden");
+  });
+
+  hideRestrictedSections([
+    "member-management-section", "finance-section", "administration-section",
+    "users-section", "audit-section", "inventory-section"
+  ]);
+
+  [
+    "dashboard-add-member", "quick-add-member", "add-member-button",
+    "register-member-button", "member-register-button", "memberRegistrationButton", "start-registration"
+  ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display = "none"; el.classList.add("hidden"); }
+  });
+
+  document.querySelectorAll('a[href*="add-member.html"]').forEach(el => {
+    el.style.display = "none";
+    el.classList.add("hidden");
+  });
+
+  document.querySelectorAll("a, button").forEach(el => {
+    const text = String(el.textContent || "").trim().toLowerCase();
+    if (
+      text.includes("sajili mwanachama") || text.includes("ongeza mwanachama") ||
+      text.includes("register member") || text.includes("add member") ||
+      text === "hariri" || text === "edit" || text === "delete" || text === "futa"
+    ) {
+      el.style.display = "none";
+    }
+  });
+
+  document.body.classList.add("member-view-only");
+  cleanupEmptySections();
+}
+
+function hideRestrictedSections(ids) {
+  ids.forEach(id => {
+    const section = document.getElementById(id);
+    if (section) section.style.display = "none";
+  });
+}
+
+/* HIDE LINKS */
+function hideLinksByHref(list) {
+  list.forEach(filename => {
+    document.querySelectorAll(`a[href*="${filename}"]`).forEach(link => {
+      link.style.display = "none";
+      link.classList.add("hidden");
+    });
+  });
+}
+
+/* CLEAN EMPTY SIDEBAR SECTIONS */
+function cleanupEmptySections() {
+  document.querySelectorAll("nav section").forEach(section => {
+    const links = Array.from(section.querySelectorAll("a"));
+    const visibleLinks = links.filter(link => {
+      const style = window.getComputedStyle(link);
+      return style.display !== "none" && !link.classList.contains("hidden");
+    });
+    if (links.length > 0 && visibleLinks.length === 0) section.style.display = "none";
+  });
+}
+
+/* MEMBER PAGE GUARD */
+async function enforceMemberAccess() {
+  try {
+    if (typeof _supabase === "undefined" || !_supabase) return;
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (!session || !session.user) return;
+
+    const { data: profile, error } = await _supabase.from("profiles").select("role").eq("id", session.user.id).maybeSingle();
+    if (error) { console.error("Member access check error:", error); return; }
+
+    const role = String(profile?.role || "member").toLowerCase();
+    if (role !== "member") return;
+
+    const currentPage = window.location.pathname.split("/").pop().toLowerCase();
+    const restrictedPages = [
+      "members.html", "members-list.html", "add-member.html", "volunteers.html",
+      "beneficiaries.html", "attendance.html", "users.html", "add-media.html",
+      "donation.html", "donations.html", "finance.html", "payments.html",
+      "inventory.html", "add-inventory.html", "administration.html", "settings.html", "audit-logs.html"
+    ];
+
+    if (restrictedPages.includes(currentPage)) {
+      const dashboardPath = window.location.pathname.includes("/pages/") ? "../dashboard.html" : "dashboard.html";
+      window.location.replace(dashboardPath);
+    }
+  } catch (error) {
+    console.error("Member access enforcement error:", error);
+  }
+}
+
+/* MEMBER REGISTRATION STATUS */
+async function checkMemberRegistrationStatus() {
+  try {
+    if (typeof _supabase === "undefined" || !_supabase || !currentUser) return false;
+
+    const { data: member, error } = await _supabase.from("members").select("id,email").eq("email", currentUser.email).maybeSingle();
+    if (error) { console.error("Member registration status error:", error); return false; }
+
+    if (member) {
+      [
+        "dashboard-add-member", "quick-add-member", "add-member-button",
+        "register-member-button", "member-register-button", "memberRegistrationButton",
+        "start-registration", "member-profile-button"
+      ].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.style.display = "none"; el.classList.add("hidden"); }
+      });
+
+      document.querySelectorAll('a[href*="add-member.html"]').forEach(el => {
+        el.style.display = "none";
+        el.classList.add("hidden");
+      });
+
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Registration status error:", error);
+    return false;
+  }
+}
+
+/* =========================================================
+   DASHBOARD FINANCE METRICS
+   Source: finance_transactions
+   Visible to admin, staff and auditor only.
+========================================================= */
+async function loadFinanceDashboardMetrics() {
+  const section = document.getElementById("dashboard-finance-summary");
+  const status = document.getElementById("finance-dashboard-status");
+  const role = String(currentProfile?.role || "member").trim().toLowerCase();
+
+  if (!section) return;
+
+  if (!["admin", "staff", "auditor"].includes(role)) {
+    section.classList.add("hidden");
+    return;
+  }
+
+  section.classList.remove("hidden");
+  if (status) status.innerHTML = '<span class="w-2 h-2 rounded-full bg-gray-300"></span> Loading...';
+
+  try {
+    const { data, error } = await _supabase.from("finance_transactions").select("transaction_type, amount");
+    if (error) throw error;
+
+    let income = 0;
+    let expense = 0;
+
+    (Array.isArray(data) ? data : []).forEach(transaction => {
+      const amount = Number(transaction?.amount || 0);
+      const type = String(transaction?.transaction_type || "").trim().toLowerCase();
+      if (type === "income" || type === "mapato") income += amount;
+      if (type === "expense" || type === "matumizi") expense += amount;
+    });
+
+    const balance = income - expense;
+
+    setText("dashboard-total-income", "TSH " + income.toLocaleString("en-TZ"));
+    setText("dashboard-total-expense", "TSH " + expense.toLocaleString("en-TZ"));
+    setText("dashboard-total-balance", "TSH " + balance.toLocaleString("en-TZ"));
+
+    if (status) status.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Taarifa zimesasishwa';
+  } catch (error) {
+    console.error("Dashboard finance metrics error:", error);
+    setText("dashboard-total-income", "TSH --");
+    setText("dashboard-total-expense", "TSH --");
+    setText("dashboard-total-balance", "TSH --");
+    if (status) status.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Imeshindikana kupakia';
+  }
+}
+
+/* =========================================================
+   DASHBOARD METRICS — OPTIMIZED (PARALLEL LOADING)
+   All independent Supabase reads now run concurrently via
+   Promise.all instead of sequential awaits. Same queries,
+   same IDs, same results — only the loading order changed
+   for speed.
+========================================================= */
+async function loadDashboardMetrics() {
+  try {
+    const [
+      membersResult,
+      projectsResult,
+      donationsResult,
+      beneficiariesResult
+    ] = await Promise.all([
+      _supabase.from("members").select("*", { count: "exact", head: true }),
+      _supabase.from("dcf_projects").select("*", { count: "exact", head: true }).eq("status", "Active"),
+      _supabase.from("donations").select("amount"),
+      _supabase.from("beneficiaries").select("*", { count: "exact", head: true })
+    ]);
+
+    const { count: memberCount, error: memberError } = membersResult;
+    setText("total-members", !memberError && memberCount !== null ? memberCount.toLocaleString() : "0");
+
+    const { count: projectCount, error: projectError } = projectsResult;
+    setText("active-projects", !projectError && projectCount !== null ? projectCount.toLocaleString() : "0");
+
+    const { data: donations, error: donationError } = donationsResult;
+    let totalDonation = 0;
+    if (!donationError && Array.isArray(donations)) {
+      totalDonation = donations.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+    }
+    setText("total-donations", "TSH " + totalDonation.toLocaleString("en-TZ"));
+
+    const { count: beneficiaryCount, error: beneficiaryError } = beneficiariesResult;
+    setText("total-beneficiaries", !beneficiaryError && beneficiaryCount !== null ? beneficiaryCount.toLocaleString() : "0");
+
+    /* Finance summary and recent activities are independent of
+       the counts above and of each other, so they run together. */
+    await Promise.all([
+      loadFinanceDashboardMetrics(),
+      loadRecentActivities()
+    ]);
+
+    updateExecutiveRibbon();
+  } catch (error) {
+    console.error("Dashboard metrics error:", error);
+  }
+}
+
+/* RECENT ACTIVITIES */
+async function loadRecentActivities() {
+  const tableBody = document.getElementById("activities-table-body");
+  if (!tableBody) return;
+
+  try {
+    const { data, error } = await _supabase
+      .from("dcf_activities")
+      .select("title, activity_date, location, status")
+      .order("activity_date", { ascending: false })
+      .limit(5);
+
+    if (error) { console.error("Activities Error:", error); showActivityEmpty("Imeshindikana kupakia shughuli."); return; }
+    if (!data || data.length === 0) { showActivityEmpty("Hakuna shughuli iliyorekodiwa bado."); return; }
+
+    const rows = data.map(activity => {
+      const status = getActivityStatus(activity.status);
+      return `
+        <tr class="border-b border-gray-100">
+          <td class="px-5 py-3.5 font-bold text-gray-800">${escapeHtml(activity.title || "-")}</td>
+          <td class="px-4 py-3.5 text-gray-600">${escapeHtml(formatDate(activity.activity_date))}</td>
+          <td class="px-4 py-3.5 text-gray-600">${escapeHtml(activity.location || "-")}</td>
+          <td class="px-4 py-3.5 text-center"><span class="inline-block px-2 py-1 border text-[10px] font-bold ${status.className}">${escapeHtml(status.label)}</span></td>
+        </tr>`;
+    }).join("");
+
+    tableBody.innerHTML = rows;
+  } catch (error) {
+    console.error("Activities Exception:", error);
+    showActivityEmpty("Kuna tatizo la kupakia taarifa.");
+  }
+}
+
+/* ACTIVITY STATUS */
+function getActivityStatus(status) {
+  const value = String(status || "Scheduled").toLowerCase();
+  if (value === "completed" || value === "complete") return { label: "Imekamilika", className: "bg-green-50 text-green-700 border-green-200" };
+  if (value === "ongoing" || value === "in progress") return { label: "Inaendelea", className: "bg-blue-50 text-blue-700 border-blue-200" };
+  if (value === "cancelled" || value === "canceled") return { label: "Imeghairiwa", className: "bg-red-50 text-red-700 border-red-200" };
+  return { label: status || "Imepangwa", className: "bg-amber-50 text-amber-700 border-amber-200" };
+}
+
+/* EMPTY ACTIVITY */
+function showActivityEmpty(message) {
+  const tableBody = document.getElementById("activities-table-body");
+  if (!tableBody) return;
+  tableBody.innerHTML = `
+    <tr><td colspan="4" class="px-5 py-10 text-center text-gray-500">
+      <i class="fas fa-inbox text-xl text-gray-300 mb-2"></i>
+      <div>${escapeHtml(message)}</div>
+    </td></tr>`;
+}
+
+/* REFRESH DASHBOARD */
+async function refreshDashboard() {
+  const button = document.getElementById("refreshButton");
+  const icon = document.getElementById("refreshIcon");
+  if (button) button.disabled = true;
+  if (icon) icon.classList.add("fa-spin");
+  try {
+    searchDataLoaded = false;
+    await loadDashboardMetrics();
+  } finally {
+    if (icon) icon.classList.remove("fa-spin");
+    if (button) button.disabled = false;
+  }
+}
+
+/* DATE & TIME */
+function updateDateTime() {
+  const now = new Date();
+  const date = now.toLocaleDateString("sw-TZ", { weekday: "long", day: "2-digit", month: "long", year: "numeric" });
+  const time = now.toLocaleTimeString("sw-TZ", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  setText("current-date", date);
+  setText("current-time", time);
+}
+updateDateTime();
+setInterval(updateDateTime, 1000);
+
+/* =========================================================
+   IMPROVED GLOBAL SEARCH — OPTIMIZED (PARALLEL LOADING)
+   Members and projects are fetched together via Promise.all
+   instead of one after another. Same tables, same columns,
+   same limits — only fetched concurrently.
+========================================================= */
+async function loadSearchData() {
+  if (searchDataLoaded || searchLoading) return;
+  searchLoading = true;
+
+  try {
+    const [membersResult, projectsResult] = await Promise.all([
+      _supabase.from("members").select("*").limit(1000),
+      _supabase.from("dcf_projects").select("*").limit(1000)
+    ]);
+
+    const { data: members, error: membersError } = membersResult;
+    if (membersError) { console.error("Search Members Error:", membersError); searchMembers = []; }
+    else { searchMembers = Array.isArray(members) ? members : []; }
+
+    const { data: projects, error: projectsError } = projectsResult;
+    if (projectsError) { console.error("Search Projects Error:", projectsError); searchProjects = []; }
+    else { searchProjects = Array.isArray(projects) ? projects : []; }
+
+    searchDataLoaded = true;
+  } catch (error) {
+    console.error("Search data loading error:", error);
+  } finally {
+    searchLoading = false;
+  }
+}
+
+/* GET MEMBER DISPLAY NAME */
+function getMemberName(member) {
+  if (!member) return "Member";
+  const fullName = member.full_name || member.name || member.member_name;
+  if (fullName) return String(fullName);
+  const parts = [member.first_name, member.middle_name, member.last_name].filter(Boolean).join(" ");
+  if (parts) return parts;
+  return member.member_no || member.membership_no || member.email || "Member";
+}
+
+/* GET PROJECT DISPLAY NAME */
+function getProjectName(project) {
+  if (!project) return "Mradi";
+  return project.name || project.project_name || project.title || project.project_title || project.code || "Mradi";
+}
+
+/* CREATE SEARCHABLE TEXT */
+function objectSearchText(object) {
+  if (!object) return "";
+  return Object.entries(object).map(([key, value]) => {
+    if (value === null || value === undefined) return "";
+    return String(key) + " " + String(value);
+  }).join(" ").toLowerCase();
+}
+
+/* SEARCH DATABASE */
+async function performGlobalSearch(query) {
+  const resultsBox = document.getElementById("searchResults");
+  if (!resultsBox) return;
+
+  const cleanQuery = String(query || "").trim().toLowerCase();
+  if (!cleanQuery) { hideSearchResults(); return; }
+
+  showSearchLoading();
+  await loadSearchData();
+
+  const results = [];
+
+  searchMembers.forEach(member => {
+    const text = objectSearchText(member);
+    if (text.includes(cleanQuery)) {
+      results.push({
+        type: "member",
+        title: getMemberName(member),
+        description: member.email || member.phone || member.member_no || member.membership_no || "Taarifa ya mwanachama",
+        data: member
+      });
+    }
+  });
+
+  searchProjects.forEach(project => {
+    const text = objectSearchText(project);
+    if (text.includes(cleanQuery)) {
+      results.push({
+        type: "project",
+        title: getProjectName(project),
+        description: project.description || project.location || project.status || "Taarifa ya mradi",
+        data: project
+      });
+    }
+  });
+
+  const sidebarLinks = Array.from(document.querySelectorAll(".sidebar-link"));
+  sidebarLinks.forEach(link => {
+    const text = link.textContent.trim();
+    if (text.toLowerCase().includes(cleanQuery)) {
+      results.push({ type: "menu", title: text, description: "Fungua ukurasa huu", href: link.href });
+    }
+  });
+
+  renderSearchResults(results.slice(0, 15), cleanQuery);
+}
+
+/* RENDER SEARCH RESULTS */
+function renderSearchResults(results, query) {
+  const resultsBox = document.getElementById("searchResults");
+  if (!resultsBox) return;
+
+  resultsBox.innerHTML = "";
+  resultsBox.classList.add("show");
+
+  if (!results || results.length === 0) {
+    resultsBox.innerHTML = `
+      <div class="search-empty">
+        <i class="fas fa-search text-gray-300 text-xl mb-2"></i>
+        <div class="font-bold">No results</div>
+        <div class="mt-1">No information matches "${escapeHtml(query)}"</div>
+      </div>`;
+    return;
+  }
+
+  const databaseResults = results.filter(item => item.type !== "menu");
+  const menuResults = results.filter(item => item.type === "menu");
+
+  if (databaseResults.length > 0) {
+    const header = document.createElement("div");
+    header.className = "search-result-header";
+    header.textContent = "Taarifa za Mfumo";
+    resultsBox.appendChild(header);
+    databaseResults.forEach(result => resultsBox.appendChild(createSearchResultElement(result)));
+  }
+
+  if (menuResults.length > 0) {
+    const header = document.createElement("div");
+    header.className = "search-result-header";
+    header.textContent = "Menu";
+    resultsBox.appendChild(header);
+    menuResults.forEach(result => resultsBox.appendChild(createSearchResultElement(result)));
+  }
+}
+
+/* CREATE SEARCH RESULT */
+function createSearchResultElement(result) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "search-result-item";
+
+  let icon = "fa-search";
+  let iconClass = "bg-gray-100 text-gray-600";
+  let typeLabel = "Taarifa";
+
+  if (result.type === "member") { icon = "fa-user"; iconClass = "bg-dcf-100 text-dcf-700"; typeLabel = "Member"; }
+  else if (result.type === "project") { icon = "fa-folder"; iconClass = "bg-blue-50 text-blue-700"; typeLabel = "Mradi"; }
+  else if (result.type === "menu") { icon = "fa-bars"; iconClass = "bg-gray-100 text-gray-700"; typeLabel = "Menu"; }
+
+  button.innerHTML = `
+    <span class="search-result-icon ${iconClass}"><i class="fas ${icon} text-xs"></i></span>
+    <span class="search-result-content">
+      <span class="search-result-title">${escapeHtml(result.title)}</span>
+      <span class="search-result-description">${escapeHtml(result.description)}</span>
+    </span>
+    <span class="search-result-type">${typeLabel}</span>`;
+
+  button.addEventListener("click", function () { openSearchResult(result); });
+  return button;
+}
+
+/* OPEN SEARCH RESULT */
+function openSearchResult(result) {
+  hideSearchResults();
+
+  if (result.type === "menu") {
+    if (result.href) window.location.href = result.href;
+    return;
+  }
+
+  if (result.type === "member") {
+    const member = result.data;
+    const memberId = member.id || member.member_id || member.MemberID || "";
+    const memberNo = member.member_no || member.membership_no || "";
+    const params = new URLSearchParams();
+    if (memberId) params.set("id", memberId);
+    if (memberNo) params.set("member_no", memberNo);
+    window.location.href = "pages/members-list.html" + (params.toString() ? "?" + params.toString() : "");
+    return;
+  }
+
+  if (result.type === "project") {
+    const project = result.data;
+    const projectId = project.id || project.project_id || project.ProjectID || "";
+    const params = new URLSearchParams();
+    if (projectId) params.set("id", projectId);
+    window.location.href = "pages/projects.html" + (params.toString() ? "?" + params.toString() : "");
+  }
+}
+
+/* SEARCH LOADING */
+function showSearchLoading() {
+  const resultsBox = document.getElementById("searchResults");
+  if (!resultsBox) return;
+  resultsBox.innerHTML = `<div class="search-loading"><span class="loader"></span><span class="ml-2">Inatafuta kwenye mfumo...</span></div>`;
+  resultsBox.classList.add("show");
+}
+
+/* HIDE SEARCH RESULTS */
+function hideSearchResults() {
+  const resultsBox = document.getElementById("searchResults");
+  if (resultsBox) resultsBox.classList.remove("show");
+}
+
+/* SEARCH INPUT EVENTS */
+const searchInput = document.getElementById("globalSearch");
+const clearSearchButton = document.getElementById("clearSearchButton");
+
+if (searchInput) {
+  searchInput.addEventListener("input", function () {
+    const query = this.value.trim();
+    if (clearSearchButton) {
+      if (query) clearSearchButton.classList.remove("hidden");
+      else clearSearchButton.classList.add("hidden");
+    }
+    if (!query) { hideSearchResults(); return; }
+    performGlobalSearch(query);
+  });
+
+  searchInput.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") { hideSearchResults(); return; }
+    if (event.key !== "Enter") return;
+
+    const query = this.value.trim();
+    if (!query) return;
+
+    const resultsBox = document.getElementById("searchResults");
+    if (resultsBox && resultsBox.classList.contains("show")) {
+      const firstResult = resultsBox.querySelector(".search-result-item");
+      if (firstResult) firstResult.click();
+    }
+  });
+}
+
+if (clearSearchButton) {
+  clearSearchButton.addEventListener("click", function () {
+    if (searchInput) { searchInput.value = ""; searchInput.focus(); }
+    this.classList.add("hidden");
+    hideSearchResults();
+  });
+}
+
+/* CLOSE SEARCH WHEN CLICKING OUTSIDE */
+document.addEventListener("click", function (event) {
+  const wrapper = document.querySelector(".search-wrapper");
+  if (wrapper && !wrapper.contains(event.target)) hideSearchResults();
+});
+
+/* ACTIVE SIDEBAR LINK */
+function markCurrentPage() {
+  const current = window.location.pathname.split("/").pop();
+  document.querySelectorAll(".sidebar-link").forEach(link => {
+    const href = link.getAttribute("href");
+    if (!href) return;
+    const linkPage = href.split("/").pop();
+    if (linkPage === current && linkPage !== "dashboard.html") link.classList.add("active");
+  });
+}
+
+/* HELPERS */
+function setText(id, value) {
+  const element = document.getElementById(id);
+  if (element) element.textContent = value;
+}
+function getInitial(name) {
+  if (!name) return "U";
+  return String(name).trim().charAt(0).toUpperCase();
+}
+function formatDate(dateString) {
+  if (!dateString) return "-";
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return dateString;
+  return date.toLocaleDateString("sw-TZ", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+/* =========================================================
+   DCF EXECUTIVE UI — NON-DESTRUCTIVE PRESENTATION HELPER
+   OPTIMIZED: the MutationObserver that watched the KPI
+   numbers on every DOM change has been removed. The ribbon
+   is now updated with a single direct call right after
+   loadDashboardMetrics() finishes (see above), which shows
+   the exact same result with far less background work.
+========================================================= */
+function updateExecutiveRibbon() {
+  const member = document.getElementById("total-members");
+  const projects = document.getElementById("active-projects");
+  const donation = document.getElementById("total-donations");
+  const beneficiary = document.getElementById("total-beneficiaries");
+
+  const values = [
+    member && member.textContent.trim(),
+    projects && projects.textContent.trim(),
+    donation && donation.textContent.trim(),
+    beneficiary && beneficiary.textContent.trim()
+  ];
+
+  document.querySelectorAll(".dcf-executive-ribbon .dcf-ribbon-value").forEach((el, index) => {
+    if (index === 0) el.textContent = "Executive Overview";
+    if (index === 1) el.textContent = values[0] && values[0] !== "--" ? "Live · " + values[0] + " records visible" : "Live Data";
+    if (index === 2) {
+      const role = currentProfile && currentProfile.role ? String(currentProfile.role) : "member";
+      el.textContent = role.charAt(0).toUpperCase() + role.slice(1) + " access";
+    }
+    if (index === 3) el.textContent = "Auto refresh enabled";
+  });
+}
+
+/* =========================================================
+   TICKET BOOKING — OPEN AS DASHBOARD MODULE
+========================================================= */
+(function () {
+  const TICKET_HREF = "pages/ticket-booking.html";
+
+  async function verifyTicketBookingPage() {
+    try {
+      const response = await fetch(TICKET_HREF, { method: "HEAD", cache: "no-store" });
+      if (!response.ok) {
+        console.error("Ticket Booking page is not available:", response.status, TICKET_HREF);
+        const frame = document.getElementById("ticket-booking-frame");
+        if (frame) {
+          frame.removeAttribute("src");
+          frame.srcdoc = `<!doctype html><html lang="en"><body style="font-family:Inter,Arial,sans-serif;padding:40px;color:#17382b;background:#fff"><h2 style="margin:0 0 10px">Ticket Booking is unavailable</h2><p style="color:#66756e">The file <strong>ticket-booking.html</strong> could not be found at the expected location.</p><p style="color:#66756e">Place <strong>ticket-booking.html</strong> in the same folder as <strong>dashboard.html</strong>, or update TICKET_HREF in dashboard.html.</p></body></html>`;
+        }
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error("Unable to verify Ticket Booking page:", error);
+      return false;
+    }
+  }
+
+  function getTicketLinks() {
+    return Array.from(document.querySelectorAll(`a[href="${TICKET_HREF}"]`));
+  }
+  function dashboardChildren() {
+    const main = document.querySelector('main');
+    const module = document.getElementById('ticket-booking-module');
+    if (!main || !module) return [];
+    return Array.from(main.children).filter(el => el !== module);
+  }
+
+  function openTicketBookingModule() {
+    const module = document.getElementById('ticket-booking-module');
+    const frame = document.getElementById('ticket-booking-frame');
+    if (!module || !frame) return;
+
+    dashboardChildren().forEach(el => {
+      el.dataset.ticketModuleHidden = el.style.display || '';
+      el.style.display = 'none';
+    });
+
+    module.classList.add('ticket-module-active');
+    document.body.classList.add('ticket-module-open');
+
+    if (frame.getAttribute('src') !== TICKET_HREF) {
+      frame.removeAttribute('srcdoc');
+      frame.setAttribute('src', TICKET_HREF);
+    }
+    verifyTicketBookingPage();
+
+    document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+    getTicketLinks().forEach(link => link.classList.add('active'));
+
+    const main = document.querySelector('main');
+    if (main) main.scrollTop = 0;
+  }
+
+  function closeTicketBookingModule() {
+    const module = document.getElementById('ticket-booking-module');
+    if (!module) return;
+
+    module.classList.remove('ticket-module-active');
+    document.body.classList.remove('ticket-module-open');
+
+    dashboardChildren().forEach(el => {
+      el.style.display = el.dataset.ticketModuleHidden || '';
+      delete el.dataset.ticketModuleHidden;
+    });
+
+    document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+    const dashboardLink = document.querySelector('.sidebar-link[href="dashboard.html"]');
+    if (dashboardLink) dashboardLink.classList.add('active');
+
+    const main = document.querySelector('main');
+    if (main) main.scrollTop = 0;
+  }
+
+  function setupTicketBookingModule() {
+    getTicketLinks().forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        openTicketBookingModule();
+      });
+    });
+
+    const back = document.getElementById('ticket-module-back');
+    if (back) back.addEventListener('click', closeTicketBookingModule);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setupTicketBookingModule);
+  else setupTicketBookingModule();
+})();
+
+/* =========================================================
+   EVENTS — DASHBOARD MODULE
+   Opens exactly like Ticket Booking
+========================================================= */
+(function(){
+  const EVENTS_HREF="pages/events.html";
+  function getEventLinks(){return Array.from(document.querySelectorAll(`a[href="${EVENTS_HREF}"]`));}
+  function dashboardChildren(){
+    const main=document.querySelector('main'); const module=document.getElementById('events-module');
+    if(!main||!module)return[];
+    return Array.from(main.children).filter(el=>el!==module&&el.id!=='ticket-booking-module');
+  }
+  function openEventsModule(){
+    const module=document.getElementById('events-module'); const frame=document.getElementById('events-module-frame');
+    if(!module||!frame)return;
+    dashboardChildren().forEach(el=>{el.dataset.eventsModuleHidden=el.style.display||'';el.style.display='none';});
+    const ticket=document.getElementById('ticket-booking-module'); if(ticket)ticket.classList.remove('ticket-module-active');
+    module.classList.add('events-module-active'); document.body.classList.add('events-module-open'); document.body.classList.remove('ticket-module-open');
+    if(frame.getAttribute('src')!==EVENTS_HREF){frame.removeAttribute('srcdoc');frame.setAttribute('src',EVENTS_HREF);}
+    document.querySelectorAll('.sidebar-link').forEach(link=>link.classList.remove('active')); getEventLinks().forEach(link=>link.classList.add('active'));
+    const main=document.querySelector('main'); if(main)main.scrollTop=0;
+  }
+  function closeEventsModule(){
+    const module=document.getElementById('events-module'); if(!module)return;
+    module.classList.remove('events-module-active'); document.body.classList.remove('events-module-open');
+    dashboardChildren().forEach(el=>{el.style.display=el.dataset.eventsModuleHidden||'';delete el.dataset.eventsModuleHidden;});
+    getEventLinks().forEach(link=>link.classList.remove('active'));
+    const dashboardLink=document.querySelector('.sidebar-link[href="dashboard.html"]'); if(dashboardLink)dashboardLink.classList.add('active');
+    const main=document.querySelector('main'); if(main)main.scrollTop=0;
+  }
+  function setupEventsModule(){
+    getEventLinks().forEach(link=>link.addEventListener('click',function(e){e.preventDefault();openEventsModule();}));
+    const back=document.getElementById('events-module-back'); if(back)back.addEventListener('click',closeEventsModule);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setupEventsModule); else setupEventsModule();
+})();
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+document.addEventListener("DOMContentLoaded", async function () {
+  setupReturnDashboardButton();
+  markCurrentPage();
+
+  const user = await checkAuthentication();
+  if (!user) return;
+
+  await loadUserProfile(user);
+
+  if (String(currentProfile?.role || "member").toLowerCase() === "member") {
+    await checkMemberRegistrationStatus();
+    applyMemberViewOnly();
+  }
+
+  await enforceMemberAccess();
+  await loadDashboardMetrics();
+  cleanupEmptySections();
+  loadSearchData();
+});
+
+</script>
+</body>
+</html>

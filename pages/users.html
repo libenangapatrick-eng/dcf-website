@@ -1,0 +1,3096 @@
+<!DOCTYPE html>
+
+<html lang="sw">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DCF — Watumiaji Wote</title>
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    dcf: '#174a35',
+                    dcfDark: '#0d3022',
+                    dcfLight: '#4C9A2A',
+                    dcfHover: '#28723E'
+                }
+            }
+        }
+    };
+</script>
+
+<!-- Font Awesome -->
+<link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- DCF Supabase Config -->
+<script src="../js/supabase.js"></script>
+
+<style>
+
+    * {
+        font-family: "Times New Roman", Times, serif !important;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: #f5f7f6;
+    }
+
+    .card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 4px 18px rgba(0,0,0,.05);
+    }
+
+    .field {
+        width: 100%;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 13px;
+        background: white;
+        outline: none;
+    }
+
+    .field:focus {
+        border-color: #174a35;
+        box-shadow: 0 0 0 2px rgba(23,74,53,.08);
+    }
+
+    .field-label {
+        display: block;
+        font-size: 12px;
+        font-weight: bold;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+
+    .table-row:hover {
+        background: #f7faf8;
+    }
+
+    .scrollbar::-webkit-scrollbar {
+        width: 7px;
+        height: 7px;
+    }
+
+    .scrollbar::-webkit-scrollbar-thumb {
+        background: #b9c9c0;
+        border-radius: 20px;
+    }
+
+    .modal {
+        animation: modalIn .2s ease;
+    }
+
+    @keyframes modalIn {
+
+        from {
+            opacity: 0;
+            transform: translateY(15px) scale(.98);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+    }
+
+    @media print {
+
+        .no-print,
+        #userModal,
+        #toast {
+            display: none !important;
+        }
+
+        body {
+            background: white;
+        }
+
+        main {
+            overflow: visible !important;
+        }
+
+    }
+
+</style>
+
+</head>
+
+<body class="min-h-screen text-gray-800">
+
+<!-- ============================================================
+     MAIN APPLICATION
+============================================================ -->
+
+<div class="min-h-screen flex flex-col">
+
+<!-- ========================================================
+     HEADER
+========================================================= -->
+
+<header class="bg-white border-b border-gray-200 shadow-sm">
+
+    <div class="max-w-[1600px] mx-auto px-4 md:px-7 py-4">
+
+        <div class="flex flex-col md:flex-row
+                    md:items-center md:justify-between gap-4">
+
+
+            <!-- TITLE -->
+
+            <div class="flex items-center gap-3">
+
+                <div class="w-12 h-12 rounded-xl
+                            bg-dcf text-white
+                            flex items-center justify-center
+                            shadow">
+
+                    <i class="fas fa-users text-xl"></i>
+
+                </div>
+
+                <div>
+
+                    <h1 class="text-xl md:text-2xl
+                               font-bold text-gray-800">
+
+                        Watumiaji Wote
+
+                    </h1>
+
+                    <p class="text-xs text-gray-500">
+
+                        Development Charity Foundation —
+                        Usimamizi wa watumiaji wa mfumo
+
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- CURRENT ADMIN -->
+
+            <div class="flex items-center gap-3">
+
+                <div class="text-right hidden sm:block">
+
+                    <p id="adminName"
+                       class="font-bold text-sm">
+
+                        Admin
+
+                    </p>
+
+                    <p id="adminEmail"
+                       class="text-[10px] text-gray-500">
+
+                        -
+
+                    </p>
+
+                </div>
+
+
+                <div id="adminAvatar"
+                     class="w-10 h-10 rounded-full
+                            bg-dcf text-white
+                            flex items-center justify-center
+                            font-bold">
+
+                    A
+
+                </div>
+
+
+                <a href="../index.html"
+                   title="Logout"
+                   class="w-10 h-10 rounded-lg
+                          bg-red-50 text-red-600
+                          flex items-center justify-center
+                          hover:bg-red-600 hover:text-white">
+
+                    <i class="fas fa-sign-out-alt"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- ========================================================
+     CONTENT
+========================================================= -->
+
+<main class="flex-1 overflow-y-auto scrollbar">
+
+    <div class="max-w-[1600px] mx-auto p-4 md:p-7">
+
+
+        <!-- =================================================
+             STATISTICS
+        ================================================= -->
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+
+
+            <!-- TOTAL -->
+
+            <div class="card rounded-xl p-4">
+
+                <div class="flex items-center
+                            justify-between">
+
+                    <div>
+
+                        <p class="text-[11px]
+                                  uppercase
+                                  text-gray-500
+                                  font-bold">
+
+                            Users Wote
+
+                        </p>
+
+                        <h2 id="totalUsers"
+                            class="text-2xl
+                                   font-bold
+                                   text-dcf mt-1">
+
+                            0
+
+                        </h2>
+
+                    </div>
+
+                    <div class="w-11 h-11
+                                rounded-xl
+                                bg-green-100
+                                text-dcf
+                                flex items-center
+                                justify-center">
+
+                        <i class="fas fa-users"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIVE -->
+
+            <div class="card rounded-xl p-4">
+
+                <div class="flex items-center
+                            justify-between">
+
+                    <div>
+
+                        <p class="text-[11px]
+                                  uppercase
+                                  text-gray-500
+                                  font-bold">
+
+                            Active
+
+                        </p>
+
+                        <h2 id="activeUsers"
+                            class="text-2xl
+                                   font-bold
+                                   text-green-700 mt-1">
+
+                            0
+
+                        </h2>
+
+                    </div>
+
+                    <div class="w-11 h-11
+                                rounded-xl
+                                bg-green-100
+                                text-green-700
+                                flex items-center
+                                justify-center">
+
+                        <i class="fas fa-user-check"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- INACTIVE -->
+
+            <div class="card rounded-xl p-4">
+
+                <div class="flex items-center
+                            justify-between">
+
+                    <div>
+
+                        <p class="text-[11px]
+                                  uppercase
+                                  text-gray-500
+                                  font-bold">
+
+                            Inactive
+
+                        </p>
+
+                        <h2 id="inactiveUsers"
+                            class="text-2xl
+                                   font-bold
+                                   text-red-600 mt-1">
+
+                            0
+
+                        </h2>
+
+                    </div>
+
+                    <div class="w-11 h-11
+                                rounded-xl
+                                bg-red-100
+                                text-red-600
+                                flex items-center
+                                justify-center">
+
+                        <i class="fas fa-user-slash"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ADMINS -->
+
+            <div class="card rounded-xl p-4">
+
+                <div class="flex items-center
+                            justify-between">
+
+                    <div>
+
+                        <p class="text-[11px]
+                                  uppercase
+                                  text-gray-500
+                                  font-bold">
+
+                            Admin
+
+                        </p>
+
+                        <h2 id="adminUsers"
+                            class="text-2xl
+                                   font-bold
+                                   text-purple-700 mt-1">
+
+                            0
+
+                        </h2>
+
+                    </div>
+
+                    <div class="w-11 h-11
+                                rounded-xl
+                                bg-purple-100
+                                text-purple-700
+                                flex items-center
+                                justify-center">
+
+                        <i class="fas fa-user-shield"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SEARCH / FILTER BAR
+        ================================================= -->
+
+        <section class="card rounded-xl p-4 mb-6">
+
+            <div class="flex flex-col
+                        lg:flex-row
+                        lg:items-end
+                        gap-4">
+
+
+                <!-- SEARCH -->
+
+                <div class="flex-1">
+
+                    <label class="field-label">
+
+                        Tafuta Mtumiaji
+
+                    </label>
+
+                    <div class="relative">
+
+                        <i class="fas fa-search
+                                  absolute left-3 top-3.5
+                                  text-gray-400 text-xs">
+                        </i>
+
+                        <input
+                            id="search-input"
+                            type="text"
+                            oninput="filterUsers()"
+                            placeholder="Jina, email, simu, username..."
+                            class="field pl-9"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <!-- ROLE -->
+
+                <div class="w-full lg:w-48">
+
+                    <label class="field-label">
+
+                        Role
+
+                    </label>
+
+                    <select
+                        id="roleFilter"
+                        onchange="filterUsers()"
+                        class="field">
+
+                        <option value="ALL">
+                            Roles Zote
+                        </option>
+
+                        <option value="admin">
+                            Admin
+                        </option>
+
+                        <option value="staff">
+                            Staff
+                        </option>
+
+                        <option value="manager">
+                            Manager
+                        </option>
+
+                        <option value="auditor">
+                            Auditor
+                        </option>
+
+                        <option value="viewer">
+                            Viewer
+                        </option>
+
+                        <option value="member">
+                            Member
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="w-full lg:w-48">
+
+                    <label class="field-label">
+
+                        Status
+
+                    </label>
+
+                    <select
+                        id="statusFilter"
+                        onchange="filterUsers()"
+                        class="field">
+
+                        <option value="ALL">
+                            Status Zote
+                        </option>
+
+                        <option value="Active">
+                            Active
+                        </option>
+
+                        <option value="Inactive">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- BUTTONS -->
+
+                <div class="flex gap-2">
+
+                    <button
+                        onclick="fetchUsers()"
+                        title="Refresh"
+                        class="h-10 px-4
+                               rounded-lg
+                               bg-dcf
+                               text-white
+                               hover:bg-dcfHover
+                               text-xs
+                               font-bold">
+
+                        <i class="fas fa-sync mr-1"></i>
+                        Refresh
+
+                    </button>
+
+
+                    <button
+                        onclick="window.print()"
+                        title="Print"
+                        class="h-10 px-4
+                               rounded-lg
+                               bg-gray-800
+                               text-white
+                               hover:bg-black
+                               text-xs
+                               font-bold">
+
+                        <i class="fas fa-print"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             USERS TABLE
+        ================================================= -->
+
+        <section class="card rounded-xl overflow-hidden">
+
+
+            <!-- TABLE HEADER -->
+
+            <div class="px-5 py-4
+                        border-b
+                        bg-gray-50
+                        flex flex-col
+                        sm:flex-row
+                        sm:items-center
+                        sm:justify-between
+                        gap-2">
+
+                <div>
+
+                    <h2 class="font-bold text-base">
+
+                        <i class="fas fa-list mr-2 text-dcf"></i>
+
+                        Orodha ya Watumiaji
+
+                    </h2>
+
+                    <p class="text-[10px]
+                              text-gray-500 mt-1">
+
+                        Users wote waliopo kwenye mfumo wa DCF
+
+                    </p>
+
+                </div>
+
+
+                <span
+                    id="displayCount"
+                    class="self-start sm:self-auto
+                           bg-green-100
+                           text-dcf
+                           px-3 py-1.5
+                           rounded-full
+                           text-[10px]
+                           font-bold">
+
+                    0 Users
+
+                </span>
+
+            </div>
+
+
+            <!-- TABLE -->
+
+            <div class="overflow-x-auto scrollbar">
+
+                <table class="w-full text-xs">
+
+                    <thead>
+
+                        <tr class="bg-dcf text-white">
+
+                            <th class="px-4 py-3 text-center">
+                                #
+                            </th>
+
+                            <th class="px-4 py-3 text-center">
+                                Picha
+                            </th>
+
+                            <th class="px-4 py-3 text-left">
+                                Mtumiaji
+                            </th>
+
+                            <th class="px-4 py-3 text-left">
+                                Simu
+                            </th>
+
+                            <th class="px-4 py-3 text-left">
+                                Role
+                            </th>
+
+                            <th class="px-4 py-3 text-center">
+                                Status
+                            </th>
+
+                            <th class="px-4 py-3 text-center">
+                                Chanzo
+                            </th>
+
+                            <th class="px-4 py-3 text-center">
+                                Tarehe
+                            </th>
+
+                            <th class="px-4 py-3 text-center no-print">
+                                Vitendo
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="usersTableBody">
+
+                        <tr>
+
+                            <td colspan="9"
+                                class="py-14
+                                       text-center
+                                       text-gray-400">
+
+                                <i class="fas fa-spinner
+                                          fa-spin
+                                          mr-2">
+                                </i>
+
+                                Inapakia users...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
+
+</div>
+
+<!-- ============================================================
+     EDIT USER MODAL
+============================================================ -->
+
+<div
+    id="userModal"
+    class="fixed inset-0
+           bg-black/60
+           hidden
+           items-center
+           justify-center
+           z-[100]
+           p-4">
+
+
+<div
+    class="modal bg-white
+           rounded-2xl
+           shadow-2xl
+           w-full
+           max-w-xl
+           overflow-hidden">
+
+
+    <!-- MODAL HEADER -->
+
+    <div class="bg-dcf
+                text-white
+                px-5 py-4
+                flex items-center
+                justify-between">
+
+        <div>
+
+            <h3 class="font-bold text-base">
+
+                <i class="fas fa-user-edit mr-2"></i>
+
+                Hariri Mtumiaji
+
+            </h3>
+
+            <p class="text-[10px]
+                      text-green-200 mt-1">
+
+                Badilisha taarifa za mtumiaji
+
+            </p>
+
+        </div>
+
+
+        <button
+            onclick="closeUserModal()"
+            class="w-8 h-8
+                   rounded-full
+                   hover:bg-white/10">
+
+            <i class="fas fa-times"></i>
+
+        </button>
+
+    </div>
+
+
+    <!-- FORM -->
+
+    <form
+        id="editUserForm"
+        onsubmit="saveUser(event)"
+        class="p-6">
+
+        <input
+            type="hidden"
+            id="edit_id"
+        >
+
+        <input
+            type="hidden"
+            id="edit_source"
+        >
+
+
+        <!-- PROFILE PHOTO -->
+
+        <div class="flex justify-center mb-5">
+
+            <div class="relative">
+
+                <img
+                    id="edit_preview"
+                    src="https://ui-avatars.com/api/?name=User&background=174a35&color=fff"
+                    class="w-24 h-24
+                           rounded-full
+                           object-cover
+                           border-4
+                           border-green-100
+                           shadow"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="grid
+                    grid-cols-1
+                    md:grid-cols-2
+                    gap-4">
+
+
+            <!-- NAME -->
+
+            <div>
+
+                <label class="field-label">
+
+                    Jina Kamili
+
+                </label>
+
+                <input
+                    id="edit_full_name"
+                    type="text"
+                    required
+                    class="field"
+                >
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div>
+
+                <label class="field-label">
+
+                    Email
+
+                </label>
+
+                <input
+                    id="edit_email"
+                    type="email"
+                    required
+                    class="field"
+                >
+
+            </div>
+
+
+            <!-- PHONE -->
+
+            <div>
+
+                <label class="field-label">
+
+                    Simu
+
+                </label>
+
+                <input
+                    id="edit_phone"
+                    type="tel"
+                    class="field"
+                >
+
+            </div>
+
+
+            <!-- USERNAME -->
+
+            <div>
+
+                <label class="field-label">
+
+                    Username
+
+                </label>
+
+                <input
+                    id="edit_username"
+                    type="text"
+                    class="field"
+                >
+
+            </div>
+
+
+            <!-- ROLE -->
+
+            <div>
+
+                <label class="field-label">
+
+                    Role
+
+                </label>
+
+                <select
+                    id="edit_role"
+                    class="field">
+
+                    <option value="member">
+                        Member
+                    </option>
+
+                    <option value="Staff">
+                        Staff
+                    </option>
+
+                    <option value="Manager">
+                        Manager
+                    </option>
+
+                    <option value="Auditor">
+                        Auditor
+                    </option>
+
+                    <option value="Viewer">
+                        Viewer
+                    </option>
+
+                    <option value="Admin">
+                        Admin
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- STATUS -->
+
+            <div>
+
+                <label class="field-label">
+
+                    Status
+
+                </label>
+
+                <select
+                    id="edit_status"
+                    class="field">
+
+                    <option value="Active">
+                        Active
+                    </option>
+
+                    <option value="Inactive">
+                        Inactive
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- PHOTO -->
+
+            <div class="md:col-span-2">
+
+                <label class="field-label">
+
+                    Picha URL
+
+                </label>
+
+                <input
+                    id="edit_photo"
+                    type="url"
+                    oninput="updateEditPreview(this.value)"
+                    placeholder="https://..."
+                    class="field"
+                >
+
+            </div>
+
+
+            <!-- SOURCE INFO -->
+
+            <div class="md:col-span-2">
+
+                <div
+                    class="bg-gray-50
+                           border
+                           border-gray-200
+                           rounded-lg
+                           p-3">
+
+                    <p class="text-[10px]
+                              text-gray-500">
+
+                        Chanzo cha taarifa:
+
+                    </p>
+
+                    <p
+                        id="edit_source_label"
+                        class="font-bold
+                               text-dcf
+                               text-xs
+                               mt-1">
+
+                        -
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- BUTTONS -->
+
+        <div class="flex
+                    justify-end
+                    gap-2
+                    border-t
+                    pt-5
+                    mt-5">
+
+            <button
+                type="button"
+                onclick="closeUserModal()"
+                class="px-5 py-2.5
+                       rounded-lg
+                       border
+                       border-gray-300
+                       text-gray-600
+                       text-xs
+                       font-bold
+                       hover:bg-gray-100">
+
+                Ghairi
+
+            </button>
+
+
+            <button
+                id="saveButton"
+                type="submit"
+                class="px-5 py-2.5
+                       rounded-lg
+                       bg-dcf
+                       hover:bg-dcfHover
+                       text-white
+                       text-xs
+                       font-bold
+                       shadow">
+
+                <i class="fas fa-save mr-2"></i>
+
+                Hifadhi Mabadiliko
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+</div>
+
+<!-- ============================================================
+     TOAST
+============================================================ -->
+
+<div
+    id="toast"
+    class="fixed
+           right-5
+           bottom-5
+           z-[200]
+           hidden">
+
+<div
+    id="toastBox"
+    class="rounded-xl
+           px-5
+           py-3
+           shadow-2xl
+           text-xs
+           font-bold
+           text-white">
+
+</div>
+
+</div>
+
+<script>
+
+/* ============================================================
+   DCF USERS MANAGEMENT
+============================================================ */
+
+let allUsers = [];
+
+let currentEditingUser = null;
+
+
+/* ============================================================
+   GET CURRENT SESSION USER
+============================================================ */
+
+function getSessionValue(key) {
+
+    return (
+        sessionStorage.getItem(key) ||
+        localStorage.getItem(key) ||
+        ""
+    );
+
+}
+
+
+function getLoggedUser() {
+
+    const keys = [
+        "user",
+        "userData",
+        "currentUser",
+        "loggedUser",
+        "dcf_user",
+        "profile"
+    ];
+
+    for (const key of keys) {
+
+        const raw =
+            sessionStorage.getItem(key) ||
+            localStorage.getItem(key);
+
+        if (!raw) continue;
+
+        try {
+
+            const parsed = JSON.parse(raw);
+
+            if (
+                parsed &&
+                typeof parsed === "object"
+            ) {
+
+                return parsed;
+
+            }
+
+        } catch (error) {
+
+        }
+
+    }
+
+    return null;
+
+}
+
+
+function getCurrentRole() {
+
+    const user = getLoggedUser();
+
+    return (
+        user?.role ||
+        user?.user_role ||
+        user?.userRole ||
+        getSessionValue("userRole") ||
+        getSessionValue("role") ||
+        ""
+    );
+
+}
+
+
+function normalizeRole(role) {
+
+    return String(role || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[\s_-]+/g, "");
+
+}
+
+
+function isAdministrator(role) {
+
+    return [
+        "admin",
+        "administrator",
+        "adminstrator",
+        "superadmin"
+    ].includes(
+        normalizeRole(role)
+    );
+
+}
+
+
+/* ============================================================
+   DISPLAY ADMIN
+============================================================ */
+
+function displayAdmin() {
+
+    const user = getLoggedUser();
+
+    const name =
+        user?.full_name ||
+        user?.fullName ||
+        user?.name ||
+        user?.username ||
+        getSessionValue("userName") ||
+        "Admin";
+
+    const email =
+        user?.email ||
+        getSessionValue("userEmail") ||
+        getSessionValue("email") ||
+        "-";
+
+    document.getElementById("adminName")
+        .textContent = name;
+
+    document.getElementById("adminEmail")
+        .textContent = email;
+
+    document.getElementById("adminAvatar")
+        .textContent =
+            name
+                .trim()
+                .charAt(0)
+                .toUpperCase();
+
+}
+
+
+/* ============================================================
+   AUTHORIZATION
+============================================================ */
+
+async function authorizePage() {
+
+    const role = getCurrentRole();
+
+    const logged =
+        getSessionValue("userLoggedIn");
+
+    const isLogged =
+        logged === "true" ||
+        logged === "1" ||
+        logged === "yes" ||
+        logged === "authenticated" ||
+        !!role;
+
+    if (!isLogged) {
+
+        window.location.replace("../login.html");
+
+        return false;
+
+    }
+
+
+    if (!isAdministrator(role)) {
+
+        document.getElementById("usersTableBody")
+            .innerHTML = `
+
+                <tr>
+
+                    <td colspan="9"
+                        class="py-16 text-center">
+
+                        <div class="flex
+                                    flex-col
+                                    items-center">
+
+                            <div class="w-16 h-16
+                                        rounded-full
+                                        bg-red-100
+                                        text-red-600
+                                        flex items-center
+                                        justify-center
+                                        mb-4">
+
+                                <i class="fas fa-lock text-2xl"></i>
+
+                            </div>
+
+                            <h3 class="font-bold
+                                       text-red-600
+                                       text-lg">
+
+                                Access Denied
+
+                            </h3>
+
+                            <p class="text-xs
+                                      text-gray-500
+                                      mt-2">
+
+                                Ukurasa huu unahitaji
+                                ruhusa ya Admin.
+
+                            </p>
+
+                            <p class="text-[10px]
+                                      text-gray-400
+                                      mt-2">
+
+                                Role:
+                                ${escapeHTML(role || "Unknown")}
+
+                            </p>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+            `;
+
+        return false;
+
+    }
+
+
+    displayAdmin();
+
+    return true;
+
+}
+
+
+/* ============================================================
+   PAGE START
+============================================================ */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        try {
+
+            const authorized =
+                await authorizePage();
+
+            if (!authorized) return;
+
+            await fetchUsers();
+
+        } catch (error) {
+
+            console.error(error);
+
+            showToast(
+                "Mfumo umeshindwa kuanzishwa: " +
+                error.message,
+                true
+            );
+
+        }
+
+    }
+);
+
+
+/* ============================================================
+   FETCH ALL USERS
+============================================================ */
+
+async function fetchUsers() {
+
+    const tbody =
+        document.getElementById(
+            "usersTableBody"
+        );
+
+    tbody.innerHTML = `
+
+        <tr>
+
+            <td colspan="9"
+                class="py-14 text-center
+                       text-gray-400">
+
+                <i class="fas fa-spinner
+                          fa-spin mr-2">
+                </i>
+
+                Inapakia users wote...
+
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try {
+
+        if (
+            typeof _supabase === "undefined" ||
+            !_supabase
+        ) {
+
+            throw new Error(
+                "Supabase haijaunganishwa. Kagua ../js/supabase.js"
+            );
+
+        }
+
+
+        /*
+         * MUHIMU:
+         *
+         * Hapa tunasoma VIEW
+         * dcf_all_users
+         *
+         * Sio dcf_users pekee.
+         */
+
+        const {
+            data,
+            error
+        } = await _supabase
+            .from("dcf_all_users")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        allUsers =
+            Array.isArray(data)
+                ? data
+                : [];
+
+
+        renderUsers(allUsers);
+
+        updateStatistics();
+
+
+    } catch (error) {
+
+        console.error(
+            "FETCH USERS ERROR:",
+            error
+        );
+
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td colspan="9"
+                    class="py-14
+                           text-center">
+
+                    <div class="flex
+                                flex-col
+                                items-center">
+
+                        <div class="w-14 h-14
+                                    rounded-full
+                                    bg-red-100
+                                    text-red-600
+                                    flex items-center
+                                    justify-center
+                                    mb-3">
+
+                            <i class="fas fa-database
+                                      text-xl">
+                            </i>
+
+                        </div>
+
+                        <p class="font-bold
+                                  text-red-600">
+
+                            Imeshindikana
+                            kupakia users
+
+                        </p>
+
+                        <p class="text-[10px]
+                                  text-gray-500
+                                  max-w-xl
+                                  mt-2
+                                  px-4">
+
+                            ${escapeHTML(
+                                error.message
+                            )}
+
+                        </p>
+
+                        <button
+                            onclick="fetchUsers()"
+                            class="mt-4
+                                   bg-dcf
+                                   text-white
+                                   px-4 py-2
+                                   rounded-lg
+                                   text-xs
+                                   font-bold">
+
+                            <i class="fas fa-sync mr-1"></i>
+
+                            Jaribu Tena
+
+                        </button>
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+/* ============================================================
+   RENDER USERS
+============================================================ */
+
+function renderUsers(users) {
+
+    const tbody =
+        document.getElementById(
+            "usersTableBody"
+        );
+
+
+    document.getElementById(
+        "displayCount"
+    ).textContent =
+        `${users.length} Users`;
+
+
+    if (!users.length) {
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td colspan="9"
+                    class="py-14
+                           text-center
+                           text-gray-400">
+
+                    <i class="fas fa-users-slash
+                              text-3xl
+                              mb-3">
+                    </i>
+
+                    <p class="font-bold">
+
+                        Hakuna users
+                        waliopatikana
+
+                    </p>
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        users.map(
+            (u, index) => {
+
+                const name =
+                    u.full_name ||
+                    u.username ||
+                    "Mtumiaji";
+
+
+                const email =
+                    u.email || "-";
+
+
+                const phone =
+                    u.phone || "-";
+
+
+                const role =
+                    u.role || "Member";
+
+
+                const status =
+                    u.status || "Active";
+
+
+                const source =
+                    u.source || "profiles";
+
+
+                const photo =
+                    u.photo_url ||
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                        name
+                    )}&background=174a35&color=fff`;
+
+
+                const date =
+                    u.created_at
+                        ? new Date(
+                            u.created_at
+                          ).toLocaleDateString(
+                            "sw-TZ",
+                            {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric"
+                            }
+                          )
+                        : "-";
+
+
+                return `
+
+                    <tr
+                        class="table-row
+                               border-b
+                               border-gray-100">
+
+
+                        <!-- NUMBER -->
+
+                        <td class="px-4 py-3
+                                   text-center
+                                   font-bold
+                                   text-gray-400">
+
+                            ${index + 1}
+
+                        </td>
+
+
+                        <!-- PHOTO -->
+
+                        <td class="px-4 py-3
+                                   text-center">
+
+                            <img
+                                src="${escapeAttribute(photo)}"
+                                onerror="
+                                    this.src='https://ui-avatars.com/api/?name=User&background=174a35&color=fff'
+                                "
+                                class="w-10 h-10
+                                       rounded-full
+                                       object-cover
+                                       border-2
+                                       border-green-100
+                                       mx-auto
+                                       shadow-sm"
+                            >
+
+                        </td>
+
+
+                        <!-- USER -->
+
+                        <td class="px-4 py-3">
+
+                            <div class="font-bold
+                                        text-gray-800">
+
+                                ${escapeHTML(name)}
+
+                            </div>
+
+
+                            <div class="text-[10px]
+                                        text-gray-500
+                                        mt-1">
+
+                                <i class="fas fa-envelope mr-1"></i>
+
+                                ${escapeHTML(email)}
+
+                            </div>
+
+
+                            ${
+                                u.username
+                                    ? `
+                                        <div
+                                            class="text-[10px]
+                                                   text-gray-400
+                                                   mt-1">
+
+                                            <i class="fas fa-at mr-1"></i>
+
+                                            ${escapeHTML(
+                                                u.username
+                                            )}
+
+                                        </div>
+                                      `
+                                    : ""
+                            }
+
+                        </td>
+
+
+                        <!-- PHONE -->
+
+                        <td class="px-4 py-3
+                                   text-gray-600">
+
+                            ${escapeHTML(phone)}
+
+                        </td>
+
+
+                        <!-- ROLE -->
+
+                        <td class="px-4 py-3">
+
+                            ${roleBadge(role)}
+
+                        </td>
+
+
+                        <!-- STATUS -->
+
+                        <td class="px-4 py-3
+                                   text-center">
+
+                            ${statusBadge(status)}
+
+                        </td>
+
+
+                        <!-- SOURCE -->
+
+                        <td class="px-4 py-3
+                                   text-center">
+
+                            ${sourceBadge(source)}
+
+                        </td>
+
+
+                        <!-- DATE -->
+
+                        <td class="px-4 py-3
+                                   text-center
+                                   text-gray-500">
+
+                            ${escapeHTML(date)}
+
+                        </td>
+
+
+                        <!-- ACTIONS -->
+
+                        <td class="px-4 py-3
+                                   no-print">
+
+                            <div class="flex
+                                        justify-center
+                                        gap-1.5">
+
+
+                                <!-- EDIT -->
+
+                                <button
+                                    onclick="editUser('${escapeAttribute(u.id)}')"
+                                    title="Hariri"
+                                    class="w-8 h-8
+                                           rounded-lg
+                                           bg-blue-50
+                                           text-blue-600
+                                           hover:bg-blue-600
+                                           hover:text-white
+                                           border
+                                           border-blue-100">
+
+                                    <i class="fas fa-pen
+                                              text-[10px]">
+                                    </i>
+
+                                </button>
+
+
+                                <!-- STATUS -->
+
+                                <button
+                                    onclick="toggleStatus('${escapeAttribute(u.id)}')"
+                                    title="${
+                                        String(status).toLowerCase()
+                                        === "active"
+                                            ? "Zima"
+                                            : "Washa"
+                                    }"
+                                    class="w-8 h-8
+                                           rounded-lg
+                                           bg-amber-50
+                                           text-amber-600
+                                           hover:bg-amber-500
+                                           hover:text-white
+                                           border
+                                           border-amber-100">
+
+                                    <i class="fas ${
+                                        String(status).toLowerCase()
+                                        === "active"
+                                            ? "fa-user-slash"
+                                            : "fa-user-check"
+                                    } text-[10px]">
+
+                                    </i>
+
+                                </button>
+
+
+                                <!-- DELETE -->
+
+                                <button
+                                    onclick="deleteUser('${escapeAttribute(u.id)}')"
+                                    title="Futa"
+                                    class="w-8 h-8
+                                           rounded-lg
+                                           bg-red-50
+                                           text-red-600
+                                           hover:bg-red-600
+                                           hover:text-white
+                                           border
+                                           border-red-100">
+
+                                    <i class="fas fa-trash
+                                              text-[10px]">
+                                    </i>
+
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+/* ============================================================
+   ROLE BADGE
+============================================================ */
+
+function roleBadge(role) {
+
+    const r =
+        normalizeRole(role);
+
+
+    let cls =
+        "bg-gray-100 text-gray-700 border-gray-200";
+
+
+    if (
+        r === "admin" ||
+        r === "administrator" ||
+        r === "adminstrator" ||
+        r === "superadmin"
+    ) {
+
+        cls =
+            "bg-red-100 text-red-700 border-red-200";
+
+    } else if (r === "staff") {
+
+        cls =
+            "bg-blue-100 text-blue-700 border-blue-200";
+
+    } else if (r === "manager") {
+
+        cls =
+            "bg-purple-100 text-purple-700 border-purple-200";
+
+    } else if (r === "auditor") {
+
+        cls =
+            "bg-orange-100 text-orange-700 border-orange-200";
+
+    } else if (r === "member") {
+
+        cls =
+            "bg-green-100 text-green-700 border-green-200";
+
+    }
+
+
+    return `
+
+        <span
+            class="inline-flex
+                   px-2.5 py-1
+                   rounded-full
+                   border
+                   text-[10px]
+                   font-bold
+                   ${cls}">
+
+            ${escapeHTML(role)}
+
+        </span>
+
+    `;
+
+}
+
+
+/* ============================================================
+   STATUS BADGE
+============================================================ */
+
+function statusBadge(status) {
+
+    const active =
+        String(status || "")
+            .trim()
+            .toLowerCase()
+            === "active";
+
+
+    if (active) {
+
+        return `
+
+            <span
+                class="inline-flex
+                       items-center
+                       gap-1
+                       px-2.5 py-1
+                       rounded-full
+                       bg-green-100
+                       text-green-700
+                       border
+                       border-green-200
+                       text-[10px]
+                       font-bold">
+
+                <span
+                    class="w-1.5 h-1.5
+                           rounded-full
+                           bg-green-600">
+                </span>
+
+                Active
+
+            </span>
+
+        `;
+
+    }
+
+
+    return `
+
+        <span
+            class="inline-flex
+                   items-center
+                   gap-1
+                   px-2.5 py-1
+                   rounded-full
+                   bg-red-100
+                   text-red-700
+                   border
+                   border-red-200
+                   text-[10px]
+                   font-bold">
+
+            <span
+                class="w-1.5 h-1.5
+                       rounded-full
+                       bg-red-600">
+            </span>
+
+            Inactive
+
+        </span>
+
+    `;
+
+}
+
+
+/* ============================================================
+   SOURCE BADGE
+============================================================ */
+
+function sourceBadge(source) {
+
+    const s =
+        String(source || "")
+            .toLowerCase();
+
+
+    if (s === "dcf_users") {
+
+        return `
+
+            <span
+                class="inline-flex
+                       px-2 py-1
+                       rounded-full
+                       bg-purple-100
+                       text-purple-700
+                       border
+                       border-purple-200
+                       text-[9px]
+                       font-bold">
+
+                DCF Users
+
+            </span>
+
+        `;
+
+    }
+
+
+    return `
+
+        <span
+            class="inline-flex
+                   px-2 py-1
+                   rounded-full
+                   bg-blue-100
+                   text-blue-700
+                   border
+                   border-blue-200
+                   text-[9px]
+                   font-bold">
+
+            Profiles
+
+        </span>
+
+    `;
+
+}
+
+
+/* ============================================================
+   STATISTICS
+============================================================ */
+
+function updateStatistics() {
+
+    const total =
+        allUsers.length;
+
+
+    const active =
+        allUsers.filter(
+            u =>
+                String(
+                    u.status || "Active"
+                ).toLowerCase()
+                === "active"
+        ).length;
+
+
+    const inactive =
+        total - active;
+
+
+    const admins =
+        allUsers.filter(
+            u =>
+                [
+                    "admin",
+                    "administrator",
+                    "adminstrator",
+                    "superadmin"
+                ].includes(
+                    normalizeRole(u.role)
+                )
+        ).length;
+
+
+    document.getElementById(
+        "totalUsers"
+    ).textContent = total;
+
+
+    document.getElementById(
+        "activeUsers"
+    ).textContent = active;
+
+
+    document.getElementById(
+        "inactiveUsers"
+    ).textContent = inactive;
+
+
+    document.getElementById(
+        "adminUsers"
+    ).textContent = admins;
+
+}
+
+
+/* ============================================================
+   SEARCH / FILTER
+============================================================ */
+
+function filterUsers() {
+
+    const search =
+        document.getElementById(
+            "search-input"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const role =
+        document.getElementById(
+            "roleFilter"
+        ).value;
+
+
+    const status =
+        document.getElementById(
+            "statusFilter"
+        ).value;
+
+
+    const filtered =
+        allUsers.filter(
+            u => {
+
+                const searchable = [
+
+                    u.full_name,
+                    u.email,
+                    u.phone,
+                    u.username,
+                    u.role,
+                    u.status,
+                    u.member_no,
+                    u.member_type
+
+                ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+
+                const matchesSearch =
+                    !search ||
+                    searchable.includes(search);
+
+
+                const matchesRole =
+                    role === "ALL" ||
+                    normalizeRole(u.role)
+                    === normalizeRole(role);
+
+
+                const matchesStatus =
+                    status === "ALL" ||
+                    String(
+                        u.status || ""
+                    ).toLowerCase()
+                    === status.toLowerCase();
+
+
+                return (
+                    matchesSearch &&
+                    matchesRole &&
+                    matchesStatus
+                );
+
+            }
+        );
+
+
+    renderUsers(filtered);
+
+}
+
+
+/* ============================================================
+   EDIT USER
+============================================================ */
+
+function editUser(id) {
+
+    const user =
+        allUsers.find(
+            u =>
+                String(u.id) ===
+                String(id)
+        );
+
+
+    if (!user) {
+
+        showToast(
+            "Mtumiaji hakupatikana.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    currentEditingUser = user;
+
+
+    document.getElementById(
+        "edit_id"
+    ).value = user.id;
+
+
+    document.getElementById(
+        "edit_source"
+    ).value =
+        user.source || "profiles";
+
+
+    document.getElementById(
+        "edit_full_name"
+    ).value =
+        user.full_name || "";
+
+
+    document.getElementById(
+        "edit_email"
+    ).value =
+        user.email || "";
+
+
+    document.getElementById(
+        "edit_phone"
+    ).value =
+        user.phone || "";
+
+
+    document.getElementById(
+        "edit_username"
+    ).value =
+        user.username || "";
+
+
+    document.getElementById(
+        "edit_role"
+    ).value =
+        user.role || "member";
+
+
+    document.getElementById(
+        "edit_status"
+    ).value =
+        user.status || "Active";
+
+
+    document.getElementById(
+        "edit_photo"
+    ).value =
+        user.photo_url || "";
+
+
+    document.getElementById(
+        "edit_source_label"
+    ).textContent =
+        user.source === "dcf_users"
+            ? "DCF Users"
+            : "Profiles";
+
+
+    updateEditPreview(
+        user.photo_url || "",
+        user.full_name || "User"
+    );
+
+
+    const modal =
+        document.getElementById(
+            "userModal"
+        );
+
+
+    modal.classList.remove("hidden");
+
+    modal.classList.add("flex");
+
+}
+
+
+/* ============================================================
+   UPDATE PHOTO PREVIEW
+============================================================ */
+
+function updateEditPreview(
+    url,
+    name = ""
+) {
+
+    const img =
+        document.getElementById(
+            "edit_preview"
+        );
+
+
+    const fallback =
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+            name || "User"
+        )}&background=174a35&color=fff`;
+
+
+    img.src =
+        url && url.trim()
+            ? url
+            : fallback;
+
+
+    img.onerror = function() {
+
+        this.src = fallback;
+
+    };
+
+}
+
+
+/* ============================================================
+   CLOSE MODAL
+============================================================ */
+
+function closeUserModal() {
+
+    const modal =
+        document.getElementById(
+            "userModal"
+        );
+
+
+    modal.classList.add("hidden");
+
+    modal.classList.remove("flex");
+
+
+    currentEditingUser = null;
+
+}
+
+
+/* ============================================================
+   SAVE EDIT
+============================================================ */
+
+async function saveUser(e) {
+
+    e.preventDefault();
+
+
+    if (!currentEditingUser) {
+
+        showToast(
+            "Hakuna user anayehaririwa.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    const user =
+        currentEditingUser;
+
+
+    const source =
+        user.source || "profiles";
+
+
+    const id =
+        user.id;
+
+
+    const button =
+        document.getElementById(
+            "saveButton"
+        );
+
+
+    button.disabled = true;
+
+    button.innerHTML = `
+        <i class="fas fa-spinner fa-spin mr-2"></i>
+        Inahifadhi...
+    `;
+
+
+    try {
+
+        let data;
+
+
+        /*
+         * USER FROM DCF_USERS
+         */
+
+        if (source === "dcf_users") {
+
+            data = {
+
+                full_name:
+                    document.getElementById(
+                        "edit_full_name"
+                    ).value.trim(),
+
+                email:
+                    document.getElementById(
+                        "edit_email"
+                    ).value.trim(),
+
+                phone:
+                    document.getElementById(
+                        "edit_phone"
+                    ).value.trim(),
+
+                username:
+                    document.getElementById(
+                        "edit_username"
+                    ).value.trim(),
+
+                role:
+                    document.getElementById(
+                        "edit_role"
+                    ).value,
+
+                status:
+                    document.getElementById(
+                        "edit_status"
+                    ).value,
+
+                photo_url:
+                    document.getElementById(
+                        "edit_photo"
+                    ).value.trim()
+
+            };
+
+
+            const {
+                error
+            } =
+                await _supabase
+                    .from("dcf_users")
+                    .update(data)
+                    .eq("id", id);
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+        }
+
+
+        /*
+         * USER FROM PROFILES
+         */
+
+        else {
+
+            data = {
+
+                full_name:
+                    document.getElementById(
+                        "edit_full_name"
+                    ).value.trim(),
+
+                email:
+                    document.getElementById(
+                        "edit_email"
+                    ).value.trim(),
+
+                phone:
+                    document.getElementById(
+                        "edit_phone"
+                    ).value.trim(),
+
+                role:
+                    document.getElementById(
+                        "edit_role"
+                    ).value
+
+            };
+
+
+            const {
+                error
+            } =
+                await _supabase
+                    .from("profiles")
+                    .update(data)
+                    .eq("id", id);
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+        }
+
+
+        showToast(
+            "Taarifa za mtumiaji zimebadilishwa."
+        );
+
+
+        closeUserModal();
+
+
+        await fetchUsers();
+
+
+    } catch (error) {
+
+        console.error(
+            "EDIT USER ERROR:",
+            error
+        );
+
+
+        showToast(
+            "Imeshindikana kuhariri: " +
+            error.message,
+            true
+        );
+
+    } finally {
+
+        button.disabled = false;
+
+        button.innerHTML = `
+            <i class="fas fa-save mr-2"></i>
+            Hifadhi Mabadiliko
+        `;
+
+    }
+
+}
+
+
+/* ============================================================
+   TOGGLE STATUS
+============================================================ */
+
+async function toggleStatus(id) {
+
+    const user =
+        allUsers.find(
+            u =>
+                String(u.id) ===
+                String(id)
+        );
+
+
+    if (!user) {
+
+        showToast(
+            "Mtumiaji hakupatikana.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    const current =
+        String(
+            user.status || "Active"
+        ).toLowerCase();
+
+
+    const newStatus =
+        current === "active"
+            ? "Inactive"
+            : "Active";
+
+
+    const name =
+        user.full_name ||
+        user.email ||
+        "Mtumiaji";
+
+
+    const confirmed =
+        confirm(
+            newStatus === "Inactive"
+                ? `Unataka kumzuia "${name}"?`
+                : `Unataka kumruhusu tena "${name}"?`
+        );
+
+
+    if (!confirmed) return;
+
+
+    try {
+
+        /*
+         * SOURCE DCF_USERS
+         */
+
+        if (
+            user.source ===
+            "dcf_users"
+        ) {
+
+            const {
+                error
+            } =
+                await _supabase
+                    .from("dcf_users")
+                    .update({
+                        status: newStatus
+                    })
+                    .eq("id", id);
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+        }
+
+
+        /*
+         * SOURCE PROFILES
+         *
+         * profiles table haina status
+         * kwenye schema uliyonipa.
+         *
+         * Kwa hiyo status ya profiles
+         * haiwezi kuhifadhiwa hapo.
+         *
+         * Tunamjulisha user badala
+         * ya kuandika column ambayo
+         * haipo.
+         */
+
+        else {
+
+            showToast(
+                "Profiles haina column ya status. Ongeza status kwenye profiles au tumia dcf_users kwa status.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        showToast(
+            newStatus === "Active"
+                ? "Mtumiaji ameruhusiwa."
+                : "Mtumiaji amezuiwa."
+        );
+
+
+        await fetchUsers();
+
+
+    } catch (error) {
+
+        console.error(
+            "TOGGLE STATUS ERROR:",
+            error
+        );
+
+
+        showToast(
+            "Imeshindikana kubadilisha status: " +
+            error.message,
+            true
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   DELETE USER
+============================================================ */
+
+async function deleteUser(id) {
+
+    const user =
+        allUsers.find(
+            u =>
+                String(u.id) ===
+                String(id)
+        );
+
+
+    if (!user) {
+
+        showToast(
+            "Mtumiaji hakupatikana.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    const name =
+        user.full_name ||
+        user.email ||
+        "Mtumiaji";
+
+
+    const confirmed =
+        confirm(
+            `TAHADHARI!\n\n` +
+            `Unataka kumfuta "${name}"?\n\n` +
+            `Kitendo hiki hakiwezi kurudishwa.`
+        );
+
+
+    if (!confirmed) return;
+
+
+    try {
+
+        /*
+         * DCF USERS
+         */
+
+        if (
+            user.source ===
+            "dcf_users"
+        ) {
+
+            const {
+                error
+            } =
+                await _supabase
+                    .from("dcf_users")
+                    .delete()
+                    .eq("id", id);
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+        }
+
+
+        /*
+         * PROFILES
+         */
+
+        else {
+
+            /*
+             * Kwanza tunafuta member
+             * aliyehusishwa na profile
+             * kama yupo.
+             *
+             * Hii inatumia user_id.
+             */
+
+            const {
+                error: memberError
+            } =
+                await _supabase
+                    .from("members")
+                    .delete()
+                    .eq("user_id", id);
+
+
+            if (memberError) {
+
+                console.warn(
+                    "Member delete warning:",
+                    memberError
+                );
+
+            }
+
+
+            /*
+             * Kisha profile
+             */
+
+            const {
+                error
+            } =
+                await _supabase
+                    .from("profiles")
+                    .delete()
+                    .eq("id", id);
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+        }
+
+
+        showToast(
+            "Mtumiaji amefutwa kikamilifu."
+        );
+
+
+        await fetchUsers();
+
+
+    } catch (error) {
+
+        console.error(
+            "DELETE USER ERROR:",
+            error
+        );
+
+
+        showToast(
+            "Imeshindikana kufuta user: " +
+            error.message,
+            true
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   TOAST
+============================================================ */
+
+function showToast(
+    message,
+    isError = false
+) {
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    const box =
+        document.getElementById(
+            "toastBox"
+        );
+
+
+    box.className =
+        isError
+            ? "bg-red-600 text-white rounded-xl px-5 py-3 shadow-2xl text-xs font-bold"
+            : "bg-dcf text-white rounded-xl px-5 py-3 shadow-2xl text-xs font-bold";
+
+
+    box.innerHTML = `
+
+        <i class="fas ${
+            isError
+                ? "fa-exclamation-circle"
+                : "fa-check-circle"
+        } mr-2"></i>
+
+        ${escapeHTML(message)}
+
+    `;
+
+
+    toast.classList.remove(
+        "hidden"
+    );
+
+
+    clearTimeout(
+        window.__dcfToastTimer
+    );
+
+
+    window.__dcfToastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.add(
+                    "hidden"
+                );
+
+            },
+            4000
+        );
+
+}
+
+
+/* ============================================================
+   SECURITY
+============================================================ */
+
+function escapeHTML(value) {
+
+    return String(value ?? "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+function escapeAttribute(value) {
+
+    return escapeHTML(value);
+
+}
+
+
+/* ============================================================
+   CLOSE MODAL BY OUTSIDE CLICK
+============================================================ */
+
+document
+    .getElementById("userModal")
+    .addEventListener(
+        "click",
+        function(e) {
+
+            if (
+                e.target === this
+            ) {
+
+                closeUserModal();
+
+            }
+
+        }
+    );
+
+
+/* ============================================================
+   ESC CLOSE
+============================================================ */
+
+document.addEventListener(
+    "keydown",
+    function(e) {
+
+        if (
+            e.key === "Escape"
+        ) {
+
+            const modal =
+                document.getElementById(
+                    "userModal"
+                );
+
+
+            if (
+                modal &&
+                !modal.classList.contains(
+                    "hidden"
+                )
+            ) {
+
+                closeUserModal();
+
+            }
+
+        }
+
+    }
+);
+
+</script>
+<script src="js/i18n.js"></script>
+</body>
+</html>

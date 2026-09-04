@@ -1,0 +1,5524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>DCF — Events & Announcements</title>
+
+    <!-- ======================================================
+         FONT AWESOME
+    ======================================================= -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <!-- ======================================================
+         SUPABASE
+    ======================================================= -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+/* Global runtime error visibility — useful after Netlify deployment */
+window.addEventListener("error", function(event) {
+    console.error("DCF runtime error:", event.error || event.message);
+});
+window.addEventListener("unhandledrejection", function(event) {
+    console.error("DCF promise error:", event.reason);
+});
+</script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --green-950: #021e13;
+            --green-900: #04351f;
+            --green-800: #09472a;
+            --green-700: #168446;
+            --green-600: #1da45a;
+            --gold: #f4c430;
+
+            --white: #ffffff;
+            --surface: #f7faf8;
+            --surface-2: #eef5f1;
+
+            --text: #10251b;
+            --muted: #718078;
+            --border: #dfe8e3;
+
+            --danger: #dc3545;
+            --success: #198754;
+            --info: #0d6efd;
+
+            --radius: 18px;
+
+            --shadow:
+                0 12px 35px rgba(3, 40, 24, .10);
+
+            --shadow-lg:
+                0 25px 70px rgba(3, 40, 24, .18);
+
+            --ease: all .25s ease;
+        }
+
+
+        body {
+            font-family:
+                Inter,
+                "Segoe UI",
+                Roboto,
+                Arial,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #f7faf8 0%,
+                    #ffffff 100%
+                );
+
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+        }
+
+
+        button {
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+           ANNOUNCEMENT BAR
+        ====================================================== */
+
+        .announcement-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+
+            z-index: 9999;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--green-950),
+                    var(--green-800)
+                );
+
+            color: white;
+
+            display: none;
+
+            box-shadow:
+                0 8px 30px rgba(0,0,0,.18);
+        }
+
+
+        .announcement-inner {
+            max-width: 1250px;
+            margin: auto;
+
+            min-height: 82px;
+
+            display: flex;
+            align-items: center;
+            gap: 18px;
+
+            padding: 12px 22px;
+        }
+
+
+        .announcement-icon {
+            width: 48px;
+            height: 48px;
+
+            border-radius: 14px;
+
+            background: rgba(244,196,48,.15);
+
+            color: var(--gold);
+
+            display: grid;
+            place-items: center;
+
+            font-size: 21px;
+
+            flex: 0 0 auto;
+        }
+
+
+        .announcement-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+
+        .announcement-badge {
+            display: inline-flex;
+
+            align-items: center;
+            gap: 6px;
+
+            font-size: 11px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+            letter-spacing: .7px;
+
+            color: var(--gold);
+
+            margin-bottom: 3px;
+        }
+
+
+        .announcement-title {
+            font-size: 17px;
+            font-weight: 800;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        .announcement-date {
+            font-size: 12px;
+            color: rgba(255,255,255,.72);
+
+            margin-top: 3px;
+        }
+
+
+        .announcement-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+
+        .btn-small {
+            border: none;
+
+            padding: 11px 16px;
+
+            border-radius: 11px;
+
+            background: var(--gold);
+            color: var(--green-950);
+
+            font-size: 13px;
+            font-weight: 800;
+
+            transition: var(--ease);
+        }
+
+
+        .btn-small:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(244,196,48,.22);
+        }
+
+
+        .btn-close-banner {
+            width: 38px;
+            height: 38px;
+
+            border: 1px solid rgba(255,255,255,.12);
+
+            background: rgba(255,255,255,.08);
+
+            color: white;
+
+            border-radius: 10px;
+
+            transition: var(--ease);
+        }
+
+
+        .btn-close-banner:hover {
+            background: rgba(255,255,255,.16);
+        }
+
+
+        /* =====================================================
+           PAGE
+        ====================================================== */
+
+        .page {
+            max-width: 1250px;
+
+            margin: auto;
+
+            padding:
+                55px 22px 80px;
+        }
+
+
+        .hero {
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--green-950),
+                    var(--green-800)
+                );
+
+            border-radius: 28px;
+
+            padding: 45px;
+
+            color: white;
+
+            box-shadow: var(--shadow-lg);
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        .hero::after {
+            content: "";
+
+            position: absolute;
+
+            width: 300px;
+            height: 300px;
+
+            border-radius: 50%;
+
+            right: -90px;
+            top: -100px;
+
+            background:
+                rgba(244,196,48,.08);
+        }
+
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+
+        .hero-label {
+            color: var(--gold);
+
+            font-size: 12px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+            letter-spacing: 1px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .hero h1 {
+            font-size: clamp(30px, 5vw, 50px);
+
+            line-height: 1.05;
+
+            margin-bottom: 15px;
+        }
+
+
+        .hero p {
+            max-width: 720px;
+
+            color: rgba(255,255,255,.78);
+
+            line-height: 1.7;
+        }
+
+
+        /* =====================================================
+           ADMIN TOOLBAR
+        ====================================================== */
+
+        .admin-toolbar {
+            margin-top: 25px;
+
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .toolbar-title h2 {
+            font-size: 21px;
+        }
+
+
+        .toolbar-title p {
+            font-size: 13px;
+            color: var(--muted);
+
+            margin-top: 4px;
+        }
+
+
+        .toolbar-actions {
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .btn {
+            border: none;
+
+            padding: 12px 17px;
+
+            border-radius: 12px;
+
+            font-weight: 800;
+
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 8px;
+
+            transition: var(--ease);
+        }
+
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+
+        .btn-primary {
+            background: var(--green-800);
+            color: white;
+
+            box-shadow:
+                0 8px 20px rgba(9,71,42,.15);
+        }
+
+
+        .btn-primary:hover {
+            background: var(--green-700);
+        }
+
+
+        .btn-gold {
+            background: var(--gold);
+            color: var(--green-950);
+        }
+
+
+        .btn-light {
+            background: white;
+
+            color: var(--green-800);
+
+            border: 1px solid var(--border);
+        }
+
+
+        .btn-danger {
+            background: #fff0f1;
+            color: var(--danger);
+
+            border: 1px solid #ffd5d8;
+        }
+
+
+        /* =====================================================
+           EVENT CARD
+        ====================================================== */
+
+        .event-section {
+            margin-top: 28px;
+        }
+
+
+        .section-heading {
+            margin-bottom: 15px;
+
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 15px;
+        }
+
+
+        .section-heading h2 {
+            font-size: 22px;
+        }
+
+
+        .event-card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            overflow: hidden;
+
+            box-shadow: var(--shadow);
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(280px, 380px)
+                1fr;
+        }
+
+
+        .event-poster {
+            background:
+                #eaf1ed;
+
+            min-height: 350px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 18px;
+        }
+
+
+        .event-poster img {
+            width: 100%;
+            height: 100%;
+
+            max-height: 500px;
+
+            object-fit: contain;
+
+            display: block;
+
+            border-radius: 12px;
+        }
+
+
+        .poster-empty {
+            text-align: center;
+
+            color: var(--muted);
+
+            padding: 40px;
+        }
+
+
+        .poster-empty i {
+            font-size: 45px;
+
+            margin-bottom: 10px;
+
+            color: var(--green-700);
+        }
+
+
+        .event-info {
+            padding: 32px;
+        }
+
+
+        .event-type {
+            display: inline-flex;
+
+            align-items: center;
+
+            background: #edf8f2;
+
+            color: var(--green-700);
+
+            border-radius: 50px;
+
+            padding: 7px 11px;
+
+            font-size: 11px;
+            font-weight: 900;
+
+            text-transform: uppercase;
+        }
+
+
+        .event-info h3 {
+            font-size: 30px;
+
+            line-height: 1.15;
+
+            margin:
+                15px 0 12px;
+        }
+
+
+        .event-description {
+            color: var(--muted);
+
+            line-height: 1.75;
+
+            white-space: pre-line;
+
+            margin-bottom: 22px;
+        }
+
+
+        .event-meta {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 12px;
+
+            margin-bottom: 22px;
+        }
+
+
+        .meta-box {
+            background: var(--surface);
+
+            border: 1px solid var(--border);
+
+            border-radius: 13px;
+
+            padding: 13px;
+        }
+
+
+        .meta-label {
+            color: var(--muted);
+
+            font-size: 11px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .meta-value {
+            font-weight: 800;
+
+            font-size: 13px;
+        }
+
+
+        .event-actions {
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+
+        /* =====================================================
+           PARTICIPANTS
+        ====================================================== */
+
+        .participants-section {
+            margin-top: 35px;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: var(--radius);
+
+            box-shadow: var(--shadow);
+
+            overflow: hidden;
+        }
+
+
+        .participants-header {
+            padding: 23px;
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .participants-title {
+            display: flex;
+
+            align-items: center;
+
+            gap: 13px;
+        }
+
+
+        .participants-title-icon {
+            width: 45px;
+            height: 45px;
+
+            border-radius: 13px;
+
+            background: #edf8f2;
+
+            color: var(--green-700);
+
+            display: grid;
+            place-items: center;
+        }
+
+
+        .participants-title h2 {
+            font-size: 19px;
+        }
+
+
+        .participants-title p {
+            color: var(--muted);
+
+            font-size: 12px;
+
+            margin-top: 3px;
+        }
+
+
+        .participant-count {
+            background: var(--green-950);
+
+            color: white;
+
+            border-radius: 50px;
+
+            padding: 8px 13px;
+
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+
+        .participant-controls {
+            padding: 18px 23px;
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(220px, 1fr)
+                minmax(220px, 1fr)
+                auto;
+
+            gap: 10px;
+
+            border-bottom: 1px solid var(--border);
+        }
+
+
+        .input {
+            width: 100%;
+
+            border: 1px solid var(--border);
+
+            background: white;
+
+            border-radius: 11px;
+
+            padding: 12px 13px;
+
+            outline: none;
+
+            color: var(--text);
+
+            transition: var(--ease);
+        }
+
+
+        .input:focus {
+            border-color: var(--green-600);
+
+            box-shadow:
+                0 0 0 3px rgba(29,164,90,.10);
+        }
+
+
+        .table-wrapper {
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+
+        table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 750px;
+        }
+
+
+        th,
+        td {
+            text-align: left;
+
+            padding: 15px 18px;
+
+            border-bottom: 1px solid var(--border);
+
+            font-size: 13px;
+        }
+
+
+        th {
+            background: #f8fbf9;
+
+            color: var(--green-800);
+
+            font-size: 11px;
+
+            text-transform: uppercase;
+
+            letter-spacing: .5px;
+        }
+
+
+        td {
+            color: #33443b;
+        }
+
+
+        tbody tr:hover {
+            background: #fbfdfc;
+        }
+
+
+        .empty-table {
+            text-align: center;
+
+            padding: 45px !important;
+
+            color: var(--muted);
+        }
+
+
+        .empty-table i {
+            font-size: 35px;
+
+            display: block;
+
+            margin-bottom: 10px;
+
+            opacity: .55;
+        }
+
+
+        /* =====================================================
+           MODAL
+        ====================================================== */
+
+        .modal {
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(1,24,15,.68);
+
+            backdrop-filter: blur(8px);
+
+            z-index: 10000;
+
+            display: none;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 18px;
+        }
+
+
+        .modal.active {
+            display: flex;
+        }
+
+
+        .modal-dialog {
+            width: min(920px, 100%);
+
+            max-height: 94vh;
+
+            overflow-y: auto;
+
+            background: white;
+
+            border-radius: 22px;
+
+            box-shadow: var(--shadow-lg);
+        }
+
+
+        .modal-header {
+            padding: 20px 23px;
+
+            border-bottom: 1px solid var(--border);
+
+            display: flex;
+
+            justify-content: space-between;
+            align-items: center;
+
+            position: sticky;
+
+            top: 0;
+
+            background: rgba(255,255,255,.96);
+
+            backdrop-filter: blur(10px);
+
+            z-index: 5;
+        }
+
+
+        .modal-header h2 {
+            font-size: 19px;
+        }
+
+
+        .modal-close {
+            width: 38px;
+            height: 38px;
+
+            border-radius: 10px;
+
+            border: 1px solid var(--border);
+
+            background: white;
+
+            color: var(--muted);
+        }
+
+
+        .modal-body {
+            padding: 23px;
+        }
+
+
+        .form-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 16px;
+        }
+
+
+        .form-group {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+        }
+
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+
+        .form-label {
+            font-size: 12px;
+
+            font-weight: 900;
+
+            color: var(--green-800);
+        }
+
+
+        .required {
+            color: var(--danger);
+        }
+
+
+        textarea.input {
+            min-height: 115px;
+
+            resize: vertical;
+        }
+
+
+        .poster-upload {
+            border: 2px dashed #c9dcd1;
+
+            background: #f8fcf9;
+
+            border-radius: 16px;
+
+            padding: 17px;
+
+            transition: var(--ease);
+        }
+
+
+        .poster-upload:hover {
+            border-color: var(--green-600);
+        }
+
+
+        .poster-upload input[type=file] {
+            width: 100%;
+        }
+
+
+        .poster-help {
+            margin-top: 8px;
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            line-height: 1.6;
+        }
+
+
+        .poster-preview {
+            margin-top: 14px;
+
+            border-radius: 15px;
+
+            background:
+                #e9f0ec;
+
+            min-height: 280px;
+
+            padding: 12px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            overflow: hidden;
+        }
+
+
+        .poster-preview img {
+            max-width: 100%;
+            max-height: 450px;
+
+            width: auto;
+            height: auto;
+
+            object-fit: contain;
+
+            border-radius: 10px;
+
+            display: none;
+        }
+
+
+        .preview-placeholder {
+            text-align: center;
+
+            color: var(--muted);
+
+            font-size: 13px;
+        }
+
+
+        .preview-placeholder i {
+            display: block;
+
+            font-size: 42px;
+
+            margin-bottom: 10px;
+
+            color: var(--green-700);
+        }
+
+
+        .image-info {
+            display: none;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 8px;
+
+            margin-top: 10px;
+        }
+
+
+        .image-info-box {
+            background: var(--surface);
+
+            border: 1px solid var(--border);
+
+            border-radius: 10px;
+
+            padding: 9px;
+
+            text-align: center;
+        }
+
+
+        .image-info-box small {
+            display: block;
+
+            color: var(--muted);
+
+            font-size: 9px;
+
+            text-transform: uppercase;
+        }
+
+
+        .image-info-box strong {
+            display: block;
+
+            margin-top: 3px;
+
+            font-size: 11px;
+        }
+
+
+        /* =====================================================
+           LIVE PREVIEW
+        ====================================================== */
+
+        .live-preview {
+            margin-top: 18px;
+
+            padding: 16px;
+
+            background: #f6faf8;
+
+            border: 1px solid var(--border);
+
+            border-radius: 16px;
+        }
+
+
+        .live-preview-title {
+            font-size: 12px;
+
+            font-weight: 900;
+
+            color: var(--green-800);
+
+            margin-bottom: 12px;
+        }
+
+
+        .preview-card {
+            background: white;
+
+            border: 1px solid var(--border);
+
+            border-radius: 14px;
+
+            overflow: hidden;
+        }
+
+
+        .preview-card-image {
+            height: 240px;
+
+            background: #eaf1ed;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            padding: 10px;
+        }
+
+
+        .preview-card-image img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: contain;
+
+            border-radius: 8px;
+        }
+
+
+        .preview-card-content {
+            padding: 15px;
+        }
+
+
+        .preview-card-content h3 {
+            font-size: 18px;
+
+            margin: 7px 0;
+        }
+
+
+        .preview-card-content p {
+            color: var(--muted);
+
+            font-size: 12px;
+
+            line-height: 1.6;
+        }
+
+
+        .modal-footer {
+            padding: 18px 23px;
+
+            border-top: 1px solid var(--border);
+
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            position: sticky;
+
+            bottom: 0;
+
+            background: rgba(255,255,255,.97);
+
+            backdrop-filter: blur(10px);
+        }
+
+
+        /* =====================================================
+           TOAST
+        ====================================================== */
+
+        .toast-container {
+            position: fixed;
+
+            right: 18px;
+            bottom: 18px;
+
+            z-index: 20000;
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+        }
+
+
+        .toast {
+            min-width: 280px;
+
+            max-width: 400px;
+
+            background: white;
+
+            border: 1px solid var(--border);
+
+            box-shadow: var(--shadow-lg);
+
+            border-radius: 13px;
+
+            padding: 14px 16px;
+
+            display: flex;
+
+            gap: 11px;
+
+            align-items: flex-start;
+
+            animation:
+                toastIn .25s ease;
+        }
+
+
+        @keyframes toastIn {
+
+            from {
+                transform: translateY(15px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+
+        .toast i {
+            margin-top: 2px;
+        }
+
+
+        .toast.success i {
+            color: var(--success);
+        }
+
+
+        .toast.error i {
+            color: var(--danger);
+        }
+
+
+        .toast.info i {
+            color: var(--info);
+        }
+
+
+        .toast strong {
+            display: block;
+
+            font-size: 13px;
+        }
+
+
+        .toast span {
+            display: block;
+
+            font-size: 12px;
+
+            color: var(--muted);
+
+            margin-top: 3px;
+
+            line-height: 1.5;
+        }
+
+
+        /* =====================================================
+           LOADING
+        ====================================================== */
+
+        .loading {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(255,255,255,.7);
+
+            backdrop-filter: blur(3px);
+
+            z-index: 30000;
+
+            align-items: center;
+
+            justify-content: center;
+        }
+
+
+        .loading.active {
+            display: flex;
+        }
+
+
+        .loading-box {
+            background: white;
+
+            border-radius: 17px;
+
+            padding: 25px 30px;
+
+            box-shadow: var(--shadow-lg);
+
+            text-align: center;
+        }
+
+
+        .spinner {
+            width: 35px;
+            height: 35px;
+
+            border: 4px solid #dcebe2;
+
+            border-top-color: var(--green-700);
+
+            border-radius: 50%;
+
+            animation:
+                spin .7s linear infinite;
+
+            margin: auto auto 12px;
+        }
+
+
+        @keyframes spin {
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+        @media(max-width: 850px) {
+
+            .event-card {
+                grid-template-columns: 1fr;
+            }
+
+            .event-poster {
+                min-height: 300px;
+            }
+
+            .participant-controls {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media(max-width: 650px) {
+
+            .page {
+                padding:
+                    35px 14px 60px;
+            }
+
+            .hero {
+                padding: 30px 22px;
+                border-radius: 20px;
+            }
+
+            .announcement-inner {
+                padding: 10px 13px;
+            }
+
+            .announcement-icon {
+                display: none;
+            }
+
+            .announcement-title {
+                font-size: 14px;
+            }
+
+            .announcement-actions .btn-small {
+                display: none;
+            }
+
+            .event-info {
+                padding: 22px;
+            }
+
+            .event-info h3 {
+                font-size: 24px;
+            }
+
+            .event-meta {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .image-info {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                padding: 8px;
+            }
+
+            .modal-dialog {
+                border-radius: 16px;
+            }
+
+        }
+
+    
+
+        .btn-danger {
+            background: #dc2626;
+            color: #fff;
+            border: 1px solid #dc2626;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+            border-color: #b91c1c;
+        }
+
+        .btn-sm {
+            padding: 8px 11px;
+            font-size: 12px;
+        }
+
+/* =========================================================
+   FINAL RESPONSIVE + TOUCH FRIENDLY LAYER
+========================================================= */
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{-webkit-tap-highlight-color:transparent}
+button,.btn,select,input,textarea{touch-action:manipulation}
+.btn{min-height:44px}
+.modal-dialog{-webkit-overflow-scrolling:touch}
+.table-wrapper{-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.event-actions .btn{flex:0 0 auto}
+@media (max-width: 760px){
+    .page{padding:28px 12px 48px}
+    .hero{padding:24px 18px;border-radius:16px}
+    .hero h1{font-size:30px}
+    .hero p{font-size:14px;line-height:1.6}
+    .admin-toolbar{align-items:stretch}
+    .toolbar-actions{width:100%;display:grid;grid-template-columns:1fr}
+    .toolbar-actions .btn{width:100%}
+    .event-card{display:block}
+    .event-poster{min-height:220px;max-height:60vh}
+    .event-poster img{max-height:55vh}
+    .event-info{padding:18px}
+    .event-info h3{font-size:23px}
+    .event-actions{display:grid;grid-template-columns:1fr}
+    .event-actions .btn{width:100%}
+    .participants-header{padding:18px}
+    .participant-controls{padding:14px 18px;grid-template-columns:1fr}
+    .participant-controls .btn{width:100%}
+    .table-wrapper{overflow-x:auto}
+    table{min-width:720px}
+    .modal{padding:6px}
+    .modal-dialog{width:100%;max-height:96vh;border-radius:14px}
+    .modal-header,.modal-body,.modal-footer{padding-left:16px;padding-right:16px}
+    .modal-footer{display:grid;grid-template-columns:1fr 1fr}
+    .modal-footer .btn{width:100%}
+    .toast-container{left:10px;right:10px;bottom:10px}
+    .toast{min-width:0;max-width:none;width:100%}
+}
+@media (max-width: 420px){
+    .announcement-inner{min-height:62px;padding:8px 10px}
+    .announcement-title{font-size:13px}
+    .announcement-date{font-size:10px}
+    .page{padding-left:9px;padding-right:9px}
+    .hero{padding:20px 15px}
+    .hero h1{font-size:27px}
+    .event-meta{gap:8px}
+    .meta-box{padding:11px}
+    .form-grid{gap:12px}
+    .poster-preview{min-height:210px}
+    .modal-footer{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ============================================================
+     ANNOUNCEMENT BAR
+============================================================= -->
+
+<div
+    id="announcementBar"
+    class="announcement-bar"
+>
+
+    <div class="announcement-inner">
+
+        <div class="announcement-icon">
+            <i class="fa-solid fa-bullhorn"></i>
+        </div>
+
+        <div class="announcement-content">
+
+            <div class="announcement-badge">
+                <i class="fa-solid fa-circle"></i>
+                TANGAZO JIPYA
+            </div>
+
+            <div
+                id="announcementTitle"
+                class="announcement-title"
+            >
+                —
+            </div>
+
+            <div
+                id="announcementDate"
+                class="announcement-date"
+            >
+                —
+            </div>
+
+        </div>
+
+        <div class="announcement-actions">
+
+            <button
+                class="btn-small"
+                onclick="openParticipateModal()"
+            >
+                <i class="fa-solid fa-user-plus"></i>
+                Register
+            </button>
+
+            <button
+                class="btn-close-banner"
+                onclick="closeAnnouncement()"
+                title="Funga"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ============================================================
+     MAIN PAGE
+============================================================= -->
+
+<main class="page">
+
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <div class="hero-label">
+                DEVELOPMENT CHARITY FOUNDATION
+            </div>
+
+            <h1>
+                Matukio & Matangazo
+            </h1>
+
+            <p>
+                Pata taarifa kuhusu matukio, mafunzo,
+                mikutano, shughuli za kijamii na matangazo
+                mbalimbali ya DCF. Unaweza pia kujisajili
+                moja kwa moja kwenye tukio.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================================================
+         ADMIN TOOLBAR
+    ========================================================= -->
+
+    <section class="admin-toolbar">
+
+        <div class="toolbar-title">
+
+            <h2>
+                Event Management
+            </h2>
+
+            <p>
+                Publish events and manage participants.
+            </p>
+
+        </div>
+
+
+        <div class="toolbar-actions">
+
+            <button
+                class="btn btn-light"
+                onclick="scrollToParticipants()"
+            >
+                <i class="fa-solid fa-users"></i>
+                Participants
+            </button>
+
+
+            <button
+                class="btn btn-primary"
+                onclick="openAdminModal()"
+            >
+                <i class="fa-solid fa-plus"></i>
+                Publish New Event
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================================================
+         CURRENT EVENT
+    ========================================================= -->
+
+    <section class="event-section">
+
+        <div class="section-heading">
+
+            <h2>
+                Published Event
+            </h2>
+
+        </div>
+
+
+        <div
+            id="eventContainer"
+        >
+
+            <div class="event-card">
+
+                <div class="event-poster">
+
+                    <div class="poster-empty">
+
+                        <i class="fa-regular fa-calendar-xmark"></i>
+
+                        <p>
+                            No event has been published.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="event-info">
+
+                    <span class="event-type">
+                        Information
+                    </span>
+
+                    <h3>
+                        No event available
+                    </h3>
+
+                    <p class="event-description">
+                        The admin can publish a new event
+                        kwa kutumia kitufe cha Publish New Event.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================================================
+         PARTICIPANTS
+    ========================================================= -->
+
+    <section
+        id="participantsSection"
+        class="participants-section"
+    >
+
+        <div class="participants-header">
+
+            <div class="participants-title">
+
+                <div class="participants-title-icon">
+
+                    <i class="fa-solid fa-users"></i>
+
+                </div>
+
+                <div>
+
+                    <h2>
+                        Registered Participants
+                    </h2>
+
+                    <p>
+                        View and download participant information.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="participantCount"
+                class="participant-count"
+            >
+                0 Participants
+            </div>
+
+        </div>
+
+
+        <div class="participant-controls">
+
+            <select
+                id="participantEventFilter"
+                class="input"
+                onchange="loadParticipants()"
+            >
+
+                <option value="">
+                    Select Event
+                </option>
+
+            </select>
+
+
+            <input
+                id="participantSearch"
+                class="input"
+                type="search"
+                placeholder="Search name, email or phone..."
+                oninput="renderParticipants()"
+            >
+
+
+            <button
+                class="btn btn-primary"
+                onclick="downloadParticipantsCSV()"
+            >
+
+                <i class="fa-solid fa-file-csv"></i>
+
+                Download CSV
+
+            </button>
+
+            <button
+                class="btn btn-light"
+                type="button"
+                onclick="printParticipants()"
+            >
+                <i class="fa-solid fa-print"></i>
+                Print
+            </button>
+
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            Full Name
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Phone
+                        </th>
+
+                        <th>
+                            Event
+                        </th>
+
+                        <th>
+                            Registration Date
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="participantsTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="7"
+                            class="empty-table"
+                        >
+
+                            <i class="fa-solid fa-users"></i>
+
+                            Select an event to view participants.
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ============================================================
+     PARTICIPANT REGISTRATION MODAL
+============================================================= -->
+
+<div
+    id="participateModal"
+    class="modal"
+>
+
+    <div class="modal-dialog">
+
+        <div class="modal-header">
+
+            <h2>
+                <i class="fa-solid fa-user-plus"></i>
+                Register for Event
+            </h2>
+
+            <button
+                class="modal-close"
+                onclick="closeModal('participateModal')"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <form
+            id="participantForm"
+            onsubmit="submitParticipant(event)"
+        >
+
+            <div class="modal-body">
+
+
+                <input
+                    type="hidden"
+                    id="participantEventId"
+                >
+
+
+                <div
+                    id="participantEventDetails"
+                    class="live-preview"
+                    style="margin-top:0;margin-bottom:18px;"
+                >
+
+                    <div class="live-preview-title">
+                        EVENT YOU ARE REGISTERING FOR
+                    </div>
+
+                    <strong
+                        id="participantEventTitle"
+                    >
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-group full">
+
+                        <label class="form-label">
+                            Full Name
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            id="participantName"
+                            class="input"
+                            type="text"
+                            required
+                            minlength="3"
+                            maxlength="150"
+                            autocomplete="name"
+                            placeholder="Enter your full name"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+                            Email
+                            <span class="required">*</span>
+                        </label>
+
+                        <input
+                            id="participantEmail"
+                            class="input"
+                            type="email"
+                            required
+                            maxlength="150"
+                            autocomplete="email"
+                            placeholder="mfano@example.com"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group full">
+                        <label class="form-label">Country <span class="required">*</span></label>
+                        <select id="participantCountry" class="input" required autocomplete="country-name">
+                            <option value="">Select your country</option>
+                            <option value="TZ" data-dial="+255" data-min="9" data-max="9">Tanzania (+255)</option>
+                            <option value="KE" data-dial="+254" data-min="9" data-max="9">Kenya (+254)</option>
+                            <option value="UG" data-dial="+256" data-min="9" data-max="9">Uganda (+256)</option>
+                            <option value="RW" data-dial="+250" data-min="9" data-max="9">Rwanda (+250)</option>
+                            <option value="BI" data-dial="+257" data-min="8" data-max="8">Burundi (+257)</option>
+                            <option value="ZM" data-dial="+260" data-min="9" data-max="9">Zambia (+260)</option>
+                            <option value="MW" data-dial="+265" data-min="9" data-max="9">Malawi (+265)</option>
+                            <option value="MZ" data-dial="+258" data-min="9" data-max="9">Mozambique (+258)</option>
+                            <option value="ZA" data-dial="+27" data-min="9" data-max="9">South Africa (+27)</option>
+                            <option value="NG" data-dial="+234" data-min="10" data-max="10">Nigeria (+234)</option>
+                            <option value="GH" data-dial="+233" data-min="9" data-max="9">Ghana (+233)</option>
+                            <option value="ET" data-dial="+251" data-min="9" data-max="9">Ethiopia (+251)</option>
+                            <option value="US" data-dial="+1" data-min="10" data-max="10">United States (+1)</option>
+                            <option value="CA" data-dial="+1" data-min="10" data-max="10">Canada (+1)</option>
+                            <option value="GB" data-dial="+44" data-min="10" data-max="10">United Kingdom (+44)</option>
+                            <option value="IN" data-dial="+91" data-min="10" data-max="10">India (+91)</option>
+                            <option value="AE" data-dial="+971" data-min="9" data-max="9">United Arab Emirates (+971)</option>
+                            <option value="OTHER" data-dial="+" data-min="7" data-max="15">Other country</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Phone Number <span class="required">*</span></label>
+                        <div class="phone-field">
+                            <span id="participantDialCode" class="dial-code">+255</span>
+                            <input id="participantPhone" class="input phone-input" type="tel" required inputmode="numeric" autocomplete="tel-national" placeholder="712345678">
+                        </div>
+                        <small id="phoneHelp" class="field-help">Enter 9 digits for Tanzania.</small>
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    onclick="closeModal('participateModal')"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    id="participantSubmitBtn"
+                    class="btn btn-primary"
+                >
+
+                    <i class="fa-solid fa-paper-plane"></i>
+
+                    Register Now
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- ============================================================
+     ADMIN EVENT MODAL
+============================================================= -->
+
+<div
+    id="adminModal"
+    class="modal"
+>
+
+    <div class="modal-dialog">
+
+        <div class="modal-header">
+
+            <h2>
+                <i class="fa-solid fa-calendar-plus"></i>
+                Publish New Event
+            </h2>
+
+            <button
+                class="modal-close"
+                onclick="closeModal('adminModal')"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+        </div>
+
+
+        <form
+            id="eventForm"
+            onsubmit="publishEvent(event)"
+        >
+
+            <div class="modal-body">
+
+
+                <div class="form-grid">
+
+
+                    <!-- TITLE -->
+
+                    <div class="form-group full">
+
+                        <label class="form-label">
+
+                            Event Title
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input
+                            id="eventTitle"
+                            class="input"
+                            type="text"
+                            required
+                            minlength="3"
+                            maxlength="200"
+                            placeholder="Example: DCF Community Training 2026"
+                        >
+
+                    </div>
+
+
+                    <!-- TYPE -->
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            Event Type
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <select
+                            id="eventType"
+                            class="input"
+                            required
+                        >
+
+                            <option value="">
+                                Select type
+                            </option>
+
+                            <option value="Training">
+                                Training
+                            </option>
+
+                            <option value="Conference">
+                                Conference
+                            </option>
+
+                            <option value="Seminar">
+                                Seminar
+                            </option>
+
+                            <option value="Workshop">
+                                Workshop
+                            </option>
+
+                            <option value="Outreach">
+                                Outreach
+                            </option>
+
+                            <option value="Meeting">
+                                Meeting
+                            </option>
+
+                            <option value="Campaign">
+                                Campaign
+                            </option>
+
+                            <option value="Event">
+                                Event
+                            </option>
+
+                            <option value="Announcement">
+                                Announcement
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- DATE -->
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            Date & Time
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input
+                            id="eventDate"
+                            class="input"
+                            type="datetime-local"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- LOCATION -->
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            Location
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input
+                            id="eventLocation"
+                            class="input"
+                            type="text"
+                            required
+                            maxlength="250"
+                            placeholder="Example: Arusha, Tanzania"
+                        >
+
+                    </div>
+
+
+                    <!-- ORGANIZER -->
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            Organizer
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input
+                            id="eventOrganizer"
+                            class="input"
+                            type="text"
+                            required
+                            maxlength="150"
+                            placeholder="Development Charity Foundation"
+                        >
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            Contact Phone
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input
+                            id="eventContactPhone"
+                            class="input"
+                            type="tel"
+                            required
+                            maxlength="30"
+                            placeholder="07XXXXXXXX"
+                        >
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            Contact Email
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input
+                            id="eventContactEmail"
+                            class="input"
+                            type="email"
+                            required
+                            maxlength="150"
+                            placeholder="info@example.com"
+                        >
+
+                    </div>
+
+
+                    <!-- DEADLINE -->
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            Registration Deadline
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input
+                            id="registrationDeadline"
+                            class="input"
+                            type="datetime-local"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- MAX -->
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            Maximum Participants
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input
+                            id="maxParticipants"
+                            class="input"
+                            type="number"
+                            required
+                            min="1"
+                            max="100000"
+                            placeholder="Mfano: 100"
+                        >
+
+                    </div>
+
+
+                    <!-- REGISTRATION -->
+
+                    <div class="form-group">
+
+                        <label class="form-label">
+
+                            Registration
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <select
+                            id="registrationRequired"
+                            class="input"
+                            required
+                        >
+
+                            <option value="true">
+                                Registration Required
+                            </option>
+
+                            <option value="false">
+                                Registration Not Required
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- REQUIREMENTS -->
+
+                    <div class="form-group full">
+
+                        <label class="form-label">
+
+                            Requirements
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <textarea
+                            id="eventRequirements"
+                            class="input"
+                            required
+                            maxlength="2000"
+                            placeholder="Mfano: Kitambulisho, notebook, passport size photo..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- DESCRIPTION -->
+
+                    <div class="form-group full">
+
+                        <label class="form-label">
+
+                            Maelezo ya Event
+
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <textarea
+                            id="eventDescription"
+                            class="input"
+                            required
+                            minlength="10"
+                            maxlength="5000"
+                            placeholder="Andika maelezo kamili kuhusu tukio..."
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- POSTER -->
+
+                    <div class="form-group full">
+
+                        <label class="form-label">
+
+                            Event Poster
+
+                            <span class="required">*</span>
+
+                        </label>
+
+
+                        <div class="poster-upload">
+
+                            <input
+                                id="eventPoster"
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp,image/gif"
+                                onchange="previewPoster(event)"
+                            >
+
+
+                            <div class="poster-help">
+
+                                <strong>
+                                    Poster Requirements:
+                                </strong>
+
+                                <br>
+
+                                • JPG, PNG, WEBP au GIF
+
+                                <br>
+
+                                • Maximum 50 MB
+
+                                <br>
+
+                                • Upana na urefu angalau 1080 × 1080 px
+
+                                <br>
+
+                                • Poster will not be cropped; the original aspect ratio will be preserved.
+
+                            </div>
+
+
+                            <div
+                                id="posterPreview"
+                                class="poster-preview"
+                            >
+
+                                <div
+                                    id="previewPlaceholder"
+                                    class="preview-placeholder"
+                                >
+
+                                    <i class="fa-regular fa-image"></i>
+
+                                    Choose a poster to preview it.
+
+                                </div>
+
+
+                                <img
+                                    id="posterPreviewImage"
+                                    alt="Poster Preview"
+                                >
+
+                            </div>
+
+
+                            <div
+                                id="imageInfo"
+                                class="image-info"
+                            >
+
+                                <div class="image-info-box">
+
+                                    <small>
+                                        Width
+                                    </small>
+
+                                    <strong id="imageWidth">
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="image-info-box">
+
+                                    <small>
+                                        Height
+                                    </small>
+
+                                    <strong id="imageHeight">
+                                        —
+                                    </strong>
+
+                                </div>
+
+
+                                <div class="image-info-box">
+
+                                    <small>
+                                        Size
+                                    </small>
+
+                                    <strong id="imageSize">
+                                        —
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- =================================================
+                     LIVE EVENT PREVIEW
+                ================================================== -->
+
+                <div class="live-preview">
+
+                    <div class="live-preview-title">
+
+                        <i class="fa-solid fa-eye"></i>
+
+                        PREVIEW — HOW THE ANNOUNCEMENT WILL APPEAR
+
+                    </div>
+
+
+                    <div class="preview-card">
+
+                        <div class="preview-card-image">
+
+                            <img
+                                id="livePreviewImage"
+                                alt="Live Preview"
+                            >
+
+                        </div>
+
+
+                        <div class="preview-card-content">
+
+                            <span
+                                id="livePreviewType"
+                                class="event-type"
+                            >
+                                EVENT
+                            </span>
+
+
+                            <h3
+                                id="livePreviewTitle"
+                            >
+                                Event Title
+                            </h3>
+
+
+                            <p
+                                id="livePreviewDescription"
+                            >
+                                Event description will appear here.
+                            </p>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-light"
+                    onclick="closeModal('adminModal')"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    id="publishBtn"
+                    class="btn btn-primary"
+                >
+
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                    Publish Event
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- ============================================================
+     TOAST
+============================================================= -->
+
+<div
+    id="toastContainer"
+    class="toast-container"
+></div>
+
+
+
+<!-- ============================================================
+     LOADING
+============================================================= -->
+
+<div
+    id="loading"
+    class="loading"
+>
+
+    <div class="loading-box">
+
+        <div class="spinner"></div>
+
+        <strong id="loadingText">
+            Tafadhali subiri...
+        </strong>
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+/* ==============================================================
+   SUPABASE CONFIG
+============================================================== */
+
+const SUPABASE_URL =
+    "https://fcjvvfbaqnaohbtbljui.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_iSG3Vea2d4Fq1evF2fvbnw_0ri5huMQ";
+
+
+const _supabase =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* ==============================================================
+   GLOBAL VARIABLES
+============================================================== */
+
+let activeEvent = null;
+
+let allEvents = [];
+
+let allParticipants = [];
+
+let selectedPosterFile = null;
+
+const MAX_FILE_SIZE =
+    50 * 1024 * 1024;
+
+const MIN_IMAGE_WIDTH = 1080;
+
+const MIN_IMAGE_HEIGHT = 1080;
+/* ==============================================================
+   BROWSER COMPATIBILITY + SAFE HELPERS
+   Works across current Chrome, Edge, Firefox, Safari and mobile browsers.
+============================================================== */
+
+function generateUniqueId() {
+    try {
+        if (window.crypto && typeof window.crypto.randomUUID === "function") {
+            return window.crypto.randomUUID();
+        }
+    } catch (_) {}
+    return Date.now().toString(36) + "-" +
+        Math.random().toString(36).slice(2, 12);
+}
+
+function safeErrorMessage(error, fallback) {
+    if (!error) return fallback;
+    return String(error.message || error.details || error.hint || fallback);
+}
+
+
+
+/* ==============================================================
+   INIT
+============================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+
+        setupLivePreview();
+
+        await loadEvents();
+
+        await loadEventFilter();
+
+    }
+);
+
+
+/* ==============================================================
+   TOAST
+============================================================== */
+
+function showToast(
+    message,
+    type = "info",
+    title = ""
+) {
+
+    const container =
+        document.getElementById(
+            "toastContainer"
+        );
+
+
+    const toast =
+        document.createElement("div");
+
+    toast.className =
+        `toast ${type}`;
+
+
+    let icon =
+        "fa-circle-info";
+
+
+    if (type === "success") {
+
+        icon =
+            "fa-circle-check";
+
+    }
+
+
+    if (type === "error") {
+
+        icon =
+            "fa-circle-exclamation";
+
+    }
+
+
+    toast.innerHTML = `
+
+        <i class="fa-solid ${icon}"></i>
+
+        <div>
+
+            <strong>
+                ${escapeHtml(
+                    title ||
+                    (
+                        type === "success"
+                            ? "Imefanikiwa"
+                            : type === "error"
+                                ? "Kuna tatizo"
+                                : "Information"
+                    )
+                )}
+            </strong>
+
+            <span>
+                ${escapeHtml(message)}
+            </span>
+
+        </div>
+
+    `;
+
+
+    container.appendChild(toast);
+
+
+    setTimeout(
+        () => {
+
+            toast.remove();
+
+        },
+        4500
+    );
+}
+
+
+/* ==============================================================
+   LOADING
+============================================================== */
+
+function showLoading(text) {
+
+    document.getElementById(
+        "loadingText"
+    ).textContent = text;
+
+    document.getElementById(
+        "loading"
+    ).classList.add("active");
+}
+
+
+function hideLoading() {
+
+    document.getElementById(
+        "loading"
+    ).classList.remove("active");
+}
+
+
+/* ==============================================================
+   ESCAPE HTML
+============================================================== */
+
+function escapeHtml(value) {
+
+    if (value === null ||
+        value === undefined) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* ==============================================================
+   LOAD EVENTS
+============================================================== */
+
+async function loadEvents() {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await _supabase
+            .from("events")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        allEvents =
+            data || [];
+
+
+        activeEvent =
+            allEvents.find(
+                event =>
+                    event.is_active === true
+            ) || null;
+
+
+        renderActiveEvent();
+
+        renderAnnouncement();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "LOAD EVENTS ERROR:",
+            error
+        );
+
+
+        showToast(
+            error.message,
+            "error",
+            "Events could not be loaded"
+        );
+
+    }
+
+}
+
+
+/* ==============================================================
+   RENDER ACTIVE EVENT
+============================================================== */
+
+function renderActiveEvent() {
+
+    const container =
+        document.getElementById(
+            "eventContainer"
+        );
+
+
+    if (!activeEvent) {
+
+        container.innerHTML = `
+
+            <div class="event-card">
+
+                <div class="event-poster">
+
+                    <div class="poster-empty">
+
+                        <i class="fa-regular fa-calendar-xmark"></i>
+
+                        <p>
+                            No event has been published.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="event-info">
+
+                    <span class="event-type">
+                        Information
+                    </span>
+
+                    <h3>
+                        No event available
+                    </h3>
+
+                    <p class="event-description">
+                        The admin can publish a new event.
+                    </p>
+
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    const eventDate =
+        formatDate(
+            activeEvent.event_date
+        );
+
+
+    container.innerHTML = `
+
+        <div class="event-card">
+
+            <div class="event-poster">
+
+                ${
+                    activeEvent.poster_url
+
+                        ? `
+
+                            <img
+                                src="${escapeHtml(
+                                    activeEvent.poster_url
+                                )}"
+                                alt="${escapeHtml(
+                                    activeEvent.title
+                                )}"
+                            >
+
+                        `
+
+                        : `
+
+                            <div class="poster-empty">
+
+                                <i class="fa-regular fa-image"></i>
+
+                                <p>
+                                    No poster available.
+                                </p>
+
+                            </div>
+
+                        `
+                }
+
+            </div>
+
+
+            <div class="event-info">
+
+                <span class="event-type">
+
+                    ${escapeHtml(
+                        activeEvent.event_type ||
+                        "Event"
+                    )}
+
+                </span>
+
+
+                <h3>
+                    ${escapeHtml(
+                        activeEvent.title
+                    )}
+                </h3>
+
+
+                <p class="event-description">
+
+                    ${escapeHtml(
+                        activeEvent.description ||
+                        ""
+                    )}
+
+                </p>
+
+
+                <div class="event-meta">
+
+
+                    <div class="meta-box">
+
+                        <div class="meta-label">
+                            Date & Time
+                        </div>
+
+                        <div class="meta-value">
+
+                            <i class="fa-regular fa-calendar"></i>
+
+                            ${escapeHtml(
+                                eventDate
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="meta-box">
+
+                        <div class="meta-label">
+                            Location
+                        </div>
+
+                        <div class="meta-value">
+
+                            <i class="fa-solid fa-location-dot"></i>
+
+                            ${escapeHtml(
+                                activeEvent.location
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="meta-box">
+
+                        <div class="meta-label">
+                            Organizer
+                        </div>
+
+                        <div class="meta-value">
+
+                            ${escapeHtml(
+                                activeEvent.organizer ||
+                                "DCF"
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="meta-box">
+
+                        <div class="meta-label">
+                            Registration Deadline
+                        </div>
+
+                        <div class="meta-value">
+
+                            ${escapeHtml(
+                                formatDate(
+                                    activeEvent.registration_deadline
+                                )
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="meta-box">
+
+                        <div class="meta-label">
+                            Maximum Participants
+                        </div>
+
+                        <div class="meta-value">
+
+                            ${escapeHtml(
+                                String(
+                                    activeEvent.max_participants ||
+                                    "—"
+                                )
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="meta-box">
+
+                        <div class="meta-label">
+                            Contact
+                        </div>
+
+                        <div class="meta-value">
+
+                            ${escapeHtml(
+                                activeEvent.contact_phone ||
+                                ""
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="event-actions">
+
+                    ${
+                        activeEvent.registration_required !== false
+
+                            ? `
+
+                                <button
+                                    class="btn btn-primary"
+                                    onclick="openParticipateModal()"
+                                >
+
+                                    <i class="fa-solid fa-user-plus"></i>
+
+                                    Register
+
+                                </button>
+
+                            `
+
+                            : `
+
+                                <span class="btn btn-light">
+                                    Registration Not Required
+                                </span>
+
+                            `
+                    }
+
+
+                    <button
+                        class="btn btn-light"
+                        onclick="scrollToParticipants()"
+                    >
+
+                        <i class="fa-solid fa-users"></i>
+
+                        Participants
+
+                    </button>
+
+                    <button class="btn btn-light" type="button" onclick="editActiveEvent()">
+                        <i class="fa-solid fa-pen"></i>
+                        Edit
+                    </button>
+
+                    <button class="btn btn-light" type="button" onclick="emailEventOrganizer()">
+                        <i class="fa-solid fa-envelope"></i>
+                        Email Organizer
+                    </button>
+
+                    <button class="btn btn-danger" type="button" onclick="unpublishActiveEvent()">
+                        <i class="fa-solid fa-eye-slash"></i>
+                        Unpublish
+                    </button>
+
+                    <button class="btn btn-danger" type="button" onclick="deleteActiveEvent()">
+                        <i class="fa-solid fa-trash"></i>
+                        Delete Event
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* ==============================================================
+   ANNOUNCEMENT
+============================================================== */
+
+function renderAnnouncement() {
+
+    const bar =
+        document.getElementById(
+            "announcementBar"
+        );
+
+
+    if (!activeEvent) {
+
+        bar.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "announcementTitle"
+    ).textContent =
+        activeEvent.title;
+
+
+    document.getElementById(
+        "announcementDate"
+    ).textContent =
+        formatDate(
+            activeEvent.event_date
+        );
+
+
+    bar.style.display =
+        "block";
+
+
+    document.body.style.paddingTop =
+        "82px";
+
+}
+
+
+/* ==============================================================
+   CLOSE ANNOUNCEMENT
+============================================================== */
+
+function closeAnnouncement() {
+
+    document.getElementById(
+        "announcementBar"
+    ).style.display = "none";
+
+
+    document.body.style.paddingTop =
+        "0";
+
+}
+
+
+/* ==============================================================
+   PARTICIPATION MODAL
+============================================================== */
+
+function openParticipateModal() {
+
+    if (!activeEvent) {
+
+        showToast(
+            "Hakuna tukio linalopatikana.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "participantEventId"
+    ).value =
+        activeEvent.id;
+
+
+    document.getElementById(
+        "participantEventTitle"
+    ).textContent =
+        activeEvent.title;
+
+
+    openModal(
+        "participateModal"
+    );
+
+}
+
+
+/* ==============================================================
+   SUBMIT PARTICIPANT
+============================================================== */
+
+async function submitParticipant(event) {
+
+    event.preventDefault();
+
+
+    if (!activeEvent) {
+
+        showToast(
+            "Event is not available.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const name =
+        document.getElementById(
+            "participantName"
+        ).value.trim();
+
+
+    const email =
+        document.getElementById(
+            "participantEmail"
+        ).value.trim();
+
+
+    const phone =
+        document.getElementById(
+            "participantPhone"
+        ).value.trim();
+
+
+    if (!name ||
+        !email ||
+        !phone) {
+
+        showToast(
+            "Please fill in all required fields.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /* Deadline check */
+
+    if (
+        activeEvent.registration_deadline &&
+        new Date(
+            activeEvent.registration_deadline
+        ) < new Date()
+    ) {
+
+        showToast(
+            "Registration deadline has passed.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const button =
+        document.getElementById(
+            "participantSubmitBtn"
+        );
+
+
+    button.disabled =
+        true;
+
+
+    button.innerHTML = `
+
+        <i class="fa-solid fa-spinner fa-spin"></i>
+
+        Submitting...
+
+    `;
+
+
+    try {
+
+        const {
+            error
+        } = await _supabase
+            .from(
+                "event_participants"
+            )
+            .insert([
+                {
+                    event_id:
+                        activeEvent.id,
+
+                    full_name:
+                        name,
+
+                    email:
+                        email,
+
+                    phone_number:
+                        phone
+                }
+            ]);
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        showToast(
+            "Your registration was received successfully.",
+            "success",
+            "Registration Successful"
+        );
+
+
+        document.getElementById(
+            "participantForm"
+        ).reset();
+
+
+        closeModal(
+            "participateModal"
+        );
+
+
+        await loadParticipants();
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "PARTICIPANT ERROR:",
+            error
+        );
+
+
+        showToast(
+            error.message,
+            "error",
+            "Registration Failed"
+        );
+
+    }
+
+    finally {
+
+        button.disabled =
+            false;
+
+
+        button.innerHTML = `
+
+            <i class="fa-solid fa-paper-plane"></i>
+
+            Register Now
+
+        `;
+
+    }
+
+}
+
+
+/* ==============================================================
+   ADMIN MODAL
+============================================================== */
+
+function openAdminModal() {
+
+    document.getElementById(
+        "eventForm"
+    ).reset();
+
+
+    selectedPosterFile =
+        null;
+
+
+    resetPosterPreview();
+
+
+    updateLivePreview();
+
+
+    openModal(
+        "adminModal"
+    );
+
+}
+
+
+/* ==============================================================
+   POSTER PREVIEW
+============================================================== */
+
+function previewPoster(event) {
+
+    const file =
+        event.target.files[0];
+
+
+    if (!file) {
+
+        resetPosterPreview();
+
+        return;
+
+    }
+
+
+    /* File type */
+
+    const allowedTypes = [
+
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif"
+
+    ];
+
+
+    if (
+        !allowedTypes.includes(
+            file.type
+        )
+    ) {
+
+        event.target.value = "";
+
+        resetPosterPreview();
+
+        showToast(
+            "Tumia JPG, PNG, WEBP au GIF.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /* File size */
+
+    if (
+        file.size >
+        MAX_FILE_SIZE
+    ) {
+
+        event.target.value = "";
+
+        resetPosterPreview();
+
+        showToast(
+            "Poster imezidi 50 MB.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const img =
+        new Image();
+
+
+    const objectUrl =
+        URL.createObjectURL(
+            file
+        );
+
+
+    img.onload = () => {
+
+        URL.revokeObjectURL(
+            objectUrl
+        );
+
+
+        const width =
+            img.naturalWidth;
+
+
+        const height =
+            img.naturalHeight;
+
+
+        if (
+            width <
+            MIN_IMAGE_WIDTH ||
+            height <
+            MIN_IMAGE_HEIGHT
+        ) {
+
+            event.target.value = "";
+
+            resetPosterPreview();
+
+            showToast(
+                `Poster lazima iwe angalau ${MIN_IMAGE_WIDTH} × ${MIN_IMAGE_HEIGHT} px. Uliyoweka ni ${width} × ${height} px.`,
+                "error",
+                "Poster ni ndogo"
+            );
+
+            return;
+
+        }
+
+
+        selectedPosterFile =
+            file;
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function(e) {
+
+                const preview =
+                    document.getElementById(
+                        "posterPreviewImage"
+                    );
+
+
+                const live =
+                    document.getElementById(
+                        "livePreviewImage"
+                    );
+
+
+                preview.src =
+                    e.target.result;
+
+
+                live.src =
+                    e.target.result;
+
+
+                preview.style.display =
+                    "block";
+
+
+                document.getElementById(
+                    "previewPlaceholder"
+                ).style.display =
+                    "none";
+
+
+                const info =
+                    document.getElementById(
+                        "imageInfo"
+                    );
+
+
+                info.style.display =
+                    "grid";
+
+
+                document.getElementById(
+                    "imageWidth"
+                ).textContent =
+                    `${width}px`;
+
+
+                document.getElementById(
+                    "imageHeight"
+                ).textContent =
+                    `${height}px`;
+
+
+                document.getElementById(
+                    "imageSize"
+                ).textContent =
+                    formatBytes(
+                        file.size
+                    );
+
+
+                updateLivePreview();
+
+            };
+
+
+        reader.readAsDataURL(
+            file
+        );
+
+    };
+
+
+    img.onerror = () => {
+
+        URL.revokeObjectURL(
+            objectUrl
+        );
+
+
+        event.target.value = "";
+
+        resetPosterPreview();
+
+        showToast(
+            "Poster haikuweza kusomwa.",
+            "error"
+        );
+
+    };
+
+
+    img.src =
+        objectUrl;
+
+}
+
+
+/* ==============================================================
+   RESET POSTER
+============================================================== */
+
+function resetPosterPreview() {
+
+    selectedPosterFile =
+        null;
+
+
+    const preview =
+        document.getElementById(
+            "posterPreviewImage"
+        );
+
+
+    preview.src = "";
+
+    preview.style.display =
+        "none";
+
+
+    document.getElementById(
+        "livePreviewImage"
+    ).src = "";
+
+
+    document.getElementById(
+        "previewPlaceholder"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "imageInfo"
+    ).style.display =
+        "none";
+
+}
+
+
+/* ==============================================================
+   LIVE PREVIEW
+============================================================== */
+
+function setupLivePreview() {
+
+    const fields = [
+
+        "eventTitle",
+        "eventType",
+        "eventDescription"
+
+    ];
+
+
+    fields.forEach(
+        id => {
+
+            const element =
+                document.getElementById(
+                    id
+                );
+
+
+            element.addEventListener(
+                "input",
+                updateLivePreview
+            );
+
+
+            element.addEventListener(
+                "change",
+                updateLivePreview
+            );
+
+        }
+    );
+
+}
+
+
+function updateLivePreview() {
+
+    const title =
+        document.getElementById(
+            "eventTitle"
+        ).value.trim();
+
+
+    const type =
+        document.getElementById(
+            "eventType"
+        ).value;
+
+
+    const description =
+        document.getElementById(
+            "eventDescription"
+        ).value.trim();
+
+
+    document.getElementById(
+        "livePreviewTitle"
+    ).textContent =
+        title ||
+        "Event Title";
+
+
+    document.getElementById(
+        "livePreviewType"
+    ).textContent =
+        type ||
+        "EVENT";
+
+
+    document.getElementById(
+        "livePreviewDescription"
+    ).textContent =
+        description ||
+        "Event description will appear here.";
+
+}
+
+
+/* ==============================================================
+   PUBLISH EVENT
+============================================================== */
+
+async function publishEvent(event) {
+
+    event.preventDefault();
+
+
+    const title =
+        document.getElementById(
+            "eventTitle"
+        ).value.trim();
+
+
+    const eventType =
+        document.getElementById(
+            "eventType"
+        ).value;
+
+
+    const eventDate =
+        document.getElementById(
+            "eventDate"
+        ).value;
+
+
+    const location =
+        document.getElementById(
+            "eventLocation"
+        ).value.trim();
+
+
+    const organizer =
+        document.getElementById(
+            "eventOrganizer"
+        ).value.trim();
+
+
+    const contactPhone =
+        document.getElementById(
+            "eventContactPhone"
+        ).value.trim();
+
+
+    const contactEmail =
+        document.getElementById(
+            "eventContactEmail"
+        ).value.trim();
+
+
+    const registrationDeadline =
+        document.getElementById(
+            "registrationDeadline"
+        ).value;
+
+
+    const maxParticipants =
+        document.getElementById(
+            "maxParticipants"
+        ).value;
+
+
+    const registrationRequired =
+        document.getElementById(
+            "registrationRequired"
+        ).value === "true";
+
+
+    const requirements =
+        document.getElementById(
+            "eventRequirements"
+        ).value.trim();
+
+
+    const description =
+        document.getElementById(
+            "eventDescription"
+        ).value.trim();
+
+
+    const file =
+        selectedPosterFile;
+
+
+    /* ==========================================================
+       REQUIRED VALIDATION
+    =========================================================== */
+
+    if (
+        !title ||
+        !eventType ||
+        !eventDate ||
+        !location ||
+        !organizer ||
+        !contactPhone ||
+        !contactEmail ||
+        !registrationDeadline ||
+        !maxParticipants ||
+        !requirements ||
+        !description
+    ) {
+
+        showToast(
+            "Please complete all required fields.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!file) {
+
+        showToast(
+            "Please upload an event poster.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        file.size >
+        MAX_FILE_SIZE
+    ) {
+
+        showToast(
+            "Poster haipaswi kuzidi 50 MB.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const startDate =
+        new Date(
+            eventDate
+        );
+
+
+    const deadlineDate =
+        new Date(
+            registrationDeadline
+        );
+
+
+    if (
+        deadlineDate >
+        startDate
+    ) {
+
+        showToast(
+            "Registration deadline haiwezi kuwa baada ya tarehe ya tukio.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    showLoading(
+        "Uploading poster..."
+    );
+
+
+    let uploadedFilePath =
+        null;
+
+
+    try {
+
+
+        /* ======================================================
+           1. DEACTIVATE OLD ACTIVE EVENTS
+        ======================================================= */
+
+        const {
+            error:
+                deactivateError
+        } = await _supabase
+            .from("events")
+            .update({
+                is_active: false
+            })
+            .eq(
+                "is_active",
+                true
+            );
+
+
+        if (deactivateError) {
+
+            throw deactivateError;
+
+        }
+
+
+        /* ======================================================
+           2. CREATE UNIQUE FILE PATH
+        ======================================================= */
+
+        const extension =
+            getFileExtension(
+                file.name
+            );
+
+
+        const uniqueId =
+            generateUniqueId();
+
+
+        uploadedFilePath =
+            `events/${Date.now()}-${uniqueId}.${extension}`;
+
+
+        /* ======================================================
+           3. UPLOAD POSTER
+        ======================================================= */
+
+        const {
+            error:
+                uploadError
+        } = await _supabase
+            .storage
+            .from(
+                "event-posters"
+            )
+            .upload(
+                uploadedFilePath,
+                file,
+                {
+                    cacheControl:
+                        "3600",
+
+                    upsert:
+                        false,
+
+                    contentType:
+                        file.type
+                }
+            );
+
+
+        if (uploadError) {
+
+            throw uploadError;
+
+        }
+
+
+        /* ======================================================
+           4. GET PUBLIC URL
+        ======================================================= */
+
+        const {
+            data:
+                publicUrlData
+        } = _supabase
+            .storage
+            .from(
+                "event-posters"
+            )
+            .getPublicUrl(
+                uploadedFilePath
+            );
+
+
+        const posterUrl =
+            publicUrlData.publicUrl;
+
+
+        /* ======================================================
+           5. INSERT EVENT
+        ======================================================= */
+
+        showLoading(
+            "Publishing event..."
+        );
+
+
+        const newEvent = {
+
+            title:
+
+                title,
+
+            description:
+
+                description,
+
+            poster_url:
+
+                posterUrl,
+
+            event_date:
+
+                new Date(
+                    eventDate
+                ).toISOString(),
+
+            location:
+
+                location,
+
+            is_active:
+
+                true,
+
+            event_type:
+
+                eventType,
+
+            organizer:
+
+                organizer,
+
+            contact_phone:
+
+                contactPhone,
+
+            contact_email:
+
+                contactEmail,
+
+            registration_deadline:
+
+                new Date(
+                    registrationDeadline
+                ).toISOString(),
+
+            max_participants:
+
+                Number(
+                    maxParticipants
+                ),
+
+            registration_required:
+
+                registrationRequired,
+
+            requirements:
+
+                requirements
+
+        };
+
+
+        const {
+            data,
+            error:
+                insertError
+        } = await _supabase
+            .from("events")
+            .insert([
+                newEvent
+            ])
+            .select()
+            .single();
+
+
+        if (insertError) {
+
+            /* Remove uploaded poster */
+
+            if (uploadedFilePath) {
+
+                await _supabase
+                    .storage
+                    .from(
+                        "event-posters"
+                    )
+                    .remove([
+                        uploadedFilePath
+                    ]);
+
+            }
+
+
+            throw insertError;
+
+        }
+
+
+        activeEvent =
+            data;
+
+
+        showToast(
+            "Event published successfully.",
+            "success",
+            "Publish Successful"
+        );
+
+
+        closeModal(
+            "adminModal"
+        );
+
+
+        await loadEvents();
+
+        await loadEventFilter();
+
+
+        document.getElementById(
+            "participantEventFilter"
+        ).value =
+            activeEvent.id;
+
+
+        await loadParticipants();
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "PUBLISH EVENT ERROR:",
+            error
+        );
+
+
+        showToast(
+            error.message ||
+            "There was a problem publishing the event.",
+            "error",
+            "Publish Failed"
+        );
+
+    }
+
+    finally {
+
+        hideLoading();
+
+    }
+
+}
+
+
+/* ==============================================================
+   LOAD EVENT FILTER
+============================================================== */
+
+async function loadEventFilter() {
+
+    const select =
+        document.getElementById(
+            "participantEventFilter"
+        );
+
+
+    select.innerHTML = `
+
+        <option value="">
+            Select Event
+        </option>
+
+    `;
+
+
+    allEvents.forEach(
+        event => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                event.id;
+
+
+            option.textContent =
+                event.title;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* ==============================================================
+   LOAD PARTICIPANTS
+============================================================== */
+
+async function loadParticipants() {
+
+    const eventId =
+        document.getElementById(
+            "participantEventFilter"
+        ).value;
+
+
+    const tbody =
+        document.getElementById(
+            "participantsTableBody"
+        );
+
+
+    if (!eventId) {
+
+        allParticipants =
+            [];
+
+
+        renderParticipants();
+
+        return;
+
+    }
+
+
+    tbody.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="7"
+                class="empty-table"
+            >
+
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                Loading participants...
+
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await _supabase
+            .from(
+                "event_participants"
+            )
+            .select(`
+                id,
+                event_id,
+                full_name,
+                email,
+                phone_number,
+                created_at
+            `)
+            .eq(
+                "event_id",
+                eventId
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        allParticipants =
+            data || [];
+
+
+        renderParticipants();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "LOAD PARTICIPANTS ERROR:",
+            error
+        );
+
+
+        allParticipants =
+            [];
+
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="empty-table"
+                >
+
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    Imeshindikana kupakia washiriki.
+
+                    <br><br>
+
+                    ${escapeHtml(
+                        error.message
+                    )}
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        updateParticipantCount(
+            0
+        );
+
+    }
+
+}
+
+
+/* ==============================================================
+   RENDER PARTICIPANTS
+============================================================== */
+
+function renderParticipants() {
+
+    const tbody =
+        document.getElementById(
+            "participantsTableBody"
+        );
+
+
+    const search =
+        document.getElementById(
+            "participantSearch"
+        ).value
+            .trim()
+            .toLowerCase();
+
+
+    const filtered =
+        allParticipants.filter(
+            participant => {
+
+                if (!search) {
+
+                    return true;
+
+                }
+
+
+                return (
+
+                    String(
+                        participant.full_name ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
+
+                    ||
+
+                    String(
+                        participant.email ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
+
+                    ||
+
+                    String(
+                        participant.phone_number ||
+                        ""
+                    )
+                    .toLowerCase()
+                    .includes(search)
+
+                );
+
+            }
+        );
+
+
+    updateParticipantCount(
+        filtered.length
+    );
+
+
+    if (!filtered.length) {
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="empty-table"
+                >
+
+                    <i class="fa-solid fa-user-slash"></i>
+
+                    No participants found.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    const event =
+        allEvents.find(
+            e =>
+                e.id ===
+                document.getElementById(
+                    "participantEventFilter"
+                ).value
+        );
+
+
+    tbody.innerHTML =
+        filtered
+            .map(
+                (participant, index) => `
+
+                    <tr>
+
+                        <td>
+                            ${index + 1}
+                        </td>
+
+                        <td>
+
+                            <strong>
+                                ${escapeHtml(
+                                    participant.full_name
+                                )}
+                            </strong>
+
+                        </td>
+
+                        <td>
+
+                            ${escapeHtml(
+                                participant.email
+                            )}
+
+                        </td>
+
+                        <td>
+
+                            ${escapeHtml(
+                                participant.phone_number
+                            )}
+
+                        </td>
+
+                        <td>
+
+                            ${escapeHtml(
+                                event?.title ||
+                                "—"
+                            )}
+
+                        </td>
+
+                        <td>
+
+                            ${escapeHtml(
+                                formatDate(
+                                    participant.created_at
+                                )
+                            )}
+
+                        </td>
+
+                        <td>
+
+                            <button
+                                type="button"
+                                class="btn btn-danger btn-sm"
+                                onclick="deleteParticipant('${participant.id}')"
+                                title="Delete participant"
+                            >
+                                <i class="fa-solid fa-trash"></i>
+                                Delete
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `
+            )
+            .join("");
+
+}
+
+
+/* ==============================================================
+   PARTICIPANT COUNT
+============================================================== */
+
+function updateParticipantCount(
+    count
+) {
+
+    document.getElementById(
+        "participantCount"
+    ).textContent =
+        `${count} ${count === 1 ? "Mshiriki" : "Participants"}`;
+
+}
+
+
+/* ==============================================================
+   DELETE PARTICIPANT
+============================================================== */
+
+async function deleteParticipant(participantId) {
+
+    if (!participantId) {
+        showToast(
+            "This participant has an invalid ID.",
+            "error"
+        );
+        return;
+    }
+
+    const participant =
+        allParticipants.find(
+            item => item.id === participantId
+        );
+
+    if (!participant) {
+        showToast(
+            "Participant not found.",
+            "error"
+        );
+        return;
+    }
+
+    const confirmed = window.confirm(
+        `Are you sure you want to delete ${participant.full_name || "participant"}?\n\nThis action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+
+        const { error } =
+            await _supabase
+                .from("event_participants")
+                .delete()
+                .eq("id", participantId);
+
+        if (error) {
+            throw error;
+        }
+
+        allParticipants =
+            allParticipants.filter(
+                item => item.id !== participantId
+            );
+
+        renderParticipants();
+
+        showToast(
+            "Participant deleted successfully.",
+            "success",
+            "Delete successful"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "DELETE PARTICIPANT ERROR:",
+            error
+        );
+
+        showToast(
+            error.message ||
+            "Imeshindikana kumfuta participant.",
+            "error",
+            "Delete failed"
+        );
+
+    }
+
+}
+
+
+/* ==============================================================
+   DOWNLOAD CSV
+============================================================== */
+
+function downloadParticipantsCSV() {
+
+    const eventId =
+        document.getElementById(
+            "participantEventFilter"
+        ).value;
+
+
+    if (!eventId) {
+
+        showToast(
+            "Please select an event first.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!allParticipants.length) {
+
+        showToast(
+            "There are no participants to download.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const event =
+        allEvents.find(
+            e =>
+                e.id === eventId
+        );
+
+
+    const rows = [];
+
+
+    rows.push([
+        "No",
+        "Full Name",
+        "Email",
+        "Phone Number",
+        "Event",
+        "Registration Date"
+    ]);
+
+
+    allParticipants.forEach(
+        (participant, index) => {
+
+            rows.push([
+
+                index + 1,
+
+                participant.full_name,
+
+                participant.email,
+
+                participant.phone_number,
+
+                event?.title ||
+                    "",
+
+                formatDate(
+                    participant.created_at
+                )
+
+            ]);
+
+        }
+    );
+
+
+    const csv =
+        rows
+            .map(
+                row =>
+                    row
+                        .map(
+                            value =>
+                                `"${String(
+                                    value ??
+                                    ""
+                                ).replace(/"/g, '""')}"`
+                        )
+                        .join(",")
+            )
+            .join("\r\n");
+
+
+    /* UTF-8 BOM */
+
+    const blob =
+        new Blob(
+            [
+                "\uFEFF",
+                csv
+            ],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const link =
+        document.createElement(
+            "a"
+        );
+
+
+    link.href =
+        url;
+
+
+    const safeTitle =
+        (
+            event?.title ||
+            "event"
+        )
+            .replace(
+                /[^a-z0-9]/gi,
+                "_"
+            )
+            .substring(
+                0,
+                60
+            );
+
+
+    link.download =
+        `DCF_${safeTitle}_participants.csv`;
+
+
+    document.body.appendChild(
+        link
+    );
+
+
+    link.click();
+
+
+    link.remove();
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+
+    showToast(
+        "Participant CSV created successfully.",
+        "success",
+        "Download ready"
+    );
+
+}
+
+
+/* ==============================================================
+   PRINT PARTICIPANTS
+============================================================== */
+function printParticipants() {
+    const eventId = document.getElementById("participantEventFilter").value;
+    if (!eventId) {
+        showToast("Please select an event first.", "error");
+        return;
+    }
+
+    const event = allEvents.find(e => e.id === eventId);
+    if (!allParticipants.length) {
+        showToast("There are no participants to print.", "error");
+        return;
+    }
+
+    const rows = allParticipants.map((p, i) => `
+        <tr>
+            <td>${i + 1}</td>
+            <td>${escapeHtml(p.full_name || "")}</td>
+            <td>${escapeHtml(p.email || "")}</td>
+            <td>${escapeHtml(p.phone_number || "")}</td>
+            <td>${escapeHtml(formatDate(p.created_at))}</td>
+        </tr>
+    `).join("");
+
+    const win = window.open("", "_blank", "noopener,noreferrer,width=1000,height=700");
+    if (!win) {
+        showToast("The browser blocked the print window. Please allow pop-ups for this site.", "error", "Print blocked");
+        return;
+    }
+
+    win.document.open();
+    win.document.write(`<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DCF Participants - ${escapeHtml(event?.title || "Event")}</title>
+<style>
+body{font-family:Arial,Helvetica,sans-serif;margin:28px;color:#10251b}
+h1{margin:0 0 6px;font-size:24px}
+p{margin:4px 0 18px;color:#5f6d65}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px;border:1px solid #dfe8e3;text-align:left;font-size:12px}
+th{background:#f3f7f4}
+@media print{body{margin:12mm}}
+</style>
+</head>
+<body>
+<h1>DCF — Registered Participants</h1>
+<p>${escapeHtml(event?.title || "Event")} · ${escapeHtml(formatDate(event?.event_date))}</p>
+<table>
+<thead><tr><th>#</th><th>Full Name</th><th>Email</th><th>Phone</th><th>Registration Date</th></tr></thead>
+<tbody>${rows}</tbody>
+</table>
+<script>
+window.addEventListener("load",function(){
+    setTimeout(function(){window.print();},150);
+});
+window.addEventListener("afterprint",function(){window.close();});
+<\/script>
+</body>
+</html>`);
+    win.document.close();
+}
+
+/* ==============================================================
+   MODALS
+============================================================== */
+
+function openModal(
+    id
+) {
+
+    document
+        .getElementById(id)
+        .classList.add("active");
+
+
+    document.body.style.overflow =
+        "hidden";
+
+}
+
+
+function closeModal(
+    id
+) {
+
+    document
+        .getElementById(id)
+        .classList.remove("active");
+
+
+    document.body.style.overflow =
+        "";
+
+}
+
+
+/* ==============================================================
+   CLICK OUTSIDE MODAL
+============================================================== */
+
+document.querySelectorAll(
+    ".modal"
+).forEach(
+    modal => {
+
+        modal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    modal
+                ) {
+
+                    closeModal(
+                        modal.id
+                    );
+
+                }
+
+            }
+        );
+
+    }
+);
+
+
+/* ==============================================================
+   ESC KEY
+============================================================== */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key ===
+            "Escape"
+        ) {
+
+            document.querySelectorAll(
+                ".modal.active"
+            )
+            .forEach(
+                modal => {
+
+                    closeModal(
+                        modal.id
+                    );
+
+                }
+            );
+
+        }
+
+    }
+);
+
+
+/* ==============================================================
+   SCROLL PARTICIPANTS
+============================================================== */
+
+function scrollToParticipants() {
+
+    document
+        .getElementById(
+            "participantsSection"
+        )
+        .scrollIntoView({
+            behavior:
+                "smooth"
+        });
+
+}
+
+
+/* ==============================================================
+   FORMAT DATE
+============================================================== */
+
+function formatDate(
+    value
+) {
+
+    if (!value) {
+
+        return "—";
+
+    }
+
+
+    const date =
+        new Date(
+            value
+        );
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "—";
+
+    }
+
+
+    return new Intl.DateTimeFormat(
+        "sw-TZ",
+        {
+            dateStyle:
+                "medium",
+
+            timeStyle:
+                "short"
+        }
+    ).format(
+        date
+    );
+
+}
+
+
+/* ==============================================================
+   FORMAT BYTES
+============================================================== */
+
+function formatBytes(
+    bytes
+) {
+
+    if (!bytes) {
+
+        return "0 B";
+
+    }
+
+
+    const units = [
+        "B",
+        "KB",
+        "MB",
+        "GB"
+    ];
+
+
+    const index = Math.min(
+        Math.floor(Math.log(bytes) / Math.log(1024)),
+        units.length - 1
+    );
+
+
+    return (
+        bytes /
+        Math.pow(
+            1024,
+            index
+        )
+    )
+        .toFixed(
+            index === 0
+                ? 0
+                : 2
+        )
+        + " "
+        + units[index];
+
+}
+
+
+/* ==============================================================
+   FILE EXTENSION
+============================================================== */
+
+function getFileExtension(
+    filename
+) {
+
+    const parts =
+        filename.split(".");
+
+
+    return (
+        parts
+            .pop()
+            .toLowerCase()
+            .replace(
+                /[^a-z0-9]/g,
+                ""
+            )
+    );
+
+}
+
+/* =============================================================
+   COUNTRY PHONE + EVENT MANAGEMENT ENHANCEMENTS
+============================================================= */
+let editingEventId = null;
+
+function setupCountryPhone(){
+    const country=document.getElementById("participantCountry");
+    const phone=document.getElementById("participantPhone");
+    const dial=document.getElementById("participantDialCode");
+    const help=document.getElementById("phoneHelp");
+    if(!country||!phone||!dial)return;
+
+    const update=()=>{
+        const opt=country.options[country.selectedIndex];
+        const code=opt && opt.dataset ? (opt.dataset.dial || "+") : "+";
+        const min=Number(opt && opt.dataset ? (opt.dataset.min || 7) : 7);
+        const max=Number(opt && opt.dataset ? (opt.dataset.max || 15) : 15);
+        dial.textContent=code;
+        phone.minLength=min;
+        phone.maxLength=max;
+        phone.placeholder=code==="+255" ? "712345678" :
+            `Enter ${min}${min===max ? "" : "-" + max} digits`;
+        help.textContent=country.value
+            ? `Enter ${min}${min===max ? "" : "-" + max} digits after ${code}. Do not include the country code.`
+            : "Select your country first.";
+    };
+
+    if (country.dataset.phoneReady !== "1") {
+        country.addEventListener("change", update);
+        phone.addEventListener("input", ()=>{
+            phone.value=phone.value.replace(/[^0-9]/g,"");
+        });
+        country.dataset.phoneReady="1";
+    }
+    update();
+}
+
+function getParticipantPhone(){
+    const country=document.getElementById("participantCountry");
+    const phone=document.getElementById("participantPhone");
+    const opt=country?.options[country.selectedIndex];
+    const code=opt?.dataset?.dial || "";
+    const digits=(phone?.value||"").replace(/\D/g,"");
+    const min=Number(opt?.dataset?.min||7), max=Number(opt?.dataset?.max||15);
+    if(!country?.value) throw new Error("Please select your country.");
+    if(digits.length<min||digits.length>max) throw new Error(`Please enter a valid phone number with ${min}${min===max?"":" to "+max} digits.`);
+    return `${code}${digits}`;
+}
+
+function emailEventOrganizer(){
+    if(!activeEvent?.contact_email)return showToast("No organizer email is available.","error","Email unavailable");
+    window.location.href=`mailto:${encodeURIComponent(activeEvent.contact_email)}?subject=${encodeURIComponent(`Event: ${activeEvent.title||"DCF Event"}`)}`;
+}
+
+function editActiveEvent(){
+    if(!activeEvent)return;
+    editingEventId=activeEvent.id;
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v??"";};
+    set("eventTitle",activeEvent.title);set("eventType",activeEvent.event_type);
+    set("eventDate",toLocalInput(activeEvent.event_date));set("eventLocation",activeEvent.location);
+    set("eventOrganizer",activeEvent.organizer);set("eventContactPhone",activeEvent.contact_phone);set("eventContactEmail",activeEvent.contact_email);
+    set("registrationDeadline",toLocalInput(activeEvent.registration_deadline));set("maxParticipants",activeEvent.max_participants);
+    set("registrationRequired",String(activeEvent.registration_required!==false));set("eventRequirements",activeEvent.requirements);set("eventDescription",activeEvent.description);
+    const poster=document.getElementById("eventPoster"); if(poster)poster.required=false;
+    const title=document.querySelector("#adminModal .modal-header h2"); if(title)title.innerHTML='<i class="fa-solid fa-pen"></i> Edit Event';
+    const btn=document.getElementById("publishBtn"); if(btn)btn.innerHTML='<i class="fa-solid fa-floppy-disk"></i> Save Changes';
+    openModal("adminModal");
+}
+
+function toLocalInput(value){
+    if(!value)return "";
+    const d=new Date(value); if(Number.isNaN(d.getTime()))return "";
+    const pad=n=>String(n).padStart(2,"0");
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+async function unpublishActiveEvent(){
+    if(!activeEvent)return;
+    if(!confirm(`Unpublish "${activeEvent.title}"? It will immediately disappear from the public website.`))return;
+    try{
+        showLoading("Unpublishing event...");
+        const {error}=await _supabase.from("events").update({is_active:false}).eq("id",activeEvent.id);
+        if(error)throw error;
+        showToast("The event is no longer public.","success","Event unpublished");
+        await loadEvents(); await loadEventFilter();
+    }catch(e){showToast(e.message,"error","Unpublish failed");}finally{hideLoading();}
+}
+
+async function deleteActiveEvent(){
+    if(!activeEvent)return;
+    if(!confirm(`Permanently delete "${activeEvent.title}"? This cannot be undone.`))return;
+    try{
+        showLoading("Deleting event...");
+        const posterUrl=activeEvent.poster_url;
+        const {error}=await _supabase.from("events").delete().eq("id",activeEvent.id);
+        if(error)throw error;
+        if(posterUrl){
+            try{const marker="/event-posters/";const i=posterUrl.indexOf(marker);if(i>=0){const path=posterUrl.slice(i+marker.length);await _supabase.storage.from("event-posters").remove([path]);}}catch(storageError){console.warn("Poster cleanup failed",storageError);}
+        }
+        showToast("The event has been permanently deleted.","success","Event deleted");
+        await loadEvents(); await loadEventFilter();
+    }catch(e){showToast(e.message,"error","Delete failed");}finally{hideLoading();}
+}
+
+const _originalSubmitParticipant=submitParticipant;
+submitParticipant=async function(event){
+    event.preventDefault();
+    if(!activeEvent)return showToast("No active event is available.","error");
+    const name=document.getElementById("participantName").value.trim();
+    const email=document.getElementById("participantEmail").value.trim();
+    if(!name||!email)return showToast("Please complete all required fields.","error");
+    let fullPhone; try{fullPhone=getParticipantPhone();}catch(e){return showToast(e.message,"error","Invalid phone number");}
+    const button=document.getElementById("participantSubmitBtn"); button.disabled=true;
+    button.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+    try{
+        if(activeEvent.registration_deadline && new Date(activeEvent.registration_deadline)<new Date())throw new Error("Registration deadline has passed.");
+        const {count,error:countError}=await _supabase.from("event_participants").select("id",{count:"exact",head:true}).eq("event_id",activeEvent.id);
+        if(countError)throw countError;
+        if(activeEvent.max_participants && Number(count)>=Number(activeEvent.max_participants))throw new Error("This event has reached its maximum participant capacity.");
+        const {data:existing}=await _supabase.from("event_participants").select("id").eq("event_id",activeEvent.id).ilike("email",email).limit(1);
+        if(existing?.length)throw new Error("This email address is already registered for this event.");
+        const {error}=await _supabase.from("event_participants").insert([{event_id:activeEvent.id,full_name:name,email,phone_number:fullPhone}]);
+        if(error)throw error;
+        showToast("Your registration was received successfully.","success","Registration Successful");
+        document.getElementById("participantForm").reset(); setupCountryPhone(); closeModal("participateModal");
+        await loadParticipants();
+    }catch(e){console.error(e);showToast(e.message||"Registration failed.","error","Registration Failed");}
+    finally{button.disabled=false;button.innerHTML='<i class="fa-solid fa-paper-plane"></i> Register Now';}
+};
+
+const _originalPublishEvent=publishEvent;
+publishEvent=async function(event){
+    if(!editingEventId)return _originalPublishEvent(event);
+    event.preventDefault();
+    const get=id=>document.getElementById(id)?.value?.trim()||"";
+    const payload={title:get("eventTitle"),description:get("eventDescription"),event_date:new Date(get("eventDate")).toISOString(),location:get("eventLocation"),event_type:get("eventType"),organizer:get("eventOrganizer"),contact_phone:get("eventContactPhone"),contact_email:get("eventContactEmail"),registration_deadline:new Date(get("registrationDeadline")).toISOString(),max_participants:Number(get("maxParticipants")),registration_required:get("registrationRequired")==="true",requirements:get("eventRequirements")};
+    if(Object.values(payload).some(v=>v===""||v===null||Number.isNaN(v)))return showToast("Please complete all required fields.","error");
+    const file=selectedPosterFile; let uploadedPath=null;
+    try{
+        showLoading("Saving event changes...");
+        if(file){
+            const ext=getFileExtension(file.name), unique=generateUniqueId();
+            uploadedPath=`events/${Date.now()}-${unique}.${ext}`;
+            const {error:upErr}=await _supabase.storage.from("event-posters").upload(uploadedPath,file,{cacheControl:"3600",upsert:false,contentType:file.type});
+            if(upErr)throw upErr;
+            payload.poster_url=_supabase.storage.from("event-posters").getPublicUrl(uploadedPath).data.publicUrl;
+        }
+        const {data,error}=await _supabase.from("events").update(payload).eq("id",editingEventId).select().single();
+        if(error)throw error;
+        if(file&&activeEvent?.poster_url){try{const marker="/event-posters/";const i=activeEvent.poster_url.indexOf(marker);if(i>=0)await _supabase.storage.from("event-posters").remove([activeEvent.poster_url.slice(i+marker.length)]);}catch(e){console.warn(e);}}
+        activeEvent=data; editingEventId=null; selectedPosterFile=null;
+        document.getElementById("eventPoster").required=false; document.getElementById("eventForm").reset(); resetPosterPreview(); closeModal("adminModal");
+        const h=document.querySelector("#adminModal .modal-header h2");if(h)h.innerHTML='<i class="fa-solid fa-calendar-plus"></i> Publish New Event';
+        const b=document.getElementById("publishBtn");if(b)b.innerHTML='<i class="fa-solid fa-cloud-arrow-up"></i> Publish Event';
+        showToast("Event updated successfully.","success","Changes Saved"); await loadEvents(); await loadEventFilter();
+    }catch(e){if(uploadedPath)try{await _supabase.storage.from("event-posters").remove([uploadedPath]);}catch(_){ }showToast(e.message,"error","Update Failed");}
+    finally{hideLoading();}
+};
+
+// Initialize enhancement after the original DOMContentLoaded handlers.
+document.addEventListener("DOMContentLoaded",()=>{setupCountryPhone();});
+</script>
+
+</body>
+</html>

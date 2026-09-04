@@ -1,0 +1,2687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DCF Online System | Travel & Ticket Management</title>
+<style>
+
+/* =========================================================
+   DCF ONLINE SYSTEM — DESIGN TOKENS (unchanged)
+========================================================= */
+
+:root{
+    --ink:#15241c;
+    --paper:#eef1e9;
+    --card:#ffffff;
+    --line:#dde1d3;
+    --line-soft:#e9ecdf;
+
+    --moss:#1f5c3f;
+    --moss-dark:#0f3323;
+    --moss-tint:#e4efe6;
+
+    --clay:#a8461f;
+    --clay-dark:#7d3216;
+    --clay-tint:#f6e6dd;
+
+    --gold:#c1932f;
+    --gold-tint:#f6ecd4;
+
+    --danger:#a1372d;
+    --danger-tint:#f6dfda;
+
+    --muted:#6d7166;
+    --radius:10px;
+    --radius-lg:16px;
+
+    --sans:"Helvetica Neue",Arial,sans-serif;
+    --serif:"Iowan Old Style","Palatino Linotype",Georgia,serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+    font-family:var(--sans);
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+}
+button,input,select,textarea{font:inherit;color:inherit;}
+button{cursor:pointer;}
+button:disabled{cursor:not-allowed;opacity:.5;}
+:focus-visible{outline:2px solid var(--moss);outline-offset:2px;}
+
+/* =========================================================
+   APP SHELL
+========================================================= */
+
+.app{display:flex;min-height:100vh;}
+
+.sidebar{
+    width:248px;
+    position:fixed;left:0;top:0;bottom:0;
+    z-index:1000;
+    background:var(--moss-dark);
+    color:#eef3ee;
+    display:flex;flex-direction:column;
+    padding:26px 0 20px;
+    overflow-y:auto;
+}
+.brand{
+    display:flex;align-items:center;gap:12px;
+    padding:0 22px 26px;
+    border-bottom:1px solid rgba(255,255,255,.12);
+    margin-bottom:18px;
+}
+.brand-mark{
+    width:42px;height:42px;border-radius:8px;
+    background:#eef3ee;color:var(--moss-dark);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--serif);font-weight:700;font-size:14px;
+}
+.brand h1{font-family:var(--serif);font-size:15px;font-weight:700;line-height:1.25;}
+.brand span{display:block;font-size:10.5px;color:rgba(255,255,255,.55);margin-top:3px;letter-spacing:.2px;}
+
+.nav-group{padding:0 14px;margin-bottom:6px;}
+.nav-label{
+    font-size:10px;color:rgba(255,255,255,.4);
+    padding:14px 10px 8px;letter-spacing:.4px;
+}
+.nav-btn{
+    width:100%;border:0;background:transparent;
+    color:rgba(255,255,255,.8);
+    display:flex;align-items:center;gap:11px;
+    padding:10px 11px;border-radius:8px;
+    font-size:13.5px;text-align:left;margin-bottom:2px;
+    transition:.15s;
+}
+.nav-btn .ico{width:18px;text-align:center;font-size:14px;opacity:.9;}
+.nav-btn:hover{background:rgba(255,255,255,.08);color:#fff;}
+.nav-btn.active{background:#eef3ee;color:var(--moss-dark);font-weight:700;}
+
+.role-box{
+    margin:auto 14px 0;padding:13px 14px;
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:10px;
+}
+.role-box small{display:block;color:rgba(255,255,255,.5);font-size:10px;margin-bottom:4px;}
+.role-box strong{font-size:12.5px;}
+
+.main{margin-left:248px;width:calc(100% - 248px);}
+
+.topbar{
+    height:70px;background:var(--card);
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 28px;position:sticky;top:0;z-index:500;
+}
+.topbar-title h2{font-family:var(--serif);font-size:19px;font-weight:700;}
+.topbar-title p{font-size:11.5px;color:var(--muted);margin-top:2px;}
+.mobile-menu{display:none;border:1px solid var(--line);background:#fff;width:38px;height:38px;border-radius:8px;font-size:17px;align-items:center;justify-content:center;}
+
+.user-area{display:flex;align-items:center;gap:10px;}
+.user-area small{display:block;color:var(--muted);font-size:10.5px;text-align:right;}
+.avatar{
+    width:36px;height:36px;border-radius:50%;background:var(--moss);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--serif);
+}
+
+.content{padding:28px;max-width:1400px;margin:0 auto;}
+
+.view{display:none;}
+.view.active{display:block;animation:reveal .25s ease;}
+@keyframes reveal{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+/* =========================================================
+   CARDS & PANELS
+========================================================= */
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);}
+.panel-head{
+    padding:19px 22px;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+}
+.panel-head h3{font-family:var(--serif);font-size:17px;font-weight:700;}
+.panel-head p{font-size:12px;color:var(--muted);margin-top:3px;}
+.panel-body{padding:22px;}
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);
+    padding:19px 20px;position:relative;overflow:hidden;
+}
+.stat::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--moss);
+}
+.stat-label{font-size:11.5px;color:var(--muted);}
+.stat-value{font-family:var(--serif);font-size:27px;font-weight:700;margin-top:7px;}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.btn{border:0;border-radius:8px;padding:10px 16px;font-weight:700;font-size:13px;transition:.15s;}
+.btn:hover{transform:translateY(-1px);}
+.btn-primary{background:var(--moss);color:#fff;}
+.btn-secondary{background:var(--paper);color:var(--ink);border:1px solid var(--line);}
+.btn-clay{background:var(--clay);color:#fff;}
+.btn-success{background:var(--moss);color:#fff;}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-outline{background:transparent;color:var(--moss-dark);border:1px solid var(--line);}
+.btn-sm{padding:7px 11px;font-size:11.5px;}
+.btn-block{width:100%;}
+
+/* =========================================================
+   FORMS
+========================================================= */
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.field{display:flex;flex-direction:column;gap:6px;}
+.field.full{grid-column:1/-1;}
+.field label{font-size:12.5px;font-weight:700;}
+.field .hint{font-size:11px;color:var(--muted);font-weight:400;}
+.input,select.input,textarea.input{
+    width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:8px;
+    background:#fff;outline:none;font-size:13.5px;
+}
+.input:focus{border-color:var(--moss);box-shadow:0 0 0 3px var(--moss-tint);}
+textarea.input{min-height:88px;resize:vertical;}
+
+/* =========================================================
+   VEHICLE BUILDER
+========================================================= */
+
+.vehicle-builder{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px;}
+.vehicle-box{border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px;background:var(--paper);}
+.vehicle-box.hidden{display:none;}
+.vehicle-box-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.vehicle-chip{
+    width:28px;height:28px;border-radius:50%;background:var(--moss);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11.5px;
+}
+.image-preview{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+.preview-img{height:96px;border-radius:8px;object-fit:cover;width:100%;border:1px solid var(--line);}
+.video-preview{width:100%;max-height:190px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#111;margin-top:8px;}
+
+/* =========================================================
+   BADGES
+========================================================= */
+
+.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;font-size:10.5px;font-weight:800;letter-spacing:.2px;}
+.badge-published{background:var(--moss-tint);color:var(--moss-dark);}
+.badge-draft{background:#eceade;color:#54544a;}
+.badge-unpublished{background:var(--danger-tint);color:var(--danger);}
+
+/* =========================================================
+   TABLES
+========================================================= */
+
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:12px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:12.5px;vertical-align:middle;}
+th{color:var(--muted);font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;}
+tbody tr:hover{background:var(--paper);}
+.vehicle-thumb{width:58px;height:40px;border-radius:6px;object-fit:cover;}
+.cell-title{font-weight:700;display:block;}
+.cell-sub{display:block;color:var(--muted);font-size:11px;margin-top:2px;}
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+.modal{position:fixed;inset:0;background:rgba(15,36,25,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:3000;}
+.modal.show{display:flex;}
+.modal-box{background:#fff;width:min(960px,100%);max-height:92vh;overflow-y:auto;border-radius:16px;}
+.modal-head{padding:19px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start;gap:15px;position:sticky;top:0;background:#fff;z-index:2;}
+.modal-head h3{font-family:var(--serif);font-size:18px;font-weight:700;}
+.modal-head p{font-size:11.5px;color:var(--muted);margin-top:4px;}
+.modal-close{border:0;background:var(--paper);width:34px;height:34px;border-radius:50%;font-size:16px;}
+.modal-body{padding:22px;}
+
+/* =========================================================
+   SEATS
+========================================================= */
+
+.seat-area{display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap;}
+.veh-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.veh-tab{border:1px solid var(--line);background:#fff;padding:9px 13px;border-radius:8px;font-size:12px;font-weight:700;}
+.veh-tab.active{background:var(--moss);color:#fff;border-color:var(--moss);}
+
+.bus{width:340px;background:var(--paper);border:2px solid var(--line);border-radius:34px 34px 16px 16px;padding:22px 16px;position:relative;}
+.driver{height:38px;background:#e2e6d8;border-radius:16px 16px 6px 6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#8a8e7c;margin-bottom:18px;}
+.seat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+
+.seat{
+    width:100%;min-height:54px;border:0;border-radius:8px 8px 4px 4px;background:var(--moss-tint);color:var(--moss-dark);
+    font-size:10.5px;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    padding:6px 3px;transition:.15s;overflow:hidden;position:relative;
+}
+.seat::before{content:"";position:absolute;left:5px;right:5px;top:4px;height:3px;background:rgba(0,0,0,.08);border-radius:4px;}
+.seat:hover{transform:translateY(-2px);}
+.seat.selected{background:var(--gold-tint);color:#6b4e05;box-shadow:0 0 0 2px var(--gold);}
+.seat.booked{background:var(--danger-tint);color:var(--danger);}
+.seat-number{font-size:12.5px;font-weight:900;}
+.seat-passenger{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:7.5px;font-weight:800;}
+.seat-status{font-size:6.5px;opacity:.75;text-transform:uppercase;letter-spacing:.3px;}
+
+.seat-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px;}
+.legend{display:flex;align-items:center;gap:6px;font-size:11px;}
+.legend-box{width:16px;height:16px;border-radius:4px;}
+
+.info-panel{flex:1;min-width:270px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);padding:18px;}
+.info-panel.empty{background:#fbfaf6;}
+.info-panel h4{font-family:var(--serif);font-size:15.5px;margin-bottom:4px;}
+.info-sub{font-size:11.5px;color:var(--muted);margin-bottom:12px;}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.detail{background:var(--paper);border-radius:8px;padding:10px;}
+.detail.full{grid-column:1/-1;}
+.detail small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;margin-bottom:3px;}
+.detail strong{font-size:12px;word-break:break-word;}
+
+/* =========================================================
+   BOOKING SUMMARY
+========================================================= */
+
+.summary{flex:1;min-width:290px;}
+.summary h4{font-family:var(--serif);font-size:15px;margin-bottom:10px;}
+.summary-item{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:12.5px;gap:16px;}
+.summary-item strong{text-align:right;max-width:60%;word-break:break-word;}
+.summary-total{display:flex;justify-content:space-between;padding:14px 0;font-family:var(--serif);font-size:18px;font-weight:700;}
+
+.passenger-box{margin-top:13px;padding:13px;background:var(--moss-tint);border-radius:10px;}
+.passenger-box h5{font-size:10.5px;color:var(--moss-dark);text-transform:uppercase;margin-bottom:7px;letter-spacing:.3px;}
+.passenger-box .main{font-size:15px;font-weight:800;}
+.passenger-box .sub{margin-top:3px;color:var(--muted);font-size:11.5px;}
+
+/* =========================================================
+   ALERTS
+========================================================= */
+
+.alert{padding:12px 14px;border-radius:9px;margin-bottom:16px;font-size:12.5px;}
+.alert-info{background:#dbe6ea;color:#1f4e5c;}
+.alert-success{background:var(--moss-tint);color:var(--moss-dark);}
+.alert-danger{background:var(--danger-tint);color:var(--danger);}
+.alert-warning{background:var(--gold-tint);color:#6b4e05;}
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.empty{padding:50px 20px;text-align:center;color:var(--muted);}
+.empty .glyph{font-size:38px;margin-bottom:12px;}
+.empty h4{font-family:var(--serif);font-size:16px;color:var(--ink);margin-bottom:6px;}
+
+/* =========================================================
+   ANNOUNCEMENTS
+========================================================= */
+
+.announce-list{display:flex;flex-direction:column;gap:12px;}
+.announce-item{border:1px solid var(--line);border-radius:12px;padding:15px 17px;background:var(--card);}
+.announce-item.inactive{opacity:.55;}
+.announce-item .row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.announce-item h4{font-family:var(--serif);font-size:15px;font-weight:700;}
+.announce-item p{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5;}
+.announce-item .meta{font-size:10.5px;color:var(--muted);margin-top:8px;}
+.announce-banner{
+    border:1px solid var(--line);background:var(--clay-tint);border-left:4px solid var(--clay);
+    border-radius:10px;padding:14px 16px;margin-bottom:18px;
+}
+.announce-banner h5{font-family:var(--serif);font-size:14px;color:var(--clay-dark);margin-bottom:4px;}
+.announce-banner p{font-size:12.5px;color:#5c3c29;}
+
+/* =========================================================
+   MEMBER PORTAL — trip list (ledger row style)
+========================================================= */
+
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.filters .input{flex:1;min-width:220px;}
+
+.trips{display:flex;flex-direction:column;gap:16px;}
+.trip{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);
+    display:grid;grid-template-columns:170px 1fr auto;align-items:stretch;overflow:hidden;transition:.15s;
+}
+.trip:hover{border-color:var(--moss);}
+.trip-media{
+    background:linear-gradient(135deg,var(--moss-dark),var(--moss));color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:32px;position:relative;min-height:135px;
+}
+.trip-media img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.trip-media .veh-count{
+    position:absolute;top:9px;left:9px;background:rgba(0,0,0,.35);color:#fff;
+    font-size:9.5px;font-weight:700;padding:4px 8px;border-radius:20px;
+}
+.trip-main{padding:18px 20px;display:flex;flex-direction:column;justify-content:center;gap:9px;}
+.trip-route{font-family:var(--serif);font-size:19px;font-weight:700;}
+.trip-route .via{color:var(--muted);font-weight:400;margin:0 8px;}
+.trip-sub{font-size:12px;color:var(--muted);}
+.trip-facts{display:flex;gap:20px;flex-wrap:wrap;font-size:12.5px;margin-top:2px;}
+.trip-facts div small{display:block;color:var(--muted);font-size:9.5px;text-transform:uppercase;margin-bottom:2px;}
+.trip-facts div strong{font-size:13.5px;}
+.trip-actions{padding:18px 20px;display:flex;flex-direction:column;justify-content:center;align-items:flex-end;gap:8px;border-left:1px solid var(--line);background:var(--paper);min-width:165px;}
+.price{font-size:18px;font-weight:800;color:var(--moss-dark);}
+.price small{display:block;font-size:9.5px;color:var(--muted);font-weight:400;text-transform:uppercase;}
+
+/* =========================================================
+   VIDEO CARD
+========================================================= */
+
+.video-card{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--paper);}
+.video-card video{width:100%;max-height:220px;border-radius:8px;background:#111;display:block;}
+
+/* =========================================================
+   TICKET PRINT PREVIEW / PRINTABLE AREA
+========================================================= */
+
+#printArea{display:none;}
+
+/* =========================================================
+   CROSS-BROWSER + MOBILE BALANCE
+========================================================= */
+html,body{max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%;}
+button,a,input,select,textarea{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+button,.btn{min-height:44px;}
+.btn-sm{min-height:40px;}
+img,video{max-width:100%;}
+.table-wrap,.modal-box{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+@media(max-width:800px){
+    .content{padding:14px;}
+    .topbar{height:auto;min-height:64px;padding:10px 14px;gap:10px;}
+    .topbar-title h2{font-size:17px;}
+    .topbar-title p{font-size:10px;}
+    .user-area strong{font-size:12px;}
+    .stats{gap:10px;}
+    .stat{padding:14px;}
+    .panel-head{padding:15px;}
+    .panel-body{padding:15px;}
+    .form-grid{gap:12px;}
+    .btn{padding:10px 13px;}
+    .trip-actions{padding:14px;gap:8px;}
+    .trip-actions .btn{flex:1;}
+    .trip-main{padding:15px;}
+    .trip-route{font-size:17px;}
+    .seat-area{gap:14px;}
+    .bus{padding:15px 11px;}
+    .seat{min-height:50px;}
+    .modal{padding:8px;}
+    .modal-box{max-height:96dvh;border-radius:14px;}
+    .modal-body{padding:15px;}
+    .modal-head{padding:14px 15px;}
+}
+@media(max-width:500px){
+    .content{padding:10px;}
+    .stats{grid-template-columns:1fr 1fr;}
+    .stat-value{font-size:22px;}
+    .stat-label{font-size:10px;}
+    .panel-head{align-items:flex-start;}
+    .panel-head .btn{width:100%;}
+    .panel-head>div:last-child{width:100%;}
+    .form-grid{grid-template-columns:1fr;}
+    .field.full{grid-column:auto;}
+    .vehicle-builder{grid-template-columns:1fr;}
+    .trip-facts{gap:12px;}
+    .trip-actions{flex-direction:column;align-items:stretch;}
+    .trip-actions .btn{width:100%;}
+    .seat-grid{gap:6px;}
+    .seat{min-height:48px;font-size:9px;}
+    .seat-number{font-size:11px;}
+    .info-panel,.summary{min-width:0;width:100%;}
+    .detail-grid{grid-template-columns:1fr 1fr;}
+    .summary-item{font-size:11px;}
+}
+@media(max-width:360px){
+    .stats{grid-template-columns:1fr;}
+    .seat-grid{gap:5px;}
+    .seat{min-height:45px;}
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:1100px){
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .vehicle-builder{grid-template-columns:1fr;}
+    .trip{grid-template-columns:1fr;}
+    .trip-media{min-height:110px;}
+    .trip-actions{border-left:0;border-top:1px solid var(--line);flex-direction:row;justify-content:space-between;align-items:center;}
+}
+
+@media(max-width:800px){
+    .sidebar{transform:translateX(-100%);transition:.25s;width:264px;}
+    .sidebar.open{transform:translateX(0);}
+    .main{margin-left:0;width:100%;}
+    .mobile-menu{display:flex;}
+    .topbar{padding:0 16px;}
+    .content{padding:16px;}
+    .form-grid{grid-template-columns:1fr;}
+    .field.full{grid-column:auto;}
+    .stats{grid-template-columns:1fr 1fr;}
+    .seat-area{flex-direction:column;}
+    .bus{width:100%;}
+    .info-panel,.summary{min-width:100%;}
+    .table-wrap table{min-width:760px;}
+}
+
+@media(max-width:500px){
+    .stats{grid-template-columns:1fr;}
+    .user-area small{display:none;}
+}
+
+/* =========================================================
+   PRINT — 20 TICKETS PER A4
+========================================================= */
+
+@media print{
+    @page{size:A4;margin:4mm;}
+    body{background:#fff !important;}
+    body *{visibility:hidden !important;}
+    #printArea,#printArea *{visibility:visible !important;}
+    #printArea{
+        display:block !important;
+        position:absolute;
+        left:0;
+        top:0;
+        width:100%;
+    }
+    /* make each ticket small and flow in a 2‑col × 10‑row grid */
+    .print-ticket{
+        display:inline-block;
+        width:48%;                 /* two per row */
+        margin:0.5% 0.5%;
+        border:1px solid #aaa;
+        border-radius:3px;
+        padding:4px 5px;
+        font-size:6.5px;
+        box-sizing:border-box;
+        page-break-inside:avoid;
+        background:#fff;
+    }
+    .print-ticket .print-head{
+        padding:2px 3px;
+        background:#0f3323 !important;
+        color:#fff !important;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        border-radius:2px 2px 0 0;
+    }
+    .print-ticket .print-brand{
+        display:flex;
+        align-items:center;
+        gap:4px;
+    }
+    .print-ticket .print-logo{
+        width:18px;
+        height:18px;
+        background:#fff !important;
+        color:#0f3323 !important;
+        border-radius:4px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-weight:900;
+        font-size:8px;
+    }
+    .print-ticket .print-brand h2{
+        font-size:8px;
+        margin:0;
+        font-family:Georgia,serif;
+    }
+    .print-ticket .print-brand small{
+        display:block;
+        font-size:4.5px;
+        margin:0;
+        opacity:.7;
+    }
+    .print-ticket .print-ref{
+        text-align:right;
+        font-size:6px;
+    }
+    .print-ticket .print-ref small{font-size:4.5px;display:block;}
+    .print-ticket .print-ref strong{font-size:7px;}
+    .print-ticket .print-body{padding:3px 4px;}
+    .print-ticket .print-route{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:3px;
+        font-size:7px;
+    }
+    .print-ticket .print-location small{
+        display:block;
+        font-size:4.5px;
+        color:#6c757d;
+    }
+    .print-ticket .print-location strong{
+        font-size:7px;
+    }
+    .print-ticket .print-arrow{
+        font-size:10px;
+        color:#0f3323 !important;
+    }
+    .print-ticket .print-grid{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:2px;
+        margin-bottom:3px;
+    }
+    .print-ticket .print-item{
+        background:#f5f7f2 !important;
+        padding:2px 3px;
+        border-radius:2px;
+    }
+    .print-ticket .print-item small{
+        display:block;
+        color:#6c757d;
+        font-size:4.5px;
+        text-transform:uppercase;
+        margin-bottom:1px;
+    }
+    .print-ticket .print-item strong{
+        font-size:6.5px;
+        word-break:break-word;
+    }
+    .print-ticket .print-passenger{
+        border-top:1px dashed #aaa;
+        border-bottom:1px dashed #aaa;
+        padding:2px 0;
+        margin-bottom:3px;
+    }
+    .print-ticket .print-passenger small{
+        display:block;
+        color:#6c757d;
+        font-size:4.5px;
+        margin-bottom:1px;
+    }
+    .print-ticket .print-passenger strong{
+        font-size:7.5px;
+    }
+    .print-ticket .print-passenger-phone{
+        color:#6c757d;
+        font-size:5px;
+        margin-top:1px;
+    }
+    .print-ticket .print-footer{
+        padding:2px 4px;
+        background:#f5f7f2 !important;
+        display:flex;
+        justify-content:space-between;
+        font-size:5px;
+        color:#6c757d;
+        border-radius:0 0 2px 2px;
+    }
+    /* hide any extra elements that might appear */
+    .print-ticket .print-head .print-brand small{display:none;} /* reduce clutter */
+    /* ensure we don't have page breaks after each */
+    .print-ticket{page-break-after:auto;}
+    /* force 2 columns */
+    #printArea{display:flex;flex-wrap:wrap;justify-content:flex-start;}
+}
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- =======================================================
+     SIDEBAR (English)
+======================================================= -->
+<aside class="sidebar" id="sidebar">
+
+    <div class="brand">
+        <div class="brand-mark">DCF</div>
+        <div>
+            <h1>DCF Online System</h1>
+            <span>Travel & Ticket Management</span>
+        </div>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-label">Navigation</div>
+        <button class="nav-btn active" onclick="switchView('adminDashboard',this)"><span class="ico">▣</span> Dashboard</button>
+        <button class="nav-btn" onclick="switchView('createTrip',this)"><span class="ico">＋</span> New Trip</button>
+        <button class="nav-btn" onclick="switchView('manageTrips',this)"><span class="ico">▤</span> Manage Trips</button>
+        <button class="nav-btn" onclick="switchView('announcements',this)"><span class="ico">📢</span> Announcements</button>
+        <button class="nav-btn" onclick="switchView('bookings',this)"><span class="ico">◉</span> Bookings</button>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-label">Member</div>
+        <button class="nav-btn" onclick="switchView('memberPortal',this)"><span class="ico">♙</span> Member Portal</button>
+        <button class="nav-btn" onclick="switchView('myBookings',this)"><span class="ico">🎫</span> My Bookings</button>
+    </div>
+
+    <div class="role-box">
+        <small>Current role</small>
+        <strong>ADMIN</strong>
+    </div>
+
+</aside>
+
+<!-- =======================================================
+     MAIN
+======================================================= -->
+<main class="main">
+
+<header class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+        <button class="mobile-menu" onclick="toggleSidebar()">☰</button>
+        <div class="topbar-title">
+            <h2 id="pageTitle">Dashboard</h2>
+            <p>DCF Online System • Travel & Ticket Management</p>
+        </div>
+    </div>
+    <div class="user-area">
+        <div><strong>Administrator</strong><small>ADMIN</small></div>
+        <div class="avatar">A</div>
+    </div>
+</header>
+
+<div class="content">
+
+<!-- =======================================================
+     ADMIN DASHBOARD
+======================================================= -->
+<section class="view active" id="adminDashboard">
+
+    <div class="stats">
+        <div class="stat"><div class="stat-label">Total Trips</div><div class="stat-value" id="totalTrips">0</div></div>
+        <div class="stat"><div class="stat-label">Published</div><div class="stat-value" id="publishedTrips">0</div></div>
+        <div class="stat"><div class="stat-label">Bookings</div><div class="stat-value" id="totalBookings">0</div></div>
+        <div class="stat"><div class="stat-label">Revenue</div><div class="stat-value" id="totalRevenue">TZS 0</div></div>
+    </div>
+
+    <div class="panel">
+        <div class="panel-head">
+            <div><h3>Recent Trips</h3><p>Manage your trip schedules</p></div>
+            <button class="btn btn-primary" onclick="switchView('createTrip')">+ New Trip</button>
+        </div>
+        <div class="panel-body">
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Vehicle</th><th>Route</th><th>Date</th><th>Time</th><th>Price</th><th>Status</th><th>Action</th></tr></thead>
+                    <tbody id="dashboardTrips"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<!-- =======================================================
+     CREATE / EDIT TRIP
+======================================================= -->
+<section class="view" id="createTrip">
+<div class="panel">
+<div class="panel-head">
+    <div><h3 id="createTripHeading">Create New Trip</h3><p>Trip starts as DRAFT, publish when ready.</p></div>
+    <span class="badge badge-draft" id="createTripBadge">DRAFT</span>
+</div>
+<div class="panel-body">
+
+<div class="alert alert-info">New trip will start as <strong>DRAFT</strong>. Members won't see it until you <strong>Publish</strong>.</div>
+
+<form id="tripForm">
+<div class="form-grid">
+
+    <div class="field"><label>Departure *</label><input class="input" id="departure" placeholder="Dar es Salaam" required></div>
+    <div class="field"><label>Destination *</label><input class="input" id="destination" placeholder="Arusha" required></div>
+    <div class="field"><label>Travel Date *</label><input type="date" class="input" id="travelDate" required></div>
+    <div class="field"><label>Departure Time *</label><input type="time" class="input" id="departureTime" required></div>
+    <div class="field"><label>Arrival Time</label><input type="time" class="input" id="arrivalTime"></div>
+    <div class="field"><label>Ticket Price (TZS) *</label><input type="number" min="0" class="input" id="ticketPrice" placeholder="50000" required></div>
+
+    <div class="field">
+        <label>Number of Vehicles *</label>
+        <select class="input" id="vehicleCount" onchange="toggleVehicleTwo()">
+            <option value="1">1 Vehicle</option>
+            <option value="2">2 Vehicles</option>
+        </select>
+    </div>
+
+    <div class="field full"><label>Trip Description</label><textarea class="input" id="tripDescription" placeholder="Trip details..."></textarea></div>
+
+</div>
+
+<div style="margin-top:24px">
+    <h3 style="font-family:var(--serif);font-size:15.5px">Vehicle Details</h3>
+    <p class="hint" style="margin-top:4px">You can use one or two vehicles for this trip.</p>
+</div>
+
+<div class="vehicle-builder">
+
+    <div class="vehicle-box">
+        <div class="vehicle-box-head"><div class="vehicle-chip">1</div><strong>Vehicle 1</strong></div>
+        <div class="field"><label>Vehicle Name *</label><input class="input" id="vehicle1Name" placeholder="DCF Express" required></div>
+        <div class="field" style="margin-top:12px"><label>Registration Number *</label><input class="input" id="vehicle1Number" placeholder="T 123 ABC" required></div>
+        <div class="field" style="margin-top:12px"><label>Seats *</label><input type="number" min="4" max="100" value="40" class="input" id="vehicle1Seats" required></div>
+        <div class="field" style="margin-top:12px">
+            <label>Seat Layout</label>
+            <select class="input" id="vehicle1Layout"><option value="2x2">2 + 2 Standard</option><option value="2x1">2 + 1 Executive</option></select>
+        </div>
+        <div class="field" style="margin-top:12px">
+            <label>Vehicle Image</label>
+            <input type="file" class="input" id="vehicle1Image" accept="image/*">
+            <label style="margin-top:12px">Vehicle Video (optional)</label>
+            <input type="file" class="input" id="vehicle1Video" accept="video/*">
+            <div id="vehicle1VideoPreview"></div>
+            <div class="image-preview" id="vehicle1Preview"></div>
+        </div>
+    </div>
+
+    <div class="vehicle-box hidden" id="vehicleTwoBox">
+        <div class="vehicle-box-head"><div class="vehicle-chip">2</div><strong>Vehicle 2</strong></div>
+        <div class="field"><label>Vehicle Name *</label><input class="input" id="vehicle2Name" placeholder="DCF Shuttle"></div>
+        <div class="field" style="margin-top:12px"><label>Registration Number *</label><input class="input" id="vehicle2Number" placeholder="T 456 DEF"></div>
+        <div class="field" style="margin-top:12px"><label>Seats *</label><input type="number" min="4" max="100" value="40" class="input" id="vehicle2Seats"></div>
+        <div class="field" style="margin-top:12px">
+            <label>Seat Layout</label>
+            <select class="input" id="vehicle2Layout"><option value="2x2">2 + 2 Standard</option><option value="2x1">2 + 1 Executive</option></select>
+        </div>
+        <div class="field" style="margin-top:12px">
+            <label>Vehicle Image</label>
+            <input type="file" class="input" id="vehicle2Image" accept="image/*">
+            <label style="margin-top:12px">Vehicle Video (optional)</label>
+            <input type="file" class="input" id="vehicle2Video" accept="video/*">
+            <div id="vehicle2VideoPreview"></div>
+            <div class="image-preview" id="vehicle2Preview"></div>
+        </div>
+    </div>
+
+</div>
+
+<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:24px">
+    <button type="button" class="btn btn-secondary" onclick="resetTripForm()">Clear</button>
+    <button type="submit" class="btn btn-primary" id="tripSubmitBtn">Save Trip as Draft</button>
+</div>
+
+</form>
+</div>
+</div>
+</section>
+
+<!-- =======================================================
+     MANAGE TRIPS
+======================================================= -->
+<section class="view" id="manageTrips">
+<div class="panel">
+<div class="panel-head">
+    <div><h3>Manage Trips</h3><p>Publish, edit, or remove trips visible to members.</p></div>
+    <button class="btn btn-primary" onclick="switchView('createTrip')">+ New Trip</button>
+</div>
+<div class="panel-body">
+<div class="table-wrap">
+<table>
+<thead><tr><th>Vehicle</th><th>Route</th><th>Date</th><th>Time</th><th>Vehicles</th><th>Seats</th><th>Price</th><th>Status</th><th>Action</th></tr></thead>
+<tbody id="manageTripsTable"></tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+
+<!-- =======================================================
+     ANNOUNCEMENTS
+======================================================= -->
+<section class="view" id="announcements">
+<div class="panel">
+<div class="panel-head">
+    <div><h3>Announcements</h3><p>Post announcements visible on the Member Portal.</p></div>
+</div>
+<div class="panel-body">
+
+<div class="alert alert-info">An active announcement appears at the top of the Member Portal for all members.</div>
+
+<form id="announceForm" class="form-grid" style="margin-bottom:24px">
+    <div class="field full"><label>Announcement Title *</label><input class="input" id="announceTitle" placeholder="e.g. Schedule Change" required></div>
+    <div class="field full"><label>Message *</label><textarea class="input" id="announceMessage" placeholder="Write your announcement..." required></textarea></div>
+    <div class="field full" style="flex-direction:row;align-items:center;gap:10px">
+        <input type="checkbox" id="announceActive" checked style="width:auto">
+        <label style="font-weight:400">Activate this announcement immediately</label>
+    </div>
+    <div class="field full" style="display:flex;justify-content:flex-end;gap:10px">
+        <button type="button" class="btn btn-secondary" onclick="resetAnnounceForm()">Clear</button>
+        <button type="submit" class="btn btn-primary" id="announceSubmitBtn">Post Announcement</button>
+    </div>
+</form>
+
+<h3 style="font-family:var(--serif);font-size:15.5px;margin-bottom:14px">Existing Announcements</h3>
+<div class="announce-list" id="announceList"></div>
+
+</div>
+</div>
+</section>
+
+<!-- =======================================================
+     BOOKINGS (with Share buttons)
+======================================================= -->
+<section class="view" id="bookings">
+<div class="panel">
+<div class="panel-head">
+    <div><h3>Ticket Bookings</h3><p>Manage confirmed passenger bookings.</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-secondary" onclick="printSelectedTicket()">🖨 Print Selected</button>
+        <button class="btn btn-primary" onclick="printAllTickets()">🖨 Print All</button>
+        <button class="btn btn-outline" onclick="copyAllTicketsLink()">🔗 Share All</button>
+    </div>
+</div>
+<div class="panel-body">
+
+<div class="alert alert-info"><strong>Passenger Info:</strong> Admin sees full name, phone, vehicle, registration, seat, route, date, time, and booking reference.</div>
+
+<div class="table-wrap">
+<table>
+<thead><tr><th>Select</th><th>Booking Ref</th><th>Passenger & Phone</th><th>Vehicle</th><th>Route</th><th>Seat</th><th>Date</th><th>Amount</th><th>Action</th></tr></thead>
+<tbody id="bookingsTable"></tbody>
+</table>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- =======================================================
+     MEMBER PORTAL
+======================================================= -->
+<section class="view" id="memberPortal">
+<div class="panel">
+<div class="panel-head">
+    <div><h3>Available Trips</h3><p>Choose your trip, vehicle, and seat.</p></div>
+    <span class="badge badge-published">MEMBER VIEW</span>
+</div>
+<div class="panel-body">
+
+<div id="memberAnnounceWrap"></div>
+
+<div class="filters">
+    <input type="text" class="input" id="searchBox" placeholder="Search by departure or destination city...">
+</div>
+
+<div id="memberTripsWrap"></div>
+
+</div>
+</div>
+</section>
+
+<!-- =======================================================
+     MY BOOKINGS
+======================================================= -->
+<section class="view" id="myBookings">
+<div class="panel">
+<div class="panel-head">
+    <div><h3>My Bookings</h3><p>Your confirmed bookings.</p></div>
+    <button class="btn btn-primary" onclick="printAllTickets()">🖨 Print All Tickets</button>
+</div>
+<div class="panel-body">
+<div class="trips" id="myBookingsGrid"></div>
+</div>
+</div>
+</section>
+
+</div>
+</main>
+</div>
+
+<!-- =======================================================
+     BOOKING MODAL
+======================================================= -->
+<div class="modal" id="bookingModal">
+<div class="modal-box">
+    <div class="modal-head">
+        <div><h3 id="modalTripTitle">Select Vehicle & Seat</h3><p id="modalTripRoute"></p></div>
+        <button class="modal-close" onclick="closeBookingModal()">×</button>
+    </div>
+    <div class="modal-body">
+
+        <div class="veh-tabs" id="bookingVehicleSelector"></div>
+
+        <div class="seat-area" style="margin-bottom:20px">
+            <div class="bus">
+                <div class="driver">DRIVER</div>
+                <div class="seat-grid" id="seatGrid"></div>
+                <div class="seat-legend">
+                    <div class="legend"><span class="legend-box" style="background:var(--moss-tint)"></span>Available</div>
+                    <div class="legend"><span class="legend-box" style="background:var(--gold-tint)"></span>Selected</div>
+                    <div class="legend"><span class="legend-box" style="background:var(--danger-tint)"></span>Booked</div>
+                </div>
+            </div>
+
+            <div class="info-panel empty" id="seatInfoPanel">
+                <h4 id="seatInfoTitle">Seat Info</h4>
+                <p class="info-sub" id="seatInfoSubtitle">Select a seat to see details.</p>
+                <div id="seatInfoContent">
+                    <div class="empty"><div class="glyph">💺</div><p>An available seat can be selected.</p></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary">
+            <h4>Booking Summary</h4>
+            <div class="summary-item"><span>Passenger</span><strong id="summaryPassenger">-</strong></div>
+            <div class="summary-item"><span>Phone</span><strong id="summaryPassengerPhone">-</strong></div>
+            <div class="summary-item"><span>Vehicle</span><strong id="summaryVehicle">-</strong></div>
+            <div class="summary-item"><span>Registration</span><strong id="summaryRegistration">-</strong></div>
+            <div class="summary-item"><span>Route</span><strong id="summaryRoute">-</strong></div>
+            <div class="summary-item"><span>Date</span><strong id="summaryDate">-</strong></div>
+            <div class="summary-item"><span>Departure</span><strong id="summaryTime">-</strong></div>
+            <div class="summary-item"><span>Selected Seat</span><strong id="summarySeat">Not selected</strong></div>
+            <div class="summary-total"><span>Total</span><span id="summaryPrice">TZS 0</span></div>
+
+            <div class="passenger-box">
+                <h5>Passenger Details</h5>
+                <div class="main" id="livePassengerName">Name not set</div>
+                <div class="sub" id="livePassengerPhone">Phone not set</div>
+            </div>
+
+            <div style="margin-top:15px">
+                <div class="field"><label>Full Passenger Name *</label><input class="input" id="passengerName" placeholder="Full name" autocomplete="name" maxlength="120"></div>
+                <div class="field" style="margin-top:12px"><label>Phone Number *</label><input class="input" id="passengerPhone" placeholder="+255 7XX XXX XXX" autocomplete="tel" maxlength="30"></div>
+            </div>
+
+            <button class="btn btn-clay btn-block" style="margin-top:18px" onclick="confirmBooking()">Confirm Booking</button>
+        </div>
+
+    </div>
+</div>
+</div>
+
+<!-- =======================================================
+     BOOKING DETAILS MODAL
+======================================================= -->
+<div class="modal" id="bookingDetailsModal">
+<div class="modal-box">
+    <div class="modal-head">
+        <div><h3>Booking Details</h3><p>Full passenger and ticket info</p></div>
+        <button class="modal-close" onclick="closeBookingDetailsModal()">×</button>
+    </div>
+    <div class="modal-body" id="bookingDetailsBody"></div>
+</div>
+</div>
+
+<!-- =======================================================
+     ADMIN TRIP MODAL
+======================================================= -->
+<div class="modal" id="adminTripModal">
+<div class="modal-box">
+    <div class="modal-head">
+        <h3 id="adminModalTitle">Trip Details</h3>
+        <button class="modal-close" onclick="closeAdminModal()">×</button>
+    </div>
+    <div class="modal-body" id="adminModalBody"></div>
+</div>
+</div>
+
+<div id="printArea"></div>
+
+<script>
+
+/* =========================================================
+   DCF ONLINE SYSTEM — CORE (English messages)
+========================================================= */
+
+const TRIP_KEY="DCF_TRAVEL_TRIPS";
+const BOOKING_KEY="DCF_TRAVEL_BOOKINGS";
+const ANNOUNCE_KEY="DCF_TRAVEL_ANNOUNCEMENTS";
+
+function safeGetJSON(key,fallback){
+    try{const raw=localStorage.getItem(key);return raw?JSON.parse(raw):fallback;}catch(e){console.warn("Storage read failed:",e);return fallback;}
+}
+let trips=safeGetJSON(TRIP_KEY,[]);
+let bookings=safeGetJSON(BOOKING_KEY,[]);
+let announcements=safeGetJSON(ANNOUNCE_KEY,[]);
+
+let selectedTripId=null;
+let selectedVehicleId=null;
+let selectedSeat=null;
+let selectedSeatBooking=null;
+let editingTripId=null;
+
+function safeSetStorage(key,value){
+    try{localStorage.setItem(key,value);return true;}
+    catch(e){console.warn("Storage write failed:",e);return false;}
+}
+function saveTrips(){safeSetStorage(TRIP_KEY,JSON.stringify(trips));}
+function saveBookings(){safeSetStorage(BOOKING_KEY,JSON.stringify(bookings));}
+function saveAnnouncements(){safeSetStorage(ANNOUNCE_KEY,JSON.stringify(announcements));}
+
+/* Keep open tabs in sync when another tab/browser window changes local data. */
+window.addEventListener("storage",function(e){
+    if(e.key===TRIP_KEY){try{trips=JSON.parse(e.newValue||"[]");normalizeData();renderDashboard();renderManageTrips();renderMemberTrips();}catch(err){console.warn(err);}}
+    if(e.key===BOOKING_KEY){try{bookings=JSON.parse(e.newValue||"[]");renderDashboard();renderManageTrips();renderBookings();renderMyBookings();renderMemberTrips();}catch(err){console.warn(err);}}
+    if(e.key===ANNOUNCE_KEY){try{announcements=JSON.parse(e.newValue||"[]");renderAnnouncements();renderMemberAnnouncements();}catch(err){console.warn(err);}}
+});
+
+function money(v){return new Intl.NumberFormat("en-TZ").format(Number(v||0));}
+function escapeHTML(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+function generateId(){return Date.now().toString(36)+Math.random().toString(36).substring(2,8);}
+function generateBookingReference(){const y=new Date().getFullYear();const r=Math.random().toString(36).substring(2,8).toUpperCase();return `DCF-${y}-${r}`;}
+function formatDate(d){if(!d)return"-";const x=new Date(d+"T00:00:00");return x.toLocaleDateString("en-GB",{day:"2-digit",month:"short",year:"numeric"});}
+function formatDateTime(dt){if(!dt)return"-";try{return new Date(dt).toLocaleString("en-GB",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});}catch(e){return"-";}}
+function normalizePhone(p){return String(p||"").trim().replace(/[^\d+]/g,"");}
+
+/* =========================================================
+   LEGACY DATA COMPAT
+========================================================= */
+
+function normalizeData(){
+    let changed=false;
+    trips=trips.map(trip=>{
+        if(!trip.vehicles||!Array.isArray(trip.vehicles)){
+            changed=true;
+            trip.vehicles=[{id:trip.vehicleId||generateId(),name:trip.vehicleName||"DCF Vehicle",number:trip.vehicleNumber||"-",seats:Number(trip.totalSeats||40),layout:trip.seatLayout||"2x2",image:trip.image||""}];
+        }
+        return trip;
+    });
+    bookings=bookings.map(b=>{
+        if(!b.id)b.id=generateId();
+        if(!b.reference)b.reference=generateBookingReference();
+        if(!b.status)b.status="confirmed";
+        if(!b.passenger&&b.passengerName)b.passenger=b.passengerName;
+        if(!b.phone&&b.passengerPhone)b.phone=b.passengerPhone;
+        if(!b.vehicleName&&b.tripName)b.vehicleName=b.tripName;
+        return b;
+    });
+    if(changed)saveTrips();
+    saveBookings();
+    saveAnnouncements();
+}
+normalizeData();
+
+/* =========================================================
+   VIEW CONTROL
+========================================================= */
+
+function switchView(viewId,button=null){
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+    const view=document.getElementById(viewId);
+    if(view)view.classList.add("active");
+
+    if(button){
+        document.querySelectorAll(".nav-btn").forEach(btn=>btn.classList.remove("active"));
+        button.classList.add("active");
+    }
+
+    const titles={
+        adminDashboard:"Dashboard",
+        createTrip:"New Trip",
+        manageTrips:"Manage Trips",
+        announcements:"Announcements",
+        bookings:"Ticket Bookings",
+        memberPortal:"Member Portal",
+        myBookings:"My Bookings"
+    };
+    document.getElementById("pageTitle").textContent=titles[viewId]||"DCF Online System";
+
+    if(viewId==="adminDashboard")renderDashboard();
+    if(viewId==="manageTrips")renderManageTrips();
+    if(viewId==="announcements")renderAnnouncements();
+    if(viewId==="bookings")renderBookings();
+    if(viewId==="memberPortal")renderMemberTrips();
+    if(viewId==="myBookings")renderMyBookings();
+
+    if(window.innerWidth<=800)document.getElementById("sidebar").classList.remove("open");
+}
+
+function toggleSidebar(){document.getElementById("sidebar").classList.toggle("open");}
+
+/* =========================================================
+   VEHICLE TWO TOGGLE
+========================================================= */
+
+function toggleVehicleTwo(){
+    const count=Number(document.getElementById("vehicleCount").value);
+    const box=document.getElementById("vehicleTwoBox");
+    const req=count===2;
+    box.classList.toggle("hidden",!req);
+    document.getElementById("vehicle2Name").required=req;
+    document.getElementById("vehicle2Number").required=req;
+    document.getElementById("vehicle2Seats").required=req;
+}
+
+/* =========================================================
+   IMAGE PREVIEW
+========================================================= */
+
+function setupImagePreview(inputId,previewId){
+    const input=document.getElementById(inputId);
+    const preview=document.getElementById(previewId);
+    input.addEventListener("change",function(){
+        preview.innerHTML="";
+        const file=this.files[0];
+        if(!file)return;
+        if(!file.type.startsWith("image/")){alert("Please choose an image file.");this.value="";return;}
+        if(file.size>2*1024*1024){alert("Image must not exceed 2MB.");this.value="";return;}
+        const reader=new FileReader();
+        reader.onload=function(e){
+            const img=document.createElement("img");
+            img.src=e.target.result;img.className="preview-img";
+            preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+setupImagePreview("vehicle1Image","vehicle1Preview");
+setupImagePreview("vehicle2Image","vehicle2Preview");
+
+function fileToBase64(file){
+    return new Promise((resolve,reject)=>{
+        if(!file){resolve("");return;}
+        const reader=new FileReader();
+        reader.onload=()=>resolve(reader.result);
+        reader.onerror=reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+/* =========================================================
+   CREATE / UPDATE TRIP
+========================================================= */
+
+document.getElementById("tripForm").addEventListener("submit",async function(e){
+    e.preventDefault();
+    const submitBtn=document.getElementById("tripSubmitBtn");
+    if(submitBtn?.dataset.busy==="1")return;
+    if(submitBtn) {submitBtn.dataset.busy="1";submitBtn.disabled=true;}
+    try{
+
+    const count=Number(document.getElementById("vehicleCount").value);
+    const v1Name=document.getElementById("vehicle1Name").value.trim();
+    const v1Number=document.getElementById("vehicle1Number").value.trim();
+    const v1Seats=Number(document.getElementById("vehicle1Seats").value);
+
+    if(!v1Name||!v1Number||!v1Seats){alert("Please fill in all Vehicle 1 details.");return;}
+
+    const existingTrip=editingTripId?trips.find(t=>t.id===editingTripId):null;
+    const existingV1=existingTrip?.vehicles?.[0];
+
+    const file1=document.getElementById("vehicle1Image").files[0];
+    const image1=file1?await fileToBase64(file1):(existingV1?.image||"");
+
+    const vehicles=[{
+        id:existingV1?.id||generateId(),
+        name:v1Name,number:v1Number,seats:v1Seats,
+        layout:document.getElementById("vehicle1Layout").value,
+        image:image1,
+        videoKey:existingV1?.videoKey||undefined
+    }];
+
+    if(count===2){
+        const v2Name=document.getElementById("vehicle2Name").value.trim();
+        const v2Number=document.getElementById("vehicle2Number").value.trim();
+        const v2Seats=Number(document.getElementById("vehicle2Seats").value);
+        if(!v2Name||!v2Number||!v2Seats){alert("Please fill in all Vehicle 2 details.");return;}
+
+        const existingV2=existingTrip?.vehicles?.[1];
+        const file2=document.getElementById("vehicle2Image").files[0];
+        const image2=file2?await fileToBase64(file2):(existingV2?.image||"");
+
+        vehicles.push({
+            id:existingV2?.id||generateId(),
+            name:v2Name,number:v2Number,seats:v2Seats,
+            layout:document.getElementById("vehicle2Layout").value,
+            image:image2,
+            videoKey:existingV2?.videoKey||undefined
+        });
+    }
+
+    const tripData={
+        departure:document.getElementById("departure").value.trim(),
+        destination:document.getElementById("destination").value.trim(),
+        travelDate:document.getElementById("travelDate").value,
+        departureTime:document.getElementById("departureTime").value,
+        arrivalTime:document.getElementById("arrivalTime").value,
+        ticketPrice:Number(document.getElementById("ticketPrice").value),
+        description:document.getElementById("tripDescription").value.trim(),
+        vehicles
+    };
+
+    await captureVehicleVideos(vehicles);
+
+    if(editingTripId&&existingTrip){
+        Object.assign(existingTrip,tripData);
+        saveTrips();
+        alert("Trip updated.");
+    }else{
+        const trip={
+            id:generateId(),
+            ...tripData,
+            status:"draft",
+            createdAt:new Date().toISOString()
+        };
+        trips.push(trip);
+        saveTrips();
+        alert("Trip saved as DRAFT.\n\nAdmin can publish it from Manage Trips.");
+    }
+
+    resetTripForm();
+    renderDashboard();
+    renderManageTrips();
+    switchView("manageTrips");
+    document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".nav-btn")[2].classList.add("active");
+    }finally{
+        if(submitBtn){submitBtn.dataset.busy="0";submitBtn.disabled=false;}
+    }
+});
+
+function resetTripForm(){
+    document.getElementById("tripForm").reset();
+    document.getElementById("vehicle1Preview").innerHTML="";
+    document.getElementById("vehicle2Preview").innerHTML="";
+    document.getElementById("vehicle1VideoPreview").innerHTML="";
+    document.getElementById("vehicle2VideoPreview").innerHTML="";
+    document.getElementById("vehicleTwoBox").classList.add("hidden");
+    document.getElementById("vehicle2Name").required=false;
+    document.getElementById("vehicle2Number").required=false;
+    document.getElementById("vehicle2Seats").required=false;
+    editingTripId=null;
+    document.getElementById("createTripHeading").textContent="Create New Trip";
+    document.getElementById("tripSubmitBtn").textContent="Save Trip as Draft";
+    document.getElementById("createTripBadge").textContent="DRAFT";
+}
+
+function editTrip(id){
+    const trip=trips.find(t=>t.id===id);
+    if(!trip)return;
+    closeAdminModal();
+    switchView("createTrip");
+    document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".nav-btn")[1].classList.add("active");
+
+    document.getElementById("departure").value=trip.departure||"";
+    document.getElementById("destination").value=trip.destination||"";
+    document.getElementById("travelDate").value=trip.travelDate||"";
+    document.getElementById("departureTime").value=trip.departureTime||"";
+    document.getElementById("arrivalTime").value=trip.arrivalTime||"";
+    document.getElementById("ticketPrice").value=trip.ticketPrice||"";
+    document.getElementById("tripDescription").value=trip.description||"";
+
+    const vs=trip.vehicles||[];
+    document.getElementById("vehicleCount").value=vs.length>1?"2":"1";
+    toggleVehicleTwo();
+
+    if(vs[0]){
+        document.getElementById("vehicle1Name").value=vs[0].name||"";
+        document.getElementById("vehicle1Number").value=vs[0].number||"";
+        document.getElementById("vehicle1Seats").value=vs[0].seats||40;
+        document.getElementById("vehicle1Layout").value=vs[0].layout||"2x2";
+        if(vs[0].image){
+            document.getElementById("vehicle1Preview").innerHTML=`<img class="preview-img" src="${vs[0].image}">`;
+        }
+    }
+    if(vs[1]){
+        document.getElementById("vehicle2Name").value=vs[1].name||"";
+        document.getElementById("vehicle2Number").value=vs[1].number||"";
+        document.getElementById("vehicle2Seats").value=vs[1].seats||40;
+        document.getElementById("vehicle2Layout").value=vs[1].layout||"2x2";
+        if(vs[1].image){
+            document.getElementById("vehicle2Preview").innerHTML=`<img class="preview-img" src="${vs[1].image}">`;
+        }
+    }
+
+    editingTripId=id;
+    document.getElementById("createTripHeading").textContent="Edit Trip";
+    document.getElementById("tripSubmitBtn").textContent="Update Trip";
+    document.getElementById("createTripBadge").textContent=trip.status.toUpperCase();
+}
+
+/* =========================================================
+   STATUS BADGE
+========================================================= */
+
+function statusBadge(status){
+    if(status==="published")return `<span class="badge badge-published">PUBLISHED</span>`;
+    if(status==="unpublished")return `<span class="badge badge-unpublished">UNPUBLISHED</span>`;
+    return `<span class="badge badge-draft">DRAFT</span>`;
+}
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function renderDashboard(){
+    const published=trips.filter(t=>t.status==="published").length;
+    const revenue=bookings.reduce((sum,b)=>sum+Number(b.amount||0),0);
+
+    document.getElementById("totalTrips").textContent=trips.length;
+    document.getElementById("publishedTrips").textContent=published;
+    document.getElementById("totalBookings").textContent=bookings.length;
+    document.getElementById("totalRevenue").textContent="TZS "+money(revenue);
+
+    const tbody=document.getElementById("dashboardTrips");
+    if(!trips.length){
+        tbody.innerHTML=`<tr><td colspan="7"><div class="empty"><div class="glyph">🚌</div>No trips created yet.</div></td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML=trips.slice(-8).reverse().map(trip=>{
+        const vehicle=trip.vehicles?.[0];
+        return `<tr>
+            <td><span class="cell-title">${escapeHTML(vehicle?.name||"DCF Vehicle")}</span><span class="cell-sub">${escapeHTML(vehicle?.number||"-")}</span></td>
+            <td>${escapeHTML(trip.departure)} → ${escapeHTML(trip.destination)}</td>
+            <td>${formatDate(trip.travelDate)}</td>
+            <td>${escapeHTML(trip.departureTime)}</td>
+            <td>TZS ${money(trip.ticketPrice)}</td>
+            <td>${statusBadge(trip.status)}</td>
+            <td><button class="btn btn-secondary btn-sm" onclick="openAdminTrip('${trip.id}')">View</button></td>
+        </tr>`;
+    }).join("");
+}
+
+/* =========================================================
+   MANAGE TRIPS
+========================================================= */
+
+function renderManageTrips(){
+    const tbody=document.getElementById("manageTripsTable");
+    if(!trips.length){
+        tbody.innerHTML=`<tr><td colspan="9"><div class="empty"><div class="glyph">🚌</div>No trips.</div></td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML=trips.slice().reverse().map(trip=>{
+        const vehicles=trip.vehicles||[];
+        const totalSeats=vehicles.reduce((s,v)=>s+Number(v.seats||0),0);
+        const bookedSeats=bookings.filter(b=>b.tripId===trip.id&&b.status==="confirmed").length;
+        const v0=vehicles[0];
+
+        return `<tr>
+            <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                    ${v0?.image?`<img class="vehicle-thumb" src="${v0.image}" alt="vehicle">`:""}
+                    <div><strong>${escapeHTML(v0?.name||"DCF Vehicle")}</strong><small style="display:block;color:var(--muted)">${escapeHTML(v0?.number||"-")}</small></div>
+                </div>
+            </td>
+            <td>${escapeHTML(trip.departure)} → ${escapeHTML(trip.destination)}</td>
+            <td>${formatDate(trip.travelDate)}</td>
+            <td>${escapeHTML(trip.departureTime)}</td>
+            <td>${vehicles.length} ${vehicles.length===2?"Vehicles":"Vehicle"}</td>
+            <td>${bookedSeats}/${totalSeats}</td>
+            <td>TZS ${money(trip.ticketPrice)}</td>
+            <td>${statusBadge(trip.status)}</td>
+            <td>
+                <div style="display:flex;gap:5px;flex-wrap:wrap">
+                    <button class="btn btn-secondary btn-sm" onclick="openAdminTrip('${trip.id}')">View</button>
+                    <button class="btn btn-outline btn-sm" onclick="editTrip('${trip.id}')">Edit</button>
+                    ${trip.status==="published"
+                        ?`<button class="btn btn-danger btn-sm" onclick="unpublishTrip('${trip.id}')">Unpublish</button>`
+                        :`<button class="btn btn-success btn-sm" onclick="publishTrip('${trip.id}')">Publish</button>`
+                    }
+                    <button class="btn btn-danger btn-sm" onclick="deleteTrip('${trip.id}')">Delete</button>
+                </div>
+            </td>
+        </tr>`;
+    }).join("");
+}
+
+function publishTrip(id){
+    const trip=trips.find(t=>t.id===id);
+    if(!trip)return;
+    if(!trip.departure||!trip.destination||!trip.travelDate||!trip.departureTime||!trip.ticketPrice||!trip.vehicles?.length){
+        alert("Trip is incomplete.");
+        return;
+    }
+    trip.status="published";
+    trip.publishedAt=new Date().toISOString();
+    saveTrips();
+    alert("PUBLISHED SUCCESSFULLY.\n\nTrip is now visible on the Member Portal.");
+    renderManageTrips();renderDashboard();renderMemberTrips();
+}
+
+function unpublishTrip(id){
+    const trip=trips.find(t=>t.id===id);
+    if(!trip)return;
+    if(!confirm("Unpublish this trip?\n\nMembers will no longer see it."))return;
+    trip.status="unpublished";
+    trip.unpublishedAt=new Date().toISOString();
+    saveTrips();
+    renderManageTrips();renderDashboard();renderMemberTrips();
+}
+
+async function deleteTrip(id){
+    const trip=trips.find(t=>String(t.id)===String(id));
+    if(!trip)return;
+
+    const label=`${trip.departure||""} → ${trip.destination||""}`.trim();
+    if(!window.confirm(`Delete this trip?\n\n${label}\n${formatDate(trip.travelDate)}\n\nThis action cannot be undone.`))return;
+
+    /* Remove the trip first so every view immediately becomes empty when appropriate. */
+    trips=trips.filter(t=>String(t.id)!==String(id));
+
+    /* Remove bookings belonging to this trip from the local cache too. */
+    bookings=bookings.filter(b=>String(b.tripId)!==String(id));
+
+    saveTrips();
+    saveBookings();
+
+    /* Remove locally stored vehicle videos for the deleted trip. */
+    try{
+        const keys=(trip.vehicles||[]).map(v=>v.videoKey).filter(Boolean);
+        if(keys.length && typeof openVideoDB==="function"){
+            const db=await openVideoDB();
+            await new Promise(resolve=>{
+                const tx=db.transaction(STORE,"readwrite");
+                keys.forEach(k=>tx.objectStore(STORE).delete(k));
+                tx.oncomplete=resolve;tx.onerror=resolve;tx.onabort=resolve;
+            });
+        }
+    }catch(err){console.warn("Video cleanup failed:",err);}
+
+    if(editingTripId && String(editingTripId)===String(id))resetTripForm();
+
+    renderDashboard();
+    renderManageTrips();
+    renderMemberTrips();
+    renderBookings();
+    renderMyBookings();
+
+    alert("Trip deleted successfully.");
+}
+
+/* =========================================================
+   ADMIN TRIP VIEW
+========================================================= */
+
+function openAdminTrip(id){
+    const trip=trips.find(t=>t.id===id);
+    if(!trip)return;
+    const vehicles=trip.vehicles||[];
+
+    document.getElementById("adminModalTitle").textContent="Trip Details";
+    document.getElementById("adminModalBody").innerHTML=`
+        <div class="alert alert-info"><strong>${escapeHTML(trip.departure)} → ${escapeHTML(trip.destination)}</strong><br>${formatDate(trip.travelDate)} • ${escapeHTML(trip.departureTime)}</div>
+        <div class="vehicle-builder">
+            ${vehicles.map(v=>`
+                <div class="vehicle-box">
+                    ${v.image?`<img src="${v.image}" style="width:100%;height:170px;object-fit:cover;border-radius:10px;margin-bottom:14px" alt="Vehicle">`:""}
+                    <h3 style="font-family:var(--serif)">${escapeHTML(v.name)}</h3>
+                    <p style="color:var(--muted);font-size:12px;margin-top:4px">Registration: ${escapeHTML(v.number)}</p>
+                    <div class="detail-grid" style="margin-top:14px">
+                        <div class="detail"><small>SEATS</small><strong>${v.seats}</strong></div>
+                        <div class="detail"><small>LAYOUT</small><strong>${escapeHTML(v.layout)}</strong></div>
+                    </div>
+                </div>`).join("")}
+        </div>
+        <div style="margin-top:18px"><strong>Ticket Price</strong><p>TZS ${money(trip.ticketPrice)}</p></div>
+        <div style="margin-top:18px"><strong>Status</strong><div style="margin-top:8px">${statusBadge(trip.status)}</div></div>
+        <div style="margin-top:18px"><strong>Description</strong><p style="color:var(--muted);margin-top:8px">${escapeHTML(trip.description||"No description")}</p></div>
+        <div style="margin-top:18px"><strong>Current Bookings</strong><p style="margin-top:7px;color:var(--muted)">${bookings.filter(b=>b.tripId===trip.id&&b.status==="confirmed").length} passengers booked.</p></div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:24px">
+            <button class="btn btn-outline" onclick="editTrip('${trip.id}')">Edit Trip</button>
+            ${trip.status==="published"
+                ?`<button class="btn btn-danger" onclick="unpublishTrip('${trip.id}');closeAdminModal()">Unpublish</button>`
+                :`<button class="btn btn-success" onclick="publishTrip('${trip.id}');closeAdminModal()">Publish to Members</button>`
+            }
+        </div>`;
+    document.getElementById("adminTripModal").classList.add("show");
+}
+function closeAdminModal(){document.getElementById("adminTripModal").classList.remove("show");}
+
+/* =========================================================
+   ANNOUNCEMENTS
+========================================================= */
+
+document.getElementById("announceForm").addEventListener("submit",function(e){
+    e.preventDefault();
+    const title=document.getElementById("announceTitle").value.trim();
+    const message=document.getElementById("announceMessage").value.trim();
+    const active=document.getElementById("announceActive").checked;
+    if(!title||!message){alert("Please fill in the title and message.");return;}
+
+    announcements.push({
+        id:generateId(),
+        title,message,active,
+        createdAt:new Date().toISOString()
+    });
+    saveAnnouncements();
+    resetAnnounceForm();
+    renderAnnouncements();
+    alert("Announcement posted.");
+});
+
+function resetAnnounceForm(){
+    document.getElementById("announceForm").reset();
+    document.getElementById("announceActive").checked=true;
+}
+
+function renderAnnouncements(){
+    const wrap=document.getElementById("announceList");
+    if(!announcements.length){
+        wrap.innerHTML=`<div class="empty"><div class="glyph">📢</div><h4>No Announcements</h4><p>Your posted announcements will appear here.</p></div>`;
+        return;
+    }
+    wrap.innerHTML=announcements.slice().reverse().map(a=>`
+        <div class="announce-item ${a.active?"":"inactive"}">
+            <div class="row">
+                <div>
+                    <h4>${escapeHTML(a.title)}</h4>
+                    <p>${escapeHTML(a.message)}</p>
+                    <div class="meta">${formatDateTime(a.createdAt)} • ${a.active?"Active":"Inactive"}</div>
+                </div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap">
+                    <button class="btn btn-outline btn-sm" onclick="toggleAnnounce('${a.id}')">${a.active?"Deactivate":"Activate"}</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteAnnounce('${a.id}')">Delete</button>
+                </div>
+            </div>
+        </div>`).join("");
+}
+
+function toggleAnnounce(id){
+    const a=announcements.find(x=>x.id===id);
+    if(!a)return;
+    a.active=!a.active;
+    saveAnnouncements();
+    renderAnnouncements();
+    renderMemberTrips();
+}
+
+function deleteAnnounce(id){
+    if(!confirm("Delete this announcement?"))return;
+    announcements=announcements.filter(x=>x.id!==id);
+    saveAnnouncements();
+    renderAnnouncements();
+    renderMemberTrips();
+}
+
+/* =========================================================
+   MEMBER TRIPS
+========================================================= */
+
+function renderMemberAnnouncements(){
+    const wrap=document.getElementById("memberAnnounceWrap");
+    const active=announcements.filter(a=>a.active).slice().reverse();
+    if(!active.length){wrap.innerHTML="";return;}
+    wrap.innerHTML=active.map(a=>`
+        <div class="announce-banner">
+            <h5>📢 ${escapeHTML(a.title)}</h5>
+            <p>${escapeHTML(a.message)}</p>
+        </div>`).join("");
+}
+
+function renderMemberTrips(filterText){
+    renderMemberAnnouncements();
+
+    const box=document.getElementById("searchBox");
+    if(filterText===undefined)filterText=box?box.value:"";
+
+    const wrap=document.getElementById("memberTripsWrap");
+    const publishedTrips=trips.filter(trip=>trip.status==="published");
+    const filtered=publishedTrips.filter(t=>{
+        if(!filterText)return true;
+        const q=filterText.toLowerCase();
+        return (t.departure||"").toLowerCase().includes(q)||(t.destination||"").toLowerCase().includes(q);
+    });
+
+    if(!filtered.length){
+        wrap.innerHTML=`<div class="empty"><div class="glyph">🚌</div><h4>${publishedTrips.length?"No matching trips":"No Published Trips"}</h4><p>${publishedTrips.length?"Try a different city name.":"No trip has been published yet."}</p></div>`;
+        return;
+    }
+
+    wrap.innerHTML=`<div class="trips">`+filtered.map(trip=>{
+        const vehicles=trip.vehicles||[];
+        const v0=vehicles[0];
+        const bookedCount=bookings.filter(b=>b.tripId===trip.id&&b.status==="confirmed").length;
+        const totalSeats=vehicles.reduce((s,v)=>s+Number(v.seats||0),0);
+        return `<div class="trip" data-trip-id="${trip.id}">
+            <div class="trip-media">
+                ${v0?.image?`<img src="${v0.image}" alt="">`:`🚌`}
+                <span class="veh-count">${vehicles.length} vehicle${vehicles.length>1?"s":""}</span>
+            </div>
+            <div class="trip-main">
+                <div class="trip-route">${escapeHTML(trip.departure)}<span class="via">→</span>${escapeHTML(trip.destination)}</div>
+                <div class="trip-sub">${escapeHTML(v0?.name||"DCF Vehicle")} · ${bookedCount}/${totalSeats} seats taken</div>
+                <div class="trip-facts">
+                    <div><small>Date</small><strong>${formatDate(trip.travelDate)}</strong></div>
+                    <div><small>Time</small><strong>${escapeHTML(trip.departureTime||"-")}</strong></div>
+                    <div><small>Price</small><strong>TZS ${money(trip.ticketPrice)}</strong></div>
+                </div>
+            </div>
+            <div class="trip-actions">
+                <div class="price"><small>Ticket price</small>TZS ${money(trip.ticketPrice)}</div>
+                <button class="btn btn-primary btn-block" onclick="openBooking('${trip.id}')">Select Vehicle & Seat</button>
+            </div>
+        </div>`;
+    }).join("")+`</div>`;
+}
+
+document.getElementById("searchBox").addEventListener("input",e=>renderMemberTrips(e.target.value));
+
+/* =========================================================
+   OPEN BOOKING
+========================================================= */
+
+function openBooking(id){
+    const trip=trips.find(t=>t.id===id&&t.status==="published");
+    if(!trip){alert("This trip is no longer available.");renderMemberTrips();return;}
+
+    selectedTripId=id;
+    selectedVehicleId=trip.vehicles?.[0]?.id||null;
+    selectedSeat=null;
+    selectedSeatBooking=null;
+
+    document.getElementById("modalTripTitle").textContent="Select Vehicle & Seat";
+    document.getElementById("modalTripRoute").textContent=`${trip.departure} → ${trip.destination}`;
+    document.getElementById("summaryRoute").textContent=`${trip.departure} → ${trip.destination}`;
+    document.getElementById("summaryDate").textContent=formatDate(trip.travelDate);
+    document.getElementById("summaryTime").textContent=trip.departureTime;
+    document.getElementById("summaryPrice").textContent="TZS "+money(trip.ticketPrice);
+    document.getElementById("summarySeat").textContent="Not selected";
+    document.getElementById("summaryPassenger").textContent="-";
+    document.getElementById("summaryPassengerPhone").textContent="-";
+    document.getElementById("passengerName").value="";
+    document.getElementById("passengerPhone").value="";
+
+    updateLivePassengerDisplay();
+    renderBookingVehicles(trip);
+    renderSeats(trip,selectedVehicleId);
+    updateBookingSummary(trip);
+    clearSeatInfo();
+
+    document.getElementById("bookingModal").classList.add("show");
+}
+
+function renderBookingVehicles(trip){
+    const container=document.getElementById("bookingVehicleSelector");
+    const vehicles=trip.vehicles||[];
+    container.innerHTML=vehicles.map(vehicle=>`
+        <button class="veh-tab ${vehicle.id===selectedVehicleId?"active":""}" onclick="selectBookingVehicle('${vehicle.id}')">
+            🚌 ${escapeHTML(vehicle.name)} • ${escapeHTML(vehicle.number)}
+        </button>`).join("");
+}
+
+function selectBookingVehicle(id){
+    if(!selectedTripId)return;
+    const trip=trips.find(t=>t.id===selectedTripId);
+    if(!trip)return;
+    selectedVehicleId=id;selectedSeat=null;selectedSeatBooking=null;
+    renderBookingVehicles(trip);
+    renderSeats(trip,id);
+    updateBookingSummary(trip);
+    clearSeatInfo();
+}
+
+function findBookingForSeat(tripId,vehicleId,seat){
+    return bookings.find(b=>b.tripId===tripId&&b.vehicleId===vehicleId&&String(b.seat)===String(seat)&&b.status==="confirmed")||null;
+}
+
+function renderSeats(trip,vehicleId){
+    const vehicle=trip.vehicles.find(v=>v.id===vehicleId);
+    if(!vehicle)return;
+    const grid=document.getElementById("seatGrid");
+    let html="";
+    for(let i=1;i<=Number(vehicle.seats);i++){
+        const seatNumber=String(i).padStart(2,"0");
+        const booking=findBookingForSeat(trip.id,vehicle.id,seatNumber);
+        const booked=Boolean(booking);
+        const passengerName=booking?.passenger||"Booked";
+        html+=`<div class="seat-wrap">
+            <button type="button" class="seat ${booked?"booked":""} ${selectedSeat===seatNumber?"selected":""}"
+                onclick="handleSeatClick('${seatNumber}',${booked?"true":"false"})"
+                title="${booked?`Booked by ${escapeHTML(passengerName)} • ${escapeHTML(booking.phone||"No phone")}`:`Seat ${seatNumber} available`}">
+                <span class="seat-number">${seatNumber}</span>
+                ${booked
+                    ?`<span class="seat-passenger">${escapeHTML(passengerName.length>14?passengerName.substring(0,14)+"…":passengerName)}</span><span class="seat-status">BOOKED</span>`
+                    :`<span class="seat-status">AVAILABLE</span>`
+                }
+            </button>
+        </div>`;
+    }
+    grid.innerHTML=html;
+}
+
+function handleSeatClick(seat,isBooked){
+    if(!selectedTripId||!selectedVehicleId)return;
+    const trip=trips.find(t=>t.id===selectedTripId);
+    if(!trip)return;
+    const booking=findBookingForSeat(selectedTripId,selectedVehicleId,seat);
+    if(isBooked||booking){showSeatBookingDetails(booking,trip);return;}
+    selectSeat(seat);
+}
+
+function selectSeat(seat){
+    if(!selectedTripId||!selectedVehicleId)return;
+    const trip=trips.find(t=>t.id===selectedTripId);
+    if(!trip)return;
+    const alreadyBooked=findBookingForSeat(selectedTripId,selectedVehicleId,seat);
+    if(alreadyBooked){showSeatBookingDetails(alreadyBooked,trip);return;}
+
+    selectedSeat=seat;selectedSeatBooking=null;
+    document.getElementById("summarySeat").textContent="Seat "+seat;
+    renderSeats(trip,selectedVehicleId);
+    showAvailableSeatInfo(seat,trip);
+    updateBookingSummary(trip);
+}
+
+function showAvailableSeatInfo(seat,trip){
+    const vehicle=trip.vehicles.find(v=>v.id===selectedVehicleId);
+    const panel=document.getElementById("seatInfoPanel");
+    panel.classList.remove("empty");
+    document.getElementById("seatInfoTitle").textContent=`Seat ${seat} • Available`;
+    document.getElementById("seatInfoSubtitle").textContent="This seat is ready to be selected.";
+    document.getElementById("seatInfoContent").innerHTML=`
+        <div class="alert alert-success"><strong>Seat ${escapeHTML(seat)}</strong> is available. After entering name and phone you can confirm your booking.</div>
+        <div class="detail-grid">
+            <div class="detail"><small>Seat</small><strong>${escapeHTML(seat)}</strong></div>
+            <div class="detail"><small>Status</small><strong>Available</strong></div>
+            <div class="detail"><small>Vehicle</small><strong>${escapeHTML(vehicle?.name||"-")}</strong></div>
+            <div class="detail"><small>Registration</small><strong>${escapeHTML(vehicle?.number||"-")}</strong></div>
+        </div>`;
+}
+
+function showSeatBookingDetails(booking,trip){
+    if(!booking){clearSeatInfo();return;}
+    selectedSeatBooking=booking;
+    const panel=document.getElementById("seatInfoPanel");
+    panel.classList.remove("empty");
+    document.getElementById("seatInfoTitle").textContent=`Seat ${booking.seat} • Booked`;
+    document.getElementById("seatInfoSubtitle").textContent="Details of the passenger who selected this seat.";
+    document.getElementById("seatInfoContent").innerHTML=`
+        <div class="alert alert-danger"><strong>Seat ${escapeHTML(booking.seat)}</strong> is already booked.</div>
+        <div class="detail-grid">
+            <div class="detail full"><small>Passenger Name</small><strong style="font-size:15px">${escapeHTML(booking.passenger||"-")}</strong></div>
+            <div class="detail"><small>Phone</small><strong>${escapeHTML(booking.phone||"-")}</strong></div>
+            <div class="detail"><small>Seat Number</small><strong>${escapeHTML(booking.seat||"-")}</strong></div>
+            <div class="detail"><small>Vehicle</small><strong>${escapeHTML(booking.vehicleName||booking.tripName||"-")}</strong></div>
+            <div class="detail"><small>Registration</small><strong>${escapeHTML(booking.vehicleNumber||"-")}</strong></div>
+            <div class="detail full"><small>Booking Reference</small><strong>${escapeHTML(booking.reference||"-")}</strong></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:15px">
+            <button class="btn btn-secondary btn-sm" onclick="openBookingDetails('${booking.id}')">👁 Full Details</button>
+            <button class="btn btn-primary btn-sm" onclick="printTicketById('${booking.id}')">🖨 Print Ticket</button>
+            <button class="btn btn-outline btn-sm" onclick="copyTicketLink('${booking.id}')">🔗 Share Link</button>
+        </div>`;
+}
+
+function clearSeatInfo(){
+    const panel=document.getElementById("seatInfoPanel");
+    panel.classList.add("empty");
+    document.getElementById("seatInfoTitle").textContent="Seat Info";
+    document.getElementById("seatInfoSubtitle").textContent="Select a seat to see details.";
+    document.getElementById("seatInfoContent").innerHTML=`<div class="empty"><div class="glyph">💺</div><p>An available seat can be selected.</p></div>`;
+}
+
+function updateBookingSummary(trip){
+    const vehicle=trip.vehicles.find(v=>v.id===selectedVehicleId);
+    if(!vehicle)return;
+    document.getElementById("summaryVehicle").textContent=vehicle.name;
+    document.getElementById("summaryRegistration").textContent=vehicle.number;
+    document.getElementById("summarySeat").textContent=selectedSeat?"Seat "+selectedSeat:"Not selected";
+    updateLivePassengerDisplay();
+}
+
+function updateLivePassengerDisplay(){
+    const name=document.getElementById("passengerName").value.trim();
+    const phone=document.getElementById("passengerPhone").value.trim();
+    document.getElementById("summaryPassenger").textContent=name||"Not entered";
+    document.getElementById("summaryPassengerPhone").textContent=phone||"Not entered";
+    document.getElementById("livePassengerName").textContent=name||"Name not set";
+    document.getElementById("livePassengerPhone").textContent=phone||"Phone not set";
+}
+document.getElementById("passengerName").addEventListener("input",updateLivePassengerDisplay);
+document.getElementById("passengerPhone").addEventListener("input",updateLivePassengerDisplay);
+
+/* =========================================================
+   CONFIRM BOOKING
+========================================================= */
+
+function confirmBooking(){
+    if(!selectedTripId){alert("Please select a trip.");return;}
+    if(!selectedVehicleId){alert("Please select a vehicle.");return;}
+    if(!selectedSeat){alert("Please select a seat first.");return;}
+
+    const name=document.getElementById("passengerName").value.trim();
+    const phone=document.getElementById("passengerPhone").value.trim();
+    if(name.length<2){alert("Please enter the passenger's full name.");return;}
+    if(phone.length<7){alert("Please enter a valid phone number.");return;}
+
+    const trip=trips.find(t=>t.id===selectedTripId&&t.status==="published");
+    if(!trip){alert("This trip is no longer available.");closeBookingModal();renderMemberTrips();return;}
+
+    const vehicle=trip.vehicles.find(v=>v.id===selectedVehicleId);
+    if(!vehicle){alert("Vehicle not found.");return;}
+
+    const seatTaken=findBookingForSeat(selectedTripId,selectedVehicleId,selectedSeat);
+    if(seatTaken){
+        alert("Sorry, that seat has been taken by another member.\n\nPassenger: "+seatTaken.passenger);
+        renderSeats(trip,selectedVehicleId);
+        showSeatBookingDetails(seatTaken,trip);
+        return;
+    }
+
+    const booking={
+        id:generateId(),reference:generateBookingReference(),
+        tripId:trip.id,tripName:vehicle.name,
+        vehicleId:vehicle.id,vehicleName:vehicle.name,vehicleNumber:vehicle.number,
+        route:`${trip.departure} → ${trip.destination}`,departure:trip.departure,destination:trip.destination,
+        seat:selectedSeat,passenger:name,passengerName:name,
+        phone:normalizePhone(phone),passengerPhone:normalizePhone(phone),
+        travelDate:trip.travelDate,departureTime:trip.departureTime,arrivalTime:trip.arrivalTime,
+        amount:trip.ticketPrice,status:"confirmed",createdAt:new Date().toISOString()
+    };
+
+    bookings.push(booking);
+    saveBookings();
+
+    alert("BOOKING CONFIRMED!\n\nPassenger: "+booking.passenger+"\nPhone: "+booking.phone+"\nReference: "+booking.reference+"\nVehicle: "+booking.vehicleName+"\nSeat: "+booking.seat);
+
+    closeBookingModal();
+    renderMemberTrips();renderBookings();renderMyBookings();renderDashboard();
+}
+
+function closeBookingModal(){
+    document.getElementById("bookingModal").classList.remove("show");
+    selectedTripId=null;selectedVehicleId=null;selectedSeat=null;selectedSeatBooking=null;
+}
+
+/* =========================================================
+   ADMIN BOOKINGS (with Share buttons)
+========================================================= */
+
+function renderBookings(){
+    const tbody=document.getElementById("bookingsTable");
+    if(!bookings.length){
+        tbody.innerHTML=`<tr><td colspan="9"><div class="empty"><div class="glyph">🎫</div><h4>No Bookings Yet</h4></div></td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML=bookings.slice().reverse().map(b=>`
+        <tr>
+            <td><input type="radio" name="ticketSelection" value="${escapeHTML(b.id)}"></td>
+            <td><strong>${escapeHTML(b.reference)}</strong><small style="display:block;color:var(--muted);margin-top:3px">${b.createdAt?formatDateTime(b.createdAt):"-"}</small></td>
+            <td>
+                <span class="cell-title">${escapeHTML(b.passenger||b.passengerName||"-")}</span>
+                <span class="cell-sub">📞 ${escapeHTML(b.phone||b.passengerPhone||"-")}</span>
+            </td>
+            <td><strong>${escapeHTML(b.vehicleName||b.tripName||"-")}</strong><small style="display:block;color:var(--muted);margin-top:3px">${escapeHTML(b.vehicleNumber||"-")}</small></td>
+            <td>${escapeHTML(b.route||"-")}</td>
+            <td><span class="badge badge-published">💺 ${escapeHTML(b.seat||"-")}</span></td>
+            <td>${formatDate(b.travelDate)}</td>
+            <td>TZS ${money(b.amount)}</td>
+            <td>
+                <div style="display:flex;gap:5px;flex-wrap:wrap">
+                    <button class="btn btn-secondary btn-sm" onclick="openBookingDetails('${b.id}')">👁</button>
+                    <button class="btn btn-primary btn-sm" onclick="printTicketById('${b.id}')">🖨</button>
+                    <button class="btn btn-outline btn-sm" onclick="copyTicketLink('${b.id}')">🔗 Share</button>
+                </div>
+            </td>
+        </tr>`).join("");
+}
+
+/* =========================================================
+   SHARE LINK FEATURES
+========================================================= */
+
+function getTicketShareLink(id){
+    const url=new URL(window.location.href);
+    url.searchParams.set("ticket",id);
+    return url.href;
+}
+
+function getAllTicketsLink(){
+    const url=new URL(window.location.href);
+    url.searchParams.set("alltickets","true");
+    return url.href;
+}
+
+function copyTicketLink(id){
+    const link=getTicketShareLink(id);
+    navigator.clipboard.writeText(link).then(()=>{
+        alert("Link copied to clipboard!\n\nShare it with the passenger to view/print their ticket.");
+    }).catch(()=>{
+        prompt("Copy this link manually:", link);
+    });
+}
+
+function copyAllTicketsLink(){
+    const link=getAllTicketsLink();
+    navigator.clipboard.writeText(link).then(()=>{
+        alert("Link to all tickets copied to clipboard!");
+    }).catch(()=>{
+        prompt("Copy this link manually:", link);
+    });
+}
+
+/* =========================================================
+   AUTO-PRINT FROM SHARED LINKS
+========================================================= */
+
+function handleSharedLink(){
+    const params=new URLSearchParams(window.location.search);
+    const ticketId=params.get("ticket");
+    const all=params.get("alltickets");
+    if(ticketId){
+        setTimeout(()=>{
+            const b=bookings.find(bk=>bk.id===ticketId);
+            if(b){
+                printTicket(b);
+            } else {
+                alert("Ticket not found. It may have been deleted.");
+            }
+        }, 600);
+    } else if(all==="true"){
+        setTimeout(()=>{
+            if(bookings.length) printAllTickets();
+            else alert("No tickets to print.");
+        }, 600);
+    }
+}
+
+/* =========================================================
+   BOOKING DETAILS
+========================================================= */
+
+function openBookingDetails(bookingId){
+    const booking=bookings.find(b=>b.id===bookingId);
+    if(!booking){alert("Booking not found.");return;}
+
+    document.getElementById("bookingDetailsBody").innerHTML=`
+        <div style="display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;padding-bottom:15px;border-bottom:1px solid var(--line);margin-bottom:18px">
+            <div>
+                <div style="color:var(--muted);font-size:10px;text-transform:uppercase;margin-bottom:4px">Booking Reference</div>
+                <div style="font-family:var(--serif);font-size:16px;font-weight:700;color:var(--moss-dark)">${escapeHTML(booking.reference)}</div>
+            </div>
+            <span class="badge badge-published">CONFIRMED</span>
+        </div>
+        <div class="detail-grid">
+            <div class="detail full"><small>Passenger Full Name</small><strong style="font-size:18px">${escapeHTML(booking.passenger||booking.passengerName||"-")}</strong></div>
+            <div class="detail"><small>Phone Number</small><strong>📞 ${escapeHTML(booking.phone||booking.passengerPhone||"-")}</strong></div>
+            <div class="detail"><small>Seat Number</small><strong>💺 ${escapeHTML(booking.seat||"-")}</strong></div>
+            <div class="detail"><small>Vehicle</small><strong>${escapeHTML(booking.vehicleName||booking.tripName||"-")}</strong></div>
+            <div class="detail"><small>Registration</small><strong>${escapeHTML(booking.vehicleNumber||"-")}</strong></div>
+            <div class="detail full"><small>Route</small><strong>${escapeHTML(booking.route||"-")}</strong></div>
+            <div class="detail"><small>Departure</small><strong>${escapeHTML(booking.departure||"-")}</strong></div>
+            <div class="detail"><small>Destination</small><strong>${escapeHTML(booking.destination||"-")}</strong></div>
+            <div class="detail"><small>Travel Date</small><strong>${formatDate(booking.travelDate)}</strong></div>
+            <div class="detail"><small>Departure Time</small><strong>${escapeHTML(booking.departureTime||"-")}</strong></div>
+            <div class="detail"><small>Arrival Time</small><strong>${escapeHTML(booking.arrivalTime||"-")}</strong></div>
+            <div class="detail"><small>Ticket Amount</small><strong>TZS ${money(booking.amount)}</strong></div>
+            <div class="detail"><small>Booking Date</small><strong>${formatDateTime(booking.createdAt)}</strong></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:20px">
+            <button class="btn btn-secondary" onclick="printTicketById('${booking.id}')">🖨 Print Ticket</button>
+            <button class="btn btn-outline" onclick="copyTicketLink('${booking.id}')">🔗 Share Link</button>
+            <button class="btn btn-primary" onclick="closeBookingDetailsModal()">Close</button>
+        </div>`;
+    document.getElementById("bookingDetailsModal").classList.add("show");
+}
+function closeBookingDetailsModal(){document.getElementById("bookingDetailsModal").classList.remove("show");}
+
+/* =========================================================
+   MY BOOKINGS
+========================================================= */
+
+function renderMyBookings(){
+    const grid=document.getElementById("myBookingsGrid");
+    if(!bookings.length){
+        grid.innerHTML=`<div class="empty"><div class="glyph">🎫</div><h4>No Bookings</h4><p>You have no confirmed bookings.</p></div>`;
+        return;
+    }
+
+    grid.innerHTML=bookings.slice().reverse().map(b=>`
+        <div class="trip">
+            <div class="trip-media" style="background:linear-gradient(135deg,var(--moss-dark),var(--moss));min-height:auto;padding:18px;align-items:flex-start;justify-content:flex-start;flex-direction:column;font-size:12px">
+                <span style="opacity:.7;font-size:9.5px;text-transform:uppercase">Reference</span>
+                <strong style="font-family:var(--serif);font-size:15px;margin-top:6px">${escapeHTML(b.reference)}</strong>
+            </div>
+            <div class="trip-main">
+                <div class="trip-route" style="font-size:16px">${escapeHTML(b.passenger||b.passengerName||"-")}</div>
+                <div class="trip-sub">📞 ${escapeHTML(b.phone||b.passengerPhone||"-")} · 📍 ${escapeHTML(b.route||"-")}</div>
+                <div class="trip-facts">
+                    <div><small>Vehicle</small><strong>${escapeHTML(b.vehicleName||b.tripName||"-")}</strong></div>
+                    <div><small>Seat</small><strong>${escapeHTML(b.seat)}</strong></div>
+                    <div><small>Date</small><strong>${formatDate(b.travelDate)}</strong></div>
+                    <div><small>Amount</small><strong>TZS ${money(b.amount)}</strong></div>
+                </div>
+            </div>
+            <div class="trip-actions">
+                <span class="badge badge-published">CONFIRMED</span>
+                <button class="btn btn-secondary btn-block" onclick="openBookingDetails('${b.id}')">👁 Details</button>
+                <button class="btn btn-primary btn-block" onclick="printTicketById('${b.id}')">🖨 Print</button>
+                <button class="btn btn-outline btn-block" onclick="copyTicketLink('${b.id}')">🔗 Share</button>
+            </div>
+        </div>`).join("");
+}
+
+/* =========================================================
+   PRINT (unchanged logic, only CSS adjusted for 20 per page)
+========================================================= */
+
+function getSelectedBooking(){
+    const selected=document.querySelector('input[name="ticketSelection"]:checked');
+    if(!selected)return null;
+    return bookings.find(b=>b.id===selected.value)||null;
+}
+
+function printSelectedTicket(){
+    const booking=getSelectedBooking();
+    if(!booking){alert("Please select a ticket first.");return;}
+    printTicket(booking);
+}
+
+function printTicketById(id){
+    const booking=bookings.find(b=>b.id===id);
+    if(!booking){alert("Ticket not found.");return;}
+    printTicket(booking);
+}
+
+function printAllTickets(){
+    if(!bookings.length){alert("No tickets to print.");return;}
+    buildPrintTickets(bookings);
+    setTimeout(()=>window.print(),150);
+}
+
+function printTicket(booking){
+    buildPrintTickets([booking]);
+    setTimeout(()=>window.print(),150);
+}
+
+function dcfLogoSVG(){
+    return `<svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"> 
+        <rect x="5" y="5" width="90" height="90" rx="18" fill="#ffffff"/> 
+        <circle cx="50" cy="50" r="34" fill="#0f3323"/> 
+        <text x="50" y="57" text-anchor="middle" font-family="Georgia" font-size="20" font-weight="900" fill="#ffffff">DCF</text> 
+    </svg>`; 
+} 
+ 
+function buildPrintTickets(list){ 
+    const area=document.getElementById("printArea"); 
+    area.innerHTML=list.map(b=>` 
+        <div class="print-ticket"> 
+            <div class="print-head"> 
+                <div class="print-brand"> 
+                    <div class="print-logo">${dcfLogoSVG()}</div> 
+                    <div><h2>DCF</h2><small>Online System</small></div> 
+                </div> 
+                <div class="print-ref"><small>REF</small><strong>${escapeHTML(b.reference)}</strong></div> 
+            </div> 
+            <div class="print-body"> 
+                <div class="print-route"> 
+                    <div class="print-location"><small>FROM</small><strong>${escapeHTML(b.departure||(b.route?b.route.split(" → ")[0]:"-"))}</strong></div> 
+                    <div class="print-arrow">→</div> 
+                    <div class="print-location"><small>TO</small><strong>${escapeHTML(b.destination||(b.route?b.route.split(" → ")[1]:"-"))}</strong></div> 
+                </div> 
+                <div class="print-grid"> 
+                    <div class="print-item"><small>Name</small><strong>${escapeHTML(b.passenger||b.passengerName||"-")}</strong></div> 
+                    <div class="print-item"><small>Phone</small><strong>${escapeHTML(b.phone||b.passengerPhone||"-")}</strong></div> 
+                    <div class="print-item"><small>Vehicle</small><strong>${escapeHTML(b.vehicleName||b.tripName||"-")}</strong></div> 
+                    <div class="print-item"><small>Reg</small><strong>${escapeHTML(b.vehicleNumber||"-")}</strong></div> 
+                    <div class="print-item"><small>Seat</small><strong>${escapeHTML(b.seat||"-")}</strong></div> 
+                    <div class="print-item"><small>Date</small><strong>${formatDate(b.travelDate)}</strong></div> 
+                    <div class="print-item"><small>Dep</small><strong>${escapeHTML(b.departureTime||"-")}</strong></div> 
+                    <div class="print-item"><small>Arr</small><strong>${escapeHTML(b.arrivalTime||"-")}</strong></div> 
+                    <div class="print-item"><small>Amount</small><strong>TZS ${money(b.amount)}</strong></div> 
+                </div> 
+                <div class="print-passenger"> 
+                    <small>PASSENGER</small> 
+                    <strong>${escapeHTML(b.passenger||b.passengerName||"-")}</strong> 
+                    <div class="print-passenger-phone">📞 ${escapeHTML(b.phone||b.passengerPhone||"-")}</div> 
+                </div> 
+            </div> 
+            <div class="print-footer"> 
+                <span>DCF Travel</span> 
+                <span>CONFIRMED</span> 
+                <span>${escapeHTML(b.reference)}</span> 
+            </div> 
+        </div>`).join(""); 
+} 
+ 
+/* ========================================================= 
+   MODAL BACKDROPS / ESC 
+========================================================= */ 
+ 
+document.getElementById("bookingModal").addEventListener("click",function(e){if(e.target===this)closeBookingModal();}); 
+document.getElementById("bookingDetailsModal").addEventListener("click",function(e){if(e.target===this)closeBookingDetailsModal();}); 
+document.getElementById("adminTripModal").addEventListener("click",function(e){if(e.target===this)closeAdminModal();}); 
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){closeBookingModal();closeBookingDetailsModal();closeAdminModal();}}); 
+ 
+/* ========================================================= 
+   VIDEO STORAGE (IndexedDB) 
+========================================================= */ 
+ 
+const DB_NAME="DCF_TICKET_MEDIA_DB"; 
+const DB_VERSION=1; 
+const STORE="videos"; 
+let videoDbPromise=null; 
+ 
+function openVideoDB(){ 
+    if(videoDbPromise)return videoDbPromise; 
+    videoDbPromise=new Promise((resolve,reject)=>{ 
+        const req=indexedDB.open(DB_NAME,DB_VERSION); 
+        req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE);}; 
+        req.onsuccess=()=>resolve(req.result); 
+        req.onerror=()=>reject(req.error); 
+    }); 
+    return videoDbPromise; 
+} 
+async function putVideo(key,file){ 
+    if(!file)return; 
+    try{ 
+        const db=await openVideoDB(); 
+        await new Promise((resolve,reject)=>{ 
+            const tx=db.transaction(STORE,"readwrite"); 
+            tx.objectStore(STORE).put(file,key); 
+            tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error); 
+        }); 
+    }catch(e){console.warn("Video storage failed:",e);} 
+} 
+async function getVideo(key){ 
+    if(!key)return null; 
+    try{ 
+        const db=await openVideoDB(); 
+        return await new Promise((resolve,reject)=>{ 
+            const tx=db.transaction(STORE,"readonly"); 
+            const req=tx.objectStore(STORE).get(key); 
+            req.onsuccess=()=>resolve(req.result||null); 
+            req.onerror=()=>reject(req.error); 
+        }); 
+    }catch(e){return null;} 
+} 
+ 
+async function downloadStoredVehicleVideo(key,name){ 
+    const file=await getVideo(key); 
+    if(!file){alert("Video not found.");return;} 
+    const url=URL.createObjectURL(file); 
+    const a=document.createElement("a"); 
+    a.href=url; 
+    a.download=(String(name||"DCF-Vehicle").replace(/[^a-z0-9_-]+/gi,"_")||"DCF-Vehicle")+".mp4"; 
+    document.body.appendChild(a);a.click();a.remove(); 
+    setTimeout(()=>URL.revokeObjectURL(url),1500); 
+} 
+function videoKey(){return "vehicle-video-"+generateId();} 
+ 
+function previewVideo(inputId,previewId){ 
+    const input=document.getElementById(inputId),box=document.getElementById(previewId); 
+    if(!input||!box)return; 
+    input.addEventListener("change",()=>{ 
+        box.innerHTML=""; 
+        const f=input.files&&input.files[0]; 
+        if(!f)return; 
+        if(!f.type.startsWith("video/"))return; 
+        const url=URL.createObjectURL(f); 
+        const v=document.createElement("video"); 
+        v.className="video-preview";v.controls=true;v.muted=true;v.src=url; 
+        box.appendChild(v); 
+    }); 
+} 
+previewVideo("vehicle1Video","vehicle1VideoPreview"); 
+previewVideo("vehicle2Video","vehicle2VideoPreview"); 
+ 
+async function captureVehicleVideos(vehicles){ 
+    for(let idx=0;idx<vehicles.length;idx++){ 
+        const input=document.getElementById(idx===0?"vehicle1Video":"vehicle2Video"); 
+        const file=input&&input.files&&input.files[0]; 
+        if(file){ 
+            const key=vehicles[idx].videoKey||videoKey(); 
+            vehicles[idx].videoKey=key; 
+            await putVideo(key,file); 
+        } 
+    } 
+} 
+ 
+function hydrateVideoElements(root=document){ 
+    root.querySelectorAll("video[data-video-key]").forEach(async el=>{ 
+        if(el.dataset.hydrated==="1")return; 
+        const key=el.dataset.videoKey; 
+        const file=await getVideo(key); 
+        if(file){el.src=URL.createObjectURL(file);el.dataset.hydrated="1";} 
+    }); 
+} 
+ 
+function addTripVideos(){ 
+    const member=document.getElementById("memberTripsWrap"); 
+    if(member){ 
+        const publishedTrips=trips.filter(t=>t.status==="published"); 
+        member.querySelectorAll(".trip").forEach(card=>{ 
+            const tripId=card.getAttribute("data-trip-id"); 
+            const trip=publishedTrips.find(t=>t.id===tripId); 
+            if(!trip||card.querySelector(".enhanced-trip-video"))return; 
+            const videos=(trip.vehicles||[]).filter(v=>v.videoKey); 
+            if(!videos.length)return; 
+            const wrap=document.createElement("div"); 
+            wrap.className="video-card enhanced-trip-video"; 
+            wrap.innerHTML='<strong style="font-size:12px">Vehicle Video</strong>'; 
+            videos.forEach(v=>{ 
+                const vid=document.createElement("video"); 
+                vid.controls=true;vid.playsInline=true;vid.preload="metadata";vid.dataset.videoKey=v.videoKey; 
+                wrap.appendChild(vid); 
+                const dl=document.createElement("button"); 
+                dl.type="button"; dl.className="btn btn-secondary btn-sm"; dl.textContent="⬇ Download Video"; 
+                dl.onclick=()=>downloadStoredVehicleVideo(v.videoKey,v.name||"DCF-Vehicle"); 
+                wrap.appendChild(dl); 
+            }); 
+            card.querySelector(".trip-main")?.appendChild(wrap); 
+        }); 
+    } 
+    hydrateVideoElements(document); 
+} 
+ 
+const observer=new MutationObserver(()=>addTripVideos()); 
+setTimeout(()=>{ 
+    const mt=document.getElementById("memberTripsWrap"); 
+    if(mt)observer.observe(mt,{childList:true,subtree:true}); 
+},200); 
+ 
+/* ========================================================= 
+   INITIALIZE 
+========================================================= */ 
+ 
+function initialize(){ 
+    renderDashboard(); 
+    renderManageTrips(); 
+    renderAnnouncements(); 
+    renderBookings(); 
+    renderMemberTrips(""); 
+    renderMyBookings(); 
+    updateLivePassengerDisplay(); 
+    setTimeout(addTripVideos,150); 
+    handleSharedLink(); 
+} 
+initialize(); 
+ 
+</script> 
+<!-- ========================================================= 
+     DCF SUPABASE BOOKING SYNC (unchanged) 
+========================================================= --> 
+<script id="dcfSupabaseBookingSync"> 
+(function(){ 
+    const TABLE="dcf_travel_bookings"; 
+    function client(){return window._supabase||window.supabaseClient||window.supabase||null;} 
+    function session(){try{return JSON.parse(localStorage.getItem("dcf_session")||localStorage.getItem("idms_session")||"null");}catch(e){return null;}} 
+    function userId(){return session()?.user?.id||session()?.id||localStorage.getItem("user_id")||null;} 
+    function email(){return session()?.user?.email||session()?.email||localStorage.getItem("user_email")||"";} 
+    function rowToBooking(row){return Object.assign({},row.payload||{}, {id:row.id,reference:row.reference,memberId:row.member_id||row.payload?.memberId||"",memberEmail:row.member_email||row.payload?.memberEmail||"",userId:row.user_id||row.payload?.userId||"",status:row.status||"confirmed",createdAt:row.created_at||row.payload?.createdAt});} 
+    async function pull(){ 
+        const c=client(); if(!c)return []; 
+        const {data,error}=await c.from(TABLE).select("*").order("created_at",{ascending:false}); 
+        if(error){console.warn("Supabase bookings:",error.message);return []} 
+        bookings=(data||[]).map(rowToBooking); 
+        localStorage.setItem(BOOKING_KEY,JSON.stringify(bookings)); 
+        try{renderBookings();renderMyBookings();renderMemberTrips("");}catch(e){} 
+        return bookings; 
+    } 
+    async function push(booking){ 
+        const c=client(); if(!c)throw new Error("Supabase client not available."); 
+        const s=session(); const uid=s?.user?.id||s?.id||null; 
+        const row={id:String(booking.id),reference:String(booking.reference),user_id:uid,member_id:booking.memberId||null,member_email:booking.memberEmail||email()||null,trip_id:String(booking.tripId),vehicle_id:String(booking.vehicleId),seat:String(booking.seat),status:String(booking.status||"confirmed"),payload:booking,created_at:booking.createdAt||new Date().toISOString()}; 
+        const {data,error}=await c.from(TABLE).insert(row).select("*").single(); 
+        if(error)throw error; 
+        const saved=rowToBooking(data); bookings=[saved,...bookings.filter(b=>String(b.id)!==String(saved.id))]; saveBookings(); return saved; 
+    } 
+    window.dcfSupabasePullBookings=pull; window.dcfSupabasePushBooking=push; 
+    const originalConfirm=window.confirmBooking; 
+    window.confirmBooking=async function(){ 
+        try{ 
+            if(!selectedTripId){alert("Please select a trip.");return} if(!selectedVehicleId){alert("Please select a vehicle.");return} if(!selectedSeat){alert("Please select a seat first.");return} 
+            const name=document.getElementById("passengerName")?.value.trim()||"", phone=document.getElementById("passengerPhone")?.value.trim()||""; 
+            if(name.length<2){alert("Please enter the passenger's full name.");return} if(phone.length<7){alert("Please enter a valid phone number.");return} 
+            await pull(); const trip=trips.find(t=>t.id===selectedTripId&&t.status==="published"); if(!trip){alert("This trip is no longer available.");return} 
+            const vehicle=trip.vehicles.find(v=>v.id===selectedVehicleId); if(!vehicle){alert("Vehicle not found.");return} 
+            const taken=bookings.some(b=>String(b.tripId)===String(trip.id)&&String(b.vehicleId)===String(vehicle.id)&&String(b.seat)===String(selectedSeat)&&String(b.status).toLowerCase()==="confirmed"); if(taken){alert("Sorry, that seat has been taken by another member.");renderSeats(trip,selectedVehicleId);return} 
+            const b={id:generateId(),reference:generateBookingReference(),tripId:trip.id,tripName:vehicle.name,vehicleId:vehicle.id,vehicleName:vehicle.name,vehicleNumber:vehicle.number,route:`${trip.departure} → ${trip.destination}`,departure:trip.departure,destination:trip.destination,seat:selectedSeat,passenger:name,passengerName:name,phone:normalizePhone(phone),passengerPhone:normalizePhone(phone),memberId:localStorage.getItem("member_id")||"",memberEmail:email(),travelDate:trip.travelDate,departureTime:trip.departureTime,arrivalTime:trip.arrivalTime,amount:trip.ticketPrice,status:"confirmed",createdAt:new Date().toISOString()}; 
+            const saved=await push(b); alert("BOOKING CONFIRMED!\n\nReference: "+saved.reference+"\nVehicle: "+saved.vehicleName+"\nSeat: "+saved.seat); closeBookingModal(); renderMemberTrips();renderBookings();renderMyBookings();renderDashboard(); 
+        }catch(e){console.error(e);if(e?.code==="23505")alert("Sorry, that seat has already been taken.");else alert("Booking failed: "+(e?.message||"Supabase error"));} 
+    }; 
+    document.addEventListener("DOMContentLoaded",()=>setTimeout(pull,600)); 
+})(); 
+</script> 
+ 
+
+<script id="dcfCrossBrowserFixes">
+(function(){
+    "use strict";
+
+    document.addEventListener("DOMContentLoaded",function(){
+        document.querySelectorAll("button").forEach(function(b){
+            if(!b.getAttribute("type"))b.setAttribute("type","button");
+        });
+
+        var sidebar=document.getElementById("sidebar");
+        document.addEventListener("click",function(e){
+            if(window.innerWidth<=800 && sidebar && sidebar.classList.contains("open")){
+                if(!sidebar.contains(e.target) && !e.target.closest(".mobile-menu"))sidebar.classList.remove("open");
+            }
+        });
+    });
+
+    document.addEventListener("keydown",function(e){
+        if(e.key!=="Escape")return;
+        try{closeBookingModal();closeBookingDetailsModal();closeAdminModal();}catch(err){}
+        var sidebar=document.getElementById("sidebar");
+        if(sidebar)sidebar.classList.remove("open");
+    });
+
+    window.addEventListener("resize",function(){
+        var sidebar=document.getElementById("sidebar");
+        if(window.innerWidth>800 && sidebar)sidebar.classList.remove("open");
+    });
+})();
+</script>
+
+<script id="dcfTripCascadeDelete">
+(function () {
+    "use strict";
+
+    const TRIP_TABLE = "dcf_travel_trips";
+    const BOOKING_TABLE = "dcf_travel_bookings";
+    const TICKET_TABLE = "dcf_travel_tickets";
+
+    function client() {
+        return window._supabase ||
+               window.supabaseClient ||
+               window.supabase ||
+               null;
+    }
+
+    function safeJson(key, fallback) {
+        try {
+            const v = localStorage.getItem(key);
+            return v ? JSON.parse(v) : fallback;
+        } catch (_) {
+            return fallback;
+        }
+    }
+
+    function saveJson(key, value) {
+        try {
+            localStorage.setItem(key, JSON.stringify(value));
+        } catch (_) {}
+    }
+
+    function tripIdOf(x) {
+        return String(
+            x?.tripId ??
+            x?.trip_id ??
+            x?.payload?.tripId ??
+            x?.payload?.trip_id ??
+            ""
+        );
+    }
+
+    function bookingTripIdOf(x) {
+        return tripIdOf(x);
+    }
+
+    function ticketTripIdOf(x) {
+        return tripIdOf(x);
+    }
+
+    function removeTripFromLocalStorage(tripId) {
+        const id = String(tripId);
+
+        const tripKeys = [
+            "dcf_trips",
+            "trips",
+            "DCF_TRIPS",
+            "travel_trips"
+        ];
+
+        tripKeys.forEach(function (key) {
+            const data = safeJson(key, null);
+            if (!Array.isArray(data)) return;
+
+            const filtered = data.filter(function (trip) {
+                return String(trip?.id ?? trip?.tripId ?? "") !== id;
+            });
+
+            saveJson(key, filtered);
+        });
+
+        // Existing in-memory array used by the page.
+        if (Array.isArray(window.trips)) {
+            window.trips = window.trips.filter(function (trip) {
+                return String(trip?.id ?? "") !== id;
+            });
+        }
+    }
+
+    function removeBookingsFromLocalStorage(tripId) {
+        const id = String(tripId);
+
+        const keys = [
+            "dcf_bookings",
+            "bookings",
+            "DCF_BOOKINGS",
+            "ticket_bookings",
+            "dcf_ticket_bookings"
+        ];
+
+        keys.forEach(function (key) {
+            const data = safeJson(key, null);
+            if (!Array.isArray(data)) return;
+
+            const filtered = data.filter(function (booking) {
+                return bookingTripIdOf(booking) !== id;
+            });
+
+            saveJson(key, filtered);
+        });
+
+        if (Array.isArray(window.bookings)) {
+            window.bookings = window.bookings.filter(function (booking) {
+                return bookingTripIdOf(booking) !== id;
+            });
+        }
+    }
+
+    function removeTicketsFromLocalStorage(tripId) {
+        const id = String(tripId);
+
+        const keys = [
+            "dcf_tickets",
+            "tickets",
+            "DCF_TICKETS",
+            "issued_tickets",
+            "dcf_issued_tickets"
+        ];
+
+        keys.forEach(function (key) {
+            const data = safeJson(key, null);
+            if (!Array.isArray(data)) return;
+
+            const filtered = data.filter(function (ticket) {
+                return ticketTripIdOf(ticket) !== id;
+            });
+
+            saveJson(key, filtered);
+        });
+    }
+
+    async function deleteRemoteRows(table, tripId) {
+        const c = client();
+        if (!c || !c.from) return { skipped: true };
+
+        const id = String(tripId);
+        let lastError = null;
+
+        // Support either trip_id or tripId schemas without breaking the page.
+        for (const column of ["trip_id", "tripId"]) {
+            try {
+                const result = await c
+                    .from(table)
+                    .delete()
+                    .eq(column, id);
+
+                if (!result.error) {
+                    return { deleted: true };
+                }
+
+                lastError = result.error;
+            } catch (e) {
+                lastError = e;
+            }
+        }
+
+        return { deleted: false, error: lastError };
+    }
+
+    async function cascadeDeleteTrip(tripId, options) {
+        const id = String(tripId || "").trim();
+        if (!id) throw new Error("Trip ID is missing.");
+
+        const opts = options || {};
+
+        // Remove dependent records first.
+        removeTicketsFromLocalStorage(id);
+        removeBookingsFromLocalStorage(id);
+
+        // Then remove the trip itself.
+        removeTripFromLocalStorage(id);
+
+        // Remote cascade: tickets -> bookings -> trip.
+        // If the database has ON DELETE CASCADE this remains harmless because
+        // deleting already-removed child rows simply affects zero rows.
+        const ticketResult = await deleteRemoteRows(TICKET_TABLE, id);
+        const bookingResult = await deleteRemoteRows(BOOKING_TABLE, id);
+        const tripResult = await deleteRemoteRows(TRIP_TABLE, id);
+
+        // Refresh all existing UI renderers without requiring a page reload.
+        const refreshers = [
+            "renderDashboard",
+            "renderManageTrips",
+            "renderMemberTrips",
+            "renderBookings",
+            "renderMyBookings",
+            "updateLivePassengerDisplay"
+        ];
+
+        refreshers.forEach(function (name) {
+            try {
+                if (typeof window[name] === "function") {
+                    if (name === "renderMemberTrips") {
+                        window[name]("");
+                    } else {
+                        window[name]();
+                    }
+                }
+            } catch (e) {
+                console.warn("DCF refresh:", name, e);
+            }
+        });
+
+        window.dispatchEvent(new CustomEvent("dcf:trip-deleted", {
+            detail: {
+                tripId: id,
+                ticketResult,
+                bookingResult,
+                tripResult
+            }
+        }));
+
+        if (!opts.silent) {
+            const remoteErrors = [ticketResult, bookingResult, tripResult]
+                .filter(r => r && r.error);
+
+            if (remoteErrors.length) {
+                console.warn("Some remote delete operations were not completed:",
+                    remoteErrors);
+            }
+        }
+
+        return {
+            tripId: id,
+            ticketResult,
+            bookingResult,
+            tripResult
+        };
+    }
+
+    // Public API for the existing Delete Trip button/function.
+    window.dcfCascadeDeleteTrip = cascadeDeleteTrip;
+
+    // Capture common existing delete functions and wrap them when possible.
+    function installDeleteHook() {
+        const candidates = [
+            "deleteTrip",
+            "deleteTripById",
+            "removeTrip",
+            "handleDeleteTrip"
+        ];
+
+        candidates.forEach(function (name) {
+            const original = window[name];
+            if (typeof original !== "function" ||
+                original.__dcfCascadeWrapped) return;
+
+            const wrapped = async function (tripId) {
+                const id =
+                    tripId ??
+                    window.selectedTripId ??
+                    window.currentTripId ??
+                    "";
+
+                return cascadeDeleteTrip(id, { silent: false });
+            };
+
+            wrapped.__dcfCascadeWrapped = true;
+            wrapped.__dcfOriginal = original;
+            window[name] = wrapped;
+        });
+    }
+
+    // Also intercept clicks on buttons/links that are explicitly marked for
+    // deletion, without changing their visual design.
+    document.addEventListener("click", async function (event) {
+        const button = event.target.closest(
+            "[data-delete-trip], [data-trip-delete]"
+        );
+
+        if (!button) return;
+
+        const tripId =
+            button.getAttribute("data-delete-trip") ||
+            button.getAttribute("data-trip-delete") ||
+            button.getAttribute("data-trip-id") ||
+            "";
+
+        if (!tripId) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (!window.confirm("Delete this trip and ALL related bookings/tickets?")) {
+            return;
+        }
+
+        button.disabled = true;
+
+        try {
+            await cascadeDeleteTrip(tripId);
+            alert("Trip, bookings and tickets deleted successfully.");
+        } catch (e) {
+            console.error("DCF cascade delete:", e);
+            alert("Delete failed: " + (e?.message || "Please try again."));
+        } finally {
+            button.disabled = false;
+        }
+    }, true);
+
+    // Run after the existing page script has defined its functions.
+    function boot() {
+        installDeleteHook();
+
+        // Re-check because some pages define functions after DOMContentLoaded.
+        setTimeout(installDeleteHook, 300);
+        setTimeout(installDeleteHook, 1000);
+        setTimeout(installDeleteHook, 2000);
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", boot, { once: true });
+    } else {
+        boot();
+    }
+})();
+</script>
+
+</body> 
+</html>

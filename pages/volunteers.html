@@ -1,0 +1,2666 @@
+<!DOCTYPE html>
+<html lang="sw">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Wajitolea | DCF MIS</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        dcf: {
+                            50: '#f2f8f5',
+                            100: '#e2f0e9',
+                            200: '#c6e1d3',
+                            600: '#236044',
+                            700: '#1b4f38',
+                            800: '#174a35',
+                            900: '#103a29'
+                        }
+                    },
+
+                    boxShadow: {
+                        card: '0 2px 12px rgba(16, 58, 41, 0.06)',
+                        soft: '0 6px 24px rgba(16, 58, 41, 0.08)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+<script src="../js/role-guard.js"></script>
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f6f8f7;
+            color: #1f2937;
+
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+        }
+
+        button,
+        input {
+            font-family: inherit;
+        }
+
+
+        /* ==========================================
+           FORM FIELDS
+        ========================================== */
+
+        .field {
+            width: 100%;
+            height: 40px;
+
+            border: 1px solid #d9e2dd;
+            background: #fff;
+
+            border-radius: 7px;
+
+            padding: 0 11px;
+
+            font-size: 12px;
+            color: #27332d;
+
+            outline: none;
+
+            transition: .18s ease;
+        }
+
+        .field:hover {
+            border-color: #bccbc3;
+        }
+
+        .field:focus {
+            border-color: #236044;
+
+            box-shadow:
+                0 0 0 3px rgba(35, 96, 68, .08);
+        }
+
+
+        /* ==========================================
+           BUTTONS
+        ========================================== */
+
+        .btn-primary {
+            background: #174a35;
+            color: white;
+
+            border: 1px solid #174a35;
+
+            transition: .18s ease;
+        }
+
+        .btn-primary:hover {
+            background: #103a29;
+            border-color: #103a29;
+        }
+
+
+        .btn-secondary {
+            background: white;
+            color: #374151;
+
+            border: 1px solid #d9e2dd;
+
+            transition: .18s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #f7faf8;
+            border-color: #bccbc3;
+        }
+
+
+        .btn-danger {
+            background: white;
+            color: #b42318;
+
+            border: 1px solid #f1c8c5;
+
+            transition: .18s ease;
+        }
+
+        .btn-danger:hover {
+            background: #fff5f4;
+            border-color: #e6aaa5;
+        }
+
+
+        /* ==========================================
+           TABLE
+        ========================================== */
+
+        .table-row:hover {
+            background: #fafcfb;
+        }
+
+
+        /* ==========================================
+           SCROLLBAR
+        ========================================== */
+
+        .scrollbar::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+
+        .scrollbar::-webkit-scrollbar-track {
+            background: #f1f4f2;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb {
+            background: #c8d3cd;
+            border-radius: 20px;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #aebcb4;
+        }
+
+
+        /* ==========================================
+           MODAL
+        ========================================== */
+
+        .modal {
+            opacity: 0;
+            pointer-events: none;
+
+            transition: opacity .18s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            transform:
+                translateY(10px)
+                scale(.98);
+
+            transition: .18s ease;
+        }
+
+        .modal.active .modal-box {
+            transform:
+                translateY(0)
+                scale(1);
+        }
+
+
+        /* ==========================================
+           SPINNER
+        ========================================== */
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+
+            border:
+                2px solid rgba(255,255,255,.35);
+
+            border-top-color: #fff;
+
+            border-radius: 50%;
+
+            animation:
+                spin .65s linear infinite;
+        }
+
+        @keyframes spin {
+
+            to {
+                transform: rotate(360deg);
+            }
+
+        }
+
+
+        /* ==========================================
+           PRINT
+        ========================================== */
+
+        @media print {
+
+            body {
+                background: white !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .print-container {
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            .print-header {
+                display: block !important;
+            }
+
+        }
+
+        .print-header {
+            display: none;
+        }
+
+
+        /* ==========================================
+           COMPACT VOLUNTEER FORM
+        ========================================== */
+
+        .volunteer-form-card {
+            width: 100%;
+            max-width: 300px;
+        }
+
+
+        /* ==========================================
+           MOBILE
+        ========================================== */
+
+        @media (max-width: 1279px) {
+
+            .volunteer-form-card {
+                max-width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+<body data-allowed-roles="admin,staff,auditor">
+
+
+    <!-- ==========================================
+         HEADER
+    ========================================== -->
+
+    <header class="no-print bg-dcf-800 text-white">
+
+        <div class="max-w-[1500px] mx-auto px-5 lg:px-8">
+
+            <div class="h-[72px] flex items-center justify-between">
+
+
+                <!-- BRAND -->
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="w-10 h-10 rounded-md bg-white/10 border border-white/15 flex items-center justify-center">
+
+                        <span class="text-lg font-bold">
+                            DCF
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="text-[15px] font-bold tracking-wide">
+                            DCF MIS
+                        </div>
+
+                        <div
+                            class="text-[10px] uppercase tracking-[1.5px] text-green-100/80">
+
+                            Management Information System
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- USER -->
+
+                <div class="flex items-center gap-3">
+
+                    <div class="hidden md:block text-right">
+
+                        <div
+                            id="currentUserName"
+                            class="text-[13px] font-semibold">
+
+                            Mfumo
+
+                        </div>
+
+
+                        <div
+                            id="currentUserRole"
+                            class="text-[10px] uppercase tracking-wide text-green-100/70">
+
+                            User
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-xs font-bold">
+
+                        U
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ==========================================
+         MAIN PAGE
+    ========================================== -->
+
+    <main class="max-w-[1500px] mx-auto px-5 lg:px-8 py-7">
+
+
+        <!-- PAGE TITLE -->
+
+        <div
+            class="no-print flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-7">
+
+
+            <div>
+
+                <div
+                    class="flex items-center gap-2 text-[11px] text-gray-400 mb-2">
+
+                    <span>
+                        DCF MIS
+                    </span>
+
+                    <span>
+                        /
+                    </span>
+
+                    <span class="text-dcf-700 font-semibold">
+                        Wajitolea
+                    </span>
+
+                </div>
+
+
+                <h1
+                    class="text-[25px] font-bold text-gray-800 tracking-tight">
+
+                    Usimamizi wa Wajitolea
+
+                </h1>
+
+
+                <p class="text-[12px] text-gray-500 mt-1">
+
+                    Usajili na usimamizi wa taarifa za wajitolea.
+
+                </p>
+
+            </div>
+
+
+
+            <!-- ACTIONS -->
+
+            <div class="flex items-center gap-2">
+
+                <button
+                    type="button"
+                    onclick="goToDashboard()"
+                    class="btn-secondary h-10 px-4 rounded-md text-[12px] font-semibold flex items-center gap-2">
+
+                    <span>
+                        ←
+                    </span>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    onclick="refreshVolunteers()"
+                    class="btn-secondary h-10 px-4 rounded-md text-[12px] font-semibold flex items-center gap-2">
+
+                    <span>
+                        ↻
+                    </span>
+
+                    <span>
+                        Refresh
+                    </span>
+
+                </button>
+
+
+                <button
+                    type="button"
+                    onclick="printVolunteers()"
+                    class="btn-primary h-10 px-4 rounded-md text-[12px] font-semibold flex items-center gap-2">
+
+                    <span>
+                        Print
+                    </span>
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==========================================
+             SUMMARY
+        ========================================== -->
+
+        <div
+            class="no-print grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+
+
+            <!-- TOTAL -->
+
+            <div
+                class="bg-white border border-gray-200 rounded-lg p-5 shadow-card">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+
+                        <p
+                            class="text-[10px] uppercase tracking-wider font-bold text-gray-400">
+
+                            Jumla ya Wajitolea
+
+                        </p>
+
+
+                        <div
+                            id="totalVolunteers"
+                            class="text-[27px] leading-none font-bold text-dcf-800 mt-3">
+
+                            0
+
+                        </div>
+
+
+                        <p class="text-[11px] text-gray-400 mt-2">
+
+                            Waliosajiliwa kwenye mfumo
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="text-dcf-700 text-xl">
+                        👥
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- PHONE -->
+
+            <div
+                class="bg-white border border-gray-200 rounded-lg p-5 shadow-card">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+
+                        <p
+                            class="text-[10px] uppercase tracking-wider font-bold text-gray-400">
+
+                            Mawasiliano
+
+                        </p>
+
+
+                        <div
+                            id="phoneCount"
+                            class="text-[27px] leading-none font-bold text-gray-800 mt-3">
+
+                            0
+
+                        </div>
+
+
+                        <p class="text-[11px] text-gray-400 mt-2">
+
+                            Wenye namba za simu
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="text-gray-500 text-xl">
+                        ☎
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SKILLS -->
+
+            <div
+                class="bg-white border border-gray-200 rounded-lg p-5 shadow-card">
+
+                <div class="flex items-start justify-between">
+
+                    <div>
+
+                        <p
+                            class="text-[10px] uppercase tracking-wider font-bold text-gray-400">
+
+                            Ujuzi / Majukumu
+
+                        </p>
+
+
+                        <div
+                            id="skillCount"
+                            class="text-[27px] leading-none font-bold text-gray-800 mt-3">
+
+                            0
+
+                        </div>
+
+
+                        <p class="text-[11px] text-gray-400 mt-2">
+
+                            Wenye taarifa ya ujuzi
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="text-gray-500 text-xl">
+                        ◈
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==========================================
+             MAIN GRID
+             FORM = 300PX
+             TABLE = REMAINING SPACE
+        ========================================== -->
+
+        <div
+            class="grid grid-cols-1 xl:grid-cols-[300px_1fr] gap-5">
+
+
+            <!-- ======================================
+                 REGISTRATION FORM
+            ======================================= -->
+
+            <section
+                class="no-print volunteer-form-card bg-white border border-gray-200 rounded-lg shadow-card">
+
+
+                <!-- FORM HEADER -->
+
+                <div class="px-4 py-3 border-b border-gray-200">
+
+                    <h2 class="text-[14px] font-bold text-gray-800">
+
+                        Sajili Mjitolea
+
+                    </h2>
+
+
+                    <p class="text-[10px] text-gray-400 mt-1">
+
+                        Jaza taarifa za mjitolea.
+
+                    </p>
+
+                </div>
+
+
+
+                <!-- FORM BODY -->
+
+                <div class="p-4">
+
+                    <form
+                        id="volunteerForm"
+                        class="space-y-3">
+
+
+                        <!-- NAME -->
+
+                        <div>
+
+                            <label
+                                for="full_name"
+                                class="block text-[10px] font-bold text-gray-600 mb-1.5">
+
+                                Majina Kamili
+                                <span class="text-red-500">*</span>
+
+                            </label>
+
+
+                            <input
+                                id="full_name"
+                                type="text"
+                                required
+                                class="field"
+                                placeholder="Majina kamili">
+
+                        </div>
+
+
+
+                        <!-- PHONE -->
+
+                        <div>
+
+                            <label
+                                for="phone"
+                                class="block text-[10px] font-bold text-gray-600 mb-1.5">
+
+                                Namba ya Simu
+
+                            </label>
+
+
+                            <input
+                                id="phone"
+                                type="tel"
+                                class="field"
+                                placeholder="07XX XXX XXX">
+
+                        </div>
+
+
+
+                        <!-- EMAIL -->
+
+                        <div>
+
+                            <label
+                                for="email"
+                                class="block text-[10px] font-bold text-gray-600 mb-1.5">
+
+                                Barua Pepe
+
+                            </label>
+
+
+                            <input
+                                id="email"
+                                type="email"
+                                class="field"
+                                placeholder="example@email.com">
+
+                        </div>
+
+
+
+                        <!-- ROLE -->
+
+                        <div>
+
+                            <label
+                                for="role_skill"
+                                class="block text-[10px] font-bold text-gray-600 mb-1.5">
+
+                                Ujuzi / Jukumu
+
+                            </label>
+
+
+                            <input
+                                id="role_skill"
+                                type="text"
+                                class="field"
+                                placeholder="Mfano: IT, Media, Admin">
+
+                        </div>
+
+
+
+                        <!-- SUBMIT -->
+
+                        <div class="pt-1">
+
+                            <button
+                                id="submitBtn"
+                                type="submit"
+                                data-action="create"
+                                class="btn-primary w-full h-10 rounded-md text-[11px] font-bold flex items-center justify-center gap-2">
+
+                                <span id="submitIcon">
+                                    Hifadhi
+                                </span>
+
+
+                                <span id="submitText">
+                                    Mjitolea
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ======================================
+                 VOLUNTEERS TABLE
+            ======================================= -->
+
+            <section
+                class="bg-white border border-gray-200 rounded-lg shadow-card overflow-hidden print-container">
+
+
+                <!-- PRINT HEADER -->
+
+                <div class="print-header p-7">
+
+                    <div class="text-center">
+
+                        <h1 class="text-xl font-bold">
+                            DCF MIS SYSTEM
+                        </h1>
+
+
+                        <h2 class="text-lg font-bold mt-1">
+                            ORODHA YA WAJITOLEA
+                        </h2>
+
+
+                        <p class="text-xs text-gray-500 mt-2">
+
+                            Tarehe:
+
+                            <span id="printDate"></span>
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- TABLE TOP -->
+
+                <div
+                    class="no-print px-5 py-4 border-b border-gray-200">
+
+                    <div
+                        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+
+
+                        <div>
+
+                            <h2
+                                class="text-[14px] font-bold text-gray-800">
+
+                                Orodha ya Wajitolea
+
+                            </h2>
+
+
+                            <p
+                                class="text-[11px] text-gray-400 mt-1">
+
+                                Taarifa za wajitolea waliosajiliwa.
+
+                            </p>
+
+                        </div>
+
+
+
+                        <!-- SEARCH -->
+
+                        <div class="relative">
+
+                            <input
+                                id="searchInput"
+                                type="search"
+                                class="h-9 w-full sm:w-64 border border-gray-200 rounded-md pl-9 pr-3 text-[12px] outline-none focus:border-dcf-600 focus:ring-2 focus:ring-green-50"
+                                placeholder="Tafuta...">
+
+
+                            <span
+                                class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs">
+
+                                🔎
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- TABLE -->
+
+                <div class="overflow-x-auto scrollbar">
+
+                    <table class="w-full min-w-[760px]">
+
+                        <thead>
+
+                            <tr
+                                class="bg-gray-50 border-b border-gray-200">
+
+
+                                <th
+                                    class="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-500">
+
+                                    #
+
+                                </th>
+
+
+                                <th
+                                    class="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-500">
+
+                                    Mjitolea
+
+                                </th>
+
+
+                                <th
+                                    class="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-500">
+
+                                    Simu
+
+                                </th>
+
+
+                                <th
+                                    class="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-500">
+
+                                    Barua Pepe
+
+                                </th>
+
+
+                                <th
+                                    class="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-gray-500">
+
+                                    Ujuzi / Jukumu
+
+                                </th>
+
+
+                                <th
+                                    class="no-print px-5 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-gray-500">
+
+                                    Vitendo
+
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+
+                        <tbody id="volunteerTable">
+
+                            <tr>
+
+                                <td
+                                    colspan="6"
+                                    class="px-5 py-12 text-center text-gray-400 text-xs">
+
+                                    Inapakia taarifa...
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+
+                <!-- FOOTER -->
+
+                <div
+                    class="no-print px-5 py-3 border-t border-gray-200 bg-gray-50/60">
+
+                    <div
+                        class="flex items-center justify-between">
+
+
+                        <span
+                            class="text-[11px] text-gray-400">
+
+                            Jumla ya kumbukumbu:
+
+                        </span>
+
+
+                        <span
+                            id="footerTotal"
+                            class="text-[11px] font-bold text-gray-700">
+
+                            0
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- ==========================================
+         DELETE MODAL
+    ========================================== -->
+
+    <div
+        id="deleteModal"
+        class="modal fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+
+
+        <div
+            class="modal-box w-full max-w-[390px] bg-white rounded-lg shadow-soft">
+
+
+            <div class="p-6">
+
+                <div class="flex items-start gap-3">
+
+
+                    <div
+                        class="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center text-red-600 flex-shrink-0">
+
+                        !
+
+                    </div>
+
+
+                    <div>
+
+                        <h3
+                            class="text-[14px] font-bold text-gray-800">
+
+                            Futa Mjitolea
+
+                        </h3>
+
+
+                        <p
+                            class="text-[11px] text-gray-400 mt-1">
+
+                            Uko karibu kufuta taarifa hii.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <p
+                    class="text-[12px] text-gray-600 leading-5 mt-5">
+
+                    Je, una uhakika unataka kufuta taarifa za
+
+                    <strong
+                        id="deleteVolunteerName"
+                        class="text-gray-800">
+                    </strong>?
+
+                </p>
+
+            </div>
+
+
+
+            <div
+                class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-2">
+
+
+                <button
+                    onclick="closeDeleteModal()"
+                    class="btn-secondary h-9 px-4 rounded-md text-[11px] font-semibold">
+
+                    Ghairi
+
+                </button>
+
+
+                <button
+                    id="confirmDeleteBtn"
+                    onclick="confirmDelete()"
+                    class="btn-danger h-9 px-4 rounded-md text-[11px] font-bold">
+
+                    Futa Taarifa
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==========================================
+         TOAST
+    ========================================== -->
+
+    <div
+        id="toast"
+        class="fixed right-5 bottom-5 z-[70] hidden">
+
+
+        <div
+            id="toastContent"
+            class="px-4 py-3 rounded-md shadow-soft bg-gray-900 text-white text-[12px] font-medium">
+        </div>
+
+    </div>
+
+
+
+<script>
+
+
+    /* ==========================================
+       GLOBAL VARIABLES
+    ========================================== */
+
+    let volunteers = [];
+
+    let selectedVolunteerId = null;
+
+
+
+    /* ==========================================
+       AUTHENTICATION
+    ========================================== */
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        async () => {
+
+
+            const isLoggedIn =
+                sessionStorage.getItem(
+                    'userLoggedIn'
+                );
+
+
+            const userRole =
+                sessionStorage.getItem(
+                    'userRole'
+                );
+
+
+            if (
+                !isLoggedIn ||
+                !userRole
+            ) {
+
+                window.location.href =
+                    '../login.html';
+
+                return;
+
+            }
+
+
+            const userName =
+                sessionStorage.getItem(
+                    'userName'
+                ) ||
+
+                sessionStorage.getItem(
+                    'fullName'
+                ) ||
+
+                'Mfumo';
+
+
+            document
+                .getElementById(
+                    'currentUserName'
+                )
+                .textContent =
+                userName;
+
+
+            document
+                .getElementById(
+                    'currentUserRole'
+                )
+                .textContent =
+                userRole;
+
+
+            document
+                .getElementById(
+                    'volunteerForm'
+                )
+                .addEventListener(
+                    'submit',
+                    saveVolunteer
+                );
+
+
+            document
+                .getElementById(
+                    'searchInput'
+                )
+                .addEventListener(
+                    'input',
+                    filterVolunteers
+                );
+
+
+            applyPageActionPermissions(
+                userRole
+            );
+
+
+            await loadVolunteers();
+
+        }
+    );
+
+
+
+    /* ==========================================
+       DASHBOARD
+    ========================================== */
+
+    function goToDashboard() {
+
+        window.location.href =
+            '../dashboard.html';
+
+    }
+
+
+
+    /* ==========================================
+       LOAD DATA
+    ========================================== */
+
+    async function loadVolunteers() {
+
+
+        const tbody =
+            document.getElementById(
+                'volunteerTable'
+            );
+
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="px-5 py-12 text-center text-gray-400 text-xs">
+
+                    Inapakia taarifa...
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        try {
+
+
+            const {
+                data,
+                error
+            } = await _supabase
+
+                .from('volunteers')
+
+                .select('*')
+
+                .order(
+                    'id',
+                    {
+                        ascending: false
+                    }
+                );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            volunteers =
+                data || [];
+
+
+            renderVolunteers(
+                volunteers
+            );
+
+
+            updateStatistics();
+
+
+        } catch (error) {
+
+
+            console.error(error);
+
+
+            tbody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="px-5 py-12 text-center">
+
+                        <p
+                            class="text-red-600 text-[12px] font-semibold">
+
+                            Imeshindikana kupakia taarifa.
+
+                        </p>
+
+
+                        <p
+                            class="text-gray-400 text-[11px] mt-1">
+
+                            ${escapeHTML(error.message)}
+
+                        </p>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+    }
+
+
+
+    /* ==========================================
+       RENDER
+    ========================================== */
+
+    function renderVolunteers(data) {
+
+
+        const tbody =
+            document.getElementById(
+                'volunteerTable'
+            );
+
+
+        if (!data.length) {
+
+
+            tbody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="px-5 py-14 text-center">
+
+                        <p
+                            class="text-gray-500 text-[12px] font-semibold">
+
+                            Hakuna taarifa za wajitolea.
+
+                        </p>
+
+
+                        <p
+                            class="text-gray-400 text-[11px] mt-1">
+
+                            Sajili mjitolea mpya kutumia fomu.
+
+                        </p>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+
+            return;
+
+        }
+
+
+
+        tbody.innerHTML =
+            data.map(
+                (v, index) => {
+
+
+                    const name =
+                        escapeHTML(
+                            v.full_name ||
+                            '-'
+                        );
+
+
+                    const phone =
+                        escapeHTML(
+                            v.phone ||
+                            '-'
+                        );
+
+
+                    const email =
+                        escapeHTML(
+                            v.email ||
+                            '-'
+                        );
+
+
+                    const role =
+                        escapeHTML(
+                            v.role_skill ||
+                            '-'
+                        );
+
+
+                    return `
+
+                        <tr
+                            class="table-row border-b border-gray-100">
+
+
+                            <td
+                                class="px-5 py-4 text-[11px] text-gray-400">
+
+                                ${index + 1}
+
+                            </td>
+
+
+
+                            <td
+                                class="px-5 py-4">
+
+                                <div
+                                    class="font-semibold text-[12px] text-gray-800">
+
+                                    ${name}
+
+                                </div>
+
+                            </td>
+
+
+
+                            <td
+                                class="px-5 py-4">
+
+                                <span
+                                    class="text-[12px] text-gray-600">
+
+                                    ${phone}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <td
+                                class="px-5 py-4">
+
+                                <span
+                                    class="text-[12px] text-gray-600">
+
+                                    ${email}
+
+                                </span>
+
+                            </td>
+
+
+
+                            <td
+                                class="px-5 py-4">
+
+                                ${
+                                    v.role_skill
+
+                                    ?
+
+                                    `<span
+                                        class="inline-flex px-2 py-1 rounded bg-dcf-50 text-dcf-700 text-[10px] font-bold">
+
+                                        ${role}
+
+                                    </span>`
+
+                                    :
+
+                                    `<span
+                                        class="text-gray-400 text-[11px]">
+
+                                        -
+
+                                    </span>`
+                                }
+
+                            </td>
+
+
+
+                            <td
+                                class="no-print px-5 py-4">
+
+                                <div
+                                    class="flex items-center justify-end gap-2">
+
+
+                                    <button
+                                        onclick="printSingleVolunteer(${JSON.stringify(v.id)})"
+                                        class="btn-secondary w-8 h-8 rounded-md text-[11px] font-bold"
+                                        title="Print taarifa">
+
+                                        P
+
+                                    </button>
+
+
+
+                                    <button
+                                        data-action="delete"
+                                        onclick="openDeleteModal(
+                                            ${JSON.stringify(v.id)},
+                                            ${JSON.stringify(v.full_name || '')}
+                                        )"
+                                        class="btn-danger btn-delete w-8 h-8 rounded-md text-[11px] font-bold"
+                                        title="Futa">
+
+                                        D
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+            ).join('');
+
+
+        applyCurrentPermissions();
+
+    }
+
+
+
+    /* ==========================================
+       SAVE VOLUNTEER
+    ========================================== */
+
+    async function saveVolunteer(e) {
+
+
+        e.preventDefault();
+
+
+        const submitBtn =
+            document.getElementById(
+                'submitBtn'
+            );
+
+
+        const submitText =
+            document.getElementById(
+                'submitText'
+            );
+
+
+        const submitIcon =
+            document.getElementById(
+                'submitIcon'
+            );
+
+
+        const fullName =
+            document
+                .getElementById(
+                    'full_name'
+                )
+                .value
+                .trim();
+
+
+        const phone =
+            document
+                .getElementById(
+                    'phone'
+                )
+                .value
+                .trim();
+
+
+        const email =
+            document
+                .getElementById(
+                    'email'
+                )
+                .value
+                .trim();
+
+
+        const roleSkill =
+            document
+                .getElementById(
+                    'role_skill'
+                )
+                .value
+                .trim();
+
+
+
+        if (!fullName) {
+
+
+            showToast(
+                'Weka majina kamili ya mjitolea.',
+                true
+            );
+
+
+            return;
+
+        }
+
+
+
+        submitBtn.disabled = true;
+
+
+        submitIcon.innerHTML =
+            '<span class="spinner"></span>';
+
+
+        submitText.textContent =
+            'Inahifadhi...';
+
+
+
+        try {
+
+
+            const {
+                error
+            } = await _supabase
+
+                .from('volunteers')
+
+                .insert([
+                    {
+                        full_name:
+                            fullName,
+
+                        phone:
+                            phone ||
+                            null,
+
+                        email:
+                            email ||
+                            null,
+
+                        role_skill:
+                            roleSkill ||
+                            null
+                    }
+                ]);
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+
+            document
+                .getElementById(
+                    'volunteerForm'
+                )
+                .reset();
+
+
+            showToast(
+                'Taarifa imehifadhiwa kikamilifu.'
+            );
+
+
+            await loadVolunteers();
+
+
+
+        } catch (error) {
+
+
+            console.error(error);
+
+
+            showToast(
+                'Kuna tatizo: ' +
+                error.message,
+                true
+            );
+
+
+        } finally {
+
+
+            submitBtn.disabled =
+                false;
+
+
+            submitIcon.textContent =
+                'Hifadhi';
+
+
+            submitText.textContent =
+                'Mjitolea';
+
+        }
+
+    }
+
+
+
+    /* ==========================================
+       DELETE MODAL
+    ========================================== */
+
+    function openDeleteModal(
+        id,
+        name
+    ) {
+
+
+        selectedVolunteerId =
+            id;
+
+
+        document
+            .getElementById(
+                'deleteVolunteerName'
+            )
+            .textContent =
+            name;
+
+
+        document
+            .getElementById(
+                'deleteModal'
+            )
+            .classList.add(
+                'active'
+            );
+
+    }
+
+
+
+    function closeDeleteModal() {
+
+
+        selectedVolunteerId =
+            null;
+
+
+        document
+            .getElementById(
+                'deleteModal'
+            )
+            .classList.remove(
+                'active'
+            );
+
+    }
+
+
+
+    async function confirmDelete() {
+
+
+        if (!selectedVolunteerId) {
+
+            return;
+
+        }
+
+
+        const button =
+            document.getElementById(
+                'confirmDeleteBtn'
+            );
+
+
+        button.disabled =
+            true;
+
+
+        button.textContent =
+            'Inafuta...';
+
+
+
+        try {
+
+
+            const {
+                error
+            } = await _supabase
+
+                .from('volunteers')
+
+                .delete()
+
+                .eq(
+                    'id',
+                    selectedVolunteerId
+                );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            closeDeleteModal();
+
+
+            showToast(
+                'Taarifa imefutwa kikamilifu.'
+            );
+
+
+            await loadVolunteers();
+
+
+
+        } catch (error) {
+
+
+            console.error(error);
+
+
+            showToast(
+                'Imeshindikana kufuta: ' +
+                error.message,
+                true
+            );
+
+
+        } finally {
+
+
+            button.disabled =
+                false;
+
+
+            button.textContent =
+                'Futa Taarifa';
+
+        }
+
+    }
+
+
+
+    /* ==========================================
+       SEARCH
+    ========================================== */
+
+    function filterVolunteers(e) {
+
+
+        const query =
+            e.target.value
+                .trim()
+                .toLowerCase();
+
+
+        if (!query) {
+
+
+            renderVolunteers(
+                volunteers
+            );
+
+
+            return;
+
+        }
+
+
+
+        const filtered =
+            volunteers.filter(
+                v => {
+
+
+                    return [
+
+                        v.full_name,
+
+                        v.phone,
+
+                        v.email,
+
+                        v.role_skill
+
+                    ]
+
+                    .filter(Boolean)
+
+                    .join(' ')
+
+                    .toLowerCase()
+
+                    .includes(query);
+
+                }
+            );
+
+
+        renderVolunteers(
+            filtered
+        );
+
+    }
+
+
+
+    /* ==========================================
+       STATISTICS
+    ========================================== */
+
+    function updateStatistics() {
+
+
+        document
+            .getElementById(
+                'totalVolunteers'
+            )
+            .textContent =
+            volunteers.length;
+
+
+        document
+            .getElementById(
+                'phoneCount'
+            )
+            .textContent =
+            volunteers.filter(
+                v => v.phone
+            ).length;
+
+
+        document
+            .getElementById(
+                'skillCount'
+            )
+            .textContent =
+            volunteers.filter(
+                v => v.role_skill
+            ).length;
+
+
+        document
+            .getElementById(
+                'footerTotal'
+            )
+            .textContent =
+            volunteers.length;
+
+    }
+
+
+
+    /* ==========================================
+       REFRESH
+    ========================================== */
+
+    async function refreshVolunteers() {
+
+
+        await loadVolunteers();
+
+
+        showToast(
+            'Taarifa zimehuishwa.'
+        );
+
+    }
+
+
+
+    /* ==========================================
+       PRINT ALL
+    ========================================== */
+
+    function printVolunteers() {
+
+
+        document
+            .getElementById(
+                'printDate'
+            )
+            .textContent =
+            new Date()
+                .toLocaleString(
+                    'sw-TZ'
+                );
+
+
+        window.print();
+
+    }
+
+
+
+    /* ==========================================
+       PRINT SINGLE VOLUNTEER
+    ========================================== */
+
+    function printSingleVolunteer(
+        id
+    ) {
+
+
+        const volunteer =
+            volunteers.find(
+                v =>
+                    String(v.id) ===
+                    String(id)
+            );
+
+
+        if (!volunteer) {
+
+            return;
+
+        }
+
+
+
+        const win =
+            window.open(
+                '',
+                '_blank',
+                'width=850,height=700'
+            );
+
+
+        if (!win) {
+
+
+            showToast(
+                'Ruhusu pop-up kwenye browser.',
+                true
+            );
+
+
+            return;
+
+        }
+
+
+
+        win.document.write(`
+
+            <!DOCTYPE html>
+
+            <html lang="sw">
+
+            <head>
+
+                <meta charset="UTF-8">
+
+                <title>
+                    Taarifa ya Mjitolea
+                </title>
+
+
+                <style>
+
+                    body {
+
+                        font-family:
+                            Arial,
+                            sans-serif;
+
+                        color:
+                            #222;
+
+                        padding:
+                            45px;
+
+                    }
+
+
+                    .header {
+
+                        text-align:
+                            center;
+
+                        border-bottom:
+                            2px solid #174a35;
+
+                        padding-bottom:
+                            20px;
+
+                        margin-bottom:
+                            30px;
+
+                    }
+
+
+                    h1 {
+
+                        margin:
+                            0;
+
+                        color:
+                            #174a35;
+
+                        font-size:
+                            23px;
+
+                    }
+
+
+                    h2 {
+
+                        margin:
+                            8px 0 0;
+
+                        font-size:
+                            17px;
+
+                    }
+
+
+                    table {
+
+                        width:
+                            100%;
+
+                        border-collapse:
+                            collapse;
+
+                    }
+
+
+                    td {
+
+                        border:
+                            1px solid #ddd;
+
+                        padding:
+                            14px;
+
+                        font-size:
+                            13px;
+
+                    }
+
+
+                    td:first-child {
+
+                        width:
+                            30%;
+
+                        background:
+                            #f5f7f6;
+
+                        font-weight:
+                            bold;
+
+                    }
+
+
+                    .footer {
+
+                        margin-top:
+                            30px;
+
+                        color:
+                            #777;
+
+                        font-size:
+                            11px;
+
+                    }
+
+                </style>
+
+            </head>
+
+
+            <body>
+
+
+                <div class="header">
+
+                    <h1>
+                        DCF MIS SYSTEM
+                    </h1>
+
+                    <h2>
+                        TAARIFA ZA MJITOLEA
+                    </h2>
+
+                </div>
+
+
+
+                <table>
+
+
+                    <tr>
+
+                        <td>
+                            Majina Kamili
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                volunteer.full_name || '-'
+                            )}
+                        </td>
+
+                    </tr>
+
+
+
+                    <tr>
+
+                        <td>
+                            Namba ya Simu
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                volunteer.phone || '-'
+                            )}
+                        </td>
+
+                    </tr>
+
+
+
+                    <tr>
+
+                        <td>
+                            Barua Pepe
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                volunteer.email || '-'
+                            )}
+                        </td>
+
+                    </tr>
+
+
+
+                    <tr>
+
+                        <td>
+                            Ujuzi / Jukumu
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                volunteer.role_skill || '-'
+                            )}
+                        </td>
+
+                    </tr>
+
+
+                </table>
+
+
+
+                <div class="footer">
+
+                    Imechapishwa:
+
+                    ${new Date().toLocaleString('sw-TZ')}
+
+                </div>
+
+
+
+                <script>
+
+                    window.onload =
+                        function() {
+
+                            window.print();
+
+                        };
+
+                <\/script>
+
+
+            </body>
+
+            </html>
+
+        `);
+
+
+        win.document.close();
+
+    }
+
+
+
+    /* ==========================================
+       TOAST
+    ========================================== */
+
+    function showToast(
+        message,
+        error = false
+    ) {
+
+
+        const toast =
+            document.getElementById(
+                'toast'
+            );
+
+
+        const content =
+            document.getElementById(
+                'toastContent'
+            );
+
+
+        content.textContent =
+            message;
+
+
+        content.className =
+
+            error
+
+            ?
+
+            'px-4 py-3 rounded-md shadow-soft bg-red-600 text-white text-[12px] font-medium'
+
+            :
+
+            'px-4 py-3 rounded-md shadow-soft bg-gray-900 text-white text-[12px] font-medium';
+
+
+        toast.classList.remove(
+            'hidden'
+        );
+
+
+        clearTimeout(
+            window.toastTimeout
+        );
+
+
+        window.toastTimeout =
+            setTimeout(
+                () => {
+
+                    toast.classList.add(
+                        'hidden'
+                    );
+
+                },
+                3500
+            );
+
+    }
+
+
+
+    /* ==========================================
+       PERMISSIONS
+    ========================================== */
+
+    function applyPageActionPermissions(
+        role
+    ) {
+
+
+        document.body.dataset.role =
+            role.toLowerCase();
+
+
+        applyCurrentPermissions();
+
+    }
+
+
+
+    function applyCurrentPermissions() {
+
+
+        const role =
+            document.body.dataset.role;
+
+
+        const deleteButtons =
+            document.querySelectorAll(
+                '.btn-delete, [data-action="delete"]'
+            );
+
+
+        const createButtons =
+            document.querySelectorAll(
+                '[data-action="create"]'
+            );
+
+
+
+        /* ======================================
+           AUDITOR
+        ====================================== */
+
+        if (role === 'auditor') {
+
+
+            createButtons.forEach(
+                button => {
+
+                    button.style.display =
+                        'none';
+
+                }
+            );
+
+
+            deleteButtons.forEach(
+                button => {
+
+                    button.style.display =
+                        'none';
+
+                }
+            );
+
+
+            document
+                .querySelectorAll(
+                    '#volunteerForm input'
+                )
+                .forEach(
+                    input => {
+
+                        input.disabled =
+                            true;
+
+
+                        input.classList.add(
+                            'bg-gray-100',
+                            'cursor-not-allowed'
+                        );
+
+                    }
+                );
+
+        }
+
+
+
+        /* ======================================
+           STAFF
+        ====================================== */
+
+        if (role === 'staff') {
+
+
+            deleteButtons.forEach(
+                button => {
+
+                    button.style.display =
+                        'none';
+
+                }
+            );
+
+        }
+
+
+
+        /* ======================================
+           ADMIN
+        ====================================== */
+
+        if (role === 'admin') {
+
+
+            createButtons.forEach(
+                button => {
+
+                    button.style.display =
+                        '';
+
+                }
+            );
+
+
+            deleteButtons.forEach(
+                button => {
+
+                    button.style.display =
+                        '';
+
+                }
+            );
+
+        }
+
+    }
+
+
+
+    /* ==========================================
+       DELETE MODAL EVENTS
+    ========================================== */
+
+    document
+        .getElementById(
+            'deleteModal'
+        )
+        .addEventListener(
+            'click',
+            function(e) {
+
+
+                if (
+                    e.target === this
+                ) {
+
+                    closeDeleteModal();
+
+                }
+
+            }
+        );
+
+
+
+    document.addEventListener(
+        'keydown',
+        function(e) {
+
+
+            if (
+                e.key === 'Escape'
+            ) {
+
+                closeDeleteModal();
+
+            }
+
+        }
+    );
+
+
+
+    /* ==========================================
+       ESCAPE HTML
+    ========================================== */
+
+    function escapeHTML(
+        value
+    ) {
+
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
+            return '';
+
+        }
+
+
+        return String(value)
+
+            .replace(
+                /&/g,
+                '&amp;'
+            )
+
+            .replace(
+                /</g,
+                '&lt;'
+            )
+
+            .replace(
+                />/g,
+                '&gt;'
+            )
+
+            .replace(
+                /"/g,
+                '&quot;'
+            )
+
+            .replace(
+                /'/g,
+                '&#039;'
+            );
+
+    }
+
+</script>
+
+<script src="js/i18n.js"></script>
+</body>
+
+</html>

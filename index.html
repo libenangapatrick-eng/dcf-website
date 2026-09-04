@@ -1,0 +1,9432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <meta
+        name="description"
+        content="Development Charity Foundation (DCF) is a Tanzanian non-profit organization advancing community development, humanitarian support, youth empowerment, health, environmental protection and sustainable change."
+    >
+
+    <meta
+        name="theme-color"
+        content="#063b25"
+    >
+
+    <meta
+        name="author"
+        content="Development Charity Foundation"
+    >
+
+    <meta
+        name="robots"
+        content="index, follow"
+    >
+
+    <title>Development Charity Foundation | DCF</title>
+
+    <!-- =====================================================
+         PERFORMANCE
+         ===================================================== -->
+
+    <link
+        rel="preload"
+        as="image"
+        href="images/hero-01.jpg"
+        fetchpriority="high"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        rel="dns-prefetch"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="dns-prefetch"
+        href="https://fonts.gstatic.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://cdnjs.cloudflare.com"
+        crossorigin
+    >
+
+    <link
+        rel="dns-prefetch"
+        href="https://cdnjs.cloudflare.com"
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <style>
+
+        /* =====================================================
+           DCF INSTITUTIONAL DESIGN SYSTEM
+           Inspired by modern international development websites
+           ===================================================== */
+
+        :root {
+
+            --green-950: #021e13;
+            --green-900: #032719;
+            --green-850: #052f1e;
+            --green-800: #063b25;
+            --green-750: #075d29;
+            --green-700: #08752f;
+            --green-600: #168446;
+
+            --gold: #d8b13f;
+            --gold-light: #efe0a8;
+            --gold-soft: #f7f0d4;
+
+            --white: #ffffff;
+            --black: #0e1712;
+
+            --text: #23372c;
+            --text-dark: #10271d;
+            --muted: #687970;
+            --muted-light: #8b9891;
+
+            --surface: #f5f8f6;
+            --surface-2: #edf3ef;
+            --surface-3: #e4ede7;
+
+            --border: #dde6e0;
+            --border-dark: #cbd8cf;
+
+            --container:
+                min(1200px, calc(100% - 42px));
+
+            --container-wide:
+                min(1320px, calc(100% - 42px));
+
+            --shadow-xs:
+                0 4px 14px rgba(3,39,25,.05);
+
+            --shadow-sm:
+                0 8px 26px rgba(3,39,25,.07);
+
+            --shadow:
+                0 18px 55px rgba(3,39,25,.11);
+
+            --shadow-lg:
+                0 30px 90px rgba(3,39,25,.17);
+
+            --radius-sm: 8px;
+            --radius: 16px;
+            --radius-lg: 24px;
+
+            --ease:
+                cubic-bezier(.2,.7,.2,1);
+
+        }
+
+
+        /* =====================================================
+           RESET
+           ===================================================== */
+
+        *,
+        *::before,
+        *::after {
+
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+
+        }
+
+
+        html {
+
+            width: 100%;
+            overflow-x: hidden;
+
+            scroll-behavior: smooth;
+
+        }
+
+
+        body {
+
+            width: 100%;
+            min-height: 100vh;
+
+            font-family:
+                "DM Sans",
+                Arial,
+                sans-serif;
+
+            color:
+                var(--text);
+
+            background:
+                var(--white);
+
+            line-height:
+                1.7;
+
+            overflow-x:
+                hidden;
+
+            -webkit-font-smoothing:
+                antialiased;
+
+            -moz-osx-font-smoothing:
+                grayscale;
+
+            text-rendering:
+                optimizeLegibility;
+
+        }
+
+
+        body.menu-open {
+
+            overflow:
+                hidden;
+
+        }
+
+
+        img {
+
+            display:
+                block;
+
+            max-width:
+                100%;
+
+            height:
+                auto;
+
+            border:
+                0;
+
+        }
+
+
+        a {
+
+            color:
+                inherit;
+
+            text-decoration:
+                none;
+
+        }
+
+
+        button,
+        input,
+        select,
+        textarea {
+
+            font:
+                inherit;
+
+        }
+
+
+        button {
+
+            border:
+                0;
+
+        }
+
+
+        ::selection {
+
+            background:
+                var(--gold);
+
+            color:
+                var(--green-950);
+
+        }
+
+
+        section {
+
+            scroll-margin-top:
+                92px;
+
+        }
+
+
+        .container {
+
+            width:
+                var(--container);
+
+            margin-inline:
+                auto;
+
+        }
+
+
+        .container-wide {
+
+            width:
+                var(--container-wide);
+
+            margin-inline:
+                auto;
+
+        }
+
+
+        /* =====================================================
+           TOP INSTITUTIONAL BAR
+           ===================================================== */
+
+        .topbar {
+
+            min-height:
+                34px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            background:
+                var(--green-950);
+
+            color:
+                rgba(255,255,255,.80);
+
+            border-bottom:
+                1px solid rgba(255,255,255,.06);
+
+            font-size:
+                10px;
+
+        }
+
+
+        .topbar-inner {
+
+            min-height:
+                34px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                20px;
+
+        }
+
+
+        .topbar-left,
+        .topbar-right {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                20px;
+
+        }
+
+
+        .topbar-item {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                7px;
+
+            white-space:
+                nowrap;
+
+        }
+
+
+        .topbar-item i {
+
+            color:
+                var(--gold);
+
+            font-size:
+                9px;
+
+        }
+
+
+        /* =====================================================
+           MAIN NAVIGATION
+           ===================================================== */
+
+        .navbar {
+
+            position:
+                sticky;
+
+            top:
+                0;
+
+            z-index:
+                9000;
+
+            background:
+                rgba(255,255,255,.95);
+
+            backdrop-filter:
+                blur(18px);
+
+            -webkit-backdrop-filter:
+                blur(18px);
+
+            border-bottom:
+                1px solid rgba(221,230,224,.90);
+
+            transition:
+                box-shadow .25s var(--ease),
+                background .25s var(--ease);
+
+        }
+
+
+        .navbar.scrolled {
+
+            background:
+                rgba(255,255,255,.98);
+
+            box-shadow:
+                0 8px 28px rgba(0,0,0,.07);
+
+        }
+
+
+        .nav-inner {
+
+            min-height:
+                78px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                25px;
+
+        }
+
+
+        .brand {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                11px;
+
+            min-width:
+                0;
+
+        }
+
+
+        .logo {
+
+            width:
+                49px;
+
+            height:
+                49px;
+
+            object-fit:
+                contain;
+
+            border-radius:
+                50%;
+
+            background:
+                #fff;
+
+            padding:
+                3px;
+
+            border:
+                2px solid var(--gold);
+
+            flex:
+                0 0 auto;
+
+            box-shadow:
+                var(--shadow-xs);
+
+        }
+
+
+        .brand-copy {
+
+            min-width:
+                0;
+
+        }
+
+
+        .brand-copy strong {
+
+            display:
+                block;
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            color:
+                var(--green-950);
+
+            font-size:
+                17px;
+
+            line-height:
+                1;
+
+            letter-spacing:
+                -.3px;
+
+        }
+
+
+        .brand-copy span {
+
+            display:
+                block;
+
+            margin-top:
+                4px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                8px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                1.1px;
+
+            white-space:
+                nowrap;
+
+        }
+
+
+        .nav-links {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                2px;
+
+        }
+
+
+        .nav-links a {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            min-height:
+                40px;
+
+            padding:
+                9px 10px;
+
+            color:
+                #294138;
+
+            border-radius:
+                7px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                700;
+
+            transition:
+                .22s var(--ease);
+
+        }
+
+
+        .nav-links a:hover {
+
+            color:
+                var(--green-700);
+
+            background:
+                #eff6f1;
+
+        }
+
+
+        .nav-links .donate-nav {
+
+            margin-left:
+                7px;
+
+            padding-inline:
+                15px;
+
+            background:
+                var(--gold);
+
+            color:
+                #203900;
+
+        }
+
+
+        .nav-links .donate-nav:hover {
+
+            background:
+                #e7c55e;
+
+            color:
+                #203900;
+
+        }
+
+
+        .nav-links .login-nav {
+
+            margin-left:
+                4px;
+
+            padding-inline:
+                15px;
+
+            background:
+                var(--green-800);
+
+            color:
+                #fff;
+
+        }
+
+
+        .nav-links .login-nav:hover {
+
+            background:
+                var(--green-950);
+
+            color:
+                #fff;
+
+        }
+
+
+        .menu-toggle {
+
+            display:
+                none;
+
+            width:
+                42px;
+
+            height:
+                42px;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border-radius:
+                9px;
+
+            background:
+                var(--green-800);
+
+            color:
+                #fff;
+
+            cursor:
+                pointer;
+
+        }
+
+
+        /* =====================================================
+           HERO — EDITORIAL / FEATURED STYLE
+           ===================================================== */
+
+        .hero {
+
+            position:
+                relative;
+
+            min-height:
+                min(730px, calc(100vh - 34px));
+
+            color:
+                #fff;
+
+            overflow:
+                hidden;
+
+            isolation:
+                isolate;
+
+        }
+
+
+        .hero-media {
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            overflow:
+                hidden;
+
+            z-index:
+                0;
+
+        }
+
+
+        .hero-slide {
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            width:
+                100%;
+
+            height:
+                100%;
+
+            background:
+                center center / cover no-repeat;
+
+            opacity:
+                0;
+
+            transform:
+                scale(1.035);
+
+            transition:
+                opacity 1s ease,
+                transform 7s ease;
+
+            will-change:
+                opacity,
+                transform;
+
+            contain:
+                paint;
+
+        }
+
+
+        .hero-slide.active {
+
+            opacity:
+                1;
+
+            transform:
+                scale(1);
+
+        }
+
+
+        .hero-overlay {
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    rgba(2,30,19,.97) 0%,
+                    rgba(2,30,19,.84) 34%,
+                    rgba(2,30,19,.55) 62%,
+                    rgba(2,30,19,.20) 100%
+                );
+
+        }
+
+
+        .hero::before {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            z-index:
+                2;
+
+            pointer-events:
+                none;
+
+            background:
+                linear-gradient(
+                    to top,
+                    rgba(2,30,19,.42),
+                    transparent 35%
+                );
+
+        }
+
+
+        .hero-inner {
+
+            position:
+                relative;
+
+            z-index:
+                5;
+
+            min-height:
+                min(730px, calc(100vh - 34px));
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+        }
+
+
+        .hero-content {
+
+            width:
+                min(760px,100%);
+
+            padding:
+                90px 0 100px;
+
+        }
+
+
+        .hero-kicker {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                8px;
+
+            padding:
+                8px 12px;
+
+            border:
+                1px solid rgba(255,255,255,.24);
+
+            border-radius:
+                999px;
+
+            background:
+                rgba(255,255,255,.07);
+
+            backdrop-filter:
+                blur(10px);
+
+            -webkit-backdrop-filter:
+                blur(10px);
+
+            color:
+                #e8f2eb;
+
+            font-size:
+                9px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                1.35px;
+
+            margin-bottom:
+                19px;
+
+        }
+
+
+        .hero-kicker i {
+
+            color:
+                var(--gold);
+
+        }
+
+
+        .hero h1 {
+
+            max-width:
+                770px;
+
+            margin-bottom:
+                18px;
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                clamp(43px,6.2vw,78px);
+
+            line-height:
+                1.02;
+
+            letter-spacing:
+                -2.8px;
+
+        }
+
+
+        .hero h1 span {
+
+            color:
+                var(--gold);
+
+        }
+
+
+        .hero-description {
+
+            max-width:
+                650px;
+
+            margin-bottom:
+                28px;
+
+            color:
+                #e0ece4;
+
+            font-size:
+                15px;
+
+            line-height:
+                1.8;
+
+        }
+
+
+        .hero-actions {
+
+            display:
+                flex;
+
+            flex-wrap:
+                wrap;
+
+            gap:
+                10px;
+
+        }
+
+
+        .btn {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            gap:
+                8px;
+
+            min-height:
+                45px;
+
+            padding:
+                11px 18px;
+
+            border-radius:
+                7px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                800;
+
+            transition:
+                transform .22s var(--ease),
+                background .22s var(--ease),
+                box-shadow .22s var(--ease);
+
+        }
+
+
+        .btn-primary {
+
+            background:
+                var(--gold);
+
+            color:
+                #183000;
+
+            box-shadow:
+                0 10px 25px rgba(0,0,0,.15);
+
+        }
+
+
+        .btn-primary:hover {
+
+            background:
+                #e5c45c;
+
+            transform:
+                translateY(-2px);
+
+        }
+
+
+        .btn-light {
+
+            background:
+                #fff;
+
+            color:
+                var(--green-700);
+
+        }
+
+
+        .btn-light:hover {
+
+            transform:
+                translateY(-2px);
+
+            box-shadow:
+                0 12px 28px rgba(0,0,0,.18);
+
+        }
+
+
+        .hero-controls {
+
+            position:
+                absolute;
+
+            right:
+                28px;
+
+            bottom:
+                31px;
+
+            z-index:
+                8;
+
+            display:
+                flex;
+
+            gap:
+                7px;
+
+        }
+
+
+        .hero-control {
+
+            width:
+                40px;
+
+            height:
+                40px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border:
+                1px solid rgba(255,255,255,.25);
+
+            border-radius:
+                50%;
+
+            background:
+                rgba(255,255,255,.09);
+
+            color:
+                #fff;
+
+            cursor:
+                pointer;
+
+            transition:
+                .2s var(--ease);
+
+        }
+
+
+        .hero-control:hover {
+
+            background:
+                var(--green-700);
+
+            border-color:
+                var(--green-700);
+
+        }
+
+
+        .hero-dots {
+
+            position:
+                absolute;
+
+            left:
+                50%;
+
+            bottom:
+                26px;
+
+            z-index:
+                8;
+
+            display:
+                flex;
+
+            gap:
+                6px;
+
+            transform:
+                translateX(-50%);
+
+        }
+
+
+        .hero-dot {
+
+            width:
+                7px;
+
+            height:
+                7px;
+
+            border-radius:
+                50%;
+
+            background:
+                rgba(255,255,255,.42);
+
+            cursor:
+                pointer;
+
+            transition:
+                .25s var(--ease);
+
+        }
+
+
+        .hero-dot.active {
+
+            width:
+                25px;
+
+            border-radius:
+                999px;
+
+            background:
+                var(--gold);
+
+        }
+
+
+        /* =====================================================
+           DATA / TRUST BAND
+           ===================================================== */
+
+        .trust-strip {
+
+            position:
+                relative;
+
+            z-index:
+                20;
+
+            background:
+                #fff;
+
+            border-bottom:
+                1px solid var(--border);
+
+        }
+
+
+        .trust-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(4,1fr);
+
+        }
+
+
+        .trust-item {
+
+            min-height:
+                112px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            flex-direction:
+                column;
+
+            padding:
+                18px;
+
+            text-align:
+                center;
+
+            border-right:
+                1px solid var(--border);
+
+        }
+
+
+        .trust-item:last-child {
+
+            border-right:
+                0;
+
+        }
+
+
+        .trust-value {
+
+            display:
+                block;
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            color:
+                var(--green-700);
+
+            font-size:
+                29px;
+
+            line-height:
+                1;
+
+            font-weight:
+                800;
+
+        }
+
+
+        .trust-label {
+
+            display:
+                block;
+
+            margin-top:
+                7px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                9px;
+
+            font-weight:
+                700;
+
+            letter-spacing:
+                .8px;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        /* =====================================================
+           SECTION FRAME
+           ===================================================== */
+
+        .section {
+
+            padding:
+                92px 0;
+
+        }
+
+
+        .section-muted {
+
+            background:
+                var(--surface);
+
+        }
+
+
+        .section-dark {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--green-950),
+                    var(--green-800)
+                );
+
+            color:
+                #fff;
+
+        }
+
+
+        .section-heading {
+
+            max-width:
+                760px;
+
+            margin:
+                0 auto 46px;
+
+            text-align:
+                center;
+
+        }
+
+
+        .section-label {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                7px;
+
+            color:
+                var(--green-700);
+
+            font-size:
+                9px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                1.8px;
+
+            margin-bottom:
+                9px;
+
+        }
+
+
+        .section-label::before {
+
+            content:
+                "";
+
+            width:
+                21px;
+
+            height:
+                2px;
+
+            background:
+                var(--gold);
+
+        }
+
+
+        .section-heading h2 {
+
+            margin-bottom:
+                12px;
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            color:
+                var(--green-950);
+
+            font-size:
+                clamp(31px,4vw,45px);
+
+            line-height:
+                1.12;
+
+            letter-spacing:
+                -1.2px;
+
+        }
+
+
+        .section-heading p {
+
+            color:
+                var(--muted);
+
+            font-size:
+                13px;
+
+        }
+
+
+        .section-dark
+        .section-heading h2 {
+
+            color:
+                #fff;
+
+        }
+
+
+        .section-dark
+        .section-heading p {
+
+            color:
+                #cbdcd1;
+
+        }
+
+
+        .section-dark
+        .section-label {
+
+            color:
+                var(--gold);
+
+        }
+
+
+        /* =====================================================
+           MISSION STATEMENT
+           ===================================================== */
+
+        .mission-intro {
+
+            max-width:
+                930px;
+
+            margin:
+                0 auto;
+
+            text-align:
+                center;
+
+        }
+
+
+        .mission-intro p {
+
+            color:
+                var(--text-dark);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                clamp(23px,3vw,35px);
+
+            line-height:
+                1.35;
+
+            letter-spacing:
+                -.7px;
+
+        }
+
+
+        .mission-intro p span {
+
+            color:
+                var(--green-700);
+
+        }
+
+
+        /* =====================================================
+           ABOUT
+           ===================================================== */
+
+        .about-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                minmax(0,1fr) minmax(0,1fr);
+
+            gap:
+                65px;
+
+            align-items:
+                center;
+
+        }
+
+
+        .visual-frame {
+
+            position:
+                relative;
+
+            width:
+                100%;
+
+            height:
+                450px;
+
+            overflow:
+                hidden;
+
+            border-radius:
+                var(--radius-lg);
+
+            background:
+                #dfe9e3;
+
+            box-shadow:
+                var(--shadow);
+
+            contain:
+                layout paint;
+
+        }
+
+
+        .visual-slide {
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            width:
+                100%;
+
+            height:
+                100%;
+
+            opacity:
+                0;
+
+            transition:
+                opacity 1s ease;
+
+        }
+
+
+        .visual-slide.active {
+
+            opacity:
+                1;
+
+        }
+
+
+        .visual-slide img {
+
+            width:
+                100%;
+
+            height:
+                100%;
+
+            object-fit:
+                cover;
+
+        }
+
+
+        .visual-label {
+
+            position:
+                absolute;
+
+            left:
+                16px;
+
+            bottom:
+                16px;
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                7px;
+
+            padding:
+                8px 12px;
+
+            border-radius:
+                6px;
+
+            background:
+                rgba(3,39,25,.84);
+
+            color:
+                #fff;
+
+            font-size:
+                9px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .7px;
+
+            backdrop-filter:
+                blur(6px);
+
+        }
+
+
+        .visual-label i {
+
+            color:
+                var(--gold);
+
+        }
+
+
+        .about-copy .mini-label,
+        .event-copy .mini-label {
+
+            display:
+                inline-block;
+
+            color:
+                var(--green-700);
+
+            font-size:
+                9px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                1.7px;
+
+        }
+
+
+        .about-copy h3 {
+
+            margin:
+                9px 0 17px;
+
+            color:
+                var(--green-950);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                35px;
+
+            line-height:
+                1.13;
+
+            letter-spacing:
+                -.8px;
+
+        }
+
+
+        .about-copy p {
+
+            margin-bottom:
+                13px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                13px;
+
+        }
+
+
+        .text-link {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                7px;
+
+            margin-top:
+                6px;
+
+            color:
+                var(--green-700);
+
+            font-size:
+                11px;
+
+            font-weight:
+                800;
+
+            transition:
+                .2s var(--ease);
+
+        }
+
+
+        .text-link:hover {
+
+            gap:
+                11px;
+
+        }
+
+
+        /* =====================================================
+           VISION / MISSION
+           ===================================================== */
+
+        .direction-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2,1fr);
+
+            gap:
+                20px;
+
+        }
+
+
+        .direction-card {
+
+            position:
+                relative;
+
+            overflow:
+                hidden;
+
+            padding:
+                32px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                var(--radius);
+
+            background:
+                #fff;
+
+            box-shadow:
+                var(--shadow-xs);
+
+            transition:
+                .25s var(--ease);
+
+        }
+
+
+        .direction-card:hover {
+
+            transform:
+                translateY(-5px);
+
+            box-shadow:
+                var(--shadow);
+
+        }
+
+
+        .direction-card::before {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            left:
+                0;
+
+            top:
+                0;
+
+            bottom:
+                0;
+
+            width:
+                4px;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    var(--green-700),
+                    var(--gold)
+                );
+
+        }
+
+
+        .direction-icon {
+
+            width:
+                48px;
+
+            height:
+                48px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            margin-bottom:
+                17px;
+
+            border-radius:
+                12px;
+
+            background:
+                #edf6ef;
+
+            color:
+                var(--green-700);
+
+        }
+
+
+        .direction-card h3 {
+
+            margin-bottom:
+                8px;
+
+            color:
+                var(--green-950);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                20px;
+
+        }
+
+
+        .direction-card p {
+
+            color:
+                var(--muted);
+
+            font-size:
+                13px;
+
+        }
+
+
+        /* =====================================================
+           PROGRAMS / AREAS OF WORK
+           ===================================================== */
+
+        .program-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3,1fr);
+
+            gap:
+                20px;
+
+        }
+
+
+        .program-card {
+
+            overflow:
+                hidden;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                var(--radius);
+
+            background:
+                #fff;
+
+            box-shadow:
+                var(--shadow-xs);
+
+            transition:
+                .25s var(--ease);
+
+        }
+
+
+        .program-card:hover {
+
+            transform:
+                translateY(-6px);
+
+            box-shadow:
+                var(--shadow);
+
+        }
+
+
+        .program-image {
+
+            width:
+                100%;
+
+            aspect-ratio:
+                16 / 10;
+
+            overflow:
+                hidden;
+
+            background:
+                #e4ede7;
+
+            contain:
+                layout paint;
+
+        }
+
+
+        .program-image img {
+
+            width:
+                100%;
+
+            height:
+                100%;
+
+            object-fit:
+                cover;
+
+            transition:
+                transform .65s ease;
+
+        }
+
+
+        .program-card:hover
+        .program-image img {
+
+            transform:
+                scale(1.045);
+
+        }
+
+
+        .program-body {
+
+            padding:
+                22px;
+
+        }
+
+
+        .program-number {
+
+            color:
+                var(--green-700);
+
+            font-size:
+                9px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                1px;
+
+        }
+
+
+        .program-body h3 {
+
+            margin:
+                5px 0 7px;
+
+            color:
+                var(--green-950);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                18px;
+
+            line-height:
+                1.3;
+
+        }
+
+
+        .program-body p {
+
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
+
+        }
+
+
+        /* =====================================================
+           IMPACT
+           ===================================================== */
+
+        .impact-highlight {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1.03fr .97fr;
+
+            gap:
+                60px;
+
+            align-items:
+                center;
+
+        }
+
+
+        .impact-copy .section-label {
+
+            margin-bottom:
+                6px;
+
+        }
+
+
+        .impact-copy h3 {
+
+            margin-bottom:
+                13px;
+
+            color:
+                #fff;
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                35px;
+
+            line-height:
+                1.13;
+
+            letter-spacing:
+                -.8px;
+
+        }
+
+
+        .impact-copy p {
+
+            max-width:
+                580px;
+
+            color:
+                #cdded3;
+
+            font-size:
+                13px;
+
+        }
+
+
+        .impact-metrics {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2,1fr);
+
+            gap:
+                13px;
+
+        }
+
+
+        .metric {
+
+            min-height:
+                145px;
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            justify-content:
+                center;
+
+            align-items:
+                center;
+
+            padding:
+                22px;
+
+            text-align:
+                center;
+
+            border:
+                1px solid rgba(255,255,255,.12);
+
+            border-radius:
+                15px;
+
+            background:
+                rgba(255,255,255,.06);
+
+            backdrop-filter:
+                blur(7px);
+
+        }
+
+
+        .metric strong {
+
+            display:
+                block;
+
+            color:
+                var(--gold);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                34px;
+
+            line-height:
+                1;
+
+        }
+
+
+        .metric span {
+
+            display:
+                block;
+
+            margin-top:
+                8px;
+
+            color:
+                #cbdcd2;
+
+            font-size:
+                10px;
+
+            font-weight:
+                700;
+
+            letter-spacing:
+                .5px;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        /* =====================================================
+           EVENTS / STORIES
+           ===================================================== */
+
+        .events-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap:
+                60px;
+
+            align-items:
+                center;
+
+        }
+
+
+        .events-image {
+
+            position:
+                relative;
+
+            width:
+                100%;
+
+            height:
+                415px;
+
+            overflow:
+                hidden;
+
+            border-radius:
+                var(--radius-lg);
+
+            background:
+                #dfe9e3;
+
+            box-shadow:
+                var(--shadow);
+
+            contain:
+                layout paint;
+
+        }
+
+
+        .event-slide {
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            width:
+                100%;
+
+            height:
+                100%;
+
+            object-fit:
+                cover;
+
+            opacity:
+                0;
+
+            transition:
+                opacity 1s ease;
+
+        }
+
+
+        .event-slide.active {
+
+            opacity:
+                1;
+
+        }
+
+
+        .event-caption {
+
+            position:
+                absolute;
+
+            left:
+                17px;
+
+            bottom:
+                17px;
+
+            padding:
+                8px 12px;
+
+            border-radius:
+                6px;
+
+            background:
+                rgba(3,39,25,.86);
+
+            color:
+                #fff;
+
+            font-size:
+                9px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .7px;
+
+            backdrop-filter:
+                blur(6px);
+
+        }
+
+
+        .event-caption i {
+
+            color:
+                var(--gold);
+
+            margin-right:
+                3px;
+
+        }
+
+
+        .event-date {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            gap:
+                5px;
+
+            margin-top:
+                10px;
+
+            padding:
+                6px 10px;
+
+            border-radius:
+                6px;
+
+            background:
+                #edf6ef;
+
+            color:
+                var(--green-700);
+
+            font-size:
+                9px;
+
+            font-weight:
+                800;
+
+        }
+
+
+        .event-copy h3 {
+
+            margin:
+                11px 0 15px;
+
+            color:
+                var(--green-950);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                32px;
+
+            line-height:
+                1.13;
+
+            letter-spacing:
+                -.7px;
+
+        }
+
+
+        .event-copy p {
+
+            margin-bottom:
+                12px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                13px;
+
+        }
+
+
+        /* =====================================================
+           LEADERSHIP
+           ===================================================== */
+
+        .team-section {
+
+            background:
+                linear-gradient(
+                    180deg,
+                    #fff 0%,
+                    #f3f8f5 100%
+                );
+
+        }
+
+
+        .team-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(4,minmax(0,1fr));
+
+            gap:
+                19px;
+
+        }
+
+
+        .team-card {
+
+            overflow:
+                hidden;
+
+            height:
+                100%;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                16px;
+
+            background:
+                #fff;
+
+            box-shadow:
+                var(--shadow-xs);
+
+            transition:
+                .25s var(--ease);
+
+        }
+
+
+        .team-card:hover {
+
+            transform:
+                translateY(-5px);
+
+            box-shadow:
+                var(--shadow);
+
+        }
+
+
+        .team-photo {
+
+            position:
+                relative;
+
+            width:
+                100%;
+
+            aspect-ratio:
+                4 / 4.65;
+
+            overflow:
+                hidden;
+
+            background:
+                #e5eee8;
+
+        }
+
+
+        .team-photo img {
+
+            width:
+                100%;
+
+            height:
+                100%;
+
+            object-fit:
+                cover;
+
+            object-position:
+                center 20%;
+
+            transition:
+                transform .45s ease;
+
+        }
+
+
+        .team-card:hover
+        .team-photo img {
+
+            transform:
+                scale(1.025);
+
+        }
+
+
+        .team-photo::after {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            left:
+                0;
+
+            right:
+                0;
+
+            bottom:
+                0;
+
+            height:
+                30%;
+
+            background:
+                linear-gradient(
+                    to top,
+                    rgba(3,39,25,.28),
+                    transparent
+                );
+
+            pointer-events:
+                none;
+
+        }
+
+
+        .team-info {
+
+            padding:
+                17px 14px;
+
+            text-align:
+                center;
+
+        }
+
+
+        .team-info h3 {
+
+            margin-bottom:
+                6px;
+
+            color:
+                var(--green-950);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                16px;
+
+            line-height:
+                1.25;
+
+        }
+
+
+        .team-role {
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            min-height:
+                25px;
+
+            padding:
+                5px 9px;
+
+            border-radius:
+                999px;
+
+            background:
+                #edf6ef;
+
+            color:
+                var(--green-700);
+
+            font-size:
+                8px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .5px;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .team-socials {
+
+            display:
+                flex;
+
+            justify-content:
+                center;
+
+            gap:
+                5px;
+
+            margin-top:
+                11px;
+
+        }
+
+
+        .team-socials .social-link {
+
+            width:
+                28px;
+
+            height:
+                28px;
+
+            display:
+                inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border-radius:
+                50%;
+
+            background:
+                var(--surface-2);
+
+            color:
+                var(--green-800);
+
+            font-size:
+                10px;
+
+            transition:
+                .2s ease;
+
+        }
+
+
+        .team-socials .social-link:hover {
+
+            background:
+                var(--gold-soft);
+
+            transform:
+                translateY(-2px);
+
+        }
+
+
+        /* =====================================================
+           FUTURE PRIORITIES
+           ===================================================== */
+
+        .future-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2,1fr);
+
+            gap:
+                18px;
+
+        }
+
+
+        .future-card {
+
+            padding:
+                27px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                15px;
+
+            background:
+                #fff;
+
+            box-shadow:
+                var(--shadow-xs);
+
+            transition:
+                .25s var(--ease);
+
+        }
+
+
+        .future-card:hover {
+
+            transform:
+                translateY(-4px);
+
+            box-shadow:
+                var(--shadow);
+
+        }
+
+
+        .future-number {
+
+            color:
+                var(--green-700);
+
+            font-size:
+                9px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                1px;
+
+        }
+
+
+        .future-card h3 {
+
+            margin:
+                7px 0 6px;
+
+            color:
+                var(--green-950);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                19px;
+
+        }
+
+
+        .future-card p {
+
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
+
+        }
+
+
+        /* =====================================================
+           GET INVOLVED
+           ===================================================== */
+
+        .action-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3,1fr);
+
+            gap:
+                18px;
+
+        }
+
+
+        .action-card {
+
+            padding:
+                28px 21px;
+
+            text-align:
+                center;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                15px;
+
+            background:
+                #fff;
+
+            transition:
+                .25s var(--ease);
+
+        }
+
+
+        .action-card:hover {
+
+            transform:
+                translateY(-4px);
+
+            box-shadow:
+                var(--shadow);
+
+        }
+
+
+        .action-icon {
+
+            width:
+                49px;
+
+            height:
+                49px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            margin:
+                0 auto 14px;
+
+            border-radius:
+                12px;
+
+            background:
+                #ecf6ef;
+
+            color:
+                var(--green-700);
+
+            font-size:
+                18px;
+
+        }
+
+
+        .action-card h3 {
+
+            margin-bottom:
+                7px;
+
+            color:
+                var(--green-950);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                18px;
+
+        }
+
+
+        .action-card p {
+
+            margin-bottom:
+                11px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
+
+        }
+
+
+        .action-link {
+
+            color:
+                var(--green-700);
+
+            font-size:
+                10px;
+
+            font-weight:
+                800;
+
+        }
+
+
+        /* =====================================================
+           CONTACT
+           ===================================================== */
+
+        .contact-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2,1fr);
+
+            gap:
+                14px;
+
+            margin-top:
+                21px;
+
+        }
+
+
+        .contact-card {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            gap:
+                13px;
+
+            padding:
+                18px;
+
+            border:
+                1px solid var(--border);
+
+            border-radius:
+                13px;
+
+            background:
+                #fff;
+
+            box-shadow:
+                var(--shadow-xs);
+
+        }
+
+
+        .contact-icon {
+
+            width:
+                43px;
+
+            height:
+                43px;
+
+            min-width:
+                43px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border-radius:
+                10px;
+
+            background:
+                #ecf6ef;
+
+            color:
+                var(--green-700);
+
+        }
+
+
+        .contact-card small {
+
+            display:
+                block;
+
+            color:
+                var(--muted);
+
+            font-size:
+                8px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .8px;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .contact-card a {
+
+            display:
+                block;
+
+            color:
+                var(--green-950);
+
+            font-size:
+                12px;
+
+            font-weight:
+                800;
+
+            overflow-wrap:
+                anywhere;
+
+        }
+
+
+        /* =====================================================
+           FINAL CALL TO ACTION
+           ===================================================== */
+
+        .final-cta {
+
+            padding:
+                92px 20px;
+
+            text-align:
+                center;
+
+            color:
+                #fff;
+
+            background:
+                radial-gradient(
+                    circle at top right,
+                    rgba(216,177,63,.18),
+                    transparent 32%
+                ),
+                linear-gradient(
+                    135deg,
+                    var(--green-700),
+                    var(--green-950)
+                );
+
+        }
+
+
+        .final-cta h2 {
+
+            margin-bottom:
+                11px;
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                clamp(35px,5vw,54px);
+
+            line-height:
+                1.06;
+
+            letter-spacing:
+                -1.5px;
+
+        }
+
+
+        .final-cta p {
+
+            max-width:
+                620px;
+
+            margin:
+                0 auto 24px;
+
+            color:
+                #dceee3;
+
+            font-size:
+                13px;
+
+        }
+
+
+        /* =====================================================
+           FOOTER
+           ===================================================== */
+
+        .footer {
+
+            padding-top:
+                58px;
+
+            background:
+                var(--green-950);
+
+            color:
+                #b8cdc0;
+
+        }
+
+
+        .footer-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1.55fr 1fr 1fr 1fr;
+
+            gap:
+                37px;
+
+            padding-bottom:
+                42px;
+
+        }
+
+
+        .footer-logo {
+
+            width:
+                60px;
+
+            height:
+                60px;
+
+            object-fit:
+                contain;
+
+            border-radius:
+                50%;
+
+            background:
+                #fff;
+
+            padding:
+                4px;
+
+            margin-bottom:
+                13px;
+
+        }
+
+
+        .footer h3 {
+
+            margin-bottom:
+                7px;
+
+            color:
+                #fff;
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                18px;
+
+        }
+
+
+        .footer h4 {
+
+            margin-bottom:
+                13px;
+
+            color:
+                #fff;
+
+            font-size:
+                12px;
+
+        }
+
+
+        .footer p,
+        .footer a {
+
+            color:
+                #a8c0b1;
+
+            font-size:
+                11px;
+
+        }
+
+
+        .footer p {
+
+            margin-bottom:
+                6px;
+
+        }
+
+
+        .footer a {
+
+            display:
+                block;
+
+            margin:
+                7px 0;
+
+            transition:
+                .2s ease;
+
+        }
+
+
+        .footer a:hover {
+
+            color:
+                var(--gold);
+
+            padding-left:
+                3px;
+
+        }
+
+
+        .footer-socials {
+
+            display:
+                flex;
+
+            gap:
+                7px;
+
+            margin-top:
+                14px;
+
+        }
+
+
+        .footer-social {
+
+            width:
+                32px;
+
+            height:
+                32px;
+
+            display:
+                flex !important;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            margin:
+                0 !important;
+
+            padding:
+                0 !important;
+
+            border-radius:
+                50%;
+
+            background:
+                rgba(255,255,255,.08);
+
+            color:
+                #fff !important;
+
+        }
+
+
+        .footer-social:hover {
+
+            background:
+                var(--green-700);
+
+            color:
+                var(--gold) !important;
+
+            transform:
+                translateY(-2px);
+
+        }
+
+
+        .footer-bottom {
+
+            border-top:
+                1px solid rgba(255,255,255,.09);
+
+            padding:
+                18px 0;
+
+        }
+
+
+        .footer-bottom-inner {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                15px;
+
+        }
+
+
+        .footer-bottom p {
+
+            margin:
+                0;
+
+            font-size:
+                9px;
+
+        }
+
+
+        .footer-slogan {
+
+            color:
+                var(--gold) !important;
+
+            font-weight:
+                800;
+
+        }
+
+
+        /* =====================================================
+           BACK TO TOP
+           ===================================================== */
+
+        .back-top {
+
+            position:
+                fixed;
+
+            right:
+                18px;
+
+            bottom:
+                18px;
+
+            z-index:
+                4000;
+
+            width:
+                42px;
+
+            height:
+                42px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border-radius:
+                10px;
+
+            background:
+                var(--green-800);
+
+            color:
+                #fff;
+
+            cursor:
+                pointer;
+
+            opacity:
+                0;
+
+            visibility:
+                hidden;
+
+            transform:
+                translateY(12px);
+
+            transition:
+                .25s var(--ease);
+
+            box-shadow:
+                0 10px 28px rgba(3,39,25,.22);
+
+        }
+
+
+        .back-top.show {
+
+            opacity:
+                1;
+
+            visibility:
+                visible;
+
+            transform:
+                translateY(0);
+
+        }
+
+
+        /* =====================================================
+           DONATION MODAL
+           ===================================================== */
+
+        .donation-modal {
+
+            position:
+                fixed;
+
+            inset:
+                0;
+
+            z-index:
+                100000;
+
+            display:
+                none;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            padding:
+                14px;
+
+        }
+
+
+        .donation-modal.active {
+
+            display:
+                flex;
+
+        }
+
+
+        .donation-backdrop {
+
+            position:
+                absolute;
+
+            inset:
+                0;
+
+            background:
+                rgba(3,24,15,.84);
+
+            backdrop-filter:
+                blur(8px);
+
+            -webkit-backdrop-filter:
+                blur(8px);
+
+        }
+
+
+        .donation-card {
+
+            position:
+                relative;
+
+            z-index:
+                2;
+
+            width:
+                min(560px,100%);
+
+            max-height:
+                calc(100dvh - 28px);
+
+            overflow-y:
+                auto;
+
+            padding:
+                30px;
+
+            border-radius:
+                22px;
+
+            background:
+                #fff;
+
+            box-shadow:
+                var(--shadow-lg);
+
+            animation:
+                donationIn .25s ease;
+
+        }
+
+
+        @keyframes donationIn {
+
+            from {
+
+                opacity:
+                    0;
+
+                transform:
+                    translateY(18px)
+                    scale(.98);
+
+            }
+
+            to {
+
+                opacity:
+                    1;
+
+                transform:
+                    translateY(0)
+                    scale(1);
+
+            }
+
+        }
+
+
+        .donation-close {
+
+            position:
+                absolute;
+
+            top:
+                13px;
+
+            right:
+                13px;
+
+            width:
+                38px;
+
+            height:
+                38px;
+
+            border-radius:
+                50%;
+
+            background:
+                #edf3ef;
+
+            color:
+                var(--green-800);
+
+            font-size:
+                22px;
+
+            cursor:
+                pointer;
+
+        }
+
+
+        .donation-kicker {
+
+            display:
+                block;
+
+            margin-bottom:
+                6px;
+
+            color:
+                var(--green-700);
+
+            font-size:
+                10px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                1.2px;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .donation-card h2 {
+
+            margin-bottom:
+                7px;
+
+            color:
+                var(--green-950);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                29px;
+
+        }
+
+
+        .donation-intro {
+
+            margin-bottom:
+                18px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                12px;
+
+        }
+
+
+        .donation-main {
+
+            padding:
+                19px;
+
+            border:
+                1px solid #dce8df;
+
+            border-radius:
+                16px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f3f9f5,
+                    #fff
+                );
+
+        }
+
+
+        .donation-label {
+
+            display:
+                block;
+
+            margin-bottom:
+                5px;
+
+            color:
+                var(--muted);
+
+            font-size:
+                10px;
+
+            font-weight:
+                800;
+
+            letter-spacing:
+                .7px;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .donation-number {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap:
+                12px;
+
+            margin-bottom:
+                16px;
+
+        }
+
+
+        .donation-number strong {
+
+            color:
+                var(--green-950);
+
+            font-family:
+                "Manrope",
+                sans-serif;
+
+            font-size:
+                34px;
+
+            line-height:
+                1.05;
+
+        }
+
+
+        .donation-copy {
+
+            min-height:
+                38px;
+
+            padding:
+                8px 12px;
+
+            border:
+                1px solid #cfe0d5;
+
+            border-radius:
+                8px;
+
+            background:
+                #fff;
+
+            color:
+                var(--green-800);
+
+            font-size:
+                11px;
+
+            font-weight:
+                800;
+
+            cursor:
+                pointer;
+
+        }
+
+
+        .donation-name {
+
+            padding:
+                13px;
+
+            border:
+                1px solid #e0e9e3;
+
+            border-radius:
+                11px;
+
+            background:
+                #fff;
+
+        }
+
+
+        .donation-name strong {
+
+            display:
+                block;
+
+            color:
+                var(--green-950);
+
+            font-size:
+                17px;
+
+        }
+
+
+        .donation-note {
+
+            margin-top:
+                13px;
+
+            padding:
+                12px;
+
+            border:
+                1px solid #eddfa9;
+
+            border-radius:
+                10px;
+
+            background:
+                #fffaf0;
+
+            color:
+                #66582c;
+
+            font-size:
+                11px;
+
+        }
+
+
+        .donation-actions {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap:
+                10px;
+
+            margin-top:
+                14px;
+
+        }
+
+
+        .donation-action {
+
+            min-height:
+                45px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            gap:
+                7px;
+
+            border-radius:
+                9px;
+
+            font-size:
+                12px;
+
+            font-weight:
+                800;
+
+        }
+
+
+        .donation-call {
+
+            background:
+                var(--green-800);
+
+            color:
+                #fff;
+
+        }
+
+
+        .donation-email {
+
+            background:
+                #edf6ef;
+
+            color:
+                var(--green-800);
+
+            border:
+                1px solid #d5e7da;
+
+        }
+
+
+        .donation-footer {
+
+            margin-top:
+                13px;
+
+            text-align:
+                center;
+
+            color:
+                #7c8b83;
+
+            font-size:
+                10px;
+
+        }
+
+
+        .donation-toast {
+
+            position:
+                fixed;
+
+            left:
+                50%;
+
+            bottom:
+                20px;
+
+            z-index:
+                200000;
+
+            padding:
+                9px 13px;
+
+            border-radius:
+                8px;
+
+            background:
+                var(--green-950);
+
+            color:
+                #fff;
+
+            font-size:
+                11px;
+
+            font-weight:
+                700;
+
+            opacity:
+                0;
+
+            pointer-events:
+                none;
+
+            transform:
+                translate(-50%,12px);
+
+            transition:
+                .25s var(--ease);
+
+        }
+
+
+        .donation-toast.show {
+
+            opacity:
+                1;
+
+            transform:
+                translate(-50%,0);
+
+        }
+
+
+        /* =====================================================
+           PERFORMANCE OPTIMIZATION
+           ===================================================== */
+
+        img {
+
+            content-visibility:
+                auto;
+
+        }
+
+
+        .hero-slide {
+
+            contain:
+                paint;
+
+        }
+
+
+        .section:not(#home) {
+
+            content-visibility:
+                auto;
+
+            contain-intrinsic-size:
+                700px;
+
+        }
+
+
+        .program-image,
+        .events-image,
+        .visual-frame,
+        .team-photo {
+
+            contain:
+                layout paint;
+
+        }
+
+
+        /* =====================================================
+           TABLET
+           ===================================================== */
+
+        @media (max-width: 1120px) {
+
+            .nav-links a {
+
+                padding-inline:
+                    7px;
+
+                font-size:
+                    10px;
+
+            }
+
+            .nav-links
+            .donate-nav,
+            .nav-links
+            .login-nav {
+
+                padding-inline:
+                    11px;
+
+            }
+
+            .program-grid {
+
+                grid-template-columns:
+                    repeat(2,1fr);
+
+            }
+
+            .team-grid {
+
+                grid-template-columns:
+                    repeat(3,minmax(0,1fr));
+
+            }
+
+            .footer-grid {
+
+                grid-template-columns:
+                    repeat(2,1fr);
+
+            }
+
+        }
+
+
+        /* =====================================================
+           MOBILE NAV + LAYOUT
+           ===================================================== */
+
+        @media (max-width: 850px) {
+
+            .topbar-left {
+
+                display:
+                    none;
+
+            }
+
+
+            .topbar-inner {
+
+                justify-content:
+                    center;
+
+            }
+
+
+            .nav-inner {
+
+                min-height:
+                    68px;
+
+            }
+
+
+            .menu-toggle {
+
+                display:
+                    flex;
+
+            }
+
+
+            .nav-links {
+
+                position:
+                    absolute;
+
+                top:
+                    calc(100% + 7px);
+
+                left:
+                    12px;
+
+                right:
+                    12px;
+
+                display:
+                    flex;
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    stretch;
+
+                gap:
+                    2px;
+
+                padding:
+                    9px;
+
+                border:
+                    1px solid var(--border);
+
+                border-radius:
+                    14px;
+
+                background:
+                    #fff;
+
+                box-shadow:
+                    var(--shadow);
+
+                opacity:
+                    0;
+
+                visibility:
+                    hidden;
+
+                pointer-events:
+                    none;
+
+                transform:
+                    translateY(-8px);
+
+                transition:
+                    .25s var(--ease);
+
+            }
+
+
+            .nav-links.open {
+
+                opacity:
+                    1;
+
+                visibility:
+                    visible;
+
+                pointer-events:
+                    auto;
+
+                transform:
+                    translateY(0);
+
+            }
+
+
+            .nav-links a {
+
+                width:
+                    100%;
+
+                min-height:
+                    42px;
+
+                padding:
+                    11px 12px;
+
+                font-size:
+                    13px;
+
+            }
+
+
+            .nav-links
+            .donate-nav,
+            .nav-links
+            .login-nav {
+
+                margin-left:
+                    0;
+
+                text-align:
+                    center;
+
+                justify-content:
+                    center;
+
+            }
+
+
+            .hero {
+
+                min-height:
+                    650px;
+
+            }
+
+
+            .hero-inner {
+
+                min-height:
+                    650px;
+
+            }
+
+
+            .hero-content {
+
+                padding:
+                    76px 0 92px;
+
+            }
+
+
+            .hero h1 {
+
+                font-size:
+                    clamp(39px,10vw,56px);
+
+                letter-spacing:
+                    -1.5px;
+
+            }
+
+
+            .hero-description {
+
+                font-size:
+                    13px;
+
+            }
+
+
+            .hero-actions {
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    stretch;
+
+                max-width:
+                    330px;
+
+            }
+
+
+            .hero-actions .btn {
+
+                width:
+                    100%;
+
+            }
+
+
+            .trust-grid {
+
+                grid-template-columns:
+                    repeat(2,1fr);
+
+            }
+
+
+            .trust-item {
+
+                border-bottom:
+                    1px solid var(--border);
+
+            }
+
+
+            .trust-item:nth-child(2) {
+
+                border-right:
+                    0;
+
+            }
+
+
+            .trust-item:nth-child(3),
+            .trust-item:nth-child(4) {
+
+                border-bottom:
+                    0;
+
+            }
+
+
+            .section {
+
+                padding:
+                    68px 0;
+
+            }
+
+
+            .about-grid,
+            .impact-highlight,
+            .events-grid {
+
+                grid-template-columns:
+                    1fr;
+
+                gap:
+                    32px;
+
+            }
+
+
+            .visual-frame {
+
+                height:
+                    340px;
+
+            }
+
+
+            .events-image {
+
+                height:
+                    330px;
+
+            }
+
+
+            .impact-copy {
+
+                text-align:
+                    center;
+
+            }
+
+
+            .impact-copy p {
+
+                margin-inline:
+                    auto;
+
+            }
+
+
+            .impact-copy .section-label {
+
+                justify-content:
+                    center;
+
+            }
+
+
+            .team-grid {
+
+                grid-template-columns:
+                    repeat(2,minmax(0,1fr));
+
+            }
+
+
+            .action-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .contact-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           SMALL MOBILE
+           ===================================================== */
+
+        @media (max-width: 560px) {
+
+            :root {
+
+                --container:
+                    min(100% - 22px, 1200px);
+
+            }
+
+
+            .brand-copy span {
+
+                display:
+                    none;
+
+            }
+
+
+            .logo {
+
+                width:
+                    43px;
+
+                height:
+                    43px;
+
+            }
+
+
+            .hero {
+
+                min-height:
+                    610px;
+
+            }
+
+
+            .hero-inner {
+
+                min-height:
+                    610px;
+
+            }
+
+
+            .hero-overlay {
+
+                background:
+                    linear-gradient(
+                        90deg,
+                        rgba(2,30,19,.97),
+                        rgba(2,30,19,.63)
+                    );
+
+            }
+
+
+            .hero-content {
+
+                padding:
+                    58px 0 86px;
+
+            }
+
+
+            .hero-description {
+
+                font-size:
+                    12px;
+
+                line-height:
+                    1.7;
+
+            }
+
+
+            .hero-kicker {
+
+                font-size:
+                    8px;
+
+                letter-spacing:
+                    1px;
+
+            }
+
+
+            .hero-control {
+
+                width:
+                    36px;
+
+                height:
+                    36px;
+
+            }
+
+
+            .trust-item {
+
+                min-height:
+                    100px;
+
+                padding:
+                    16px 7px;
+
+            }
+
+
+            .trust-value {
+
+                font-size:
+                    23px;
+
+            }
+
+
+            .trust-label {
+
+                font-size:
+                    8px;
+
+            }
+
+
+            .section-heading {
+
+                margin-bottom:
+                    35px;
+
+            }
+
+
+            .section-heading h2 {
+
+                font-size:
+                    31px;
+
+            }
+
+
+            .mission-intro p {
+
+                font-size:
+                    22px;
+
+            }
+
+
+            .direction-grid,
+            .program-grid,
+            .future-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .program-image {
+
+                aspect-ratio:
+                    16 / 10;
+
+            }
+
+
+            .impact-metrics {
+
+                grid-template-columns:
+                    repeat(2,1fr);
+
+            }
+
+
+            .metric {
+
+                min-height:
+                    125px;
+
+            }
+
+
+            .team-grid {
+
+                grid-template-columns:
+                    repeat(2,minmax(0,1fr));
+
+                gap:
+                    10px;
+
+            }
+
+
+            .team-photo {
+
+                aspect-ratio:
+                    1 / 1.18;
+
+            }
+
+
+            .team-info {
+
+                padding:
+                    14px 9px;
+
+            }
+
+
+            .team-info h3 {
+
+                font-size:
+                    13px;
+
+            }
+
+
+            .team-role {
+
+                font-size:
+                    7px;
+
+                padding-inline:
+                    7px;
+
+            }
+
+
+            .team-socials {
+
+                gap:
+                    3px;
+
+            }
+
+
+            .team-socials
+            .social-link {
+
+                width:
+                    25px;
+
+                height:
+                    25px;
+
+                font-size:
+                    9px;
+
+            }
+
+
+            .footer-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .footer-bottom-inner {
+
+                flex-direction:
+                    column;
+
+                text-align:
+                    center;
+
+            }
+
+
+            .donation-card {
+
+                padding:
+                    22px 15px 18px;
+
+            }
+
+
+            .donation-number {
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    stretch;
+
+            }
+
+
+            .donation-number strong {
+
+                text-align:
+                    center;
+
+                font-size:
+                    28px;
+
+            }
+
+
+            .donation-copy {
+
+                width:
+                    100%;
+
+            }
+
+
+            .donation-actions {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           REDUCED MOTION
+           ===================================================== */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+
+                animation:
+                    none !important;
+
+                transition:
+                    none !important;
+
+                scroll-behavior:
+                    auto !important;
+
+            }
+
+        }
+
+    
+
+/* ============================================================
+   DCF RESPONSIVE VISUAL OVERRIDE
+   ------------------------------------------------------------
+   Existing HTML + JavaScript are intentionally left unchanged.
+   This block only improves visual responsiveness, spacing,
+   touch usability, overflow handling and cross-browser fallbacks.
+   ============================================================ */
+
+/* Safe defaults for every screen */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+*, *::before, *::after {
+    min-width: 0;
+}
+
+.container,
+.container-wide {
+    width: min(100% - 32px, 1200px);
+}
+
+.container-wide {
+    width: min(100% - 32px, 1320px);
+}
+
+/* Better keyboard focus without changing the design */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid rgba(216,177,63,.72);
+    outline-offset: 3px;
+}
+
+/* Touch-friendly controls */
+button,
+a,
+input,
+select,
+textarea {
+    touch-action: manipulation;
+}
+
+button,
+.nav-links a,
+.btn,
+.donation-action,
+.donation-copy,
+.hero-control,
+.hero-dot,
+.menu-toggle,
+.back-top {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Prevent long URLs/emails from breaking layouts */
+a,
+p,
+h1,
+h2,
+h3,
+h4,
+span,
+strong,
+small {
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+/* Images remain inside their containers */
+img,
+svg,
+video,
+iframe {
+    max-width: 100%;
+}
+
+/* ============================================================
+   LARGE TABLETS / SMALL LAPTOPS
+   ============================================================ */
+@media (max-width: 1200px) {
+    .nav-inner {
+        gap: 14px;
+    }
+
+    .nav-links {
+        gap: 1px;
+    }
+
+    .nav-links a {
+        padding-left: 8px;
+        padding-right: 8px;
+        font-size: 10px;
+    }
+
+    .program-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .team-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .footer-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* ============================================================
+   TABLET + MOBILE
+   ============================================================ */
+@media (max-width: 850px) {
+    .container,
+    .container-wide {
+        width: min(100% - 28px, 720px);
+    }
+
+    .topbar {
+        min-height: 32px;
+    }
+
+    .topbar-left {
+        display: none;
+    }
+
+    .topbar-inner {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .nav-inner {
+        min-height: 66px;
+    }
+
+    .brand {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .brand-copy strong {
+        font-size: clamp(15px, 4vw, 18px);
+    }
+
+    .menu-toggle {
+        display: flex;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        flex: 0 0 44px;
+    }
+
+    .nav-links {
+        left: 10px;
+        right: 10px;
+        max-height: calc(100vh - 82px);
+        max-height: calc(100dvh - 82px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
+
+    .nav-links a {
+        min-height: 44px;
+        padding: 11px 13px;
+        font-size: 13px;
+    }
+
+    .hero {
+        min-height: 640px;
+        min-height: min(720px, calc(100svh - 32px));
+    }
+
+    .hero-inner {
+        min-height: 640px;
+        min-height: min(720px, calc(100svh - 32px));
+    }
+
+    .hero-content {
+        width: 100%;
+        padding-top: 72px;
+        padding-bottom: 92px;
+    }
+
+    .hero h1 {
+        font-size: clamp(36px, 8.8vw, 58px);
+        max-width: 100%;
+    }
+
+    .hero-description {
+        max-width: 680px;
+    }
+
+    .hero-actions {
+        width: 100%;
+    }
+
+    .hero-actions .btn {
+        min-height: 48px;
+    }
+
+    .trust-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .about-grid,
+    .impact-highlight,
+    .events-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 30px;
+    }
+
+    .visual-frame {
+        height: auto;
+        aspect-ratio: 16 / 10;
+        min-height: 280px;
+    }
+
+    .events-image {
+        height: auto;
+        aspect-ratio: 16 / 10;
+        min-height: 270px;
+    }
+
+    .direction-grid,
+    .future-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .action-grid,
+    .contact-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .impact-copy {
+        text-align: center;
+    }
+
+    .impact-copy p {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .impact-copy .section-label {
+        justify-content: center;
+    }
+
+    .team-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .footer-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .footer-bottom-inner {
+        flex-wrap: wrap;
+    }
+}
+
+/* ============================================================
+   PHONES
+   ============================================================ */
+@media (max-width: 560px) {
+    .container,
+    .container-wide {
+        width: min(100% - 22px, 540px);
+    }
+
+    .topbar {
+        font-size: 9px;
+    }
+
+    .nav-inner {
+        min-height: 62px;
+    }
+
+    .logo {
+        width: 42px;
+        height: 42px;
+    }
+
+    .brand {
+        gap: 8px;
+    }
+
+    .brand-copy span {
+        display: none;
+    }
+
+    .menu-toggle {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .nav-links {
+        top: calc(100% + 5px);
+        left: 8px;
+        right: 8px;
+        padding: 7px;
+        border-radius: 13px;
+        max-height: calc(100vh - 74px);
+        max-height: calc(100dvh - 74px);
+    }
+
+    .nav-links a {
+        min-height: 44px;
+        font-size: 12px;
+        padding: 11px 12px;
+    }
+
+    .hero,
+    .hero-inner {
+        min-height: 610px;
+        min-height: max(610px, calc(100svh - 62px));
+    }
+
+    .hero-content {
+        padding: 52px 0 82px;
+    }
+
+    .hero h1 {
+        font-size: clamp(32px, 10.5vw, 48px);
+        line-height: 1.04;
+        letter-spacing: -1.2px;
+    }
+
+    .hero-description {
+        font-size: 12px;
+        line-height: 1.75;
+    }
+
+    .hero-actions {
+        gap: 9px;
+        max-width: none;
+    }
+
+    .hero-actions .btn {
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .hero-controls {
+        right: 14px;
+        bottom: 18px;
+    }
+
+    .hero-control {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+    }
+
+    .hero-dots {
+        bottom: 20px;
+    }
+
+    .trust-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .trust-item {
+        min-height: 96px;
+        padding: 14px 6px;
+    }
+
+    .trust-value {
+        font-size: 22px;
+    }
+
+    .trust-label {
+        font-size: 8px;
+        line-height: 1.35;
+    }
+
+    .section {
+        padding: 58px 0;
+    }
+
+    .section-heading {
+        margin-bottom: 30px;
+    }
+
+    .section-heading h2 {
+        font-size: clamp(28px, 8.5vw, 34px);
+        line-height: 1.12;
+    }
+
+    .section-heading p {
+        font-size: 12px;
+    }
+
+    .mission-intro p {
+        font-size: clamp(21px, 6.5vw, 27px);
+    }
+
+    .direction-grid,
+    .program-grid,
+    .future-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .direction-card,
+    .future-card {
+        padding: 23px 18px;
+    }
+
+    .program-body {
+        padding: 18px;
+    }
+
+    .program-body h3 {
+        font-size: 17px;
+    }
+
+    .visual-frame,
+    .events-image {
+        min-height: 240px;
+    }
+
+    .impact-metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .metric {
+        min-height: 112px;
+        padding: 16px 8px;
+    }
+
+    .metric strong {
+        font-size: 27px;
+    }
+
+    .metric span {
+        font-size: 8px;
+        line-height: 1.35;
+    }
+
+    .team-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .team-info {
+        padding: 12px 7px;
+    }
+
+    .team-info h3 {
+        font-size: 12px;
+    }
+
+    .team-role {
+        max-width: 100%;
+        font-size: 7px;
+        line-height: 1.25;
+    }
+
+    .team-socials .social-link {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+    }
+
+    .footer-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 26px;
+    }
+
+    .footer-bottom-inner {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .back-top {
+        right: max(12px, env(safe-area-inset-right));
+        bottom: max(12px, env(safe-area-inset-bottom));
+        width: 44px;
+        height: 44px;
+    }
+
+    .donation-modal {
+        align-items: flex-end;
+        padding: 8px;
+        padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+
+    .donation-card {
+        width: 100%;
+        max-width: 520px;
+        max-height: calc(100vh - 16px);
+        max-height: calc(100dvh - 16px);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 18px;
+        padding: 22px 15px 18px;
+    }
+
+    .donation-actions {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .donation-action,
+    .donation-copy {
+        min-height: 48px;
+    }
+}
+
+/* ============================================================
+   VERY SMALL PHONES
+   ============================================================ */
+@media (max-width: 380px) {
+    .container,
+    .container-wide {
+        width: calc(100% - 18px);
+    }
+
+    .hero h1 {
+        font-size: clamp(29px, 10.8vw, 42px);
+    }
+
+    .hero-description {
+        font-size: 11px;
+    }
+
+    .trust-value {
+        font-size: 20px;
+    }
+
+    .team-grid {
+        gap: 7px;
+    }
+
+    .team-info h3 {
+        font-size: 11px;
+    }
+
+    .team-role {
+        font-size: 6.5px;
+    }
+
+    .team-socials {
+        gap: 3px;
+    }
+}
+
+/* ============================================================
+   LANDSCAPE PHONES
+   ============================================================ */
+@media (max-height: 520px) and (orientation: landscape) {
+    .hero,
+    .hero-inner {
+        min-height: 560px;
+    }
+
+    .hero-content {
+        padding-top: 45px;
+        padding-bottom: 70px;
+    }
+
+    .nav-links {
+        max-height: calc(100vh - 74px);
+        max-height: calc(100dvh - 74px);
+    }
+
+    .donation-modal {
+        align-items: flex-start;
+        overflow-y: auto;
+    }
+
+    .donation-card {
+        margin-top: 8px;
+        margin-bottom: 8px;
+        max-height: calc(100vh - 16px);
+        max-height: calc(100dvh - 16px);
+    }
+}
+
+/* ============================================================
+   HOVER ONLY WHERE A REAL HOVER DEVICE EXISTS
+   ============================================================ */
+@media (hover: none), (pointer: coarse) {
+    .program-card:hover,
+    .team-card:hover,
+    .direction-card:hover,
+    .future-card:hover,
+    .action-card:hover {
+        transform: none;
+    }
+
+    .program-card:hover .program-image img,
+    .team-card:hover .team-photo img {
+        transform: none;
+    }
+
+    .btn-primary:hover,
+    .btn-light:hover,
+    .text-link:hover,
+    .footer a:hover {
+        transform: none;
+        padding-left: initial;
+    }
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<!-- ============================================================
+     DCF EVENT ANNOUNCEMENT - EVENT SYSTEM INTEGRATION
+     Added above the original index. Original content below remains unchanged.
+     ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+#dcfEventAnnouncement{display:none;position:sticky;top:0;z-index:99999;width:100%;background:linear-gradient(135deg,#021e13,#063b25);color:#fff;border-bottom:2px solid #d8b13f;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+#dcfEventAnnouncement.dcf-event-visible{display:block}
+.dcf-event-inner{width:min(1200px,calc(100% - 30px));margin:auto;min-height:64px;padding:9px 0;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.dcf-event-info{min-width:0;display:flex;align-items:center;gap:12px}
+.dcf-event-poster-thumb{width:54px;height:54px;flex:0 0 54px;object-fit:cover;border-radius:9px;background:#edf3ef;border:1px solid rgba(255,255,255,.25);display:block}.dcf-event-badge{flex:0 0 auto;background:#d8b13f;color:#021e13;border-radius:7px;padding:6px 9px;font-size:10px;font-weight:900;letter-spacing:.4px}
+.dcf-event-copy{min-width:0}.dcf-event-title{display:block;font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dcf-event-meta{display:block;margin-top:2px;color:#dce9e3;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dcf-event-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}.dcf-event-join{border:0;border-radius:9px;padding:10px 15px;background:#d8b13f;color:#021e13;font-weight:900;font-size:11px;cursor:pointer}.dcf-event-join:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.dcf-event-close{width:35px;height:35px;border:0;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font-size:21px;cursor:pointer}.dcf-event-close:hover{background:rgba(255,255,255,.2)}
+.dcf-event-modal{display:none;position:fixed;inset:0;z-index:100000;background:rgba(2,30,19,.72);backdrop-filter:blur(5px);padding:20px;overflow:auto}.dcf-event-modal.open{display:flex;align-items:center;justify-content:center}
+.dcf-event-card{width:min(760px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.3);position:relative;padding:24px;color:#23372c}.dcf-event-modal-close{position:absolute;right:14px;top:12px;width:36px;height:36px;border:0;border-radius:50%;background:#edf3ef;color:#23372c;font-size:22px;cursor:pointer}.dcf-event-kicker{font-size:10px;font-weight:900;letter-spacing:1px;color:#08752f;text-transform:uppercase}.dcf-event-card h2{margin:5px 45px 4px 0;color:#063b25;font-size:25px}.dcf-event-card p{font-size:13px;line-height:1.6}.dcf-event-poster-wrap{display:flex;justify-content:center;background:#f5f8f6;border:1px solid #dde6e0;border-radius:12px;overflow:hidden;margin:16px 0}.dcf-event-poster{display:none;max-width:100%;max-height:420px;width:auto;height:auto;object-fit:contain}.dcf-event-details{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}.dcf-event-detail{background:#f5f8f6;border-radius:9px;padding:10px;font-size:12px}.dcf-event-detail strong{display:block;color:#063b25;margin-bottom:2px}.dcf-event-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}.dcf-event-field.full{grid-column:1/-1}.dcf-event-field label{display:block;font-size:11px;font-weight:800;margin-bottom:5px}.dcf-event-field input{width:100%;box-sizing:border-box;border:1px solid #cbd8cf;border-radius:9px;padding:11px 12px;font:inherit;font-size:13px;outline:none}.dcf-event-field input:focus{border-color:#08752f;box-shadow:0 0 0 3px rgba(8,117,47,.1)}.dcf-event-submit{grid-column:1/-1;border:0;border-radius:10px;padding:12px;background:#08752f;color:#fff;font-weight:900;cursor:pointer}.dcf-event-submit:disabled{opacity:.6;cursor:not-allowed}.dcf-event-status{grid-column:1/-1;display:none;padding:10px;border-radius:9px;font-size:12px}.dcf-event-status.show{display:block}.dcf-event-status.success{background:#ecfdf3;color:#08752f}.dcf-event-status.error{background:#fff1f2;color:#b42318}
+@media(max-width:700px){.dcf-event-inner{width:calc(100% - 20px);align-items:flex-start;min-height:74px}.dcf-event-info{align-items:flex-start}.dcf-event-title{white-space:normal;line-height:1.3}.dcf-event-meta{white-space:normal}.dcf-event-actions{padding-top:2px}.dcf-event-join{padding:9px 10px}.dcf-event-details,.dcf-event-form{grid-template-columns:1fr}.dcf-event-field.full,.dcf-event-submit,.dcf-event-status{grid-column:auto}.dcf-event-card{padding:20px 15px}}
+</style>
+
+<div id="dcfEventAnnouncement" aria-live="polite">
+  <div class="dcf-event-inner">
+    <div class="dcf-event-info">
+      <img id="dcfEventPosterThumb" class="dcf-event-poster-thumb" alt="Event Poster">
+      <span class="dcf-event-badge"><i class="fa-solid fa-bullhorn"></i> TANGAZO</span>
+      <div class="dcf-event-copy">
+        <strong id="dcfEventTitle" class="dcf-event-title">Event</strong>
+        <span id="dcfEventMeta" class="dcf-event-meta"></span>
+      </div>
+    </div>
+    <div class="dcf-event-actions">
+      <button type="button" class="dcf-event-join" onclick="dcfOpenEventModal()"><i class="fa-solid fa-hand-pointer"></i> JIUNGE SASA</button>
+      <button type="button" class="dcf-event-close" onclick="dcfCloseEventAnnouncement()" aria-label="Ondoa tangazo">×</button>
+    </div>
+  </div>
+</div>
+
+<div id="dcfEventModal" class="dcf-event-modal" aria-hidden="true" onclick="if(event.target===this) dcfCloseEventModal()">
+  <div class="dcf-event-card" role="dialog" aria-modal="true" aria-labelledby="dcfModalEventTitle">
+    <button type="button" class="dcf-event-modal-close" onclick="dcfCloseEventModal()" aria-label="Close">×</button>
+    <span class="dcf-event-kicker">JIUNGE KWENYE EVENT</span>
+    <h2 id="dcfModalEventTitle">Event</h2>
+    <p id="dcfModalDescription"></p>
+    <div class="dcf-event-poster-wrap"><img id="dcfModalPoster" class="dcf-event-poster" alt="Event Poster"></div>
+    <div class="dcf-event-details">
+      <div class="dcf-event-detail"><strong>Tarehe na Muda</strong><span id="dcfModalDate"></span></div>
+      <div class="dcf-event-detail"><strong>Mahali</strong><span id="dcfModalLocation"></span></div>
+      <div class="dcf-event-detail"><strong>Aina</strong><span id="dcfModalType"></span></div>
+      <div class="dcf-event-detail"><strong>Organizer</strong><span id="dcfModalOrganizer"></span></div>
+      <div class="dcf-event-detail"><strong>Usajili unaishia</strong><span id="dcfModalDeadline"></span></div>
+      <div class="dcf-event-detail"><strong>Idadi ya juu</strong><span id="dcfModalMax"></span></div>
+      <div class="dcf-event-detail"><strong>Contact</strong><span id="dcfModalContact"></span></div>
+    </div>
+    <div id="dcfModalRequirements" style="display:none;margin:0 0 16px;padding:12px 14px;border-radius:10px;background:#f5f8f6;font-size:12px;line-height:1.6;"><strong style="display:block;color:#063b25;margin-bottom:4px;">Requirements</strong><span></span></div>
+    <form id="dcfEventForm" class="dcf-event-form" onsubmit="dcfSubmitParticipant(event)">
+      <div class="dcf-event-field full"><label for="dcfParticipantName">Jina Kamili</label><input id="dcfParticipantName" required autocomplete="name"></div>
+      <div class="dcf-event-field"><label for="dcfParticipantEmail">Barua Pepe</label><input id="dcfParticipantEmail" type="email" required autocomplete="email"></div>
+      <div class="dcf-event-field"><label for="dcfParticipantPhone">Namba ya Simu</label><input id="dcfParticipantPhone" type="tel" required autocomplete="tel"></div>
+      <div id="dcfEventStatus" class="dcf-event-status"></div>
+      <button id="dcfEventSubmit" class="dcf-event-submit" type="submit"><i class="fa-solid fa-paper-plane"></i> Tuma Ombi la Kushiriki</button>
+    </form>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const URL="https://fcjvvfbaqnaohbtbljui.supabase.co";
+  const KEY="sb_publishable_iSG3Vea2d4Fq1evF2fvbnw_0ri5huMQ";
+  let client=null, activeEvent=null, dismissedEventId=null;
+  const $=id=>document.getElementById(id);
+  function initClient(){
+    if(client)return client;
+    if(typeof window.supabase==="undefined") { console.error("Supabase SDK haijapakia."); return null; }
+    client=window.supabase.createClient(URL,KEY); return client;
+  }
+  function formatDate(v){ if(!v)return ""; const d=new Date(v); if(Number.isNaN(d.getTime()))return v; return d.toLocaleString("sw-TZ",{dateStyle:"medium",timeStyle:"short"}); }
+  function setStatus(msg,type){const el=$("dcfEventStatus"); if(!el)return; el.textContent=msg; el.className="dcf-event-status show "+type;}
+  function render(ev){
+    activeEvent=ev; const bar=$("dcfEventAnnouncement"); if(!bar)return;
+    dismissedEventId=localStorage.getItem("dcf_event_dismissed_id");
+    if(dismissedEventId===String(ev.id)){bar.classList.remove("dcf-event-visible");return;}
+    $("dcfEventTitle").textContent=ev.title||"Event";
+    $("dcfEventMeta").textContent=[formatDate(ev.event_date),ev.location,ev.event_type].filter(Boolean).join(" • ");
+    const thumb=$("dcfEventPosterThumb");
+    if(thumb){
+      if(ev.poster_url){thumb.src=ev.poster_url;thumb.style.display="block";}
+      else{thumb.removeAttribute("src");thumb.style.display="none";}
+    }
+    bar.classList.add("dcf-event-visible");
+  }
+  async function load(){
+    const sb=initClient(); if(!sb)return;
+    try{
+      const {data,error}=await sb.from("events").select("*").eq("is_active",true).order("created_at",{ascending:false}).limit(1).maybeSingle();
+      if(error){console.error("DCF EVENT LOAD ERROR:",error);return;}
+      if(!data){activeEvent=null;$("dcfEventAnnouncement")?.classList.remove("dcf-event-visible");return;}
+      render(data);
+    }catch(e){console.error("DCF EVENT LOAD ERROR:",e);}
+  }
+  window.dcfOpenEventModal=function(){
+    if(!activeEvent)return;
+    const ev=activeEvent;
+    $("dcfModalEventTitle").textContent=ev.title||"Event";
+    $("dcfModalDescription").textContent=ev.description||"";
+    $("dcfModalDate").textContent=formatDate(ev.event_date)||"-";
+    $("dcfModalLocation").textContent=ev.location||"-";
+    $("dcfModalType").textContent=ev.event_type||"-";
+    $("dcfModalOrganizer").textContent=ev.organizer||"-";
+    $("dcfModalDeadline").textContent=ev.registration_deadline?formatDate(ev.registration_deadline):"Hakuna deadline";
+    $("dcfModalMax").textContent=(ev.max_participants?String(ev.max_participants):"Hakuna kikomo");
+    $("dcfModalContact").textContent=[ev.contact_phone,ev.contact_email].filter(Boolean).join(" • ")||"-";
+    const req=$("dcfModalRequirements");
+    if(req){
+      const text=String(ev.requirements||"").trim();
+      req.style.display=text?"block":"none";
+      const span=req.querySelector("span"); if(span)span.textContent=text;
+    }
+    const img=$("dcfModalPoster");
+    if(ev.poster_url){img.src=ev.poster_url;img.style.display="block";}else{img.removeAttribute("src");img.style.display="none";}
+    $("dcfEventStatus").className="dcf-event-status";
+    $("dcfEventModal").classList.add("open");
+    $("dcfEventModal").setAttribute("aria-hidden","false");
+    document.body.style.overflow="hidden";
+  };
+  window.dcfCloseEventModal=function(){
+    $("dcfEventModal").classList.remove("open");
+    $("dcfEventModal").setAttribute("aria-hidden","true");
+    document.body.style.overflow="";
+  };
+  window.dcfCloseEventAnnouncement=function(){
+    if(activeEvent?.id)localStorage.setItem("dcf_event_dismissed_id",String(activeEvent.id));
+    $("dcfEventAnnouncement")?.classList.remove("dcf-event-visible");
+  };
+  window.dcfSubmitParticipant=async function(e){
+    e.preventDefault(); if(!activeEvent?.id)return;
+    const sb=initClient(); if(!sb)return;
+    const btn=$("dcfEventSubmit"); btn.disabled=true; btn.textContent="Inahifadhi...";
+    try{
+      const ev=activeEvent;
+      const now=new Date();
+      if(ev.registration_deadline && now>=new Date(ev.registration_deadline)) throw new Error("Usajili wa event hii umefungwa.");
+      if(ev.event_date && now>=new Date(ev.event_date)) throw new Error("Event hii tayari imeanza au imekwisha.");
+
+      const {count,error:countError}=await sb.from("event_participants").select("id",{count:"exact",head:true}).eq("event_id",ev.id);
+      if(countError)throw countError;
+      if(ev.max_participants && Number(count||0)>=Number(ev.max_participants)) throw new Error("Idadi ya washiriki imefikia kikomo.");
+
+      const fullName=$("dcfParticipantName").value.trim();
+      const email=$("dcfParticipantEmail").value.trim().toLowerCase();
+      const phone=$("dcfParticipantPhone").value.trim();
+      if(!fullName||!email||!phone)throw new Error("Tafadhali jaza taarifa zote zinazohitajika.");
+
+      const {data:existing,error:dupError}=await sb.from("event_participants").select("id").eq("event_id",ev.id).ilike("email",email).limit(1);
+      if(dupError)throw dupError;
+      if(existing?.length)throw new Error("Email hii tayari imesajiliwa kwenye event hii.");
+
+      const {error}=await sb.from("event_participants").insert([{event_id:ev.id,full_name:fullName,email,phone_number:phone}]);
+      if(error)throw error;
+      $("dcfEventForm").reset();
+      setStatus("Hongera! Usajili wako umefanikiwa. Tutawasiliana nawe kuhusu event.","success");
+    }catch(err){
+      console.error("DCF PARTICIPANT ERROR:",err);
+      setStatus("Imeshindikana kutuma taarifa: "+(err.message||"jaribu tena."),"error");
+    }finally{
+      btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-paper-plane"></i> Tuma Ombi la Kushiriki';
+    }
+  };
+  document.addEventListener("DOMContentLoaded",function(){load();setInterval(load,10000);});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")window.dcfCloseEventModal();});
+})();
+</script>
+
+<!-- ============================================================
+     ORIGINAL INDEX STARTS HERE - UNCHANGED
+     ============================================================ -->
+
+
+
+
+
+    <!-- =====================================================
+         TOP BAR
+         ===================================================== -->
+
+    <div class="topbar">
+
+        <div class="container topbar-inner">
+
+            <div class="topbar-left">
+
+                <div class="topbar-item">
+
+                    <i class="fa-solid fa-location-dot"></i>
+
+                    Tanzania • Dodoma • Mbeya
+
+                </div>
+
+                <div class="topbar-item">
+
+                    <i class="fa-solid fa-envelope"></i>
+
+                    info.dcftz@gmail.com
+
+                </div>
+
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="topbar-item">
+
+                    <i class="fa-solid fa-circle-check"></i>
+
+                    Non-Profit • Non-Religious • Non-Political
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         NAVIGATION
+         ===================================================== -->
+
+    <nav
+        class="navbar"
+        id="navbar"
+    >
+
+        <div class="container nav-inner">
+
+            <a
+                href="#home"
+                class="brand"
+                aria-label="Development Charity Foundation Home"
+            >
+
+                <img
+                    src="images/dcf-logo.png"
+                    alt="Development Charity Foundation Logo"
+                    class="logo"
+                    width="49"
+                    height="49"
+                    loading="eager"
+                    decoding="async"
+                    fetchpriority="high"
+                >
+
+                <div class="brand-copy">
+
+                    <strong>
+                        DCF
+                    </strong>
+
+                    <span>
+                        DEVELOPMENT CHARITY FOUNDATION
+                    </span>
+
+                </div>
+
+            </a>
+
+
+            <button
+                type="button"
+                class="menu-toggle"
+                id="menuToggle"
+                aria-label="Open navigation"
+                aria-expanded="false"
+            >
+
+                <i class="fa-solid fa-bars"></i>
+
+            </button>
+
+
+            <div
+                class="nav-links"
+                id="navLinks"
+            >
+
+                <a href="#home">
+                    Home
+                </a>
+
+                <a href="#about">
+                    Who We Are
+                </a>
+
+                <a href="#programs">
+                    What We Do
+                </a>
+
+                <a href="#impact">
+                    Our Impact
+                </a>
+
+                <a href="#events">
+                    Stories
+                </a>
+
+                <a href="#team">
+                    Leadership
+                </a>
+
+                <a href="#future">
+                    Future
+                </a>
+
+                <a
+                    href="#"
+                    class="donate-nav"
+                    onclick="event.preventDefault(); openDonationModal();"
+                >
+                    Donate
+                </a>
+
+                <a
+                    href="login.html"
+                    class="login-nav"
+                >
+                    Login / Register
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
+
+    <section
+        class="hero"
+        id="home"
+    >
+
+        <div class="hero-media">
+
+            <div
+                class="hero-slide active"
+                style="background-image:url('images/hero-01.jpg');"
+            ></div>
+
+            <div
+                class="hero-slide"
+                style="background-image:url('images/hero-02.jpg');"
+            ></div>
+
+            <div
+                class="hero-slide"
+                style="background-image:url('images/hero-03.jpg');"
+            ></div>
+
+            <div class="hero-overlay"></div>
+
+        </div>
+
+
+        <div class="container hero-inner">
+
+            <div class="hero-content">
+
+                <div class="hero-kicker">
+
+                    <i class="fa-solid fa-earth-africa"></i>
+
+                    COMMUNITY • EMPOWERMENT • SUSTAINABLE DEVELOPMENT
+
+                </div>
+
+
+                <h1>
+
+                    Building Stronger
+
+                    <span>
+                        Communities
+                    </span>
+
+                </h1>
+
+
+                <p class="hero-description">
+
+                    Development Charity Foundation works with
+                    communities, volunteers and partners to create
+                    opportunities, strengthen livelihoods, provide
+                    humanitarian support and advance sustainable
+                    development.
+
+                </p>
+
+
+                <div class="hero-actions">
+
+                    <a
+                        href="#about"
+                        class="btn btn-light"
+                    >
+
+                        Discover DCF
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </a>
+
+
+                    <a
+                        href="#contact"
+                        class="btn btn-primary"
+                    >
+
+                        Get Involved
+
+                        <i class="fa-solid fa-handshake"></i>
+
+                    </a>
+
+
+                    <a
+                        href="#"
+                        class="btn btn-primary"
+                        onclick="event.preventDefault(); openDonationModal();"
+                    >
+
+                        Donate Now
+
+                        <i class="fa-solid fa-heart"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="hero-controls">
+
+            <button
+                type="button"
+                class="hero-control"
+                id="heroPrev"
+                aria-label="Previous slide"
+            >
+
+                <i class="fa-solid fa-chevron-left"></i>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="hero-control"
+                id="heroNext"
+                aria-label="Next slide"
+            >
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+            </button>
+
+        </div>
+
+
+        <div
+            class="hero-dots"
+            id="heroDots"
+        ></div>
+
+    </section>
+
+
+    <!-- =====================================================
+         IMPACT SNAPSHOT
+         ===================================================== -->
+
+    <div class="trust-strip">
+
+        <div class="container trust-grid">
+
+            <div class="trust-item">
+
+                <span class="trust-value">
+                    2022
+                </span>
+
+                <span class="trust-label">
+                    Established
+                </span>
+
+            </div>
+
+
+            <div class="trust-item">
+
+                <span class="trust-value">
+                    57+
+                </span>
+
+                <span class="trust-label">
+                    Active Members
+                </span>
+
+            </div>
+
+
+            <div class="trust-item">
+
+                <span class="trust-value">
+                    2
+                </span>
+
+                <span class="trust-label">
+                    Locations
+                </span>
+
+            </div>
+
+
+            <div class="trust-item">
+
+                <span class="trust-value">
+                    6
+                </span>
+
+                <span class="trust-label">
+                    Core Programs
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MISSION STATEMENT
+         ===================================================== -->
+
+    <section class="section">
+
+        <div class="container">
+
+            <div class="mission-intro">
+
+                <div class="section-heading">
+
+                    <span class="section-label">
+                        OUR MISSION
+                    </span>
+
+                    <h2>
+                        Development With People at the Centre
+                    </h2>
+
+                </div>
+
+
+                <p>
+
+                    DCF empowers communities through
+
+                    <span>
+                        humanitarian support, education,
+                        health, economic opportunity,
+                        environmental action
+                    </span>
+
+                    and sustainable community development.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ABOUT
+         ===================================================== -->
+
+    <section
+        class="section section-muted"
+        id="about"
+    >
+
+        <div class="container">
+
+            <div class="section-heading">
+
+                <span class="section-label">
+                    WHO WE ARE
+                </span>
+
+                <h2>
+                    Building Hope. Empowering Communities.
+                </h2>
+
+                <p>
+                    DCF is committed to improving lives and
+                    creating sustainable opportunities.
+                </p>
+
+            </div>
+
+
+            <div class="about-grid">
+
+
+                <div class="visual-frame">
+
+                    <div class="visual-slide active">
+
+                        <img
+                            src="images/about-01.jpg"
+                            alt="DCF community activity"
+                            width="900"
+                            height="620"
+                            loading="lazy"
+                            decoding="async"
+                            fetchpriority="low"
+                        >
+
+                    </div>
+
+
+                    <div class="visual-slide">
+
+                        <img
+                            src="images/about-02.jpg"
+                            alt="DCF volunteers"
+                            width="900"
+                            height="620"
+                            loading="lazy"
+                            decoding="async"
+                            fetchpriority="low"
+                        >
+
+                    </div>
+
+
+                    <div class="visual-slide">
+
+                        <img
+                            src="images/about-03.jpg"
+                            alt="DCF community support"
+                            width="900"
+                            height="620"
+                            loading="lazy"
+                            decoding="async"
+                            fetchpriority="low"
+                        >
+
+                    </div>
+
+
+                    <div class="visual-label">
+
+                        <i class="fa-solid fa-people-group"></i>
+
+                        DCF IN ACTION
+
+                    </div>
+
+                </div>
+
+
+                <div class="about-copy">
+
+                    <span class="mini-label">
+                        OUR STORY
+                    </span>
+
+                    <h3>
+                        Compassion Into Action
+                    </h3>
+
+
+                    <p>
+
+                        Development Charity Foundation (DCF) is a
+                        Tanzanian non-profit, non-religious and
+                        non-political organization established in 2022
+                        in Dodoma, Tanzania.
+
+                    </p>
+
+
+                    <p>
+
+                        DCF began as a youth-led initiative with
+                        8 members and has grown to more than
+                        57 active members.
+
+                    </p>
+
+
+                    <p>
+
+                        Our work focuses on humanitarian support,
+                        education, youth empowerment, health,
+                        environmental protection, economic
+                        empowerment and community development.
+
+                    </p>
+
+
+                    <a
+                        href="#programs"
+                        class="text-link"
+                    >
+
+                        Explore our programs
+
+                        <i class="fa-solid fa-arrow-right"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         VISION & MISSION
+         ===================================================== -->
+
+    <section class="section">
+
+        <div class="container">
+
+            <div class="section-heading">
+
+                <span class="section-label">
+                    OUR DIRECTION
+                </span>
+
+                <h2>
+                    Vision & Mission
+                </h2>
+
+            </div>
+
+
+            <div class="direction-grid">
+
+
+                <article class="direction-card">
+
+                    <div class="direction-icon">
+
+                        <i class="fa-solid fa-eye"></i>
+
+                    </div>
+
+                    <h3>
+                        Our Vision
+                    </h3>
+
+                    <p>
+
+                        To be a trusted and exceptional institution
+                        contributing to sustainable development,
+                        community welfare and improved quality of
+                        life for vulnerable and underserved
+                        communities in Tanzania and beyond.
+
+                    </p>
+
+                </article>
+
+
+                <article class="direction-card">
+
+                    <div class="direction-icon">
+
+                        <i class="fa-solid fa-bullseye"></i>
+
+                    </div>
+
+                    <h3>
+                        Our Mission
+                    </h3>
+
+                    <p>
+
+                        To empower communities through humanitarian
+                        support, education, health services, economic
+                        opportunities, advocacy, environmental
+                        initiatives and sustainable development.
+
+                    </p>
+
+                </article>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         PROGRAMS / WHAT WE DO
+         ===================================================== -->
+
+    <section
+        class="section section-muted"
+        id="programs"
+    >
+
+        <div class="container">
+
+            <div class="section-heading">
+
+                <span class="section-label">
+                    WHAT WE DO
+                </span>
+
+                <h2>
+                    Our Areas of Work
+                </h2>
+
+                <p>
+                    Practical action focused on people,
+                    opportunity and resilient communities.
+                </p>
+
+            </div>
+
+
+            <div class="program-grid">
+
+
+                <article class="program-card">
+
+                    <div class="program-image">
+
+                        <img
+                            src="images/program-01.jpg"
+                            alt="Humanitarian support"
+                            width="900"
+                            height="563"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="program-body">
+
+                        <span class="program-number">
+                            01
+                        </span>
+
+                        <h3>
+                            Humanitarian Support
+                        </h3>
+
+                        <p>
+                            Supporting vulnerable families,
+                            orphans, older people and people
+                            with special needs.
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="program-card">
+
+                    <div class="program-image">
+
+                        <img
+                            src="images/program-02.jpg"
+                            alt="Youth empowerment"
+                            width="900"
+                            height="563"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="program-body">
+
+                        <span class="program-number">
+                            02
+                        </span>
+
+                        <h3>
+                            Youth Empowerment
+                        </h3>
+
+                        <p>
+                            Promoting education, skills development,
+                            leadership and volunteerism among young
+                            people.
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="program-card">
+
+                    <div class="program-image">
+
+                        <img
+                            src="images/program-03.jpg"
+                            alt="Community development"
+                            width="900"
+                            height="563"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="program-body">
+
+                        <span class="program-number">
+                            03
+                        </span>
+
+                        <h3>
+                            Community Development
+                        </h3>
+
+                        <p>
+                            Supporting community-driven projects
+                            that respond to local challenges and
+                            create lasting positive change.
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="program-card">
+
+                    <div class="program-image">
+
+                        <img
+                            src="images/program-04.jpg"
+                            alt="Women and economic empowerment"
+                            width="900"
+                            height="563"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="program-body">
+
+                        <span class="program-number">
+                            04
+                        </span>
+
+                        <h3>
+                            Women & Economic Empowerment
+                        </h3>
+
+                        <p>
+                            Supporting opportunities that help
+                            women, youth and vulnerable groups
+                            improve their livelihoods.
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="program-card">
+
+                    <div class="program-image">
+
+                        <img
+                            src="images/program-05.jpg"
+                            alt="Environmental protection"
+                            width="900"
+                            height="563"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="program-body">
+
+                        <span class="program-number">
+                            05
+                        </span>
+
+                        <h3>
+                            Environmental Protection
+                        </h3>
+
+                        <p>
+                            Promoting environmental awareness and
+                            sustainable community practices.
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+                <article class="program-card">
+
+                    <div class="program-image">
+
+                        <img
+                            src="images/program-06.jpg"
+                            alt="Health and community welfare"
+                            width="900"
+                            height="563"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="program-body">
+
+                        <span class="program-number">
+                            06
+                        </span>
+
+                        <h3>
+                            Health & Community Welfare
+                        </h3>
+
+                        <p>
+                            Supporting health awareness, social care
+                            and improved living conditions.
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         IMPACT
+         ===================================================== -->
+
+    <section
+        class="section section-dark"
+        id="impact"
+    >
+
+        <div class="container">
+
+            <div class="impact-highlight">
+
+
+                <div class="impact-copy">
+
+                    <span class="section-label">
+                        OUR IMPACT
+                    </span>
+
+                    <h3>
+                        Creating Change Together
+                    </h3>
+
+                    <p>
+
+                        Every volunteer, partner and community member
+                        contributes to the change we seek. DCF continues
+                        to build practical solutions that strengthen
+                        communities and expand opportunities.
+
+                    </p>
+
+                </div>
+
+
+                <div class="impact-metrics">
+
+
+                    <div class="metric">
+
+                        <strong>
+                            57+
+                        </strong>
+
+                        <span>
+                            Active Members
+                        </span>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <strong>
+                            2
+                        </strong>
+
+                        <span>
+                            Locations
+                        </span>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <strong>
+                            2022
+                        </strong>
+
+                        <span>
+                            Established
+                        </span>
+
+                    </div>
+
+
+                    <div class="metric">
+
+                        <strong>
+                            6
+                        </strong>
+
+                        <span>
+                            Core Programs
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         EVENTS / STORIES
+         ===================================================== -->
+
+    <section
+        class="section"
+        id="events"
+    >
+
+        <div class="container">
+
+            <div class="section-heading">
+
+                <span class="section-label">
+                    COMMUNITY STORIES
+                </span>
+
+                <h2>
+                    Events & Activities
+                </h2>
+
+                <p>
+                    Moments of service, solidarity and
+                    community engagement.
+                </p>
+
+            </div>
+
+
+            <div class="events-grid">
+
+
+                <div class="events-image">
+
+                    <img
+                        src="images/event-01.jpg"
+                        alt="DCF charity event"
+                        class="event-slide active"
+                        width="900"
+                        height="600"
+                        loading="lazy"
+                        decoding="async"
+                    >
+
+                    <img
+                        src="images/event-02.jpg"
+                        alt="DCF outreach"
+                        class="event-slide"
+                        width="900"
+                        height="600"
+                        loading="lazy"
+                        decoding="async"
+                    >
+
+                    <img
+                        src="images/event-03.jpg"
+                        alt="DCF volunteers"
+                        class="event-slide"
+                        width="900"
+                        height="600"
+                        loading="lazy"
+                        decoding="async"
+                    >
+
+
+                    <div class="event-caption">
+
+                        <i class="fa-solid fa-camera"></i>
+
+                        DCF COMMUNITY ACTIVITIES
+
+                    </div>
+
+                </div>
+
+
+                <div class="event-copy">
+
+                    <span class="mini-label">
+                        COMMUNITY OUTREACH
+                    </span>
+
+
+                    <div class="event-date">
+
+                        <i class="fa-regular fa-calendar"></i>
+
+                        15 AUGUST 2026
+
+                    </div>
+
+
+                    <h3>
+                        Community Charity & Solidarity Initiative
+                    </h3>
+
+
+                    <p>
+
+                        DCF organized a community-focused charity
+                        activity aimed at supporting people in need
+                        and strengthening the spirit of solidarity,
+                        volunteerism and service to the community.
+
+                    </p>
+
+
+                    <p>
+
+                        Our activities bring volunteers and community
+                        members together to identify needs, provide
+                        practical assistance and create positive
+                        social impact.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         LEADERSHIP
+         ===================================================== -->
+
+    <section
+        class="section team-section"
+        id="team"
+    >
+
+        <div class="container">
+
+            <div class="section-heading">
+
+                <span class="section-label">
+                    LEADERSHIP & GOVERNANCE
+                </span>
+
+                <h2>
+                    Meet Our Team
+                </h2>
+
+                <p>
+                    Leadership, governance, administration and
+                    professional support working together for impact.
+                </p>
+
+            </div>
+
+
+            <div
+                class="team-grid"
+                id="teamGrid"
+            >
+
+
+                <article class="team-card">
+
+                    <div class="team-photo">
+
+                        <img
+                            src="images/team.jpg"
+                            alt="Patrick Libenanga - Founder"
+                            width="600"
+                            height="700"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="team-info">
+
+                        <h3>
+                            Patrick Libenanga
+                        </h3>
+
+                        <span class="team-role">
+                            Founder
+                        </span>
+
+                        <div class="team-socials">
+
+                            <a href="#" class="social-link" aria-label="Facebook" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="Instagram" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="LinkedIn" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="X" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <article class="team-card">
+
+                    <div class="team-photo">
+
+                        <img
+                            src="images/team1.jpg"
+                            alt="Irene Severine - Chairperson"
+                            width="600"
+                            height="700"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="team-info">
+
+                        <h3>
+                            Irene Severine
+                        </h3>
+
+                        <span class="team-role">
+                            Chairperson
+                        </span>
+
+                        <div class="team-socials">
+
+                            <a href="#" class="social-link" aria-label="Facebook" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="Instagram" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="LinkedIn" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="X" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <article class="team-card">
+
+                    <div class="team-photo">
+
+                        <img
+                            src="images/team2.jpg"
+                            alt="Moshi Juma - General Secretary"
+                            width="600"
+                            height="700"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="team-info">
+
+                        <h3>
+                            Moshi Juma
+                        </h3>
+
+                        <span class="team-role">
+                            General Secretary
+                        </span>
+
+                        <div class="team-socials">
+
+                            <a href="#" class="social-link" aria-label="Facebook" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="Instagram" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="LinkedIn" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="X" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <article class="team-card">
+
+                    <div class="team-photo">
+
+                        <img
+                            src="images/team3.jpg"
+                            alt="Alicia Kokushubira - Deputy Secretary"
+                            width="600"
+                            height="700"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="team-info">
+
+                        <h3>
+                            Alicia Kokushubira
+                        </h3>
+
+                        <span class="team-role">
+                            Deputy Secretary
+                        </span>
+
+                        <div class="team-socials">
+
+                            <a href="#" class="social-link" aria-label="Facebook" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="Instagram" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="LinkedIn" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="X" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <article class="team-card">
+
+                    <div class="team-photo">
+
+                        <img
+                            src="images/team4.jpg"
+                            alt="Winfrida Kavishe - Accountant"
+                            width="600"
+                            height="700"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="team-info">
+
+                        <h3>
+                            Winfrida Kavishe
+                        </h3>
+
+                        <span class="team-role">
+                            Accountant
+                        </span>
+
+                        <div class="team-socials">
+
+                            <a href="#" class="social-link" aria-label="Facebook" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="Instagram" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="LinkedIn" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="X" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <article class="team-card">
+
+                    <div class="team-photo">
+
+                        <img
+                            src="images/team5.jpg"
+                            alt="Tegemea Mujunangoma - Coordinator"
+                            width="600"
+                            height="700"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="team-info">
+
+                        <h3>
+                            Tegemea Mujunangoma
+                        </h3>
+
+                        <span class="team-role">
+                            Coordinator
+                        </span>
+
+                        <div class="team-socials">
+
+                            <a href="#" class="social-link" aria-label="Facebook" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="Instagram" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="LinkedIn" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="X" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <article class="team-card">
+
+                    <div class="team-photo">
+
+                        <img
+                            src="images/team6.jpg"
+                            alt="Jofrey Respicius - Customer Relations"
+                            width="600"
+                            height="700"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="team-info">
+
+                        <h3>
+                            Jofrey Respicius
+                        </h3>
+
+                        <span class="team-role">
+                            Customer Relations
+                        </span>
+
+                        <div class="team-socials">
+
+                            <a href="#" class="social-link" aria-label="Facebook" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="Instagram" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="LinkedIn" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="X" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <article class="team-card">
+
+                    <div class="team-photo">
+
+                        <img
+                            src="images/team7.jpg"
+                            alt="Ndunguru Ndunguru - ICT"
+                            width="600"
+                            height="700"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="team-info">
+
+                        <h3>
+                            Ndunguru Ndunguru
+                        </h3>
+
+                        <span class="team-role">
+                            ICT
+                        </span>
+
+                        <div class="team-socials">
+
+                            <a href="#" class="social-link" aria-label="Facebook" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="Instagram" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="LinkedIn" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="X" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <article class="team-card">
+
+                    <div class="team-photo">
+
+                        <img
+                            src="images/team8.jpg"
+                            alt="Thomson Zacharia - Board Chairperson"
+                            width="600"
+                            height="700"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="team-info">
+
+                        <h3>
+                            Thomson Zacharia
+                        </h3>
+
+                        <span class="team-role">
+                            Board Chairperson
+                        </span>
+
+                        <div class="team-socials">
+
+                            <a href="#" class="social-link" aria-label="Facebook" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="Instagram" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="LinkedIn" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="X" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <article class="team-card">
+
+                    <div class="team-photo">
+
+                        <img
+                            src="images/team9.jpg"
+                            alt="Paskali Mayo - Board Member"
+                            width="600"
+                            height="700"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="team-info">
+
+                        <h3>
+                            Paskali Mayo
+                        </h3>
+
+                        <span class="team-role">
+                            Board Member
+                        </span>
+
+                        <div class="team-socials">
+
+                            <a href="#" class="social-link" aria-label="Facebook" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="Instagram" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="LinkedIn" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="X" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <article class="team-card">
+
+                    <div class="team-photo">
+
+                        <img
+                            src="images/team10.jpg"
+                            alt="Elisha Mkamba - Board Member"
+                            width="600"
+                            height="700"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="team-info">
+
+                        <h3>
+                            Elisha Mkamba
+                        </h3>
+
+                        <span class="team-role">
+                            Board Member
+                        </span>
+
+                        <div class="team-socials">
+
+                            <a href="#" class="social-link" aria-label="Facebook" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="Instagram" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="LinkedIn" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="X" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+                <article class="team-card">
+
+                    <div class="team-photo">
+
+                        <img
+                            src="images/team11.jpg"
+                            alt="Jamila Ayubu - Board Member"
+                            width="600"
+                            height="700"
+                            loading="lazy"
+                            decoding="async"
+                        >
+
+                    </div>
+
+                    <div class="team-info">
+
+                        <h3>
+                            Jamila Ayubu
+                        </h3>
+
+                        <span class="team-role">
+                            Board Member
+                        </span>
+
+                        <div class="team-socials">
+
+                            <a href="#" class="social-link" aria-label="Facebook" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-facebook-f"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="Instagram" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-instagram"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="LinkedIn" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-linkedin-in"></i>
+                            </a>
+
+                            <a href="#" class="social-link" aria-label="X" onclick="event.preventDefault();">
+                                <i class="fa-brands fa-x-twitter"></i>
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FUTURE PLANS
+         ===================================================== -->
+
+    <section
+        class="section section-muted"
+        id="future"
+    >
+
+        <div class="container">
+
+            <div class="section-heading">
+
+                <span class="section-label">
+                    LOOKING AHEAD
+                </span>
+
+                <h2>
+                    Our Future Plans
+                </h2>
+
+                <p>
+                    Building stronger systems for long-term impact.
+                </p>
+
+            </div>
+
+
+            <div class="future-grid">
+
+
+                <article class="future-card">
+
+                    <span class="future-number">
+                        01
+                    </span>
+
+                    <h3>
+                        Care & Support Centre
+                    </h3>
+
+                    <p>
+                        Establishing a dedicated care centre
+                        supporting orphans and people with
+                        special needs.
+                    </p>
+
+                </article>
+
+
+                <article class="future-card">
+
+                    <span class="future-number">
+                        02
+                    </span>
+
+                    <h3>
+                        Youth Development Centre
+                    </h3>
+
+                    <p>
+                        Developing a centre for youth skills,
+                        leadership and economic opportunities.
+                    </p>
+
+                </article>
+
+
+                <article class="future-card">
+
+                    <span class="future-number">
+                        03
+                    </span>
+
+                    <h3>
+                        Program Expansion
+                    </h3>
+
+                    <p>
+                        Expanding humanitarian, education,
+                        health and environmental initiatives
+                        to more communities.
+                    </p>
+
+                </article>
+
+
+                <article class="future-card">
+
+                    <span class="future-number">
+                        04
+                    </span>
+
+                    <h3>
+                        Stronger Partnerships
+                    </h3>
+
+                    <p>
+                        Working with donors, government institutions,
+                        businesses, volunteers and development
+                        partners.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         GET INVOLVED
+         ===================================================== -->
+
+    <section
+        class="section"
+        id="contact"
+    >
+
+        <div class="container">
+
+            <div class="section-heading">
+
+                <span class="section-label">
+                    GET INVOLVED
+                </span>
+
+                <h2>
+                    Be Part of the Change
+                </h2>
+
+                <p>
+                    There are many ways to support DCF.
+                </p>
+
+            </div>
+
+
+            <div class="action-grid">
+
+
+                <article class="action-card">
+
+                    <div class="action-icon">
+
+                        <i class="fa-solid fa-handshake-angle"></i>
+
+                    </div>
+
+                    <h3>
+                        Volunteer
+                    </h3>
+
+                    <p>
+                        Contribute your time, skills and energy
+                        to community development activities.
+                    </p>
+
+                    <a
+                        href="mailto:info.dcftz@gmail.com"
+                        class="action-link"
+                    >
+                        Become a Volunteer →
+                    </a>
+
+                </article>
+
+
+                <article class="action-card">
+
+                    <div class="action-icon">
+
+                        <i class="fa-solid fa-heart"></i>
+
+                    </div>
+
+                    <h3>
+                        Support Our Work
+                    </h3>
+
+                    <p>
+                        Support humanitarian and development
+                        activities through meaningful contributions.
+                    </p>
+
+                    <a
+                        href="#"
+                        class="action-link"
+                        onclick="event.preventDefault(); openDonationModal();"
+                    >
+                        Support DCF →
+                    </a>
+
+                </article>
+
+
+                <article class="action-card">
+
+                    <div class="action-icon">
+
+                        <i class="fa-solid fa-building-columns"></i>
+
+                    </div>
+
+                    <h3>
+                        Partner With Us
+                    </h3>
+
+                    <p>
+                        Work with DCF to create sustainable
+                        community solutions.
+                    </p>
+
+                    <a
+                        href="mailto:info.dcftz@gmail.com"
+                        class="action-link"
+                    >
+                        Partner With DCF →
+                    </a>
+
+                </article>
+
+            </div>
+
+
+            <div class="contact-grid">
+
+
+                <div class="contact-card">
+
+                    <div class="contact-icon">
+
+                        <i class="fa-solid fa-envelope"></i>
+
+                    </div>
+
+                    <div>
+
+                        <small>
+                            Email Us
+                        </small>
+
+                        <a href="mailto:info.dcftz@gmail.com">
+                            info.dcftz@gmail.com
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="contact-card">
+
+                    <div class="contact-icon">
+
+                        <i class="fa-solid fa-phone"></i>
+
+                    </div>
+
+                    <div>
+
+                        <small>
+                            Call Us
+                        </small>
+
+                        <a href="tel:+255793344501">
+                            +255 793 344 501
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FINAL CTA
+         ===================================================== -->
+
+    <section class="final-cta">
+
+        <div class="container">
+
+            <h2>
+                Together Is Success.
+            </h2>
+
+            <p>
+
+                Together, we can turn compassion into action
+                and action into lasting change.
+
+            </p>
+
+
+            <a
+                href="login.html"
+                class="btn btn-light"
+            >
+
+                Join DCF
+
+                <i class="fa-solid fa-arrow-right"></i>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+    <footer class="footer">
+
+        <div class="container footer-grid">
+
+
+            <div>
+
+                <img
+                    src="images/dcf-logo.png"
+                    alt="DCF Logo"
+                    class="footer-logo"
+                    width="60"
+                    height="60"
+                    loading="lazy"
+                    decoding="async"
+                >
+
+                <h3>
+                    Development Charity Foundation
+                </h3>
+
+                <p>
+
+                    A Tanzanian non-profit, non-religious and
+                    non-political organization committed to
+                    sustainable community development.
+
+                </p>
+
+
+                <div class="footer-socials">
+
+                    <a
+                        href="#"
+                        class="footer-social"
+                        aria-label="Facebook"
+                        onclick="event.preventDefault();"
+                    >
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </a>
+
+                    <a
+                        href="#"
+                        class="footer-social"
+                        aria-label="Instagram"
+                        onclick="event.preventDefault();"
+                    >
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+
+                    <a
+                        href="#"
+                        class="footer-social"
+                        aria-label="LinkedIn"
+                        onclick="event.preventDefault();"
+                    >
+                        <i class="fa-brands fa-linkedin-in"></i>
+                    </a>
+
+                    <a
+                        href="#"
+                        class="footer-social"
+                        aria-label="X"
+                        onclick="event.preventDefault();"
+                    >
+                        <i class="fa-brands fa-x-twitter"></i>
+                    </a>
+
+                    <a
+                        href="#"
+                        class="footer-social"
+                        aria-label="YouTube"
+                        onclick="event.preventDefault();"
+                    >
+                        <i class="fa-brands fa-youtube"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div>
+
+                <h4>
+                    Explore
+                </h4>
+
+                <a href="#home">
+                    Home
+                </a>
+
+                <a href="#about">
+                    Who We Are
+                </a>
+
+                <a href="#programs">
+                    What We Do
+                </a>
+
+                <a href="#impact">
+                    Our Impact
+                </a>
+
+            </div>
+
+
+            <div>
+
+                <h4>
+                    Organization
+                </h4>
+
+                <a href="#events">
+                    Stories
+                </a>
+
+                <a href="#team">
+                    Leadership
+                </a>
+
+                <a href="#future">
+                    Future Plans
+                </a>
+
+                <a href="#contact">
+                    Get Involved
+                </a>
+
+            </div>
+
+
+            <div>
+
+                <h4>
+                    Contact
+                </h4>
+
+                <p>
+                    Dodoma, Tanzania
+                </p>
+
+                <p>
+                    Mbeya, Tanzania
+                </p>
+
+                <p>
+                    <a href="mailto:info.dcftz@gmail.com">
+                        info.dcftz@gmail.com
+                    </a>
+                </p>
+
+                <p>
+                    <a href="tel:+255793344501">
+                        +255 793 344 501
+                    </a>
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            <div class="container footer-bottom-inner">
+
+                <p>
+                    © 2026 Development Charity Foundation.
+                    All Rights Reserved.
+                </p>
+
+                <p class="footer-slogan">
+                    Together Is Success.
+                </p>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <!-- =====================================================
+         BACK TO TOP
+         ===================================================== -->
+
+    <button
+        type="button"
+        class="back-top"
+        id="backTop"
+        aria-label="Back to top"
+    >
+
+        <i class="fa-solid fa-arrow-up"></i>
+
+    </button>
+
+
+    <!-- =====================================================
+         DONATION MODAL
+         ===================================================== -->
+
+    <div
+        class="donation-modal"
+        id="donationModal"
+        aria-hidden="true"
+    >
+
+        <div
+            class="donation-backdrop"
+            onclick="closeDonationModal()"
+        ></div>
+
+
+        <div
+            class="donation-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="donationTitle"
+        >
+
+            <button
+                type="button"
+                class="donation-close"
+                onclick="closeDonationModal()"
+                aria-label="Close"
+            >
+
+                &times;
+
+            </button>
+
+
+            <span class="donation-kicker">
+
+                Development Charity Foundation
+
+            </span>
+
+
+            <h2 id="donationTitle">
+
+                Support DCF Today
+
+            </h2>
+
+
+            <p class="donation-intro">
+
+                Thank you for supporting Development Charity Foundation.
+                Use the Lipa Namba details below to make your donation.
+
+            </p>
+
+
+            <div class="donation-main">
+
+
+                <span class="donation-label">
+
+                    Lipa Namba
+
+                </span>
+
+
+                <div class="donation-number">
+
+
+                    <strong>
+
+                        351604882
+
+                    </strong>
+
+
+                    <button
+                        type="button"
+                        class="donation-copy"
+                        onclick="copyDonationNumber()"
+                    >
+
+                        Copy Number
+
+                    </button>
+
+                </div>
+
+
+                <div class="donation-name">
+
+
+                    <span class="donation-label">
+
+                        Account / Business Name
+
+                    </span>
+
+
+                    <strong>
+
+                        Development Agro
+
+                    </strong>
+
+                </div>
+
+
+                <div class="donation-note">
+
+                    <strong>
+                        Important:
+                    </strong>
+
+                    Please confirm that the payment details show
+                    <strong>
+                        Development Agro
+                    </strong>
+                    before completing your payment.
+
+                </div>
+
+            </div>
+
+
+            <div class="donation-actions">
+
+
+                <a
+                    href="tel:+255793344501"
+                    class="donation-action donation-call"
+                >
+
+                    <i class="fa-solid fa-phone"></i>
+
+                    Call 0793344501
+
+                </a>
+
+
+                <a
+                    href="mailto:info.dcftz@gmail.com"
+                    class="donation-action donation-email"
+                >
+
+                    <i class="fa-solid fa-envelope"></i>
+
+                    Email DCF
+
+                </a>
+
+            </div>
+
+
+            <p class="donation-footer">
+
+                Tanzania • 0793344501 • info.dcftz@gmail.com
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="donation-toast"
+        id="donationToast"
+    ></div>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+         ===================================================== -->
+
+    <script>
+
+        "use strict";
+
+
+        /* =====================================================
+           NAVBAR
+           ===================================================== */
+
+        const navbar =
+            document.getElementById(
+                "navbar"
+            );
+
+        const menuToggle =
+            document.getElementById(
+                "menuToggle"
+            );
+
+        const navLinks =
+            document.getElementById(
+                "navLinks"
+            );
+
+
+        let navbarFrame =
+            false;
+
+
+        function updateNavbar() {
+
+            if (!navbar) {
+
+                navbarFrame =
+                    false;
+
+                return;
+
+            }
+
+
+            navbar.classList.toggle(
+                "scrolled",
+                window.scrollY > 25
+            );
+
+
+            navbarFrame =
+                false;
+
+        }
+
+
+        window.addEventListener(
+            "scroll",
+            function () {
+
+                if (navbarFrame) {
+
+                    return;
+
+                }
+
+
+                navbarFrame =
+                    true;
+
+
+                requestAnimationFrame(
+                    updateNavbar
+                );
+
+            },
+            {
+                passive:
+                    true
+            }
+        );
+
+
+        if (
+            menuToggle &&
+            navLinks
+        ) {
+
+
+            menuToggle.addEventListener(
+                "click",
+                function () {
+
+                    const opened =
+                        navLinks.classList.toggle(
+                            "open"
+                        );
+
+
+                    document.body.classList.toggle(
+                        "menu-open",
+                        opened
+                    );
+
+
+                    menuToggle.setAttribute(
+                        "aria-expanded",
+                        String(opened)
+                    );
+
+
+                    menuToggle.innerHTML =
+                        opened
+
+                            ?
+
+                            '<i class="fa-solid fa-xmark"></i>'
+
+                            :
+
+                            '<i class="fa-solid fa-bars"></i>';
+
+                }
+            );
+
+
+            navLinks
+                .querySelectorAll("a")
+                .forEach(
+                    function (link) {
+
+                        link.addEventListener(
+                            "click",
+                            function () {
+
+                                navLinks.classList.remove(
+                                    "open"
+                                );
+
+
+                                document.body.classList.remove(
+                                    "menu-open"
+                                );
+
+
+                                menuToggle.setAttribute(
+                                    "aria-expanded",
+                                    "false"
+                                );
+
+
+                                menuToggle.innerHTML =
+                                    '<i class="fa-solid fa-bars"></i>';
+
+                            }
+                        );
+
+                    }
+                );
+
+        }
+
+
+        /* =====================================================
+           HERO SLIDER
+           ===================================================== */
+
+        const heroSlides =
+            document.querySelectorAll(
+                ".hero-slide"
+            );
+
+        const heroPrev =
+            document.getElementById(
+                "heroPrev"
+            );
+
+        const heroNext =
+            document.getElementById(
+                "heroNext"
+            );
+
+        const heroDots =
+            document.getElementById(
+                "heroDots"
+            );
+
+
+        let heroCurrent =
+            0;
+
+        let heroTimer =
+            null;
+
+
+        function showHeroSlide(
+            index
+        ) {
+
+            if (!heroSlides.length) {
+
+                return;
+
+            }
+
+
+            if (index < 0) {
+
+                index =
+                    heroSlides.length - 1;
+
+            }
+
+
+            if (
+                index >=
+                heroSlides.length
+            ) {
+
+                index =
+                    0;
+
+            }
+
+
+            heroSlides.forEach(
+                function (slide) {
+
+                    slide.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+            if (heroDots) {
+
+                heroDots
+                    .querySelectorAll(
+                        ".hero-dot"
+                    )
+                    .forEach(
+                        function (dot) {
+
+                            dot.classList.remove(
+                                "active"
+                            );
+
+                        }
+                    );
+
+            }
+
+
+            heroCurrent =
+                index;
+
+
+            heroSlides[
+                heroCurrent
+            ]?.classList.add(
+                "active"
+            );
+
+
+            heroDots
+                ?.querySelector(
+                    `.hero-dot:nth-child(${heroCurrent + 1})`
+                )
+                ?.classList.add(
+                    "active"
+                );
+
+        }
+
+
+        function restartHeroTimer() {
+
+            clearInterval(
+                heroTimer
+            );
+
+
+            if (
+                document.hidden
+            ) {
+
+                return;
+
+            }
+
+
+            heroTimer =
+                setInterval(
+                    function () {
+
+                        showHeroSlide(
+                            heroCurrent + 1
+                        );
+
+                    },
+                    5000
+                );
+
+        }
+
+
+        if (
+            heroDots &&
+            heroSlides.length
+        ) {
+
+
+            heroSlides.forEach(
+                function (_, index) {
+
+                    const dot =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    dot.type =
+                        "button";
+
+
+                    dot.className =
+                        "hero-dot";
+
+
+                    dot.setAttribute(
+                        "aria-label",
+                        `Show hero slide ${index + 1}`
+                    );
+
+
+                    dot.addEventListener(
+                        "click",
+                        function () {
+
+                            showHeroSlide(
+                                index
+                            );
+
+                            restartHeroTimer();
+
+                        }
+                    );
+
+
+                    heroDots.appendChild(
+                        dot
+                    );
+
+                }
+            );
+
+        }
+
+
+        if (
+            heroSlides.length
+        ) {
+
+            showHeroSlide(
+                0
+            );
+
+            restartHeroTimer();
+
+        }
+
+
+        heroNext
+            ?.addEventListener(
+                "click",
+                function () {
+
+                    showHeroSlide(
+                        heroCurrent + 1
+                    );
+
+                    restartHeroTimer();
+
+                }
+            );
+
+
+        heroPrev
+            ?.addEventListener(
+                "click",
+                function () {
+
+                    showHeroSlide(
+                        heroCurrent - 1
+                    );
+
+                    restartHeroTimer();
+
+                }
+            );
+
+
+        /* =====================================================
+           PRELOAD NEXT HERO IMAGES
+           ===================================================== */
+
+        function preloadHeroImages() {
+
+            [
+                "images/hero-02.jpg",
+                "images/hero-03.jpg"
+            ]
+            .forEach(
+                function (src) {
+
+                    const img =
+                        new Image();
+
+                    img.decoding =
+                        "async";
+
+                    img.src =
+                        src;
+
+                }
+            );
+
+        }
+
+
+        function scheduleHeroPreload() {
+
+            if (
+                "requestIdleCallback"
+                in window
+            ) {
+
+                window.requestIdleCallback(
+                    preloadHeroImages,
+                    {
+                        timeout:
+                            2500
+                    }
+                );
+
+            } else {
+
+                setTimeout(
+                    preloadHeroImages,
+                    1100
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           ABOUT SLIDER
+           ===================================================== */
+
+        const aboutSlides =
+            document.querySelectorAll(
+                ".visual-slide"
+            );
+
+        let aboutCurrent =
+            0;
+
+
+        function showAboutSlide() {
+
+            if (!aboutSlides.length) {
+
+                return;
+
+            }
+
+
+            aboutSlides.forEach(
+                function (slide) {
+
+                    slide.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+            aboutSlides[
+                aboutCurrent
+            ]?.classList.add(
+                "active"
+            );
+
+
+            aboutCurrent =
+                (
+                    aboutCurrent + 1
+                ) %
+                aboutSlides.length;
+
+        }
+
+
+        if (
+            aboutSlides.length > 1
+        ) {
+
+            setInterval(
+                showAboutSlide,
+                4700
+            );
+
+        }
+
+
+        /* =====================================================
+           EVENT SLIDER
+           ===================================================== */
+
+        const eventSlides =
+            document.querySelectorAll(
+                ".event-slide"
+            );
+
+        let eventCurrent =
+            0;
+
+
+        function showEventSlide() {
+
+            if (!eventSlides.length) {
+
+                return;
+
+            }
+
+
+            eventSlides.forEach(
+                function (slide) {
+
+                    slide.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+            eventSlides[
+                eventCurrent
+            ]?.classList.add(
+                "active"
+            );
+
+
+            eventCurrent =
+                (
+                    eventCurrent + 1
+                ) %
+                eventSlides.length;
+
+        }
+
+
+        if (
+            eventSlides.length > 1
+        ) {
+
+            setInterval(
+                showEventSlide,
+                4700
+            );
+
+        }
+
+
+        /* =====================================================
+           EXISTING TEAM SLIDER SUPPORT
+           ===================================================== */
+
+        const teamSlides =
+            document.querySelectorAll(
+                ".team-slide"
+            );
+
+        const teamDots =
+            document.getElementById(
+                "teamDots"
+            );
+
+        const teamCount =
+            document.getElementById(
+                "teamCount"
+            );
+
+        const teamPrev =
+            document.getElementById(
+                "teamPrev"
+            );
+
+        const teamNext =
+            document.getElementById(
+                "teamNext"
+            );
+
+        const teamCarousel =
+            document.getElementById(
+                "teamCarousel"
+            );
+
+
+        let teamCurrent =
+            0;
+
+        let teamTimer =
+            null;
+
+
+        function showTeamSlide(
+            index
+        ) {
+
+            if (!teamSlides.length) {
+
+                return;
+
+            }
+
+
+            if (index < 0) {
+
+                index =
+                    teamSlides.length - 1;
+
+            }
+
+
+            if (
+                index >=
+                teamSlides.length
+            ) {
+
+                index =
+                    0;
+
+            }
+
+
+            teamSlides.forEach(
+                function (slide) {
+
+                    slide.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+            if (teamDots) {
+
+                teamDots
+                    .querySelectorAll(
+                        ".team-dot"
+                    )
+                    .forEach(
+                        function (dot) {
+
+                            dot.classList.remove(
+                                "active"
+                            );
+
+                        }
+                    );
+
+            }
+
+
+            teamCurrent =
+                index;
+
+
+            teamSlides[
+                teamCurrent
+            ]?.classList.add(
+                "active"
+            );
+
+
+            teamDots
+                ?.querySelector(
+                    `.team-dot:nth-child(${teamCurrent + 1})`
+                )
+                ?.classList.add(
+                    "active"
+                );
+
+
+            if (teamCount) {
+
+                teamCount.textContent =
+                    `${teamCurrent + 1} / ${teamSlides.length}`;
+
+            }
+
+        }
+
+
+        function restartTeamTimer() {
+
+            clearInterval(
+                teamTimer
+            );
+
+
+            if (
+                !teamSlides.length ||
+                document.hidden
+            ) {
+
+                return;
+
+            }
+
+
+            teamTimer =
+                setInterval(
+                    function () {
+
+                        showTeamSlide(
+                            teamCurrent + 1
+                        );
+
+                    },
+                    5600
+                );
+
+        }
+
+
+        if (
+            teamDots &&
+            teamSlides.length
+        ) {
+
+
+            teamSlides.forEach(
+                function (_, index) {
+
+                    const dot =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    dot.type =
+                        "button";
+
+
+                    dot.className =
+                        "team-dot";
+
+
+                    dot.setAttribute(
+                        "aria-label",
+                        `Show team member ${index + 1}`
+                    );
+
+
+                    dot.addEventListener(
+                        "click",
+                        function () {
+
+                            showTeamSlide(
+                                index
+                            );
+
+                            restartTeamTimer();
+
+                        }
+                    );
+
+
+                    teamDots.appendChild(
+                        dot
+                    );
+
+                }
+            );
+
+
+            showTeamSlide(
+                0
+            );
+
+
+            restartTeamTimer();
+
+        }
+
+
+        teamPrev
+            ?.addEventListener(
+                "click",
+                function () {
+
+                    showTeamSlide(
+                        teamCurrent - 1
+                    );
+
+                    restartTeamTimer();
+
+                }
+            );
+
+
+        teamNext
+            ?.addEventListener(
+                "click",
+                function () {
+
+                    showTeamSlide(
+                        teamCurrent + 1
+                    );
+
+                    restartTeamTimer();
+
+                }
+            );
+
+
+        if (teamCarousel) {
+
+            teamCarousel.addEventListener(
+                "mouseenter",
+                function () {
+
+                    clearInterval(
+                        teamTimer
+                    );
+
+                }
+            );
+
+
+            teamCarousel.addEventListener(
+                "mouseleave",
+                function () {
+
+                    restartTeamTimer();
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
+           BACK TO TOP
+           ===================================================== */
+
+        const backTop =
+            document.getElementById(
+                "backTop"
+            );
+
+        let backTopFrame =
+            false;
+
+
+        function updateBackTop() {
+
+            if (!backTop) {
+
+                backTopFrame =
+                    false;
+
+                return;
+
+            }
+
+
+            backTop.classList.toggle(
+                "show",
+                window.scrollY > 450
+            );
+
+
+            backTopFrame =
+                false;
+
+        }
+
+
+        window.addEventListener(
+            "scroll",
+            function () {
+
+                if (backTopFrame) {
+
+                    return;
+
+                }
+
+
+                backTopFrame =
+                    true;
+
+
+                requestAnimationFrame(
+                    updateBackTop
+                );
+
+            },
+            {
+                passive:
+                    true
+            }
+        );
+
+
+        backTop?.addEventListener(
+            "click",
+            function () {
+
+                window.scrollTo(
+                    {
+                        top:
+                            0,
+
+                        behavior:
+                            "smooth"
+                    }
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           ANCHOR NAVIGATION
+           ===================================================== */
+
+        document
+            .querySelectorAll(
+                'a[href^="#"]'
+            )
+            .forEach(
+                function (anchor) {
+
+                    anchor.addEventListener(
+                        "click",
+                        function (event) {
+
+                            const href =
+                                anchor.getAttribute(
+                                    "href"
+                                );
+
+
+                            if (
+                                !href ||
+                                href === "#"
+                            ) {
+
+                                return;
+
+                            }
+
+
+                            const target =
+                                document.querySelector(
+                                    href
+                                );
+
+
+                            if (!target) {
+
+                                return;
+
+                            }
+
+
+                            event.preventDefault();
+
+
+                            target.scrollIntoView(
+                                {
+                                    behavior:
+                                        "smooth",
+
+                                    block:
+                                        "start"
+                                }
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+           DONATION MODAL
+           ===================================================== */
+
+        function openDonationModal() {
+
+            const modal =
+                document.getElementById(
+                    "donationModal"
+                );
+
+
+            if (!modal) {
+
+                return;
+
+            }
+
+
+            modal.classList.add(
+                "active"
+            );
+
+
+            modal.setAttribute(
+                "aria-hidden",
+                "false"
+            );
+
+
+            document.body.style.overflow =
+                "hidden";
+
+        }
+
+
+        function closeDonationModal() {
+
+            const modal =
+                document.getElementById(
+                    "donationModal"
+                );
+
+
+            if (!modal) {
+
+                return;
+
+            }
+
+
+            modal.classList.remove(
+                "active"
+            );
+
+
+            modal.setAttribute(
+                "aria-hidden",
+                "true"
+            );
+
+
+            document.body.style.overflow =
+                "";
+
+        }
+
+
+        window.openDonationModal =
+            openDonationModal;
+
+        window.closeDonationModal =
+            closeDonationModal;
+
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key ===
+                    "Escape"
+                ) {
+
+                    closeDonationModal();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           DONATION COPY
+           ===================================================== */
+
+        function copyDonationNumber() {
+
+            const number =
+                "351604882";
+
+
+            function success() {
+
+                const toast =
+                    document.getElementById(
+                        "donationToast"
+                    );
+
+
+                if (!toast) {
+
+                    return;
+
+                }
+
+
+                toast.textContent =
+                    "Lipa Namba 351604882 copied.";
+
+
+                toast.classList.add(
+                    "show"
+                );
+
+
+                setTimeout(
+                    function () {
+
+                        toast.classList.remove(
+                            "show"
+                        );
+
+                    },
+                    2200
+                );
+
+            }
+
+
+            if (
+                navigator.clipboard &&
+                window.isSecureContext
+            ) {
+
+                navigator.clipboard
+                    .writeText(
+                        number
+                    )
+                    .then(
+                        success
+                    )
+                    .catch(
+                        function () {
+
+                            fallbackCopy(
+                                number,
+                                success
+                            );
+
+                        }
+                    );
+
+            } else {
+
+                fallbackCopy(
+                    number,
+                    success
+                );
+
+            }
+
+        }
+
+
+        function fallbackCopy(
+            text,
+            callback
+        ) {
+
+            const input =
+                document.createElement(
+                    "textarea"
+                );
+
+
+            input.value =
+                text;
+
+
+            input.style.position =
+                "fixed";
+
+
+            input.style.opacity =
+                "0";
+
+
+            document.body.appendChild(
+                input
+            );
+
+
+            input.select();
+
+
+            try {
+
+                document.execCommand(
+                    "copy"
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Copy failed:",
+                    error
+                );
+
+            }
+
+
+            input.remove();
+
+
+            if (
+                typeof callback ===
+                "function"
+            ) {
+
+                callback();
+
+            }
+
+        }
+
+
+        window.copyDonationNumber =
+            copyDonationNumber;
+
+
+        /* =====================================================
+           IMAGE FALLBACK
+           ===================================================== */
+
+        document
+            .querySelectorAll(
+                "img"
+            )
+            .forEach(
+                function (image) {
+
+                    image.addEventListener(
+                        "error",
+                        function () {
+
+                            this.style.backgroundColor =
+                                "#eef4f0";
+
+                            this.style.objectFit =
+                                "contain";
+
+                            this.style.padding =
+                                "20px";
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+           TAB VISIBILITY
+           ===================================================== */
+
+        document.addEventListener(
+            "visibilitychange",
+            function () {
+
+                if (
+                    document.hidden
+                ) {
+
+                    clearInterval(
+                        heroTimer
+                    );
+
+                    clearInterval(
+                        teamTimer
+                    );
+
+                } else {
+
+                    restartHeroTimer();
+
+                    restartTeamTimer();
+
+                }
+
+            }
+        );
+
+
+        /* =====================================================
+           START NON-BLOCKING PRELOAD
+           ===================================================== */
+
+        if (
+            document.readyState ===
+            "loading"
+        ) {
+
+            document.addEventListener(
+                "DOMContentLoaded",
+                scheduleHeroPreload,
+                {
+                    once:
+                        true
+                }
+            );
+
+        } else {
+
+            scheduleHeroPreload();
+
+        }
+
+    </script>
+
+
+    <script
+       
+        defer
+    ></script>
+
+
+</body>
+
+</html>

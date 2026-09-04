@@ -1,0 +1,2197 @@
+<!DOCTYPE html>
+<html lang="sw">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Sajili Mwanachama - DCF Online System</title>
+
+
+    <!-- =====================================================
+         STYLE
+    ====================================================== -->
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7f6;
+            color: #1f2937;
+            min-height: 100vh;
+            padding: 30px 15px;
+        }
+
+        /* =====================================================
+           MAIN WRAPPER
+        ====================================================== */
+
+        .page-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 900px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        /* =====================================================
+           HEADER
+        ====================================================== */
+
+        .form-header {
+            padding: 24px 30px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #ffffff;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #174a35;
+            border: 1px solid #174a35;
+            padding: 9px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            background: #fff;
+            transition: 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: #174a35;
+            color: #ffffff;
+        }
+
+        .role-badge {
+            background: #eef5f1;
+            color: #174a35;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .form-title {
+            font-size: 23px;
+            color: #174a35;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .form-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        /* =====================================================
+           FORM BODY
+        ====================================================== */
+
+        .form-body {
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #174a35;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #111827;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease,
+                        box-shadow 0.2s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #174a35;
+            box-shadow: 0 0 0 2px rgba(23, 74, 53, 0.08);
+        }
+
+        input[readonly] {
+            background: #f3f4f6;
+            color: #174a35;
+            font-weight: 700;
+            cursor: not-allowed;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        /* =====================================================
+           IMAGE
+        ====================================================== */
+
+        .image-upload-box {
+            border: 1px dashed #b8c8bf;
+            padding: 15px;
+            border-radius: 7px;
+            background: #fafcfb;
+        }
+
+        .preview-container {
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        #image_preview {
+            width: 120px;
+            height: 140px;
+            border-radius: 6px;
+            border: 2px solid #174a35;
+            padding: 3px;
+            display: none;
+            margin: 0 auto;
+            object-fit: cover;
+        }
+
+        /* =====================================================
+           BUTTON
+        ====================================================== */
+
+        .form-actions {
+            margin-top: 28px;
+            padding-top: 22px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn-submit {
+            width: 100%;
+            border: none;
+            border-radius: 6px;
+            background: #174a35;
+            color: #ffffff;
+            padding: 13px 18px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background: #0d3022;
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        /* =====================================================
+           MESSAGE
+        ====================================================== */
+
+        #msg {
+            display: none;
+            margin-top: 20px;
+            padding: 14px 16px;
+            border-radius: 7px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .success {
+            display: block !important;
+            background: #ecfdf3;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .error {
+            display: block !important;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .warning {
+            display: block !important;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
+        /* =====================================================
+           EXISTING MEMBER
+        ====================================================== */
+
+        .existing-member {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fffaf0;
+            border: 1px solid #f3d58a;
+            border-radius: 7px;
+            display: none;
+        }
+
+        .existing-member-title {
+            font-weight: bold;
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+
+        .existing-member-info {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #4b5563;
+        }
+
+        .edit-member-btn {
+            margin-top: 12px;
+            display: inline-block;
+            padding: 9px 14px;
+            background: #174a35;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .edit-member-btn:hover {
+            background: #0d3022;
+        }
+
+        /* =====================================================
+           RESPONSIVE
+        ====================================================== */
+
+        @media (max-width: 700px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .form-header,
+            .form-body {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: auto;
+            }
+
+            .header-top {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .form-title {
+                font-size: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body data-allowed-roles="admin,staff">
+
+<div class="page-wrapper">
+
+    <div class="form-container">
+
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <div class="form-header">
+
+            <div class="header-top">
+
+                <a href="../dashboard.html"
+                   class="back-btn">
+
+                    ← Rudi Dashboard
+
+                </a>
+
+
+                <div class="role-badge"
+                     id="roleBadge">
+
+                    STAFF
+
+                </div>
+
+            </div>
+
+
+            <div class="form-title">
+
+                Fomu ya Usajili wa Mwanachama
+
+            </div>
+
+
+            <div class="form-subtitle">
+
+                Jaza taarifa za mwanachama kwa usahihi.
+                Mwanachama aliyepo tayari hawezi kusajiliwa mara mbili.
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             BODY
+        ================================================== -->
+
+        <div class="form-body">
+
+            <div class="section-title">
+
+                Taarifa za Msingi za Mwanachama
+
+            </div>
+
+
+            <form id="memberForm">
+
+
+                <div class="form-grid">
+
+
+                    <!-- MEMBER ID -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Namba ya Uanachama
+                        </label>
+
+                        <input
+                            type="text"
+                            id="member_id"
+                            readonly
+                            value="Inazalishwa..."
+                        >
+
+                    </div>
+
+
+
+                    <!-- FULL NAME -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Majina Kamili *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="full_name"
+                            placeholder="Ingiza majina yote"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- GENDER -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Jinsia *
+                        </label>
+
+                        <select id="gender"
+                                required>
+
+                            <option value="">
+                                -- Chagua Jinsia --
+                            </option>
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+
+                    <!-- DOB -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Tarehe ya Kuzaliwa *
+                        </label>
+
+                        <input
+                            type="date"
+                            id="dob"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- NIDA -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Namba ya NIDA
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nida_no"
+                            placeholder="Namba ya NIDA"
+                        >
+
+                    </div>
+
+
+
+                    <!-- PASSPORT -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Namba ya Passport
+                        </label>
+
+                        <input
+                            type="text"
+                            id="passport_no"
+                            placeholder="Kama anayo"
+                        >
+
+                    </div>
+
+
+
+                    <!-- PHONE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Namba ya Simu *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="phone"
+                            placeholder="Mfano: 0712345678"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- EMAIL -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Barua Pepe
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="mfano@gmail.com"
+                        >
+
+                    </div>
+
+
+
+                    <!-- OCCUPATION -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Kazi / Shughuli
+                        </label>
+
+                        <input
+                            type="text"
+                            id="occupation"
+                            placeholder="Mfano: Mkulima, Mwalimu"
+                        >
+
+                    </div>
+
+
+
+                    <!-- NATIONALITY -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Utaifa
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nationality"
+                            value="Tanzanian"
+                        >
+
+                    </div>
+
+
+
+                    <!-- COUNTRY -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Nchi
+                        </label>
+
+                        <input
+                            type="text"
+                            id="country"
+                            value="Tanzania"
+                        >
+
+                    </div>
+
+
+
+                    <!-- IMAGE -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Picha ya Mwanachama
+                        </label>
+
+                        <div class="image-upload-box">
+
+                            <input
+                                type="file"
+                                id="passport_image"
+                                accept="image/*"
+                            >
+
+
+                            <div class="preview-container">
+
+                                <img
+                                    id="image_preview"
+                                    src="#"
+                                    alt="Muonekano wa Picha"
+                                >
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- ADDRESS -->
+
+                    <div class="form-group full-width">
+
+                        <label>
+                            Anwani / Mahali Anapoishi
+                        </label>
+
+                        <textarea
+                            id="address"
+                            placeholder="Mtaa, Kata, Wilaya, Mkoa"
+                        ></textarea>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     EXISTING MEMBER
+                ================================================== -->
+
+                <div
+                    id="existingMember"
+                    class="existing-member"
+                >
+
+                    <div class="existing-member-title">
+
+                        Mwanachama huyu tayari yupo kwenye mfumo
+
+                    </div>
+
+
+                    <div
+                        id="existingMemberInfo"
+                        class="existing-member-info"
+                    ></div>
+
+
+                    <a
+                        href="#"
+                        id="editMemberBtn"
+                        class="edit-member-btn"
+                    >
+
+                        Fungua Taarifa kwa ajili ya Edit
+
+                    </a>
+
+                </div>
+
+
+
+                <!-- MESSAGE -->
+
+                <div id="msg"></div>
+
+
+
+                <!-- ACTION -->
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="btn-submit"
+                        id="saveBtn"
+                    >
+
+                        HIFADHI MWANACHAMA
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     SUPABASE
+====================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="../js/supabase.js"></script>
+<script src="../js/role-guard.js"></script>
+
+
+<script>
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+const form =
+    document.getElementById('memberForm');
+
+const saveBtn =
+    document.getElementById('saveBtn');
+
+const msgDiv =
+    document.getElementById('msg');
+
+const existingMemberBox =
+    document.getElementById('existingMember');
+
+const existingMemberInfo =
+    document.getElementById('existingMemberInfo');
+
+const editMemberBtn =
+    document.getElementById('editMemberBtn');
+
+const passportInput =
+    document.getElementById('passport_image');
+
+const imagePreview =
+    document.getElementById('image_preview');
+
+const roleBadge =
+    document.getElementById('roleBadge');
+
+let currentExistingMember = null;
+
+
+
+/* =========================================================
+   AUTHENTICATION PROTECTION
+   MUHIMU:
+   HAPA HATUTUMII SESSIONSTORAGE PEKE YAKE.
+   TUNAANGALIA SUPABASE SESSION KWANZA.
+========================================================= */
+
+async function checkPageAccess() {
+
+    try {
+
+        if (
+            typeof _supabase === 'undefined' ||
+            !_supabase
+        ) {
+
+            console.error(
+                'Supabase client haijapatikana.'
+            );
+
+            window.location.replace(
+                '../login.html'
+            );
+
+            return false;
+        }
+
+
+        const {
+            data: {
+                session
+            },
+            error
+        } =
+            await _supabase.auth.getSession();
+
+
+        if (error) {
+
+            console.error(
+                'Session error:',
+                error
+            );
+
+            window.location.replace(
+                '../login.html'
+            );
+
+            return false;
+        }
+
+
+        /*
+         * Kama hakuna Supabase session,
+         * basi user hajalogin.
+         */
+
+        if (
+            !session ||
+            !session.user
+        ) {
+
+            window.location.replace(
+                '../login.html'
+            );
+
+            return false;
+        }
+
+
+        /*
+         * Tunapata role kutoka profile.
+         */
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+            await _supabase
+                .from('profiles')
+                .select(
+                    'id, full_name, role'
+                )
+                .eq(
+                    'id',
+                    session.user.id
+                )
+                .maybeSingle();
+
+
+        if (profileError) {
+
+            console.error(
+                'Profile error:',
+                profileError
+            );
+
+            window.location.replace(
+                '../login.html'
+            );
+
+            return false;
+        }
+
+
+        if (!profile) {
+
+            window.location.replace(
+                '../login.html'
+            );
+
+            return false;
+        }
+
+
+        const role =
+            String(
+                profile.role || ''
+            ).toLowerCase();
+
+
+        /*
+         * Admin na Staff pekee.
+         */
+
+        if (
+            ![
+                'admin',
+                'staff'
+            ].includes(role)
+        ) {
+
+            alert(
+                'Huna ruhusa ya kutumia ukurasa huu.'
+            );
+
+            window.location.replace(
+                '../dashboard.html'
+            );
+
+            return false;
+        }
+
+
+        /*
+         * Tunahakikisha sessionStorage
+         * ina taarifa sahihi pia.
+         */
+
+        sessionStorage.setItem(
+            'userLoggedIn',
+            'true'
+        );
+
+        sessionStorage.setItem(
+            'userRole',
+            role
+        );
+
+        sessionStorage.setItem(
+            'userId',
+            session.user.id
+        );
+
+        sessionStorage.setItem(
+            'username',
+            session.user.email || ''
+        );
+
+        sessionStorage.setItem(
+            'fullName',
+            profile.full_name || ''
+        );
+
+
+        roleBadge.textContent =
+            role.toUpperCase();
+
+
+        return true;
+
+
+    } catch (error) {
+
+        console.error(
+            'AUTH CHECK ERROR:',
+            error
+        );
+
+        window.location.replace(
+            '../login.html'
+        );
+
+        return false;
+    }
+}
+
+
+
+/* =========================================================
+   PAGE START
+========================================================= */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    async function () {
+
+        const allowed =
+            await checkPageAccess();
+
+
+        if (!allowed) {
+            return;
+        }
+
+
+        /*
+         * User amethibitishwa.
+         * Sasa tunaandaa form.
+         */
+
+        generateMemberID();
+
+    }
+);
+
+
+
+/* =========================================================
+   IMAGE PREVIEW
+========================================================= */
+
+passportInput.addEventListener(
+    'change',
+    function (event) {
+
+        const file =
+            event.target.files[0];
+
+
+        if (!file) {
+
+            imagePreview.style.display =
+                'none';
+
+            imagePreview.src =
+                '#';
+
+            return;
+        }
+
+
+        if (
+            !file.type.startsWith(
+                'image/'
+            )
+        ) {
+
+            passportInput.value =
+                '';
+
+            showMessage(
+                'error',
+                'Tafadhali chagua picha halali.'
+            );
+
+            return;
+        }
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function (e) {
+
+                imagePreview.src =
+                    e.target.result;
+
+                imagePreview.style.display =
+                    'block';
+
+            };
+
+
+        reader.readAsDataURL(file);
+
+    }
+);
+
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function showMessage(
+    type,
+    text
+) {
+
+    msgDiv.className =
+        '';
+
+    msgDiv.classList.add(
+        type
+    );
+
+    msgDiv.textContent =
+        text;
+
+    msgDiv.style.display =
+        'block';
+
+}
+
+
+function clearMessage() {
+
+    msgDiv.className =
+        '';
+
+    msgDiv.textContent =
+        '';
+
+    msgDiv.style.display =
+        'none';
+
+}
+
+
+
+/* =========================================================
+   GENERATE MEMBER ID
+========================================================= */
+
+async function generateMemberID() {
+
+    const memberInput =
+        document.getElementById(
+            'member_id'
+        );
+
+
+    memberInput.value =
+        'Inazalishwa...';
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await _supabase
+                .from('members')
+                .select('member_id')
+                .order(
+                    'created_at',
+                    {
+                        ascending: false
+                    }
+                )
+                .limit(1);
+
+
+        if (error) {
+
+            console.error(
+                'Member ID Error:',
+                error
+            );
+
+
+            memberInput.value =
+                'DCF-' +
+                Date.now()
+                    .toString()
+                    .slice(-6);
+
+            return;
+        }
+
+
+        let nextNumber =
+            1;
+
+
+        if (
+            data &&
+            data.length > 0
+        ) {
+
+            const lastID =
+                data[0].member_id;
+
+
+            if (lastID) {
+
+                const match =
+                    lastID.match(
+                        /\d+$/
+                    );
+
+
+                if (match) {
+
+                    nextNumber =
+                        parseInt(
+                            match[0],
+                            10
+                        ) + 1;
+
+                }
+
+            }
+
+        }
+
+
+        memberInput.value =
+            'DCF-' +
+            String(nextNumber)
+                .padStart(
+                    4,
+                    '0'
+                );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        memberInput.value =
+            'DCF-' +
+            Date.now()
+                .toString()
+                .slice(-6);
+
+    }
+
+}
+
+
+
+/* =========================================================
+   NORMALIZE VALUE
+========================================================= */
+
+function cleanValue(value) {
+
+    return (
+        value || ''
+    )
+        .trim()
+        .toLowerCase();
+
+}
+
+
+
+/* =========================================================
+   FIND EXISTING MEMBER
+========================================================= */
+
+async function findExistingMember() {
+
+    const nida =
+        cleanValue(
+            document
+                .getElementById(
+                    'nida_no'
+                )
+                .value
+        );
+
+
+    const passport =
+        cleanValue(
+            document
+                .getElementById(
+                    'passport_no'
+                )
+                .value
+        );
+
+
+    const phone =
+        cleanValue(
+            document
+                .getElementById(
+                    'phone'
+                )
+                .value
+        );
+
+
+    const email =
+        cleanValue(
+            document
+                .getElementById(
+                    'email'
+                )
+                .value
+        );
+
+
+    if (
+        !nida &&
+        !passport &&
+        !phone &&
+        !email
+    ) {
+
+        hideExistingMember();
+
+        return null;
+
+    }
+
+
+    try {
+
+        let found =
+            null;
+
+
+        /* ================= NIDA ================= */
+
+        if (nida) {
+
+            const {
+                data
+            } =
+                await _supabase
+                    .from('members')
+                    .select('*')
+                    .ilike(
+                        'nida_no',
+                        nida
+                    )
+                    .limit(1);
+
+
+            if (
+                data &&
+                data.length
+            ) {
+
+                found =
+                    data[0];
+
+            }
+
+        }
+
+
+
+        /* ================= PASSPORT ================= */
+
+        if (
+            !found &&
+            passport
+        ) {
+
+            const {
+                data
+            } =
+                await _supabase
+                    .from('members')
+                    .select('*')
+                    .ilike(
+                        'passport_no',
+                        passport
+                    )
+                    .limit(1);
+
+
+            if (
+                data &&
+                data.length
+            ) {
+
+                found =
+                    data[0];
+
+            }
+
+        }
+
+
+
+        /* ================= PHONE ================= */
+
+        if (
+            !found &&
+            phone
+        ) {
+
+            const {
+                data
+            } =
+                await _supabase
+                    .from('members')
+                    .select('*')
+                    .ilike(
+                        'phone',
+                        phone
+                    )
+                    .limit(1);
+
+
+            if (
+                data &&
+                data.length
+            ) {
+
+                found =
+                    data[0];
+
+            }
+
+        }
+
+
+
+        /* ================= EMAIL ================= */
+
+        if (
+            !found &&
+            email
+        ) {
+
+            const {
+                data
+            } =
+                await _supabase
+                    .from('members')
+                    .select('*')
+                    .ilike(
+                        'email',
+                        email
+                    )
+                    .limit(1);
+
+
+            if (
+                data &&
+                data.length
+            ) {
+
+                found =
+                    data[0];
+
+            }
+
+        }
+
+
+
+        if (found) {
+
+            showExistingMember(
+                found
+            );
+
+            return found;
+
+        }
+
+
+        hideExistingMember();
+
+        return null;
+
+
+    } catch (error) {
+
+        console.error(
+            'Duplicate Check Error:',
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   SHOW EXISTING MEMBER
+========================================================= */
+
+function showExistingMember(
+    member
+) {
+
+    currentExistingMember =
+        member;
+
+
+    existingMemberBox.style.display =
+        'block';
+
+
+    existingMemberInfo.innerHTML =
+
+        '<strong>Jina:</strong> ' +
+        escapeHTML(
+            member.full_name || '-'
+        ) +
+
+        '<br>' +
+
+        '<strong>Member ID:</strong> ' +
+        escapeHTML(
+            member.member_id || '-'
+        ) +
+
+        '<br>' +
+
+        '<strong>Simu:</strong> ' +
+        escapeHTML(
+            member.phone || '-'
+        ) +
+
+        '<br>' +
+
+        '<strong>NIDA:</strong> ' +
+        escapeHTML(
+            member.nida_no || '-'
+        ) +
+
+        '<br>' +
+
+        '<strong>Email:</strong> ' +
+        escapeHTML(
+            member.email || '-'
+        );
+
+
+    editMemberBtn.style.display =
+        'inline-block';
+
+
+    if (member.id) {
+
+        editMemberBtn.href =
+            './edit-member.html?id=' +
+            encodeURIComponent(
+                member.id
+            );
+
+    } else if (
+        member.member_id
+    ) {
+
+        editMemberBtn.href =
+            './edit-member.html?member_id=' +
+            encodeURIComponent(
+                member.member_id
+            );
+
+    } else {
+
+        editMemberBtn.style.display =
+            'none';
+
+    }
+
+}
+
+
+
+/* =========================================================
+   HIDE EXISTING MEMBER
+========================================================= */
+
+function hideExistingMember() {
+
+    currentExistingMember =
+        null;
+
+
+    existingMemberBox.style.display =
+        'none';
+
+
+    existingMemberInfo.innerHTML =
+        '';
+
+
+    editMemberBtn.href =
+        '#';
+
+}
+
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(
+    value
+) {
+
+    return String(
+        value || ''
+    )
+        .replace(
+            /&/g,
+            '&amp;'
+        )
+        .replace(
+            /</g,
+            '&lt;'
+        )
+        .replace(
+            />/g,
+            '&gt;'
+        )
+        .replace(
+            /"/g,
+            '&quot;'
+        )
+        .replace(
+            /'/g,
+            '&#039;'
+        );
+
+}
+
+
+
+/* =========================================================
+   CHECK DUPLICATE WHEN USER LEAVES FIELDS
+========================================================= */
+
+[
+    'nida_no',
+    'passport_no',
+    'phone',
+    'email'
+].forEach(
+    function (id) {
+
+        const input =
+            document.getElementById(
+                id
+            );
+
+
+        input.addEventListener(
+            'blur',
+            async function () {
+
+                await findExistingMember();
+
+            }
+        );
+
+    }
+);
+
+
+
+/* =========================================================
+   FORM SUBMIT
+========================================================= */
+
+form.addEventListener(
+    'submit',
+    async function (e) {
+
+        e.preventDefault();
+
+        clearMessage();
+
+
+        /* =================================================
+           AUTH CHECK
+        ================================================= */
+
+        const {
+            data: {
+                session
+            }
+        } =
+            await _supabase.auth.getSession();
+
+
+        if (
+            !session ||
+            !session.user
+        ) {
+
+            window.location.replace(
+                '../login.html'
+            );
+
+            return;
+        }
+
+
+        /* =================================================
+           CHECK ROLE
+        ================================================= */
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+            await _supabase
+                .from('profiles')
+                .select(
+                    'id, full_name, role'
+                )
+                .eq(
+                    'id',
+                    session.user.id
+                )
+                .maybeSingle();
+
+
+        if (
+            profileError ||
+            !profile
+        ) {
+
+            showMessage(
+                'error',
+                'Taarifa za mtumiaji hazijapatikana.'
+            );
+
+            return;
+        }
+
+
+        const role =
+            String(
+                profile.role || ''
+            ).toLowerCase();
+
+
+        if (
+            ![
+                'admin',
+                'staff'
+            ].includes(role)
+        ) {
+
+            showMessage(
+                'error',
+                'Huna ruhusa ya kusajili mwanachama.'
+            );
+
+            return;
+        }
+
+
+
+        /* =================================================
+           DUPLICATE CHECK
+        ================================================= */
+
+        const existing =
+            await findExistingMember();
+
+
+        if (existing) {
+
+            showMessage(
+                'warning',
+                'Mwanachama huyu tayari amesajiliwa. Huwezi kumsajili tena. Tumia kitufe cha "Fungua Taarifa kwa ajili ya Edit" kubadilisha taarifa zake.'
+            );
+
+            return;
+        }
+
+
+
+        /* =================================================
+           DISABLE BUTTON
+        ================================================= */
+
+        saveBtn.disabled =
+            true;
+
+        saveBtn.textContent =
+            'Inahifadhi...';
+
+
+
+        try {
+
+
+            /* =================================================
+               GET VALUES
+            ================================================= */
+
+            const member_id =
+                document
+                    .getElementById(
+                        'member_id'
+                    )
+                    .value
+                    .trim();
+
+
+            const full_name =
+                document
+                    .getElementById(
+                        'full_name'
+                    )
+                    .value
+                    .trim();
+
+
+            const gender =
+                document
+                    .getElementById(
+                        'gender'
+                    )
+                    .value;
+
+
+            const dob =
+                document
+                    .getElementById(
+                        'dob'
+                    )
+                    .value;
+
+
+            const nida_no =
+                document
+                    .getElementById(
+                        'nida_no'
+                    )
+                    .value
+                    .trim();
+
+
+            const passport_no =
+                document
+                    .getElementById(
+                        'passport_no'
+                    )
+                    .value
+                    .trim();
+
+
+            const phone =
+                document
+                    .getElementById(
+                        'phone'
+                    )
+                    .value
+                    .trim();
+
+
+            const email =
+                document
+                    .getElementById(
+                        'email'
+                    )
+                    .value
+                    .trim();
+
+
+            const occupation =
+                document
+                    .getElementById(
+                        'occupation'
+                    )
+                    .value
+                    .trim();
+
+
+            const nationality =
+                document
+                    .getElementById(
+                        'nationality'
+                    )
+                    .value
+                    .trim();
+
+
+            const country =
+                document
+                    .getElementById(
+                        'country'
+                    )
+                    .value
+                    .trim();
+
+
+            const address =
+                document
+                    .getElementById(
+                        'address'
+                    )
+                    .value
+                    .trim();
+
+
+
+            /* =================================================
+               IMAGE
+            ================================================= */
+
+            let imageUrl =
+                null;
+
+
+            const file =
+                passportInput.files[0];
+
+
+            if (file) {
+
+                const extension =
+                    file.name
+                        .split('.')
+                        .pop()
+                        .toLowerCase();
+
+
+                const safeName =
+                    member_id.replace(
+                        /[^a-zA-Z0-9-_]/g,
+                        ''
+                    );
+
+
+                const fileName =
+                    safeName +
+                    '_' +
+                    Date.now() +
+                    '.' +
+                    extension;
+
+
+                const {
+                    error: uploadError
+                } =
+                    await _supabase
+                        .storage
+                        .from('passports')
+                        .upload(
+                            fileName,
+                            file,
+                            {
+                                upsert: false
+                            }
+                        );
+
+
+                if (uploadError) {
+
+                    throw new Error(
+                        'Picha haikupakiwa: ' +
+                        uploadError.message
+                    );
+
+                }
+
+
+                const {
+                    data: publicUrlData
+                } =
+                    _supabase
+                        .storage
+                        .from('passports')
+                        .getPublicUrl(
+                            fileName
+                        );
+
+
+                imageUrl =
+                    publicUrlData.publicUrl;
+
+            }
+
+
+
+            /* =================================================
+               PAYLOAD
+            ================================================= */
+
+            const payload = {
+
+                member_id:
+                    member_id,
+
+                full_name:
+                    full_name,
+
+                gender:
+                    gender,
+
+                dob:
+                    dob,
+
+                nida_no:
+                    nida_no || null,
+
+                passport_no:
+                    passport_no || null,
+
+                passport_image_url:
+                    imageUrl,
+
+                phone:
+                    phone,
+
+                email:
+                    email || null,
+
+                occupation:
+                    occupation || null,
+
+                nationality:
+                    nationality || null,
+
+                country:
+                    country || null,
+
+                address:
+                    address || null
+
+            };
+
+
+
+            /* =================================================
+               INSERT
+            ================================================= */
+
+            const {
+                data,
+                error
+            } =
+                await _supabase
+                    .from('members')
+                    .insert([
+                        payload
+                    ])
+                    .select();
+
+
+            if (error) {
+
+
+                if (
+                    error.code ===
+                    '23505'
+                ) {
+
+                    throw new Error(
+                        'Mwanachama huyu tayari yupo kwenye mfumo.'
+                    );
+
+                }
+
+
+                throw new Error(
+                    error.message
+                );
+
+            }
+
+
+
+            /* =================================================
+               SUCCESS
+            ================================================= */
+
+            showMessage(
+                'success',
+                'Mwanachama amesajiliwa kikamilifu. Inaelekea Dashboard...'
+            );
+
+
+            /*
+             * MUHIMU:
+             * HAPA SASA TUNAMPELEKA DASHBOARD
+             * BAADA YA USAJILI KUFANIKIWA.
+             */
+
+            setTimeout(
+                function () {
+
+                    window.location.replace(
+                        '../dashboard.html'
+                    );
+
+                },
+                900
+            );
+
+
+
+        } catch (error) {
+
+            console.error(
+                'SAVE MEMBER ERROR:',
+                error
+            );
+
+
+            showMessage(
+                'error',
+                'Kosa limetokea: ' +
+                error.message
+            );
+
+
+        } finally {
+
+            saveBtn.disabled =
+                false;
+
+            saveBtn.textContent =
+                'HIFADHI MWANACHAMA';
+
+        }
+
+    }
+);
+
+
+
+/* =========================================================
+   SUPABASE AUTH STATE LISTENER
+   HAKURUDISHI USER LOGIN.
+   INASYNCHRONOUSLY KUFUATILIA SESSION.
+========================================================= */
+
+if (
+    typeof _supabase !== 'undefined'
+) {
+
+    _supabase.auth.onAuthStateChange(
+        function (event, session) {
+
+            /*
+             * Hatufanyi redirect hapa.
+             *
+             * Hii ni muhimu kwa sababu:
+             *
+             * SIGNED_IN
+             * TOKEN_REFRESHED
+             * INITIAL_SESSION
+             *
+             * Zote zinaweza kutokea wakati page
+             * inafunguka.
+             *
+             * Hatutaki form itoke bila sababu.
+             */
+
+            if (
+                session &&
+                session.user
+            ) {
+
+                sessionStorage.setItem(
+                    'userLoggedIn',
+                    'true'
+                );
+
+            }
+
+        }
+    );
+
+}
+
+</script>
+<script src="js/i18n.js"></script>
+</body>
+</html>

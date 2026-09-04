@@ -1,0 +1,3687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DCF Certificate Studio</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,600;6..96,700&family=Caveat:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600;700&family=Dancing+Script:wght@400;500;600;700&family=Great+Vibes&family=Lato:wght@400;700;900&family=Libre+Baskerville:wght@400;700&family=Lobster&family=Montserrat:wght@400;500;600;700;800;900&family=Open+Sans:wght@400;600;700;800&family=Oswald:wght@400;500;600;700&family=Pacifico&family=Playfair+Display:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Raleway:wght@400;500;600;700;800&family=Roboto:wght@400;500;700;900&family=Satisfy&display=swap" rel="stylesheet">
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+:root{
+    --navy:#071b35;
+    --navy-2:#0d294c;
+    --gold:#c9a227;
+    --gold-light:#e0c45c;
+    --bg:#f3f5f8;
+    --panel:#ffffff;
+    --border:#e2e6ec;
+    --text:#202938;
+    --muted:#7a8495;
+    --danger:#c0392b;
+    --success:#287b4f;
+    --shadow:0 8px 25px rgba(10,25,45,.08);
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+}
+
+body{
+    font-family:'Poppins',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    overflow:hidden;
+}
+
+/* =========================================================
+   APP
+========================================================= */
+
+.app{
+    width:100%;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header{
+    height:66px;
+    flex-shrink:0;
+    background:var(--navy);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo-box{
+    width:40px;
+    height:40px;
+    background:var(--gold);
+    color:var(--navy);
+    border-radius:5px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.5px;
+}
+
+.brand-title{
+    font-size:14px;
+    font-weight:700;
+    letter-spacing:.2px;
+}
+
+.brand-subtitle{
+    color:#aebbd0;
+    font-size:9px;
+    margin-top:2px;
+}
+
+.header-actions{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.header-btn{
+    height:34px;
+    padding:0 12px;
+    border-radius:4px;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(255,255,255,.06);
+    color:#fff;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:10px;
+    font-weight:600;
+    transition:.18s;
+}
+
+.header-btn:hover{
+    background:rgba(255,255,255,.14);
+}
+
+.header-btn.primary{
+    background:var(--gold);
+    color:var(--navy);
+    border-color:var(--gold);
+}
+
+.header-btn.primary:hover{
+    background:var(--gold-light);
+}
+
+.header-btn.danger:hover{
+    background:#9f3026;
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.main{
+    flex:1;
+    min-height:0;
+    display:grid;
+    grid-template-columns:375px minmax(0,1fr);
+}
+
+/* =========================================================
+   EDITOR
+========================================================= */
+
+.editor{
+    min-height:0;
+    background:#fff;
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+}
+
+.editor-head{
+    padding:16px 18px 13px;
+    border-bottom:1px solid var(--border);
+}
+
+.editor-head-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.editor-head h2{
+    font-size:13px;
+    font-weight:700;
+}
+
+.editor-head p{
+    margin-top:3px;
+    font-size:9px;
+    color:var(--muted);
+}
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.tabs{
+    display:flex;
+    overflow-x:auto;
+    border-bottom:1px solid var(--border);
+    scrollbar-width:none;
+}
+
+.tabs::-webkit-scrollbar{
+    display:none;
+}
+
+.tab{
+    min-width:74px;
+    padding:11px 8px 10px;
+    background:#fff;
+    border:none;
+    border-bottom:3px solid transparent;
+    font-family:inherit;
+    font-size:9px;
+    font-weight:700;
+    color:var(--muted);
+    cursor:pointer;
+    white-space:nowrap;
+}
+
+.tab:hover{
+    color:var(--navy);
+}
+
+.tab.active{
+    color:#9c7618;
+    border-bottom-color:var(--gold);
+}
+
+/* =========================================================
+   TAB BODY
+========================================================= */
+
+.tab-body{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    padding:17px;
+}
+
+.tab-body::-webkit-scrollbar{
+    width:5px;
+}
+
+.tab-body::-webkit-scrollbar-thumb{
+    background:#d5dae2;
+    border-radius:10px;
+}
+
+.tab-content{
+    display:none;
+}
+
+.tab-content.active{
+    display:block;
+}
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.section{
+    margin-bottom:22px;
+}
+
+.section-title{
+    font-size:9px;
+    font-weight:800;
+    color:#9c7618;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    padding-bottom:7px;
+    border-bottom:1px solid #edf0f4;
+    margin-bottom:12px;
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.field{
+    margin-bottom:10px;
+}
+
+.field label{
+    display:block;
+    font-size:9px;
+    font-weight:600;
+    color:#657083;
+    margin-bottom:4px;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    border:1px solid #dce1e8;
+    border-radius:4px;
+    background:#fff;
+    padding:8px 9px;
+    outline:none;
+    font-family:inherit;
+    font-size:10px;
+    color:#263247;
+    transition:.15s;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border-color:var(--gold);
+    box-shadow:0 0 0 2px rgba(201,162,39,.10);
+}
+
+textarea{
+    resize:vertical;
+    min-height:90px;
+    line-height:1.5;
+}
+
+input[type="color"]{
+    height:36px;
+    padding:3px;
+    cursor:pointer;
+}
+
+input[type="range"]{
+    accent-color:var(--gold);
+    padding:0;
+}
+
+input[type="file"]{
+    cursor:pointer;
+    padding:7px;
+}
+
+.grid2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
+
+.color-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.action{
+    width:100%;
+    padding:9px;
+    margin-top:6px;
+    border:none;
+    border-radius:4px;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:10px;
+    font-weight:700;
+    transition:.18s;
+}
+
+.action.gold{
+    background:var(--gold);
+    color:var(--navy);
+}
+
+.action.gold:hover{
+    background:var(--gold-light);
+}
+
+.action.navy{
+    background:var(--navy);
+    color:#fff;
+}
+
+.action.navy:hover{
+    background:var(--navy-2);
+}
+
+.action.light{
+    background:#edf0f5;
+    color:#26344b;
+}
+
+.action.light:hover{
+    background:#e2e6ec;
+}
+
+.action.danger{
+    background:#f8e9e7;
+    color:#a83226;
+}
+
+.action.danger:hover{
+    background:#f2d8d4;
+}
+
+/* =========================================================
+   TEMPLATE CARDS
+========================================================= */
+
+.template-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px;
+}
+
+.template{
+    border:1px solid var(--border);
+    border-radius:5px;
+    padding:10px 7px;
+    background:#fff;
+    cursor:pointer;
+    text-align:center;
+    transition:.18s;
+}
+
+.template:hover{
+    border-color:var(--gold);
+}
+
+.template.active{
+    border-color:var(--gold);
+    box-shadow:0 0 0 1px var(--gold);
+}
+
+.template-preview{
+    height:45px;
+    border-radius:3px;
+    margin-bottom:6px;
+    background:#fff;
+    border:4px solid var(--gold);
+    position:relative;
+}
+
+.template-preview.classic{
+    border-color:#071b35;
+}
+
+.template-preview.modern{
+    border:3px solid #071b35;
+}
+
+.template-preview.minimal{
+    border:1px solid #cfd5dd;
+}
+
+.template-name{
+    font-size:8px;
+    font-weight:700;
+    color:#596578;
+}
+
+/* =========================================================
+   INLINE TOOLS
+========================================================= */
+
+.inline-tools{
+    display:flex;
+    gap:5px;
+    flex-wrap:wrap;
+}
+
+.inline-tools button{
+    width:36px;
+    height:32px;
+    border:1px solid #dfe4eb;
+    background:#fff;
+    border-radius:4px;
+    cursor:pointer;
+    font-weight:700;
+}
+
+.inline-tools button:hover{
+    border-color:var(--gold);
+}
+
+.inline-tools button.active{
+    background:var(--navy);
+    color:#fff;
+}
+
+/* =========================================================
+   RANGE
+========================================================= */
+
+.range-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:9px;
+    color:var(--muted);
+    margin-bottom:3px;
+}
+
+/* =========================================================
+   FONT PREVIEW
+========================================================= */
+
+.font-preview{
+    padding:12px;
+    margin-top:6px;
+    margin-bottom:10px;
+    background:#f8f9fb;
+    border:1px solid #e0e4ea;
+    border-radius:4px;
+    text-align:center;
+    font-size:17px;
+}
+
+/* =========================================================
+   PREVIEW WORKSPACE
+========================================================= */
+
+.preview-workspace{
+    min-width:0;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    background:#dfe3e9;
+}
+
+/* =========================================================
+   PREVIEW TOOLBAR
+========================================================= */
+
+.preview-toolbar{
+    height:52px;
+    flex-shrink:0;
+    background:#fff;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 15px;
+}
+
+.preview-title{
+    font-size:10px;
+    font-weight:700;
+    color:#39465a;
+    letter-spacing:.3px;
+}
+
+.toolbar-group{
+    display:flex;
+    align-items:center;
+    gap:5px;
+}
+
+.tool{
+    height:30px;
+    min-width:30px;
+    padding:0 9px;
+    border:1px solid #dce1e8;
+    background:#fff;
+    border-radius:4px;
+    cursor:pointer;
+    font-family:inherit;
+    font-size:10px;
+    font-weight:600;
+    color:#334056;
+}
+
+.tool:hover{
+    border-color:var(--gold);
+}
+
+.zoom{
+    min-width:55px;
+    text-align:center;
+    font-size:9px;
+    color:var(--muted);
+}
+
+/* =========================================================
+   PREVIEW AREA
+========================================================= */
+
+.preview-area{
+    flex:1;
+    min-height:0;
+    overflow:auto;
+    position:relative;
+    padding:35px 45px;
+}
+
+.certificate-stage{
+    transform-origin:top left;
+    width:1123px;
+    height:794px;
+    transition:transform .2s ease;
+}
+
+/* =========================================================
+   CERTIFICATE
+========================================================= */
+
+.certificate{
+    width:1123px;
+    height:794px;
+    background:#fff;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 12px 35px rgba(0,0,0,.25);
+}
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+.certificate-bg{
+    position:absolute;
+    inset:0;
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    opacity:.05;
+}
+
+/* =========================================================
+   FRAME
+========================================================= */
+
+.outer-border{
+    position:absolute;
+    inset:17px;
+    border:5px solid var(--gold);
+    z-index:10;
+    pointer-events:none;
+}
+
+.inner-border{
+    position:absolute;
+    inset:31px;
+    border:1px solid var(--navy);
+    z-index:10;
+    pointer-events:none;
+}
+
+/* =========================================================
+   CORNERS
+========================================================= */
+
+.corner{
+    position:absolute;
+    width:75px;
+    height:75px;
+    border-color:var(--gold);
+    border-style:solid;
+    z-index:11;
+}
+
+.corner.tl{
+    left:31px;
+    top:31px;
+    border-width:4px 0 0 4px;
+}
+
+.corner.tr{
+    right:31px;
+    top:31px;
+    border-width:4px 4px 0 0;
+}
+
+.corner.bl{
+    left:31px;
+    bottom:31px;
+    border-width:0 0 4px 4px;
+}
+
+.corner.br{
+    right:31px;
+    bottom:31px;
+    border-width:0 4px 4px 0;
+}
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.certificate-content{
+    position:relative;
+    z-index:20;
+    height:100%;
+    padding:55px 100px;
+    text-align:center;
+}
+
+/* =========================================================
+   LOGOS
+========================================================= */
+
+.logos{
+    height:58px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:25px;
+}
+
+.org-logo{
+    max-height:55px;
+    max-width:100px;
+    object-fit:contain;
+}
+
+/* =========================================================
+   ORGANIZATIONS
+========================================================= */
+
+.orgs{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:13px;
+    margin-top:4px;
+}
+
+.org-name{
+    color:var(--navy);
+    font-family:'Montserrat',sans-serif;
+    font-size:20px;
+    font-weight:800;
+    letter-spacing:1.3px;
+}
+
+.org-and{
+    color:var(--gold);
+    font-weight:800;
+}
+
+.partner-location{
+    margin-top:2px;
+    color:#777;
+    font-size:8px;
+    letter-spacing:2px;
+}
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.title{
+    margin-top:22px;
+    font-family:'Cinzel',serif;
+    font-size:38px;
+    font-weight:700;
+    letter-spacing:2px;
+    color:var(--gold);
+}
+
+/* =========================================================
+   PRESENTED
+========================================================= */
+
+.presented{
+    margin-top:9px;
+    color:#555;
+    font-size:12px;
+}
+
+/* =========================================================
+   RECIPIENT
+========================================================= */
+
+.recipient{
+    margin-top:9px;
+    font-family:'Playfair Display',serif;
+    font-size:43px;
+    font-weight:700;
+    color:var(--navy);
+    letter-spacing:1px;
+    text-transform:uppercase;
+}
+
+.recipient-line{
+    width:270px;
+    height:2px;
+    background:var(--gold);
+    margin:8px auto;
+}
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+.description{
+    max-width:760px;
+    margin:10px auto;
+    color:#444;
+    font-size:12px;
+    line-height:1.55;
+}
+
+/* =========================================================
+   EVENT
+========================================================= */
+
+.event{
+    font-size:10px;
+    color:#555;
+    line-height:1.7;
+    margin-top:7px;
+}
+
+/* =========================================================
+   PHOTO
+========================================================= */
+
+.photo{
+    position:absolute;
+    top:120px;
+    right:115px;
+    width:110px;
+    height:110px;
+    border-radius:50%;
+    border:4px solid var(--gold);
+    overflow:hidden;
+    display:none;
+    z-index:30;
+}
+
+.photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* =========================================================
+   SIGNATURES
+========================================================= */
+
+.signatures{
+    position:absolute;
+    left:110px;
+    right:110px;
+    bottom:82px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+}
+
+.signature{
+    width:210px;
+}
+
+.signature-line{
+    border-top:1px solid #333;
+    margin-bottom:5px;
+}
+
+.signature-name{
+    font-size:9px;
+    font-weight:700;
+}
+
+/* =========================================================
+   SEAL
+========================================================= */
+
+.seal{
+    width:70px;
+    height:70px;
+    border:3px double var(--gold);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.seal-inner{
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    background:var(--navy);
+    color:var(--gold);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:800;
+}
+
+/* =========================================================
+   SPONSORS
+========================================================= */
+
+.sponsors{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:25px;
+}
+
+.sponsor-title{
+    font-size:7px;
+    color:#777;
+    letter-spacing:2px;
+    margin-bottom:4px;
+}
+
+.sponsor-logos{
+    height:25px;
+    display:flex;
+    justify-content:center;
+    gap:16px;
+}
+
+.sponsor-logo{
+    max-height:24px;
+    max-width:70px;
+    object-fit:contain;
+}
+
+/* =========================================================
+   NUMBER
+========================================================= */
+
+.cert-number{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:8px;
+    text-align:center;
+    font-size:7px;
+    color:#777;
+}
+
+.slogan{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:4px;
+    transform:translateY(14px);
+    font-family:Georgia,serif;
+    font-size:9px;
+    color:var(--gold);
+    font-style:italic;
+}
+
+/* =========================================================
+   FULLSCREEN
+========================================================= */
+
+.fullscreen{
+    position:fixed!important;
+    inset:0!important;
+    z-index:9999;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.status{
+    position:fixed;
+    right:18px;
+    bottom:18px;
+    padding:9px 13px;
+    background:var(--navy);
+    color:#fff;
+    border-radius:4px;
+    font-size:9px;
+    font-weight:600;
+    opacity:0;
+    transform:translateY(10px);
+    pointer-events:none;
+    transition:.25s;
+    z-index:10000;
+}
+
+.status.show{
+    opacity:1;
+    transform:translateY(0);
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:900px){
+
+    body{
+        overflow:auto;
+    }
+
+    .app{
+        height:auto;
+        min-height:100vh;
+    }
+
+    .header{
+        height:auto;
+        min-height:64px;
+        gap:10px;
+        flex-wrap:wrap;
+        padding:10px 14px;
+    }
+
+    .header-actions{
+        flex-wrap:wrap;
+    }
+
+    .main{
+        display:block;
+    }
+
+    .editor{
+        height:480px;
+        border-right:none;
+        border-bottom:1px solid var(--border);
+    }
+
+    .preview-workspace{
+        height:calc(100vh - 544px);
+        min-height:450px;
+    }
+
+    .preview-area{
+        padding:20px;
+    }
+}
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+@media print{
+
+    html,
+    body{
+        width:297mm;
+        height:210mm;
+        overflow:visible;
+        background:#fff;
+    }
+
+    .header,
+    .editor,
+    .preview-toolbar,
+    .status{
+        display:none!important;
+    }
+
+    .app,
+    .main,
+    .preview-workspace,
+    .preview-area{
+        display:block;
+        width:297mm;
+        height:210mm;
+        min-height:0;
+        padding:0;
+        margin:0;
+        background:#fff;
+        overflow:visible;
+    }
+
+    .certificate-stage{
+        width:1123px;
+        height:794px;
+        transform:none!important;
+        margin:0;
+    }
+
+    .certificate{
+        box-shadow:none;
+    }
+
+    @page{
+        size:A4 landscape;
+        margin:0;
+    }
+}
+
+</style>
+</head>
+
+<body data-allowed-roles="admin,staff">
+
+<div class="app">
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header class="header">
+
+    <div class="brand">
+
+        <div class="logo-box">DCF</div>
+
+        <div>
+            <div class="brand-title">
+                DCF Certificate Studio
+            </div>
+
+            <div class="brand-subtitle">
+                Development Charity Foundation
+            </div>
+        </div>
+
+    </div>
+
+    <div class="header-actions">
+
+        <button
+            class="header-btn"
+            onclick="goDashboard()">
+            ← Dashboard
+        </button>
+
+        <button
+            class="header-btn"
+            onclick="newCertificate()">
+            + New
+        </button>
+
+        <button
+            class="header-btn"
+            onclick="saveCertificate()">
+            Save
+        </button>
+
+        <button
+            class="header-btn"
+            onclick="deleteCertificate()">
+            Delete
+        </button>
+
+        <button
+            class="header-btn primary"
+            onclick="printCertificate()">
+            Print Certificate
+        </button>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<div class="main">
+
+
+<!-- =========================================================
+     EDITOR
+========================================================= -->
+
+<section class="editor">
+
+    <div class="editor-head">
+
+        <div class="editor-head-row">
+
+            <div>
+                <h2>Certificate Editor</h2>
+
+                <p>
+                    Professional certificate design workspace
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TABS -->
+
+    <div class="tabs">
+
+        <button
+            class="tab active"
+            onclick="openTab('design',this)">
+            Design
+        </button>
+
+        <button
+            class="tab"
+            onclick="openTab('content',this)">
+            Content
+        </button>
+
+        <button
+            class="tab"
+            onclick="openTab('organization',this)">
+            Organization
+        </button>
+
+        <button
+            class="tab"
+            onclick="openTab('sponsors',this)">
+            Sponsors
+        </button>
+
+        <button
+            class="tab"
+            onclick="openTab('signature',this)">
+            Signatures
+        </button>
+
+    </div>
+
+
+    <div class="tab-body">
+
+
+<!-- =========================================================
+     DESIGN
+========================================================= -->
+
+<div id="design" class="tab-content active">
+
+    <div class="section">
+
+        <div class="section-title">
+            Certificate Template
+        </div>
+
+        <div class="template-grid">
+
+            <div
+                class="template active"
+                onclick="applyTemplate('gold',this)">
+
+                <div class="template-preview"></div>
+
+                <div class="template-name">
+                    Executive Gold
+                </div>
+
+            </div>
+
+            <div
+                class="template"
+                onclick="applyTemplate('classic',this)">
+
+                <div class="template-preview classic"></div>
+
+                <div class="template-name">
+                    Classic Navy
+                </div>
+
+            </div>
+
+            <div
+                class="template"
+                onclick="applyTemplate('modern',this)">
+
+                <div class="template-preview modern"></div>
+
+                <div class="template-name">
+                    Modern
+                </div>
+
+            </div>
+
+            <div
+                class="template"
+                onclick="applyTemplate('minimal',this)">
+
+                <div class="template-preview minimal"></div>
+
+                <div class="template-name">
+                    Minimal
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <div class="section-title">
+            Certificate Colors
+        </div>
+
+        <div class="color-row">
+
+            <div class="field">
+
+                <label>Main Color</label>
+
+                <input
+                    type="color"
+                    id="mainColor"
+                    value="#071b35">
+
+            </div>
+
+            <div class="field">
+
+                <label>Frame Color</label>
+
+                <input
+                    type="color"
+                    id="frameColor"
+                    value="#c9a227">
+
+            </div>
+
+        </div>
+
+        <div class="color-row">
+
+            <div class="field">
+
+                <label>Inner Frame</label>
+
+                <input
+                    type="color"
+                    id="innerColor"
+                    value="#071b35">
+
+            </div>
+
+            <div class="field">
+
+                <label>Corner Color</label>
+
+                <input
+                    type="color"
+                    id="cornerColor"
+                    value="#c9a227">
+
+            </div>
+
+        </div>
+
+        <div class="field">
+
+            <label>Certificate Background</label>
+
+            <input
+                type="color"
+                id="certificateColor"
+                value="#ffffff">
+
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <div class="section-title">
+            Frame / Border
+        </div>
+
+        <div class="range-row">
+            <span>Outer Frame</span>
+            <span id="outerValue">5px</span>
+        </div>
+
+        <input
+            type="range"
+            id="outerSize"
+            min="1"
+            max="15"
+            value="5">
+
+        <br>
+
+        <div class="range-row">
+            <span>Inner Frame</span>
+            <span id="innerValue">1px</span>
+        </div>
+
+        <input
+            type="range"
+            id="innerSize"
+            min="0"
+            max="10"
+            value="1">
+
+        <br>
+
+        <div class="range-row">
+            <span>Corner Size</span>
+            <span id="cornerValue">75px</span>
+        </div>
+
+        <input
+            type="range"
+            id="cornerSize"
+            min="20"
+            max="150"
+            value="75">
+
+    </div>
+
+
+    <div class="section">
+
+        <div class="section-title">
+            Background
+        </div>
+
+        <div class="field">
+
+            <label>Background Image</label>
+
+            <input
+                type="file"
+                id="backgroundUpload"
+                accept="image/*">
+
+        </div>
+
+        <div class="range-row">
+            <span>Background Opacity</span>
+            <span id="backgroundValue">5%</span>
+        </div>
+
+        <input
+            type="range"
+            id="backgroundOpacity"
+            min="0"
+            max=".30"
+            step=".01"
+            value=".05">
+
+    </div>
+
+
+    <div class="section">
+
+        <div class="section-title">
+            Organization Logos
+        </div>
+
+        <div class="field">
+
+            <label>Main Logo</label>
+
+            <input
+                type="file"
+                id="logoUpload"
+                accept="image/*">
+
+        </div>
+
+        <div class="field">
+
+            <label>Partner Logo</label>
+
+            <input
+                type="file"
+                id="partnerLogoUpload"
+                accept="image/*">
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     CONTENT
+========================================================= -->
+
+<div id="content" class="tab-content">
+
+    <div class="section">
+
+        <div class="section-title">
+            Certificate Information
+        </div>
+
+        <div class="field">
+
+            <label>Certificate Type</label>
+
+            <select id="certificateType">
+
+                <option>CERTIFICATE OF APPRECIATION</option>
+                <option>CERTIFICATE OF PARTICIPATION</option>
+                <option>CERTIFICATE OF RECOGNITION</option>
+                <option>CERTIFICATE OF GRATITUDE</option>
+                <option>CERTIFICATE OF VOLUNTEER SERVICE</option>
+                <option>CERTIFICATE OF PARTNERSHIP</option>
+                <option>CERTIFICATE OF ACHIEVEMENT</option>
+
+            </select>
+
+        </div>
+
+        <div class="field">
+
+            <label>Recipient Name</label>
+
+            <input
+                id="recipientName"
+                placeholder="Enter recipient full name">
+
+        </div>
+
+        <div class="field">
+
+            <label>Certificate Number</label>
+
+            <input
+                id="certificateNumber"
+                value="DCF/2026/001">
+
+        </div>
+
+        <div class="field">
+
+            <label>Event Name</label>
+
+            <input
+                id="eventName"
+                value="DCF COMMUNITY DEVELOPMENT INITIATIVE">
+
+        </div>
+
+        <div class="grid2">
+
+            <div class="field">
+
+                <label>Date</label>
+
+                <input
+                    type="date"
+                    id="eventDate"
+                    value="2026-08-15">
+
+            </div>
+
+            <div class="field">
+
+                <label>Venue</label>
+
+                <input
+                    id="eventVenue"
+                    value="Gairo, Morogoro">
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <div class="section-title">
+            Certificate Message
+        </div>
+
+        <div class="field">
+
+            <label>Message</label>
+
+            <textarea id="certificateMessage">For your valuable contribution, dedication and commitment towards creating positive change in our community.</textarea>
+
+        </div>
+
+        <div class="color-row">
+
+            <div class="field">
+
+                <label>Message Color</label>
+
+                <input
+                    type="color"
+                    id="messageColor"
+                    value="#444444">
+
+            </div>
+
+            <div class="field">
+
+                <label>Message Size</label>
+
+                <input
+                    type="number"
+                    id="messageSize"
+                    value="12"
+                    min="7"
+                    max="30">
+
+            </div>
+
+        </div>
+
+        <div class="field">
+
+            <label>Message Line Height</label>
+
+            <input
+                type="range"
+                id="messageLine"
+                min="1"
+                max="2.5"
+                step=".05"
+                value="1.55">
+
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <div class="section-title">
+            Advanced Text Editor
+        </div>
+
+        <div class="field">
+
+            <label>Select Text</label>
+
+            <select id="textTarget">
+
+                <option value="recipient">
+                    Recipient Name
+                </option>
+
+                <option value="title">
+                    Certificate Title
+                </option>
+
+                <option value="message">
+                    Certificate Message
+                </option>
+
+                <option value="organization">
+                    Organization
+                </option>
+
+                <option value="event">
+                    Event Information
+                </option>
+
+                <option value="signature">
+                    Signature
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="field">
+
+            <label>Font Family</label>
+
+            <select id="advancedFont">
+
+                <optgroup label="Classic">
+
+                    <option value="'Times New Roman',serif">
+                        Times New Roman
+                    </option>
+
+                    <option value="Georgia,serif">
+                        Georgia
+                    </option>
+
+                    <option value="'Palatino Linotype',serif">
+                        Palatino
+                    </option>
+
+                    <option value="'Book Antiqua',serif">
+                        Book Antiqua
+                    </option>
+
+                    <option value="'Baskerville',serif">
+                        Baskerville
+                    </option>
+
+                </optgroup>
+
+                <optgroup label="Elegant">
+
+                    <option value="'Playfair Display',serif">
+                        Playfair Display
+                    </option>
+
+                    <option value="'Cormorant Garamond',serif">
+                        Cormorant Garamond
+                    </option>
+
+                    <option value="'Libre Baskerville',serif">
+                        Libre Baskerville
+                    </option>
+
+                    <option value="'Cinzel',serif">
+                        Cinzel
+                    </option>
+
+                    <option value="'Bodoni Moda',serif">
+                        Bodoni Moda
+                    </option>
+
+                </optgroup>
+
+                <optgroup label="Modern">
+
+                    <option value="'Montserrat',sans-serif">
+                        Montserrat
+                    </option>
+
+                    <option value="'Poppins',sans-serif">
+                        Poppins
+                    </option>
+
+                    <option value="'Roboto',sans-serif">
+                        Roboto
+                    </option>
+
+                    <option value="'Open Sans',sans-serif">
+                        Open Sans
+                    </option>
+
+                    <option value="'Lato',sans-serif">
+                        Lato
+                    </option>
+
+                    <option value="'Raleway',sans-serif">
+                        Raleway
+                    </option>
+
+                    <option value="'Oswald',sans-serif">
+                        Oswald
+                    </option>
+
+                </optgroup>
+
+                <optgroup label="Handwriting">
+
+                    <option value="'Dancing Script',cursive">
+                        Dancing Script
+                    </option>
+
+                    <option value="'Pacifico',cursive">
+                        Pacifico
+                    </option>
+
+                    <option value="'Great Vibes',cursive">
+                        Great Vibes
+                    </option>
+
+                    <option value="'Satisfy',cursive">
+                        Satisfy
+                    </option>
+
+                    <option value="'Caveat',cursive">
+                        Caveat
+                    </option>
+
+                </optgroup>
+
+                <optgroup label="Decorative">
+
+                    <option value="'Lobster',cursive">
+                        Lobster
+                    </option>
+
+                    <option value="'Abril Fatface',serif">
+                        Abril Fatface
+                    </option>
+
+                </optgroup>
+
+            </select>
+
+        </div>
+
+        <div
+            id="fontPreview"
+            class="font-preview">
+            Certificate Preview
+        </div>
+
+        <div class="range-row">
+
+            <span>Font Size</span>
+
+            <span id="fontSizeValue">43px</span>
+
+        </div>
+
+        <input
+            type="range"
+            id="fontSize"
+            min="8"
+            max="80"
+            value="43">
+
+        <br>
+
+        <div class="range-row">
+
+            <span>Letter Spacing</span>
+
+            <span id="letterValue">1px</span>
+
+        </div>
+
+        <input
+            type="range"
+            id="letterSpacing"
+            min="-3"
+            max="15"
+            value="1">
+
+        <br>
+
+        <div class="field">
+
+            <label>Text Color</label>
+
+            <input
+                type="color"
+                id="textColor"
+                value="#071b35">
+
+        </div>
+
+        <div class="field">
+
+            <label>Text Style</label>
+
+            <div class="inline-tools">
+
+                <button
+                    id="boldButton"
+                    onclick="toggleBold()">
+                    B
+                </button>
+
+                <button
+                    id="italicButton"
+                    onclick="toggleItalic()">
+                    I
+                </button>
+
+                <button
+                    id="underlineButton"
+                    onclick="toggleUnderline()">
+                    U
+                </button>
+
+                <button onclick="alignSelected('left')">
+                    L
+                </button>
+
+                <button onclick="alignSelected('center')">
+                    C
+                </button>
+
+                <button onclick="alignSelected('right')">
+                    R
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <div class="section-title">
+            Recipient Photo
+        </div>
+
+        <div class="field">
+
+            <input
+                type="file"
+                id="photoUpload"
+                accept="image/*">
+
+        </div>
+
+        <button
+            class="action light"
+            onclick="togglePhoto()">
+            Show / Hide Photo
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     ORGANIZATION
+========================================================= -->
+
+<div id="organization" class="tab-content">
+
+    <div class="section">
+
+        <div class="section-title">
+            Organization 01
+        </div>
+
+        <div class="field">
+
+            <label>Organization Name</label>
+
+            <input
+                id="organizationOne"
+                value="DEVELOPMENT CHARITY FOUNDATION">
+
+        </div>
+
+    </div>
+
+    <div class="section">
+
+        <div class="section-title">
+            Partner Organization
+        </div>
+
+        <div class="field">
+
+            <label>Enable Partner</label>
+
+            <select id="enablePartner">
+
+                <option value="yes">YES</option>
+                <option value="no">NO</option>
+
+            </select>
+
+        </div>
+
+        <div class="field">
+
+            <label>Partner Name</label>
+
+            <input
+                id="organizationTwo"
+                placeholder="Partner Organization">
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     SPONSORS
+========================================================= -->
+
+<div id="sponsors" class="tab-content">
+
+    <div class="section">
+
+        <div class="section-title">
+            Sponsors & Partners
+        </div>
+
+        <div class="field">
+
+            <label>Show Sponsors</label>
+
+            <select id="showSponsors">
+
+                <option value="yes">YES</option>
+                <option value="no">NO</option>
+
+            </select>
+
+        </div>
+
+        <div class="field">
+
+            <label>Section Title</label>
+
+            <input
+                id="sponsorTitle"
+                value="SPONSORS & PARTNERS">
+
+        </div>
+
+        <div class="field">
+
+            <label>Sponsor 01</label>
+
+            <input
+                type="file"
+                id="sponsorOne"
+                accept="image/*">
+
+        </div>
+
+        <div class="field">
+
+            <label>Sponsor 02</label>
+
+            <input
+                type="file"
+                id="sponsorTwo"
+                accept="image/*">
+
+        </div>
+
+        <div class="field">
+
+            <label>Sponsor 03</label>
+
+            <input
+                type="file"
+                id="sponsorThree"
+                accept="image/*">
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     SIGNATURE
+========================================================= -->
+
+<div id="signature" class="tab-content">
+
+    <div class="section">
+
+        <div class="section-title">
+            Authorized Signatures
+        </div>
+
+        <div class="field">
+
+            <label>Signature 01</label>
+
+            <input
+                id="signatureOne"
+                value="Executive Director">
+
+        </div>
+
+        <div class="field">
+
+            <label>Signature 02</label>
+
+            <input
+                id="signatureTwo"
+                value="Event Coordinator">
+
+        </div>
+
+    </div>
+
+    <div class="section">
+
+        <div class="section-title">
+            Official Seal
+        </div>
+
+        <button
+            class="action light"
+            onclick="toggleSeal()">
+            Show / Hide Seal
+        </button>
+
+    </div>
+
+</div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     PREVIEW
+========================================================= -->
+
+<section
+    class="preview-workspace"
+    id="previewWorkspace">
+
+    <div class="preview-toolbar">
+
+        <div class="preview-title">
+            LIVE CERTIFICATE PREVIEW
+        </div>
+
+        <div class="toolbar-group">
+
+            <button
+                class="tool"
+                onclick="zoomOut()">
+                −
+            </button>
+
+            <span
+                class="zoom"
+                id="zoomValue">
+                70%
+            </span>
+
+            <button
+                class="tool"
+                onclick="zoomIn()">
+                +
+            </button>
+
+            <button
+                class="tool"
+                onclick="fitCertificate()">
+                Fit
+            </button>
+
+            <button
+                class="tool"
+                onclick="toggleFullscreen()">
+                ⛶
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="preview-area"
+        id="previewArea">
+
+        <div
+            class="certificate-stage"
+            id="certificateStage">
+
+            <div
+                class="certificate"
+                id="certificate">
+
+                <div
+                    class="certificate-bg"
+                    id="certificateBackground">
+                </div>
+
+                <div
+                    class="outer-border"
+                    id="outerBorder">
+                </div>
+
+                <div
+                    class="inner-border"
+                    id="innerBorder">
+                </div>
+
+                <div class="corner tl"></div>
+                <div class="corner tr"></div>
+                <div class="corner bl"></div>
+                <div class="corner br"></div>
+
+
+                <div class="certificate-content">
+
+
+                    <div class="logos">
+
+                        <img
+                            id="previewLogo"
+                            class="org-logo"
+                            style="display:none">
+
+                        <img
+                            id="previewPartnerLogo"
+                            class="org-logo"
+                            style="display:none">
+
+                    </div>
+
+
+                    <div class="orgs">
+
+                        <div
+                            id="previewOrganizationOne"
+                            class="org-name">
+                            DEVELOPMENT CHARITY FOUNDATION
+                        </div>
+
+                        <div
+                            id="partnerAnd"
+                            class="org-and"
+                            style="display:none">
+                            &
+                        </div>
+
+                        <div
+                            id="previewOrganizationTwo"
+                            class="org-name"
+                            style="display:none">
+                        </div>
+
+                    </div>
+
+
+                    <div class="partner-location">
+                        DODOMA – TANZANIA
+                    </div>
+
+
+                    <div
+                        id="previewTitle"
+                        class="title">
+                        CERTIFICATE OF APPRECIATION
+                    </div>
+
+
+                    <div class="presented">
+                        This certificate is proudly presented to
+                    </div>
+
+
+                    <div
+                        id="previewRecipient"
+                        class="recipient">
+                        RECIPIENT NAME
+                    </div>
+
+
+                    <div class="recipient-line"></div>
+
+
+                    <div
+                        id="previewMessage"
+                        class="description">
+                        For your valuable contribution, dedication and commitment towards creating positive change in our community.
+                    </div>
+
+
+                    <div class="event">
+
+                        <strong>Event:</strong>
+
+                        <span id="previewEvent">
+                            DCF COMMUNITY DEVELOPMENT INITIATIVE
+                        </span>
+
+                        &nbsp; | &nbsp;
+
+                        <strong>Date:</strong>
+
+                        <span id="previewDate">
+                            15 August 2026
+                        </span>
+
+                        <br>
+
+                        <strong>Venue:</strong>
+
+                        <span id="previewVenue">
+                            Gairo, Morogoro
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="photo"
+                        id="photoBox">
+
+                        <img
+                            id="previewPhoto">
+
+                    </div>
+
+
+                    <div class="signatures">
+
+                        <div class="signature">
+
+                            <div class="signature-line"></div>
+
+                            <div
+                                id="previewSignatureOne"
+                                class="signature-name">
+                                Executive Director
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="seal"
+                            id="officialSeal">
+
+                            <div class="seal-inner">
+                                DCF
+                            </div>
+
+                        </div>
+
+
+                        <div class="signature">
+
+                            <div class="signature-line"></div>
+
+                            <div
+                                id="previewSignatureTwo"
+                                class="signature-name">
+                                Event Coordinator
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="sponsors"
+                        id="previewSponsors">
+
+                        <div
+                            class="sponsor-title"
+                            id="previewSponsorTitle">
+                            SPONSORS & PARTNERS
+                        </div>
+
+                        <div class="sponsor-logos">
+
+                            <img
+                                id="previewSponsorOne"
+                                class="sponsor-logo"
+                                style="display:none">
+
+                            <img
+                                id="previewSponsorTwo"
+                                class="sponsor-logo"
+                                style="display:none">
+
+                            <img
+                                id="previewSponsorThree"
+                                class="sponsor-logo"
+                                style="display:none">
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="cert-number">
+
+                        Certificate No:
+
+                        <strong id="previewCertificateNumber">
+                            DCF/2026/001
+                        </strong>
+
+                    </div>
+
+
+                    <div class="slogan">
+                        “Their Smile, Our Happiness.”
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+</div>
+
+</div>
+
+
+<div
+    class="status"
+    id="status">
+    Saved successfully
+</div>
+
+
+<script>
+
+/* =========================================================
+   HELPER
+========================================================= */
+
+function $(id){
+    return document.getElementById(id);
+}
+
+
+/* =========================================================
+   STATUS MESSAGE
+========================================================= */
+
+let statusTimer;
+
+function showStatus(message){
+
+    const status = $('status');
+
+    status.textContent = message;
+
+    status.classList.add('show');
+
+    clearTimeout(statusTimer);
+
+    statusTimer = setTimeout(function(){
+
+        status.classList.remove('show');
+
+    },2200);
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function goDashboard(){
+
+    /*
+       Change this filename if your dashboard has
+       another filename.
+    */
+
+    window.location.href = 'dashboard.html';
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+function openTab(id,button){
+
+    document
+        .querySelectorAll('.tab-content')
+        .forEach(function(tab){
+            tab.classList.remove('active');
+        });
+
+    document
+        .querySelectorAll('.tab')
+        .forEach(function(tab){
+            tab.classList.remove('active');
+        });
+
+    $(id).classList.add('active');
+
+    button.classList.add('active');
+}
+
+
+/* =========================================================
+   COLORS
+========================================================= */
+
+$('mainColor').addEventListener('input',function(){
+
+    document.documentElement.style
+        .setProperty('--navy',this.value);
+
+});
+
+$('frameColor').addEventListener('input',function(){
+
+    document.documentElement.style
+        .setProperty('--gold',this.value);
+
+});
+
+$('innerColor').addEventListener('input',function(){
+
+    document.documentElement.style
+        .setProperty('--inner',this.value);
+
+});
+
+$('cornerColor').addEventListener('input',function(){
+
+    document.documentElement.style
+        .setProperty('--corner',this.value);
+
+});
+
+$('certificateColor').addEventListener('input',function(){
+
+    $('certificate').style.backgroundColor =
+        this.value;
+
+});
+
+
+/* =========================================================
+   FRAME
+========================================================= */
+
+$('outerSize').addEventListener('input',function(){
+
+    $('outerBorder').style.borderWidth =
+        this.value + 'px';
+
+    $('outerValue').textContent =
+        this.value + 'px';
+
+});
+
+$('innerSize').addEventListener('input',function(){
+
+    $('innerBorder').style.borderWidth =
+        this.value + 'px';
+
+    $('innerValue').textContent =
+        this.value + 'px';
+
+});
+
+$('cornerSize').addEventListener('input',function(){
+
+    document
+        .querySelectorAll('.corner')
+        .forEach(function(corner){
+
+            corner.style.width =
+                this.value + 'px';
+
+            corner.style.height =
+                this.value + 'px';
+
+        },this);
+
+    $('cornerValue').textContent =
+        this.value + 'px';
+
+});
+
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+$('backgroundOpacity').addEventListener('input',function(){
+
+    $('certificateBackground').style.opacity =
+        this.value;
+
+    $('backgroundValue').textContent =
+        Math.round(this.value * 100) + '%';
+
+});
+
+$('backgroundUpload').addEventListener('change',function(){
+
+    const file = this.files[0];
+
+    if(!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        $('certificateBackground')
+            .style.backgroundImage =
+            'url("' + e.target.result + '")';
+
+    };
+
+    reader.readAsDataURL(file);
+
+});
+
+
+/* =========================================================
+   IMAGE UPLOAD
+========================================================= */
+
+function uploadImage(input,target){
+
+    const file = input.files[0];
+
+    if(!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        $(target).src = e.target.result;
+
+        $(target).style.display = 'block';
+
+    };
+
+    reader.readAsDataURL(file);
+}
+
+
+$('logoUpload').addEventListener('change',function(){
+
+    uploadImage(this,'previewLogo');
+
+});
+
+
+$('partnerLogoUpload').addEventListener('change',function(){
+
+    uploadImage(this,'previewPartnerLogo');
+
+});
+
+
+$('photoUpload').addEventListener('change',function(){
+
+    uploadImage(this,'previewPhoto');
+
+    $('photoBox').style.display = 'block';
+
+});
+
+
+$('sponsorOne').addEventListener('change',function(){
+
+    uploadImage(this,'previewSponsorOne');
+
+});
+
+
+$('sponsorTwo').addEventListener('change',function(){
+
+    uploadImage(this,'previewSponsorTwo');
+
+});
+
+
+$('sponsorThree').addEventListener('change',function(){
+
+    uploadImage(this,'previewSponsorThree');
+
+});
+
+
+/* =========================================================
+   LIVE CERTIFICATE
+========================================================= */
+
+function updateCertificate(){
+
+    $('previewTitle').textContent =
+        $('certificateType').value;
+
+
+    $('previewRecipient').textContent =
+        $('recipientName').value.trim() ||
+        'RECIPIENT NAME';
+
+
+    $('previewCertificateNumber').textContent =
+        $('certificateNumber').value ||
+        'DCF/2026/001';
+
+
+    $('previewEvent').textContent =
+        $('eventName').value ||
+        'DCF COMMUNITY DEVELOPMENT INITIATIVE';
+
+
+    $('previewVenue').textContent =
+        $('eventVenue').value ||
+        'Gairo, Morogoro';
+
+
+    $('previewMessage').textContent =
+        $('certificateMessage').value ||
+        'Certificate of appreciation.';
+
+
+    $('previewOrganizationOne').textContent =
+        $('organizationOne').value ||
+        'DEVELOPMENT CHARITY FOUNDATION';
+
+
+    $('previewSignatureOne').textContent =
+        $('signatureOne').value ||
+        'Executive Director';
+
+
+    $('previewSignatureTwo').textContent =
+        $('signatureTwo').value ||
+        'Event Coordinator';
+
+
+    $('previewSponsorTitle').textContent =
+        $('sponsorTitle').value ||
+        'SPONSORS & PARTNERS';
+
+
+    /* DATE */
+
+    if($('eventDate').value){
+
+        const date = new Date(
+            $('eventDate').value + 'T00:00:00'
+        );
+
+        $('previewDate').textContent =
+            date.toLocaleDateString(
+                'en-GB',
+                {
+                    day:'2-digit',
+                    month:'long',
+                    year:'numeric'
+                }
+            );
+
+    }
+
+
+    /* MESSAGE */
+
+    $('previewMessage').style.color =
+        $('messageColor').value;
+
+    $('previewMessage').style.fontSize =
+        $('messageSize').value + 'px';
+
+    $('previewMessage').style.lineHeight =
+        $('messageLine').value;
+
+
+    /* PARTNER */
+
+    const partnerEnabled =
+        $('enablePartner').value === 'yes';
+
+    const partnerName =
+        $('organizationTwo').value.trim();
+
+    if(partnerEnabled && partnerName){
+
+        $('previewOrganizationTwo').style.display =
+            'block';
+
+        $('partnerAnd').style.display =
+            'block';
+
+        $('previewOrganizationTwo').textContent =
+            partnerName;
+
+    }else{
+
+        $('previewOrganizationTwo').style.display =
+            'none';
+
+        $('partnerAnd').style.display =
+            'none';
+
+    }
+
+
+    /* SPONSORS */
+
+    $('previewSponsors').style.display =
+        $('showSponsors').value === 'yes'
+        ? 'block'
+        : 'none';
+
+}
+
+
+/* =========================================================
+   LIVE INPUTS
+========================================================= */
+
+const liveInputs = [
+
+    'certificateType',
+    'recipientName',
+    'certificateNumber',
+    'eventName',
+    'eventDate',
+    'eventVenue',
+    'certificateMessage',
+    'messageColor',
+    'messageSize',
+    'messageLine',
+    'organizationOne',
+    'organizationTwo',
+    'enablePartner',
+    'showSponsors',
+    'sponsorTitle',
+    'signatureOne',
+    'signatureTwo'
+
+];
+
+liveInputs.forEach(function(id){
+
+    $(id).addEventListener(
+        'input',
+        updateCertificate
+    );
+
+    $(id).addEventListener(
+        'change',
+        updateCertificate
+    );
+
+});
+
+
+/* =========================================================
+   ADVANCED TEXT
+========================================================= */
+
+function getSelectedText(){
+
+    const selected =
+        $('textTarget').value;
+
+    if(selected === 'recipient')
+        return $('previewRecipient');
+
+    if(selected === 'title')
+        return $('previewTitle');
+
+    if(selected === 'message')
+        return $('previewMessage');
+
+    if(selected === 'organization')
+        return $('previewOrganizationOne');
+
+    if(selected === 'event')
+        return $('previewEvent');
+
+    if(selected === 'signature')
+        return $('previewSignatureOne');
+
+    return null;
+}
+
+
+function updateTextEditor(){
+
+    const element =
+        getSelectedText();
+
+    if(!element) return;
+
+
+    const computed =
+        getComputedStyle(element);
+
+
+    $('advancedFont').value =
+        element.style.fontFamily ||
+        $('advancedFont').value;
+
+
+    $('fontSize').value =
+        parseInt(computed.fontSize) || 43;
+
+
+    $('letterSpacing').value =
+        parseInt(computed.letterSpacing) || 1;
+
+
+    $('textColor').value =
+        rgbToHex(computed.color);
+
+
+    $('fontSizeValue').textContent =
+        $('fontSize').value + 'px';
+
+
+    $('letterValue').textContent =
+        $('letterSpacing').value + 'px';
+
+
+    $('fontPreview').style.fontFamily =
+        $('advancedFont').value;
+
+
+    updateStyleButtons();
+
+}
+
+
+$('textTarget').addEventListener(
+    'change',
+    updateTextEditor
+);
+
+
+/* =========================================================
+   FONT
+========================================================= */
+
+$('advancedFont').addEventListener('change',function(){
+
+    const element =
+        getSelectedText();
+
+    if(!element) return;
+
+    element.style.fontFamily =
+        this.value;
+
+    $('fontPreview').style.fontFamily =
+        this.value;
+
+});
+
+
+/* =========================================================
+   FONT SIZE
+========================================================= */
+
+$('fontSize').addEventListener('input',function(){
+
+    const element =
+        getSelectedText();
+
+    if(!element) return;
+
+    element.style.fontSize =
+        this.value + 'px';
+
+    $('fontSizeValue').textContent =
+        this.value + 'px';
+
+});
+
+
+/* =========================================================
+   LETTER SPACING
+========================================================= */
+
+$('letterSpacing').addEventListener('input',function(){
+
+    const element =
+        getSelectedText();
+
+    if(!element) return;
+
+    element.style.letterSpacing =
+        this.value + 'px';
+
+    $('letterValue').textContent =
+        this.value + 'px';
+
+});
+
+
+/* =========================================================
+   TEXT COLOR
+========================================================= */
+
+$('textColor').addEventListener('input',function(){
+
+    const element =
+        getSelectedText();
+
+    if(!element) return;
+
+    element.style.color =
+        this.value;
+
+});
+
+
+/* =========================================================
+   STYLE BUTTON STATE
+========================================================= */
+
+function updateStyleButtons(){
+
+    const element =
+        getSelectedText();
+
+    if(!element) return;
+
+    const style =
+        getComputedStyle(element);
+
+    $('boldButton')
+        .classList
+        .toggle(
+            'active',
+            ['700','800','900']
+            .includes(style.fontWeight)
+        );
+
+    $('italicButton')
+        .classList
+        .toggle(
+            'active',
+            style.fontStyle === 'italic'
+        );
+
+    $('underlineButton')
+        .classList
+        .toggle(
+            'active',
+            style.textDecorationLine.includes('underline')
+        );
+
+}
+
+
+/* =========================================================
+   BOLD
+========================================================= */
+
+function toggleBold(){
+
+    const element =
+        getSelectedText();
+
+    if(!element) return;
+
+    const isBold =
+        ['700','800','900']
+        .includes(
+            getComputedStyle(element).fontWeight
+        );
+
+    element.style.fontWeight =
+        isBold ? '400' : '700';
+
+    updateStyleButtons();
+
+}
+
+
+/* =========================================================
+   ITALIC
+========================================================= */
+
+function toggleItalic(){
+
+    const element =
+        getSelectedText();
+
+    if(!element) return;
+
+    const italic =
+        getComputedStyle(element).fontStyle === 'italic';
+
+    element.style.fontStyle =
+        italic ? 'normal' : 'italic';
+
+    updateStyleButtons();
+
+}
+
+
+/* =========================================================
+   UNDERLINE
+========================================================= */
+
+function toggleUnderline(){
+
+    const element =
+        getSelectedText();
+
+    if(!element) return;
+
+    const underline =
+        getComputedStyle(element)
+        .textDecorationLine
+        .includes('underline');
+
+    element.style.textDecoration =
+        underline ? 'none' : 'underline';
+
+    updateStyleButtons();
+
+}
+
+
+/* =========================================================
+   ALIGN
+========================================================= */
+
+function alignSelected(position){
+
+    const element =
+        getSelectedText();
+
+    if(!element) return;
+
+    element.style.textAlign =
+        position;
+
+}
+
+
+/* =========================================================
+   RGB TO HEX
+========================================================= */
+
+function rgbToHex(rgb){
+
+    if(!rgb)
+        return '#071b35';
+
+    if(rgb.startsWith('#'))
+        return rgb;
+
+    const values =
+        rgb.match(/\d+/g);
+
+    if(!values || values.length < 3)
+        return '#071b35';
+
+    return '#' +
+        values
+        .slice(0,3)
+        .map(function(x){
+
+            return (
+                '0' +
+                parseInt(x).toString(16)
+            ).slice(-2);
+
+        })
+        .join('');
+
+}
+
+
+/* =========================================================
+   PHOTO
+========================================================= */
+
+function togglePhoto(){
+
+    const box =
+        $('photoBox');
+
+    box.style.display =
+        box.style.display === 'block'
+        ? 'none'
+        : 'block';
+
+}
+
+
+/* =========================================================
+   SEAL
+========================================================= */
+
+function toggleSeal(){
+
+    const seal =
+        $('officialSeal');
+
+    seal.style.display =
+        seal.style.display === 'none'
+        ? 'flex'
+        : 'none';
+
+}
+
+
+/* =========================================================
+   TEMPLATES
+========================================================= */
+
+function applyTemplate(type,element){
+
+    document
+        .querySelectorAll('.template')
+        .forEach(function(item){
+
+            item.classList.remove('active');
+
+        });
+
+    element.classList.add('active');
+
+
+    if(type === 'gold'){
+
+        setColor('mainColor','#071b35');
+        setColor('frameColor','#c9a227');
+        setColor('innerColor','#071b35');
+        setColor('cornerColor','#c9a227');
+
+        $('outerSize').value = 5;
+        $('innerSize').value = 1;
+
+    }
+
+
+    if(type === 'classic'){
+
+        setColor('mainColor','#101820');
+        setColor('frameColor','#9c8a52');
+        setColor('innerColor','#101820');
+        setColor('cornerColor','#9c8a52');
+
+        $('outerSize').value = 4;
+        $('innerSize').value = 2;
+
+    }
+
+
+    if(type === 'modern'){
+
+        setColor('mainColor','#0a2942');
+        setColor('frameColor','#b28a28');
+        setColor('innerColor','#0a2942');
+        setColor('cornerColor','#b28a28');
+
+        $('outerSize').value = 3;
+        $('innerSize').value = 1;
+
+    }
+
+
+    if(type === 'minimal'){
+
+        setColor('mainColor','#283746');
+        setColor('frameColor','#a98b3b');
+        setColor('innerColor','#d1d5da');
+        setColor('cornerColor','#a98b3b');
+
+        $('outerSize').value = 2;
+        $('innerSize').value = 1;
+
+    }
+
+
+    $('outerSize').dispatchEvent(new Event('input'));
+    $('innerSize').dispatchEvent(new Event('input'));
+
+    showStatus('Template applied');
+
+}
+
+
+function setColor(id,value){
+
+    $(id).value = value;
+
+    $(id).dispatchEvent(
+        new Event('input')
+    );
+
+}
+
+
+/* =========================================================
+   ZOOM
+========================================================= */
+
+let zoom = .70;
+
+
+function applyZoom(){
+
+    $('certificateStage').style.transform =
+        'scale(' + zoom + ')';
+
+    $('zoomValue').textContent =
+        Math.round(zoom * 100) + '%';
+
+}
+
+
+function zoomIn(){
+
+    zoom += .05;
+
+    if(zoom > 1.20)
+        zoom = 1.20;
+
+    applyZoom();
+
+}
+
+
+function zoomOut(){
+
+    zoom -= .05;
+
+    if(zoom < .25)
+        zoom = .25;
+
+    applyZoom();
+
+}
+
+
+/* =========================================================
+   FIT
+========================================================= */
+
+function fitCertificate(){
+
+    const area =
+        $('previewArea');
+
+    const width =
+        Math.max(
+            200,
+            area.clientWidth - 90
+        );
+
+    const height =
+        Math.max(
+            200,
+            area.clientHeight - 70
+        );
+
+    const widthRatio =
+        width / 1123;
+
+    const heightRatio =
+        height / 794;
+
+    zoom =
+        Math.min(
+            widthRatio,
+            heightRatio
+        );
+
+    zoom =
+        Math.max(
+            .25,
+            Math.min(
+                1.10,
+                zoom
+            )
+        );
+
+    applyZoom();
+
+}
+
+
+/* =========================================================
+   FULLSCREEN
+========================================================= */
+
+function toggleFullscreen(){
+
+    $('previewWorkspace')
+        .classList
+        .toggle('fullscreen');
+
+    setTimeout(
+        fitCertificate,
+        120
+    );
+
+}
+
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+function printCertificate(){
+
+    window.print();
+
+}
+
+
+/* =========================================================
+   SAVE
+========================================================= */
+
+function collectCertificateData(){
+
+    return {
+
+        certificateType:
+            $('certificateType').value,
+
+        recipient:
+            $('recipientName').value,
+
+        certificateNumber:
+            $('certificateNumber').value,
+
+        event:
+            $('eventName').value,
+
+        date:
+            $('eventDate').value,
+
+        venue:
+            $('eventVenue').value,
+
+        message:
+            $('certificateMessage').value,
+
+        organizationOne:
+            $('organizationOne').value,
+
+        organizationTwo:
+            $('organizationTwo').value,
+
+        enablePartner:
+            $('enablePartner').value,
+
+        signatureOne:
+            $('signatureOne').value,
+
+        signatureTwo:
+            $('signatureTwo').value,
+
+        sponsorTitle:
+            $('sponsorTitle').value,
+
+        showSponsors:
+            $('showSponsors').value,
+
+        messageColor:
+            $('messageColor').value,
+
+        messageSize:
+            $('messageSize').value,
+
+        messageLine:
+            $('messageLine').value,
+
+        mainColor:
+            $('mainColor').value,
+
+        frameColor:
+            $('frameColor').value,
+
+        innerColor:
+            $('innerColor').value,
+
+        cornerColor:
+            $('cornerColor').value,
+
+        certificateColor:
+            $('certificateColor').value,
+
+        outerSize:
+            $('outerSize').value,
+
+        innerSize:
+            $('innerSize').value,
+
+        cornerSize:
+            $('cornerSize').value,
+
+        backgroundOpacity:
+            $('backgroundOpacity').value
+
+    };
+
+}
+
+
+function saveCertificate(){
+
+    const data =
+        collectCertificateData();
+
+    localStorage.setItem(
+        'DCF_CERTIFICATE',
+        JSON.stringify(data)
+    );
+
+    showStatus(
+        'Certificate saved successfully'
+    );
+
+}
+
+
+/* =========================================================
+   LOAD
+========================================================= */
+
+function loadCertificate(){
+
+    const saved =
+        localStorage.getItem(
+            'DCF_CERTIFICATE'
+        );
+
+    if(!saved)
+        return;
+
+    try{
+
+        const data =
+            JSON.parse(saved);
+
+
+        Object.keys(data).forEach(function(key){
+
+            const field =
+                $(key === 'recipient'
+                    ? 'recipientName'
+                    : key === 'event'
+                    ? 'eventName'
+                    : key === 'date'
+                    ? 'eventDate'
+                    : key
+                );
+
+
+            if(field){
+
+                field.value =
+                    data[key];
+
+            }
+
+        });
+
+
+        updateCertificate();
+
+
+        [
+            'mainColor',
+            'frameColor',
+            'innerColor',
+            'cornerColor',
+            'certificateColor',
+            'outerSize',
+            'innerSize',
+            'cornerSize',
+            'backgroundOpacity'
+        ].forEach(function(id){
+
+            if($(id)){
+
+                $(id).dispatchEvent(
+                    new Event('input')
+                );
+
+            }
+
+        });
+
+
+    }catch(error){
+
+        console.warn(
+            'Unable to load certificate.',
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   NEW CERTIFICATE
+========================================================= */
+
+function newCertificate(){
+
+    const confirmed =
+        confirm(
+            'Create a new certificate? Unsaved changes will be cleared.'
+        );
+
+    if(!confirmed)
+        return;
+
+    localStorage.removeItem(
+        'DCF_CERTIFICATE'
+    );
+
+    location.reload();
+
+}
+
+
+/* =========================================================
+   DELETE
+========================================================= */
+
+function deleteCertificate(){
+
+    const confirmed =
+        confirm(
+            'Delete the saved certificate?'
+        );
+
+    if(!confirmed)
+        return;
+
+    localStorage.removeItem(
+        'DCF_CERTIFICATE'
+    );
+
+    showStatus(
+        'Saved certificate deleted'
+    );
+
+}
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+loadCertificate();
+
+updateCertificate();
+
+updateTextEditor();
+
+applyZoom();
+
+
+window.addEventListener(
+    'load',
+    function(){
+
+        fitCertificate();
+
+    }
+);
+
+
+window.addEventListener(
+    'resize',
+    function(){
+
+        fitCertificate();
+
+    }
+);
+
+
+/* =========================================================
+   ESC FULLSCREEN
+========================================================= */
+
+document.addEventListener(
+    'keydown',
+    function(e){
+
+        if(e.key === 'Escape'){
+
+            $('previewWorkspace')
+                .classList
+                .remove('fullscreen');
+
+            setTimeout(
+                fitCertificate,
+                100
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>

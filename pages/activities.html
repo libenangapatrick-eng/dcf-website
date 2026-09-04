@@ -1,0 +1,2366 @@
+<!DOCTYPE html>
+<html lang="sw">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Usimamizi wa Shughuli - DCF Online System</title>
+
+    <!-- TAILWIND -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+
+        tailwind.config = {
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        'dcf-green': '#174a35',
+                        'dcf-light-green': '#4C9A2A',
+                        'dcf-dark-green': '#0d3022',
+                        'dcf-hover': '#28723E'
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    </script>
+
+
+    <!-- FONT AWESOME -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    >
+
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="../js/supabase.js"></script>
+<script src="../js/role-guard.js"></script>
+
+    <style>
+
+        * {
+            font-family:
+                'Times New Roman',
+                Times,
+                serif !important;
+        }
+
+
+        body {
+            background: #f5f7f6;
+        }
+
+
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+
+
+        ::-webkit-scrollbar-track {
+            background: #eeeeee;
+        }
+
+
+        ::-webkit-scrollbar-thumb {
+            background: #174a35;
+            border-radius: 10px;
+        }
+
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0d3022;
+        }
+
+
+        /* MODAL */
+
+        #activity-modal {
+            transition: opacity .2s ease;
+        }
+
+
+        #activity-modal.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+
+        #activity-modal:not(.hidden) {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+
+        /* INPUT */
+
+        .form-input {
+
+            width: 100%;
+
+            background: #f8faf9;
+
+            border: 1px solid #d7ded9;
+
+            border-radius: 6px;
+
+            padding: 10px 12px;
+
+            font-size: 13px;
+
+            color: #26332d;
+
+            outline: none;
+
+            transition: all .2s;
+
+        }
+
+
+        .form-input:focus {
+
+            background: #fff;
+
+            border-color: #174a35;
+
+            box-shadow:
+                0 0 0 2px rgba(23,74,53,.08);
+
+        }
+
+
+        .form-label {
+
+            display: block;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            color: #34413b;
+
+            margin-bottom: 5px;
+
+        }
+
+
+        /* TABLE */
+
+        .activity-row {
+
+            transition: background .15s ease;
+
+        }
+
+
+        .activity-row:hover {
+
+            background: #f8faf9;
+
+        }
+
+
+        /* STAT CARD */
+
+        .stat-card {
+
+            background: #fff;
+
+            border: 1px solid #e0e5e2;
+
+            border-radius: 8px;
+
+            padding: 18px;
+
+            box-shadow:
+                0 1px 3px rgba(0,0,0,.04);
+
+        }
+
+
+        /* BUTTON */
+
+        .btn {
+
+            transition: all .2s ease;
+
+        }
+
+
+        /* PRINT */
+
+        @media print {
+
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: white !important;
+            }
+
+            main {
+                padding: 0 !important;
+            }
+
+            .table-container {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body class="min-h-screen text-gray-800"
+data-allowed-roles="admin,staff,auditor">
+
+
+    <!-- =====================================================
+         MAIN APPLICATION
+    ====================================================== -->
+
+    <div class="min-h-screen">
+
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <header
+            class="bg-white border-b border-gray-200 sticky top-0 z-40 no-print"
+        >
+
+            <div
+                class="max-w-[1500px] mx-auto px-4 md:px-7"
+            >
+
+                <div
+                    class="h-[72px] flex items-center justify-between"
+                >
+
+
+                    <!-- LEFT -->
+
+                    <div class="flex items-center gap-4">
+
+                        <!-- LOGO -->
+
+                        <div
+                            class="w-11 h-11 rounded-lg bg-dcf-green flex items-center justify-center overflow-hidden border border-green-900"
+                        >
+
+                            <img
+                                src="../assets/images/logo.png"
+                                alt="DCF Logo"
+                                class="w-full h-full object-contain bg-white"
+                                onerror="this.style.display='none'"
+                            >
+
+                            <i
+                                class="fas fa-building text-white text-lg"
+                            ></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <div
+                                class="flex items-center gap-2"
+                            >
+
+                                <h1
+                                    class="text-base md:text-xl font-bold text-gray-800"
+                                >
+                                    Usimamizi wa Shughuli
+                                </h1>
+
+                            </div>
+
+
+                            <p
+                                class="text-[11px] md:text-xs text-gray-500 mt-0.5"
+                            >
+                                DCF Online Management System
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- RIGHT -->
+
+                    <div class="flex items-center gap-2">
+
+
+                        <!-- PRINT -->
+
+                        <button
+                            type="button"
+                            onclick="window.print()"
+                            class="btn hidden sm:flex items-center gap-2 px-3 py-2 text-xs font-bold text-gray-600 border border-gray-300 rounded-md bg-white hover:bg-gray-50"
+                        >
+
+                            <i class="fas fa-print"></i>
+
+                            Chapisha
+
+                        </button>
+
+
+
+                        <!-- DASHBOARD -->
+
+                        <a
+                            href="../dashboard.html"
+                            class="btn flex items-center gap-2 px-3 md:px-4 py-2 bg-dcf-green text-white rounded-md text-xs font-bold hover:bg-dcf-dark-green shadow-sm"
+                        >
+
+                            <i class="fas fa-arrow-left"></i>
+
+                            <span>
+                                Rudi Dashboard
+                            </span>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+
+        <!-- =================================================
+             MAIN
+        ================================================== -->
+
+        <main
+            class="max-w-[1500px] mx-auto px-4 md:px-7 py-6"
+        >
+
+
+            <!-- =================================================
+                 PAGE INTRO
+            ================================================== -->
+
+            <section
+                class="mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4"
+            >
+
+
+                <div>
+
+                    <p
+                        class="text-[11px] font-bold uppercase tracking-wide text-dcf-green mb-1"
+                    >
+                        SHUGHULI & MATUKIO
+                    </p>
+
+                    <h2
+                        class="text-xl md:text-2xl font-bold text-gray-800"
+                    >
+                        Orodha ya Shughuli
+                    </h2>
+
+                    <p
+                        class="text-xs text-gray-500 mt-1"
+                    >
+                        Sajili, hariri na fuatilia shughuli zote za taasisi.
+                    </p>
+
+                </div>
+
+
+
+                <!-- ADD -->
+
+                <button
+                    id="add-activity-btn"
+                    type="button"
+                    data-action="create"
+                    onclick="openActivityModal()"
+                    class="btn btn-add flex items-center justify-center gap-2 bg-dcf-green hover:bg-dcf-dark-green text-white px-5 py-2.5 rounded-md text-xs font-bold shadow-sm"
+                >
+
+                    <i class="fas fa-plus"></i>
+
+                    Sajili Shughuli Mpya
+
+                </button>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 STATISTICS
+            ================================================== -->
+
+            <section
+                class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6"
+            >
+
+
+                <!-- TOTAL -->
+
+                <div class="stat-card">
+
+                    <div
+                        class="flex items-center justify-between"
+                    >
+
+                        <div>
+
+                            <p
+                                class="text-[10px] uppercase tracking-wide font-bold text-gray-500"
+                            >
+                                Jumla ya Shughuli
+                            </p>
+
+                            <h3
+                                id="stat-total-activities"
+                                class="text-2xl font-bold text-dcf-green mt-2"
+                            >
+                                0
+                            </h3>
+
+                        </div>
+
+
+                        <div
+                            class="w-11 h-11 rounded-lg bg-green-50 text-dcf-green flex items-center justify-center"
+                        >
+
+                            <i
+                                class="fas fa-calendar-check"
+                            ></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- SCHEDULED -->
+
+                <div class="stat-card">
+
+                    <div
+                        class="flex items-center justify-between"
+                    >
+
+                        <div>
+
+                            <p
+                                class="text-[10px] uppercase tracking-wide font-bold text-gray-500"
+                            >
+                                Zilizopangwa
+                            </p>
+
+                            <h3
+                                id="stat-scheduled-activities"
+                                class="text-2xl font-bold text-amber-600 mt-2"
+                            >
+                                0
+                            </h3>
+
+                        </div>
+
+
+                        <div
+                            class="w-11 h-11 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center"
+                        >
+
+                            <i class="fas fa-clock"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- COMPLETED -->
+
+                <div class="stat-card">
+
+                    <div
+                        class="flex items-center justify-between"
+                    >
+
+                        <div>
+
+                            <p
+                                class="text-[10px] uppercase tracking-wide font-bold text-gray-500"
+                            >
+                                Zilizokamilika
+                            </p>
+
+                            <h3
+                                id="stat-completed-activities"
+                                class="text-2xl font-bold text-blue-600 mt-2"
+                            >
+                                0
+                            </h3>
+
+                        </div>
+
+
+                        <div
+                            class="w-11 h-11 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center"
+                        >
+
+                            <i class="fas fa-check-circle"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 TABLE CARD
+            ================================================== -->
+
+            <section
+                class="table-container bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
+            >
+
+
+                <!-- TABLE TOOLBAR -->
+
+                <div
+                    class="px-4 md:px-5 py-4 border-b border-gray-200 flex flex-col md:flex-row md:items-center md:justify-between gap-3"
+                >
+
+
+                    <div>
+
+                        <h3
+                            class="text-sm font-bold text-gray-800"
+                        >
+                            Shughuli Zilizosajiliwa
+                        </h3>
+
+                        <p
+                            class="text-[11px] text-gray-500 mt-1"
+                        >
+                            Taarifa zote za shughuli za taasisi
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- SEARCH -->
+
+                    <div
+                        class="relative w-full md:w-80"
+                    >
+
+                        <i
+                            class="fas fa-search absolute left-3 top-3 text-gray-400 text-xs"
+                        ></i>
+
+
+                        <input
+                            type="text"
+                            id="search-input"
+                            onkeyup="filterActivities()"
+                            placeholder="Tafuta jina, eneo, aina..."
+                            class="w-full pl-9 pr-3 py-2.5 text-xs border border-gray-300 rounded-md bg-gray-50 focus:bg-white focus:outline-none focus:border-dcf-green"
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- TABLE -->
+
+                <div class="overflow-x-auto">
+
+                    <table
+                        class="w-full text-left border-collapse"
+                    >
+
+                        <thead>
+
+                            <tr
+                                class="bg-gray-50 border-b border-gray-200 text-gray-600"
+                            >
+
+                                <th
+                                    class="px-4 py-3 text-[10px] uppercase font-bold"
+                                >
+                                    #
+                                </th>
+
+                                <th
+                                    class="px-4 py-3 text-[10px] uppercase font-bold"
+                                >
+                                    Shughuli
+                                </th>
+
+                                <th
+                                    class="px-4 py-3 text-[10px] uppercase font-bold"
+                                >
+                                    Aina
+                                </th>
+
+                                <th
+                                    class="px-4 py-3 text-[10px] uppercase font-bold"
+                                >
+                                    Tarehe / Muda
+                                </th>
+
+                                <th
+                                    class="px-4 py-3 text-[10px] uppercase font-bold"
+                                >
+                                    Mahali
+                                </th>
+
+                                <th
+                                    class="px-4 py-3 text-[10px] uppercase font-bold"
+                                >
+                                    Msimamizi
+                                </th>
+
+                                <th
+                                    class="px-4 py-3 text-[10px] uppercase font-bold"
+                                >
+                                    Hali
+                                </th>
+
+                                <th
+                                    class="px-4 py-3 text-[10px] uppercase font-bold text-center"
+                                >
+                                    Vitendo
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody
+                            id="activities-table-body"
+                            class="text-xs"
+                        >
+
+                            <tr>
+
+                                <td
+                                    colspan="8"
+                                    class="py-10 text-center text-gray-500"
+                                >
+
+                                    <i
+                                        class="fas fa-spinner fa-spin mr-2"
+                                    ></i>
+
+                                    Inapakia taarifa...
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MODAL
+    ====================================================== -->
+
+    <div
+        id="activity-modal"
+        class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4"
+    >
+
+
+        <div
+            class="bg-white w-full max-w-2xl rounded-lg shadow-2xl overflow-hidden max-h-[94vh] overflow-y-auto"
+        >
+
+
+            <!-- MODAL HEADER -->
+
+            <div
+                class="px-5 py-4 bg-dcf-green text-white flex items-center justify-between"
+            >
+
+                <div>
+
+                    <p
+                        class="text-[10px] uppercase tracking-wider text-green-200 font-bold"
+                    >
+                        DCF ONLINE SYSTEM
+                    </p>
+
+                    <h3
+                        id="modal-title"
+                        class="text-base font-bold mt-1"
+                    >
+                        Sajili Shughuli Mpya
+                    </h3>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    onclick="closeActivityModal()"
+                    class="w-8 h-8 rounded-md hover:bg-white/10 flex items-center justify-center"
+                >
+
+                    <i class="fas fa-times"></i>
+
+                </button>
+
+            </div>
+
+
+
+            <!-- FORM -->
+
+            <form
+                id="activity-form"
+                onsubmit="saveActivity(event)"
+                class="p-5"
+            >
+
+
+                <input
+                    type="hidden"
+                    id="activity-id"
+                >
+
+
+
+                <!-- SECTION 1 -->
+
+                <div class="mb-5">
+
+                    <div
+                        class="flex items-center gap-2 mb-3 pb-2 border-b"
+                    >
+
+                        <i
+                            class="fas fa-info-circle text-dcf-green"
+                        ></i>
+
+                        <h4
+                            class="text-xs font-bold uppercase text-gray-700"
+                        >
+                            Taarifa za Shughuli
+                        </h4>
+
+                    </div>
+
+
+
+                    <!-- TITLE -->
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Jina la Shughuli / Tukio *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="activity-title"
+                            required
+                            placeholder="Mfano: Mkutano wa Hadhara"
+                            class="form-input"
+                        >
+
+                    </div>
+
+
+
+                    <!-- CATEGORY + LOCATION -->
+
+                    <div
+                        class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                    >
+
+                        <div>
+
+                            <label class="form-label">
+                                Aina ya Shughuli *
+                            </label>
+
+                            <select
+                                id="activity-category"
+                                required
+                                class="form-input"
+                            >
+
+                                <option value="Mkutano">
+                                    Mkutano
+                                </option>
+
+                                <option value="Semina / Mafunzo">
+                                    Semina / Mafunzo
+                                </option>
+
+                                <option value="Ugawaji Misaada">
+                                    Ugawaji Misaada
+                                </option>
+
+                                <option value="Uhamasishaji">
+                                    Uhamasishaji
+                                </option>
+
+                                <option value="Kawaida">
+                                    Kawaida
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div>
+
+                            <label class="form-label">
+                                Eneo / Mahali *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="activity-location"
+                                required
+                                placeholder="Mfano: Ukumbi wa DCF"
+                                class="form-input"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- SECTION 2 -->
+
+                <div class="mb-5">
+
+                    <div
+                        class="flex items-center gap-2 mb-3 pb-2 border-b"
+                    >
+
+                        <i
+                            class="fas fa-calendar-alt text-dcf-green"
+                        ></i>
+
+                        <h4
+                            class="text-xs font-bold uppercase text-gray-700"
+                        >
+                            Ratiba ya Shughuli
+                        </h4>
+
+                    </div>
+
+
+
+                    <div
+                        class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                    >
+
+                        <div>
+
+                            <label class="form-label">
+                                Tarehe *
+                            </label>
+
+                            <input
+                                type="date"
+                                id="activity-date"
+                                required
+                                class="form-input"
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label class="form-label">
+                                Muda
+                            </label>
+
+                            <input
+                                type="time"
+                                id="activity-time"
+                                class="form-input"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- SECTION 3 -->
+
+                <div class="mb-5">
+
+                    <div
+                        class="flex items-center gap-2 mb-3 pb-2 border-b"
+                    >
+
+                        <i
+                            class="fas fa-user-tie text-dcf-green"
+                        ></i>
+
+                        <h4
+                            class="text-xs font-bold uppercase text-gray-700"
+                        >
+                            Usimamizi
+                        </h4>
+
+                    </div>
+
+
+
+                    <div
+                        class="grid grid-cols-1 md:grid-cols-2 gap-4"
+                    >
+
+                        <div>
+
+                            <label class="form-label">
+                                Msimamizi
+                            </label>
+
+                            <input
+                                type="text"
+                                id="activity-organizer"
+                                placeholder="Mfano: Katibu Mkuu"
+                                class="form-input"
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label class="form-label">
+                                Hali ya Shughuli *
+                            </label>
+
+                            <select
+                                id="activity-status"
+                                required
+                                class="form-input"
+                            >
+
+                                <option value="Scheduled">
+                                    Imepangwa
+                                </option>
+
+                                <option value="Ongoing">
+                                    Inaendelea
+                                </option>
+
+                                <option value="Completed">
+                                    Imekamilika
+                                </option>
+
+                                <option value="Cancelled">
+                                    Imefutwa
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="mb-5">
+
+                    <label class="form-label">
+                        Maelezo ya Ziada
+                    </label>
+
+                    <textarea
+                        id="activity-description"
+                        rows="4"
+                        placeholder="Andika maelezo ya ziada kuhusu shughuli..."
+                        class="form-input resize-none"
+                    ></textarea>
+
+                </div>
+
+
+
+                <!-- FOOTER -->
+
+                <div
+                    class="flex flex-col-reverse sm:flex-row sm:justify-between gap-2 border-t pt-4"
+                >
+
+                    <button
+                        type="button"
+                        onclick="closeActivityModal()"
+                        class="px-4 py-2.5 border border-gray-300 text-gray-600 rounded-md text-xs font-bold hover:bg-gray-50"
+                    >
+
+                        <i class="fas fa-times mr-1"></i>
+
+                        Ghairi
+
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        id="save-btn"
+                        class="px-5 py-2.5 bg-dcf-green text-white rounded-md text-xs font-bold hover:bg-dcf-dark-green shadow-sm"
+                    >
+
+                        <i class="fas fa-save mr-1"></i>
+
+                        Hifadhi Shughuli
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script>
+
+        let activitiesList = [];
+
+
+
+        /* =====================================================
+           ESCAPE HTML
+        ===================================================== */
+
+        function escapeHTML(value) {
+
+            if (
+                value === null ||
+                value === undefined
+            ) {
+
+                return '';
+
+            }
+
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+
+        }
+
+
+
+        /* =====================================================
+           LOAD ACTIVITIES
+        ===================================================== */
+
+        async function loadActivities() {
+
+            const tableBody =
+                document.getElementById(
+                    'activities-table-body'
+                );
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await _supabase
+
+                    .from('dcf_activities')
+
+                    .select(`
+                        id,
+                        title,
+                        category,
+                        activity_date,
+                        activity_time,
+                        location,
+                        organizer,
+                        status,
+                        description,
+                        created_at
+                    `)
+
+                    .order(
+                        'activity_date',
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                activitiesList =
+                    data || [];
+
+
+                renderTable(
+                    activitiesList
+                );
+
+
+                updateStats(
+                    activitiesList
+                );
+
+
+            }
+
+            catch (err) {
+
+                console.error(
+                    'Error loading activities:',
+                    err
+                );
+
+
+                tableBody.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="py-10 text-center text-red-600 font-bold"
+                        >
+
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+
+                            Imeshindikana kupakia taarifa.
+
+                            <div
+                                class="text-xs font-normal mt-1"
+                            >
+                                ${escapeHTML(err.message)}
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           STATUS BADGE
+        ===================================================== */
+
+        function getStatusBadge(status) {
+
+            const map = {
+
+                Scheduled: `
+                    <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-700 border border-amber-100 px-2 py-1 rounded text-[10px] font-bold">
+                        <i class="fas fa-clock"></i>
+                        Imepangwa
+                    </span>
+                `,
+
+                Ongoing: `
+                    <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded text-[10px] font-bold">
+                        <i class="fas fa-spinner"></i>
+                        Inaendelea
+                    </span>
+                `,
+
+                Completed: `
+                    <span class="inline-flex items-center gap-1 bg-green-50 text-green-700 border border-green-100 px-2 py-1 rounded text-[10px] font-bold">
+                        <i class="fas fa-check"></i>
+                        Imekamilika
+                    </span>
+                `,
+
+                Cancelled: `
+                    <span class="inline-flex items-center gap-1 bg-red-50 text-red-700 border border-red-100 px-2 py-1 rounded text-[10px] font-bold">
+                        <i class="fas fa-times"></i>
+                        Imefutwa
+                    </span>
+                `
+
+            };
+
+
+            return map[status] ||
+                `<span class="text-gray-500">-</span>`;
+
+        }
+
+
+
+        /* =====================================================
+           FORMAT DATE
+        ===================================================== */
+
+        function formatDate(date) {
+
+            if (!date) return '-';
+
+
+            const parts =
+                date.split('-');
+
+
+            if (parts.length !== 3) {
+
+                return escapeHTML(date);
+
+            }
+
+
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+        }
+
+
+
+        /* =====================================================
+           RENDER TABLE
+        ===================================================== */
+
+        function renderTable(data) {
+
+            const tableBody =
+                document.getElementById(
+                    'activities-table-body'
+                );
+
+
+            if (
+                !data ||
+                data.length === 0
+            ) {
+
+                tableBody.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="py-12 text-center"
+                        >
+
+                            <div
+                                class="w-12 h-12 mx-auto rounded-full bg-gray-100 flex items-center justify-center text-gray-400 mb-3"
+                            >
+
+                                <i
+                                    class="fas fa-calendar-times"
+                                ></i>
+
+                            </div>
+
+                            <p
+                                class="font-bold text-gray-600 text-xs"
+                            >
+                                Hakuna shughuli iliyosajiliwa
+                            </p>
+
+                            <p
+                                class="text-[11px] text-gray-400 mt-1"
+                            >
+                                Bonyeza "Sajili Shughuli Mpya" kuongeza taarifa.
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+
+            }
+
+
+            tableBody.innerHTML = '';
+
+
+            data.forEach(
+                (act, idx) => {
+
+
+                    let dateTime =
+                        formatDate(
+                            act.activity_date
+                        );
+
+
+                    if (
+                        act.activity_time
+                    ) {
+
+                        dateTime +=
+                            ' • ' +
+                            escapeHTML(
+                                act.activity_time
+                            );
+
+                    }
+
+
+                    const row = `
+
+                        <tr
+                            class="activity-row border-b border-gray-100"
+                        >
+
+                            <td
+                                class="px-4 py-3 text-gray-400 font-bold"
+                            >
+                                ${idx + 1}
+                            </td>
+
+
+                            <td
+                                class="px-4 py-3"
+                            >
+
+                                <div
+                                    class="font-bold text-gray-800"
+                                >
+                                    ${escapeHTML(
+                                        act.title || '-'
+                                    )}
+                                </div>
+
+                                ${
+                                    act.description
+                                        ? `
+                                            <div
+                                                class="text-[10px] text-gray-400 mt-1 max-w-xs truncate"
+                                            >
+                                                ${escapeHTML(
+                                                    act.description
+                                                )}
+                                            </div>
+                                        `
+                                        : ''
+                                }
+
+                            </td>
+
+
+                            <td
+                                class="px-4 py-3"
+                            >
+
+                                <span
+                                    class="inline-block bg-gray-100 border border-gray-200 text-gray-600 px-2 py-1 rounded text-[10px] font-bold"
+                                >
+                                    ${escapeHTML(
+                                        act.category || 'Kawaida'
+                                    )}
+                                </span>
+
+                            </td>
+
+
+                            <td
+                                class="px-4 py-3"
+                            >
+
+                                <div
+                                    class="flex items-center gap-2 text-dcf-green font-bold"
+                                >
+
+                                    <i
+                                        class="far fa-calendar text-gray-400"
+                                    ></i>
+
+                                    ${dateTime}
+
+                                </div>
+
+                            </td>
+
+
+                            <td
+                                class="px-4 py-3"
+                            >
+
+                                <div
+                                    class="flex items-center gap-2"
+                                >
+
+                                    <i
+                                        class="fas fa-location-dot text-gray-400"
+                                    ></i>
+
+                                    <span>
+                                        ${escapeHTML(
+                                            act.location || '-'
+                                        )}
+                                    </span>
+
+                                </div>
+
+                            </td>
+
+
+                            <td
+                                class="px-4 py-3"
+                            >
+
+                                ${
+                                    act.organizer
+                                        ? `
+                                            <div
+                                                class="flex items-center gap-2"
+                                            >
+
+                                                <span
+                                                    class="w-7 h-7 rounded-full bg-green-50 text-dcf-green flex items-center justify-center text-[10px] font-bold"
+                                                >
+                                                    <i class="fas fa-user"></i>
+                                                </span>
+
+                                                <span>
+                                                    ${escapeHTML(
+                                                        act.organizer
+                                                    )}
+                                                </span>
+
+                                            </div>
+                                        `
+                                        : '<span class="text-gray-400">-</span>'
+                                }
+
+                            </td>
+
+
+                            <td
+                                class="px-4 py-3"
+                            >
+
+                                ${getStatusBadge(
+                                    act.status
+                                )}
+
+                            </td>
+
+
+                            <td
+                                class="px-4 py-3"
+                            >
+
+                                <div
+                                    class="flex items-center justify-center gap-1"
+                                >
+
+
+                                    <!-- EDIT -->
+
+                                    <button
+                                        type="button"
+                                        class="btn-edit w-8 h-8 rounded-md text-blue-600 hover:bg-blue-50"
+                                        data-action="update"
+                                        onclick="editActivity('${act.id}')"
+                                        title="Hariri"
+                                    >
+
+                                        <i
+                                            class="fas fa-pen-to-square text-xs"
+                                        ></i>
+
+                                    </button>
+
+
+
+                                    <!-- DELETE -->
+
+                                    <button
+                                        type="button"
+                                        class="btn-delete w-8 h-8 rounded-md text-red-600 hover:bg-red-50"
+                                        data-action="delete"
+                                        onclick="deleteActivity('${act.id}')"
+                                        title="Futa"
+                                    >
+
+                                        <i
+                                            class="fas fa-trash text-xs"
+                                        ></i>
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+
+                    tableBody.innerHTML += row;
+
+                }
+            );
+
+
+
+            /* APPLY ROLE AGAIN */
+
+            const role =
+                sessionStorage.getItem(
+                    'userRole'
+                );
+
+
+            if (role) {
+
+                applyPageActionPermissions(
+                    role
+                );
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           STATISTICS
+        ===================================================== */
+
+        function updateStats(data) {
+
+            document.getElementById(
+                'stat-total-activities'
+            ).innerText =
+                data.length;
+
+
+            document.getElementById(
+                'stat-scheduled-activities'
+            ).innerText =
+                data.filter(
+                    a =>
+                        a.status ===
+                        'Scheduled'
+                ).length;
+
+
+            document.getElementById(
+                'stat-completed-activities'
+            ).innerText =
+                data.filter(
+                    a =>
+                        a.status ===
+                        'Completed'
+                ).length;
+
+        }
+
+
+
+        /* =====================================================
+           OPEN MODAL
+        ===================================================== */
+
+        function openActivityModal() {
+
+            const form =
+                document.getElementById(
+                    'activity-form'
+                );
+
+
+            form.reset();
+
+
+            document.getElementById(
+                'activity-id'
+            ).value = '';
+
+
+            document.getElementById(
+                'modal-title'
+            ).innerText =
+                'Sajili Shughuli Mpya';
+
+
+            document.getElementById(
+                'save-btn'
+            ).innerHTML =
+                '<i class="fas fa-save mr-1"></i> Hifadhi Shughuli';
+
+
+            document.getElementById(
+                'activity-modal'
+            ).classList.remove(
+                'hidden'
+            );
+
+
+            setTimeout(
+                () => {
+
+                    document.getElementById(
+                        'activity-title'
+                    ).focus();
+
+                },
+                100
+            );
+
+        }
+
+
+
+        /* =====================================================
+           CLOSE MODAL
+        ===================================================== */
+
+        function closeActivityModal() {
+
+            document.getElementById(
+                'activity-modal'
+            ).classList.add(
+                'hidden'
+            );
+
+        }
+
+
+
+        /* =====================================================
+           SAVE
+        ===================================================== */
+
+        async function saveActivity(event) {
+
+            event.preventDefault();
+
+
+            const id =
+                document.getElementById(
+                    'activity-id'
+                ).value;
+
+
+            const saveBtn =
+                document.getElementById(
+                    'save-btn'
+                );
+
+
+            const payload = {
+
+                title:
+                    document.getElementById(
+                        'activity-title'
+                    ).value.trim(),
+
+                category:
+                    document.getElementById(
+                        'activity-category'
+                    ).value,
+
+                location:
+                    document.getElementById(
+                        'activity-location'
+                    ).value.trim(),
+
+                activity_date:
+                    document.getElementById(
+                        'activity-date'
+                    ).value,
+
+                activity_time:
+                    document.getElementById(
+                        'activity-time'
+                    ).value ||
+                    null,
+
+                organizer:
+                    document.getElementById(
+                        'activity-organizer'
+                    ).value.trim() ||
+                    null,
+
+                status:
+                    document.getElementById(
+                        'activity-status'
+                    ).value,
+
+                description:
+                    document.getElementById(
+                        'activity-description'
+                    ).value.trim() ||
+                    null
+
+            };
+
+
+            saveBtn.disabled = true;
+
+
+            saveBtn.innerHTML =
+                '<i class="fas fa-spinner fa-spin mr-1"></i> Inahifadhi...';
+
+
+            try {
+
+
+                if (id) {
+
+                    const {
+                        error
+                    } = await _supabase
+
+                        .from(
+                            'dcf_activities'
+                        )
+
+                        .update(
+                            payload
+                        )
+
+                        .eq(
+                            'id',
+                            id
+                        );
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    alert(
+                        'Taarifa za shughuli zimebadilishwa kikamilifu.'
+                    );
+
+                }
+
+
+                else {
+
+                    const {
+                        error
+                    } = await _supabase
+
+                        .from(
+                            'dcf_activities'
+                        )
+
+                        .insert([
+                            payload
+                        ]);
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    alert(
+                        'Shughuli mpya imesajiliwa kikamilifu.'
+                    );
+
+                }
+
+
+                closeActivityModal();
+
+
+                await loadActivities();
+
+            }
+
+
+            catch (err) {
+
+                console.error(
+                    'Save Activity Error:',
+                    err
+                );
+
+
+                alert(
+                    'Hitilafu: ' +
+                    err.message
+                );
+
+            }
+
+
+            finally {
+
+                saveBtn.disabled =
+                    false;
+
+
+                saveBtn.innerHTML =
+                    '<i class="fas fa-save mr-1"></i> Hifadhi Shughuli';
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           EDIT
+        ===================================================== */
+
+        function editActivity(id) {
+
+            const act =
+                activitiesList.find(
+                    item =>
+                        String(item.id) ===
+                        String(id)
+                );
+
+
+            if (!act) {
+
+                alert(
+                    'Taarifa ya shughuli haijapatikana.'
+                );
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                'activity-id'
+            ).value =
+                act.id;
+
+
+            document.getElementById(
+                'activity-title'
+            ).value =
+                act.title || '';
+
+
+            document.getElementById(
+                'activity-category'
+            ).value =
+                act.category ||
+                'Kawaida';
+
+
+            document.getElementById(
+                'activity-location'
+            ).value =
+                act.location || '';
+
+
+            document.getElementById(
+                'activity-date'
+            ).value =
+                act.activity_date || '';
+
+
+            document.getElementById(
+                'activity-time'
+            ).value =
+                act.activity_time || '';
+
+
+            document.getElementById(
+                'activity-organizer'
+            ).value =
+                act.organizer || '';
+
+
+            document.getElementById(
+                'activity-status'
+            ).value =
+                act.status ||
+                'Scheduled';
+
+
+            document.getElementById(
+                'activity-description'
+            ).value =
+                act.description || '';
+
+
+            document.getElementById(
+                'modal-title'
+            ).innerText =
+                'Hariri Taarifa za Shughuli';
+
+
+            document.getElementById(
+                'save-btn'
+            ).innerHTML =
+                '<i class="fas fa-save mr-1"></i> Hifadhi Mabadiliko';
+
+
+            document.getElementById(
+                'activity-modal'
+            ).classList.remove(
+                'hidden'
+            );
+
+        }
+
+
+
+        /* =====================================================
+           DELETE
+        ===================================================== */
+
+        async function deleteActivity(id) {
+
+            const act =
+                activitiesList.find(
+                    item =>
+                        String(item.id) ===
+                        String(id)
+                );
+
+
+            const activityName =
+                act?.title ||
+                'shughuli hii';
+
+
+            const confirmed =
+                confirm(
+                    `Je, una uhakika unataka kufuta "${activityName}"?\n\nKitendo hiki hakiwezi kurejeshwa.`
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const {
+                    error
+                } = await _supabase
+
+                    .from(
+                        'dcf_activities'
+                    )
+
+                    .delete()
+
+                    .eq(
+                        'id',
+                        id
+                    );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                await loadActivities();
+
+
+                alert(
+                    'Shughuli imefutwa kikamilifu.'
+                );
+
+            }
+
+
+            catch (err) {
+
+                console.error(
+                    'Delete Activity Error:',
+                    err
+                );
+
+
+                alert(
+                    'Imeshindikana kufuta shughuli: ' +
+                    err.message
+                );
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           SEARCH
+        ===================================================== */
+
+        function filterActivities() {
+
+            const query =
+                document.getElementById(
+                    'search-input'
+                )
+                .value
+                .toLowerCase()
+                .trim();
+
+
+            if (!query) {
+
+                renderTable(
+                    activitiesList
+                );
+
+                return;
+
+            }
+
+
+            const filtered =
+                activitiesList.filter(
+                    a => {
+
+                        return (
+
+                            (
+                                a.title &&
+                                a.title
+                                    .toLowerCase()
+                                    .includes(query)
+                            )
+
+                            ||
+
+                            (
+                                a.location &&
+                                a.location
+                                    .toLowerCase()
+                                    .includes(query)
+                            )
+
+                            ||
+
+                            (
+                                a.category &&
+                                a.category
+                                    .toLowerCase()
+                                    .includes(query)
+                            )
+
+                            ||
+
+                            (
+                                a.organizer &&
+                                a.organizer
+                                    .toLowerCase()
+                                    .includes(query)
+                            )
+
+                            ||
+
+                            (
+                                a.status &&
+                                a.status
+                                    .toLowerCase()
+                                    .includes(query)
+                            )
+
+                        );
+
+                    }
+                );
+
+
+            renderTable(
+                filtered
+            );
+
+        }
+
+
+
+        /* =====================================================
+           ROLE PERMISSIONS
+        ===================================================== */
+
+        function applyPageActionPermissions(role) {
+
+
+            /* ADMIN */
+
+            if (
+                role ===
+                'admin'
+            ) {
+
+                document
+                    .querySelectorAll(
+                        '.btn-add, .btn-edit, .btn-delete'
+                    )
+                    .forEach(
+                        el =>
+                            el.style.display =
+                                ''
+                    );
+
+                return;
+
+            }
+
+
+
+            /* STAFF */
+
+            if (
+                role ===
+                'staff'
+            ) {
+
+                document
+                    .querySelectorAll(
+                        '.btn-delete'
+                    )
+                    .forEach(
+                        el =>
+                            el.style.display =
+                                'none'
+                    );
+
+                return;
+
+            }
+
+
+
+            /* AUDITOR / MEMBER */
+
+            if (
+                role === 'auditor' ||
+                role === 'member'
+            ) {
+
+                document
+                    .querySelectorAll(
+                        '.btn-add, .btn-edit, .btn-delete'
+                    )
+                    .forEach(
+                        el =>
+                            el.style.display =
+                                'none'
+                    );
+
+            }
+
+        }
+
+
+
+        /* =====================================================
+           AUTH
+        ===================================================== */
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            () => {
+
+
+                const userRole =
+                    sessionStorage.getItem(
+                        'userRole'
+                    );
+
+
+                const isLoggedIn =
+                    sessionStorage.getItem(
+                        'userLoggedIn'
+                    );
+
+
+                if (
+                    !isLoggedIn ||
+                    !userRole
+                ) {
+
+                    window.location.href =
+                        '../login.html';
+
+                    return;
+
+                }
+
+
+                applyPageActionPermissions(
+                    userRole
+                );
+
+
+                loadActivities();
+
+            }
+        );
+
+
+
+        /* =====================================================
+           CLICK OUTSIDE MODAL
+        ===================================================== */
+
+        document.addEventListener(
+            'click',
+            function(event) {
+
+                const modal =
+                    document.getElementById(
+                        'activity-modal'
+                    );
+
+
+                if (
+                    event.target ===
+                    modal
+                ) {
+
+                    closeActivityModal();
+
+                }
+
+            }
+        );
+
+
+
+        /* =====================================================
+           ESCAPE
+        ===================================================== */
+
+        document.addEventListener(
+            'keydown',
+            function(event) {
+
+                if (
+                    event.key ===
+                    'Escape'
+                ) {
+
+                    const modal =
+                        document.getElementById(
+                            'activity-modal'
+                        );
+
+
+                    if (
+                        modal &&
+                        !modal.classList.contains(
+                            'hidden'
+                        )
+                    ) {
+
+                        closeActivityModal();
+
+                    }
+
+                }
+
+            }
+        );
+
+    </script>
+<script src="js/i18n.js"></script>
+</body>
+
+</html>

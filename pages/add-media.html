@@ -1,0 +1,3828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DCCF | Media Management</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Inter,Arial,sans-serif;
+    background:#f4f7f5;
+    color:#17231d;
+}
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.topbar{
+    height:74px;
+    background:#fff;
+    border-bottom:1px solid #e1e8e4;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 6%;
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo{
+    width:44px;
+    height:44px;
+    background:#075b3b;
+    color:#fff;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    font-size:11px;
+}
+
+.brand-title{
+    font-size:16px;
+    font-weight:750;
+}
+
+.brand-subtitle{
+    color:#7b8580;
+    font-size:11px;
+}
+
+.top-actions{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.back{
+    color:#075b3b;
+    text-decoration:none;
+    font-size:13px;
+    font-weight:700;
+}
+
+.back:hover{
+    text-decoration:underline;
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.page{
+    width:90%;
+    max-width:1250px;
+    margin:40px auto 70px;
+}
+
+.page-header{
+    margin-bottom:25px;
+}
+
+.page-header span{
+    color:#075b3b;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:2px;
+}
+
+.page-header h1{
+    font-size:34px;
+    margin-top:8px;
+}
+
+.page-header p{
+    color:#758079;
+    margin-top:8px;
+    font-size:13px;
+}
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.card{
+    background:#fff;
+    border:1px solid #e1e8e4;
+    border-radius:17px;
+    padding:30px;
+    box-shadow:0 10px 30px rgba(0,0,0,.04);
+    margin-bottom:25px;
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+#loadingBox{
+    text-align:center;
+    padding:70px 20px;
+}
+
+.loading-icon{
+    font-size:45px;
+    margin-bottom:15px;
+}
+
+#loadingBox h2{
+    font-size:20px;
+}
+
+#loadingBox p{
+    color:#758079;
+    margin-top:8px;
+    font-size:13px;
+}
+
+/* =========================================================
+   ACCESS DENIED
+========================================================= */
+
+#accessDenied{
+    display:none;
+    text-align:center;
+    padding:70px 20px;
+}
+
+#accessDenied .icon{
+    font-size:50px;
+    margin-bottom:15px;
+}
+
+#accessDenied h2{
+    color:#8f2f2f;
+}
+
+#accessDenied p{
+    color:#758079;
+    margin-top:8px;
+    font-size:13px;
+}
+
+/* =========================================================
+   MAIN FORM
+========================================================= */
+
+#mediaForm{
+    display:none;
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:22px;
+}
+
+.full{
+    grid-column:1/-1;
+}
+
+.field{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+label{
+    font-size:12px;
+    font-weight:750;
+    color:#34423b;
+}
+
+input,
+textarea,
+select{
+    width:100%;
+    border:1px solid #dce4df;
+    border-radius:9px;
+    padding:12px 13px;
+    outline:none;
+    font-family:inherit;
+    font-size:13px;
+    background:#fff;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+    border-color:#075b3b;
+    box-shadow:0 0 0 3px rgba(7,91,59,.08);
+}
+
+textarea{
+    min-height:110px;
+    resize:vertical;
+}
+
+/* =========================================================
+   UPLOAD TABS
+========================================================= */
+
+.upload-tabs{
+    display:flex;
+    gap:10px;
+}
+
+.tab-btn{
+    flex:1;
+    padding:12px;
+    border:1px solid #dce4df;
+    background:#f7f9f8;
+    color:#55625c;
+    font-size:12px;
+    font-weight:750;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.tab-btn.active{
+    background:#075b3b;
+    color:#fff;
+    border-color:#075b3b;
+}
+
+.upload-section{
+    display:none;
+    margin-top:12px;
+}
+
+.upload-section.active{
+    display:block;
+}
+
+/* =========================================================
+   DROP AREA
+========================================================= */
+
+.drop-area{
+    border:2px dashed #b7c7be;
+    background:#f4f8f6;
+    padding:35px 20px;
+    border-radius:10px;
+    text-align:center;
+    cursor:pointer;
+}
+
+.drop-area:hover{
+    background:#e8f2ec;
+}
+
+.drop-area strong{
+    color:#075b3b;
+}
+
+#photoFiles{
+    display:none;
+}
+
+.link-box{
+    min-height:170px;
+    font-family:monospace;
+}
+
+.hint{
+    color:#89938e;
+    font-size:11px;
+    line-height:1.5;
+}
+
+.preview-count{
+    margin-top:12px;
+    font-size:12px;
+    font-weight:700;
+    color:#075b3b;
+}
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.stats{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:18px;
+}
+
+.stat{
+    background:#f3f7f5;
+    border:1px solid #dce7e0;
+    border-radius:10px;
+    padding:12px 18px;
+    min-width:120px;
+}
+
+.stat strong{
+    display:block;
+    font-size:20px;
+    color:#075b3b;
+}
+
+.stat span{
+    color:#758079;
+    font-size:11px;
+}
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+.progress-box{
+    margin-top:25px;
+    display:none;
+}
+
+.progress-top{
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.progress{
+    height:12px;
+    background:#e7ede9;
+    border-radius:20px;
+    overflow:hidden;
+}
+
+.progress-bar{
+    height:100%;
+    width:0%;
+    background:#075b3b;
+    transition:.2s;
+}
+
+/* =========================================================
+   RESULT
+========================================================= */
+
+.result-box{
+    margin-top:20px;
+    display:none;
+    padding:15px;
+    border-radius:10px;
+    font-size:12px;
+}
+
+.result-success{
+    background:#e7f5ed;
+    color:#08603c;
+    border:1px solid #c5e7d4;
+}
+
+.result-error{
+    background:#fff0f0;
+    color:#a93232;
+    border:1px solid #f0cccc;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.actions{
+    margin-top:25px;
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+}
+
+.btn{
+    border:none;
+    border-radius:9px;
+    padding:13px 22px;
+    cursor:pointer;
+    font-size:12px;
+    font-weight:800;
+}
+
+.btn-clear{
+    background:#edf1ef;
+    color:#34423b;
+}
+
+.btn-upload{
+    background:#075b3b;
+    color:#fff;
+    min-width:180px;
+}
+
+.btn-upload:hover{
+    background:#043c28;
+}
+
+.btn:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+
+/* =========================================================
+   MEDIA LIBRARY HEADER
+========================================================= */
+
+.library-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:20px;
+    margin-bottom:22px;
+}
+
+.library-title{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.library-title h2{
+    font-size:23px;
+}
+
+.library-title p{
+    color:#7b8580;
+    font-size:12px;
+}
+
+.library-actions{
+    display:flex;
+    gap:10px;
+}
+
+.small-btn{
+    border:1px solid #dce4df;
+    background:#fff;
+    color:#075b3b;
+    padding:10px 14px;
+    border-radius:8px;
+    font-size:12px;
+    font-weight:750;
+    cursor:pointer;
+}
+
+.small-btn:hover{
+    background:#f1f7f3;
+}
+
+/* =========================================================
+   FOLDER BROWSER
+========================================================= */
+
+.folder-browser{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+.folder-btn{
+    border:1px solid #dce4df;
+    background:#f8faf9;
+    border-radius:10px;
+    padding:10px 14px;
+    cursor:pointer;
+    font-size:12px;
+    font-weight:750;
+    color:#46544d;
+    display:flex;
+    align-items:center;
+    gap:7px;
+}
+
+.folder-btn:hover{
+    background:#edf5f0;
+}
+
+.folder-btn.active{
+    background:#075b3b;
+    color:#fff;
+    border-color:#075b3b;
+}
+
+.folder-count{
+    opacity:.7;
+}
+
+/* =========================================================
+   LIBRARY TOOLS
+========================================================= */
+
+.library-tools{
+    display:grid;
+    grid-template-columns:1fr 180px;
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.library-tools input,
+.library-tools select{
+    background:#f9fbfa;
+}
+
+/* =========================================================
+   LIBRARY STATS
+========================================================= */
+
+.library-stats{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    padding:12px 15px;
+    border:1px solid #e1e8e4;
+    background:#f7faf8;
+    border-radius:10px;
+    margin-bottom:20px;
+}
+
+.library-stats span{
+    font-size:12px;
+    color:#66736d;
+}
+
+.library-stats strong{
+    color:#075b3b;
+}
+
+/* =========================================================
+   MEDIA GRID
+========================================================= */
+
+.media-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:17px;
+}
+
+.media-card{
+    border:1px solid #e0e7e3;
+    border-radius:13px;
+    overflow:hidden;
+    background:#fff;
+    transition:.2s;
+}
+
+.media-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 22px rgba(0,0,0,.08);
+}
+
+.media-image{
+    height:180px;
+    background:#edf2ef;
+    position:relative;
+    overflow:hidden;
+}
+
+.media-image img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+
+.media-badge{
+    position:absolute;
+    top:9px;
+    left:9px;
+    background:rgba(4,60,40,.9);
+    color:#fff;
+    border-radius:6px;
+    padding:5px 8px;
+    font-size:10px;
+    font-weight:750;
+}
+
+.media-content{
+    padding:13px;
+}
+
+.media-title{
+    font-size:13px;
+    font-weight:800;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.media-description{
+    color:#7b8580;
+    font-size:11px;
+    margin-top:5px;
+    min-height:16px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.media-url{
+    margin-top:10px;
+    padding:8px;
+    background:#f5f8f6;
+    border:1px solid #e1e8e4;
+    border-radius:7px;
+    font-family:monospace;
+    font-size:9px;
+    color:#65736c;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.media-actions{
+    display:flex;
+    gap:6px;
+    margin-top:10px;
+}
+
+.media-action{
+    flex:1;
+    border:1px solid #dce4df;
+    background:#fff;
+    padding:8px 5px;
+    border-radius:7px;
+    cursor:pointer;
+    font-size:10px;
+    font-weight:750;
+}
+
+.media-action:hover{
+    background:#f1f7f3;
+}
+
+.media-action.open{
+    background:#075b3b;
+    color:#fff;
+    border-color:#075b3b;
+}
+
+.media-action.delete{
+    color:#a52f2f;
+}
+
+.media-meta{
+    margin-top:9px;
+    display:flex;
+    justify-content:space-between;
+    font-size:9px;
+    color:#89938e;
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-library{
+    text-align:center;
+    padding:65px 20px;
+    border:2px dashed #dce5df;
+    border-radius:13px;
+    background:#fafcfb;
+}
+
+.empty-library .empty-icon{
+    font-size:45px;
+    margin-bottom:12px;
+}
+
+.empty-library h3{
+    font-size:17px;
+}
+
+.empty-library p{
+    color:#7b8580;
+    font-size:12px;
+    margin-top:7px;
+}
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+.pagination{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:8px;
+    margin-top:25px;
+}
+
+.page-btn{
+    border:1px solid #dce4df;
+    background:#fff;
+    color:#46544d;
+    min-width:36px;
+    height:36px;
+    border-radius:7px;
+    cursor:pointer;
+    font-size:11px;
+    font-weight:750;
+}
+
+.page-btn:hover{
+    background:#edf5f0;
+}
+
+.page-btn.active{
+    background:#075b3b;
+    color:#fff;
+    border-color:#075b3b;
+}
+
+.page-btn:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.58);
+    z-index:1000;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:100%;
+    max-width:850px;
+    max-height:90vh;
+    overflow:auto;
+    background:#fff;
+    border-radius:15px;
+    padding:20px;
+}
+
+.modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.modal-header h3{
+    font-size:17px;
+}
+
+.close-modal{
+    width:35px;
+    height:35px;
+    border:none;
+    background:#edf1ef;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.modal-image{
+    width:100%;
+    max-height:65vh;
+    object-fit:contain;
+    background:#f3f5f4;
+    border-radius:10px;
+}
+
+.modal-url{
+    margin-top:15px;
+    display:flex;
+    gap:8px;
+}
+
+.modal-url input{
+    font-family:monospace;
+    font-size:11px;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+.toast{
+    position:fixed;
+    right:25px;
+    bottom:25px;
+    z-index:2000;
+    min-width:250px;
+    max-width:400px;
+    padding:14px 17px;
+    border-radius:10px;
+    color:#fff;
+    background:#075b3b;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+    font-size:12px;
+    font-weight:700;
+    transform:translateY(120px);
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+}
+
+.toast.show{
+    transform:translateY(0);
+    opacity:1;
+}
+
+.toast.error{
+    background:#a93232;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer{
+    background:#043c28;
+    color:#fff;
+    text-align:center;
+    padding:27px;
+    font-size:12px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:1050px){
+
+    .media-grid{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+}
+
+@media(max-width:800px){
+
+    .media-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .library-header{
+        flex-direction:column;
+    }
+
+}
+
+@media(max-width:700px){
+
+    .topbar{
+        padding:0 20px;
+    }
+
+    .brand-title{
+        font-size:13px;
+    }
+
+    .brand-subtitle{
+        display:none;
+    }
+
+    .form-grid{
+        grid-template-columns:1fr;
+    }
+
+    .full{
+        grid-column:auto;
+    }
+
+    .card{
+        padding:20px;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+
+    .btn{
+        width:100%;
+    }
+
+    .library-tools{
+        grid-template-columns:1fr;
+    }
+
+    .media-grid{
+        grid-template-columns:1fr;
+    }
+
+    .media-image{
+        height:220px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     TOP BAR
+========================================================= -->
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="logo">
+            DCCF
+        </div>
+
+        <div>
+
+            <div class="brand-title">
+                Development Charity Foundation
+            </div>
+
+            <div class="brand-subtitle">
+                Media Management — Admin Only
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="top-actions">
+
+        <a href="../dashboard.html" class="back">
+            ← Dashboard
+        </a>
+
+    </div>
+
+</header>
+
+
+
+<main class="page">
+
+
+    <!-- =====================================================
+         PAGE HEADER
+    ====================================================== -->
+
+    <div class="page-header">
+
+        <span>
+            MEDIA MANAGEMENT
+        </span>
+
+        <h1>
+            Media Library
+        </h1>
+
+        <p>
+            Upload, manage, search na kupata links za picha zote za DCCF.
+        </p>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         LOADING
+    ====================================================== -->
+
+    <div id="loadingBox" class="card">
+
+        <div class="loading-icon">
+            ⏳
+        </div>
+
+        <h2>
+            Inakagua Ruhusa...
+        </h2>
+
+        <p>
+            Tafadhali subiri wakati mfumo unahakiki akaunti yako.
+        </p>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         ACCESS DENIED
+    ====================================================== -->
+
+    <div id="accessDenied" class="card">
+
+        <div class="icon">
+            🛡️
+        </div>
+
+        <h2>
+            Access Denied
+        </h2>
+
+        <p id="accessDesc">
+            Akaunti yako haina ruhusa ya kusimamia media.
+        </p>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MAIN AREA
+    ====================================================== -->
+
+    <div id="mediaForm">
+
+
+
+        <!-- =================================================
+             UPLOAD CARD
+        ================================================== -->
+
+        <div class="card">
+
+            <div class="form-grid">
+
+
+                <!-- TITLE -->
+
+                <div class="field">
+
+                    <label>
+                        Photo Title
+                    </label>
+
+                    <input
+                        type="text"
+                        id="title"
+                        placeholder="Mfano: DCCF Charity Event 2026"
+                        maxlength="150"
+                    >
+
+                </div>
+
+
+
+                <!-- CATEGORY -->
+
+                <div class="field">
+
+                    <label>
+                        Folder / Category
+                    </label>
+
+                    <select id="category">
+
+                        <option value="Events">
+                            📁 Events
+                        </option>
+
+                        <option value="Charity">
+                            📁 Charity
+                        </option>
+
+                        <option value="Projects">
+                            📁 Projects
+                        </option>
+
+                        <option value="Community">
+                            📁 Community
+                        </option>
+
+                        <option value="Volunteers">
+                            📁 Volunteers
+                        </option>
+
+                        <option value="Members">
+                            📁 Members
+                        </option>
+
+                        <option value="Certificates">
+                            📁 Certificates
+                        </option>
+
+                        <option value="Other">
+                            📁 Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="field full">
+
+                    <label>
+                        Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        maxlength="500"
+                        placeholder="Maelezo ya picha hizi..."
+                    ></textarea>
+
+                </div>
+
+
+
+                <!-- SOURCE -->
+
+                <div class="field full">
+
+                    <label>
+                        Image Source
+                    </label>
+
+
+                    <div class="upload-tabs">
+
+                        <button
+                            type="button"
+                            id="fileTab"
+                            class="tab-btn active"
+                            onclick="switchTab('files')"
+                        >
+                            📁 Upload Folder / Files
+                        </button>
+
+
+                        <button
+                            type="button"
+                            id="urlTab"
+                            class="tab-btn"
+                            onclick="switchTab('links')"
+                        >
+                            🌐 Multiple Image Links
+                        </button>
+
+                    </div>
+
+
+
+                    <!-- FILE UPLOAD -->
+
+                    <div
+                        id="filesSection"
+                        class="upload-section active"
+                    >
+
+                        <div
+                            class="drop-area"
+                            onclick="document.getElementById('photoFiles').click()"
+                        >
+
+                            <div style="font-size:35px;">
+                                📸
+                            </div>
+
+                            <strong>
+                                Bonyeza hapa kuchagua picha au folder
+                            </strong>
+
+                            <div class="hint">
+                                Unaweza kuchagua hadi picha 500 kwa mara moja.
+                            </div>
+
+                            <input
+                                type="file"
+                                id="photoFiles"
+                                accept="image/*"
+                                multiple
+                                webkitdirectory
+                            >
+
+                        </div>
+
+
+                        <div
+                            id="fileInfo"
+                            class="preview-count"
+                        >
+                            Hakuna picha zilizochaguliwa.
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- LINK UPLOAD -->
+
+                    <div
+                        id="linksSection"
+                        class="upload-section"
+                    >
+
+                        <textarea
+                            id="imageLinks"
+                            class="link-box"
+                            placeholder="Weka link moja kwa kila mstari:
+
+https://example.com/photo1.jpg
+https://example.com/photo2.jpg
+https://example.com/photo3.jpg"
+                        ></textarea>
+
+
+                        <div class="hint">
+                            Link moja kwa kila mstari. Hadi links 500.
+                        </div>
+
+
+                        <div
+                            id="linkInfo"
+                            class="preview-count"
+                        >
+                            Links: 0
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- STATUS -->
+
+                <div class="field">
+
+                    <label>
+                        Publication Status
+                    </label>
+
+                    <select id="status">
+
+                        <option value="Published">
+                            Published
+                        </option>
+
+                        <option value="Draft">
+                            Draft
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- STATS -->
+
+                <div class="field">
+
+                    <label>
+                        Upload Summary
+                    </label>
+
+                    <div class="stats">
+
+                        <div class="stat">
+
+                            <strong id="totalCount">
+                                0
+                            </strong>
+
+                            <span>
+                                Total
+                            </span>
+
+                        </div>
+
+
+                        <div class="stat">
+
+                            <strong id="successCount">
+                                0
+                            </strong>
+
+                            <span>
+                                Uploaded
+                            </span>
+
+                        </div>
+
+
+                        <div class="stat">
+
+                            <strong id="failedCount">
+                                0
+                            </strong>
+
+                            <span>
+                                Failed
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- PROGRESS -->
+
+                <div
+                    class="field full progress-box"
+                    id="progressBox"
+                >
+
+                    <div class="progress-top">
+
+                        <span id="progressText">
+                            Preparing...
+                        </span>
+
+                        <span id="progressPercent">
+                            0%
+                        </span>
+
+                    </div>
+
+
+                    <div class="progress">
+
+                        <div
+                            id="progressBar"
+                            class="progress-bar"
+                        ></div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- RESULT -->
+
+            <div
+                id="resultBox"
+                class="result-box"
+            ></div>
+
+
+
+            <!-- ACTIONS -->
+
+            <div class="actions">
+
+                <button
+                    type="button"
+                    class="btn btn-clear"
+                    onclick="clearForm()"
+                    id="clearBtn"
+                >
+                    Clear
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn btn-upload"
+                    onclick="startBulkUpload()"
+                    id="uploadBtn"
+                >
+                    Upload Photos
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             MEDIA LIBRARY
+        ================================================== -->
+
+        <div class="card">
+
+
+            <div class="library-header">
+
+                <div class="library-title">
+
+                    <h2>
+                        🖼️ Media Library
+                    </h2>
+
+                    <p>
+                        Hapa utaona picha zote zilizohifadhiwa kwenye
+                        <strong>media</strong>.
+                    </p>
+
+                </div>
+
+
+                <div class="library-actions">
+
+                    <button
+                        class="small-btn"
+                        onclick="loadMediaLibrary()"
+                    >
+                        ↻ Refresh
+                    </button>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FOLDERS
+            ================================================== -->
+
+            <div
+                id="folderBrowser"
+                class="folder-browser"
+            >
+            </div>
+
+
+
+            <!-- =================================================
+                 SEARCH
+            ================================================== -->
+
+            <div class="library-tools">
+
+                <input
+                    type="search"
+                    id="mediaSearch"
+                    placeholder="🔍 Tafuta title, category au description..."
+                >
+
+
+                <select id="mediaStatusFilter">
+
+                    <option value="">
+                        All Status
+                    </option>
+
+                    <option value="Published">
+                        Published
+                    </option>
+
+                    <option value="Draft">
+                        Draft
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 LIBRARY STATS
+            ================================================== -->
+
+            <div class="library-stats">
+
+                <span>
+                    Showing:
+                    <strong id="showingCount">
+                        0
+                    </strong>
+                </span>
+
+
+                <span>
+                    Total Media:
+                    <strong id="libraryTotal">
+                        0
+                    </strong>
+                </span>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 MEDIA GRID
+            ================================================== -->
+
+            <div
+                id="mediaGrid"
+                class="media-grid"
+            >
+            </div>
+
+
+
+            <!-- =================================================
+                 EMPTY
+            ================================================== -->
+
+            <div
+                id="emptyLibrary"
+                class="empty-library"
+                style="display:none;"
+            >
+
+                <div class="empty-icon">
+                    🖼️
+                </div>
+
+                <h3>
+                    Hakuna picha zilizopatikana
+                </h3>
+
+                <p>
+                    Picha utakazopakia zitaonekana hapa automatically.
+                </p>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 PAGINATION
+            ================================================== -->
+
+            <div
+                id="pagination"
+                class="pagination"
+            >
+            </div>
+
+
+        </div>
+
+    </div>
+
+</main>
+
+
+
+<!-- =========================================================
+     IMAGE MODAL
+========================================================== -->
+
+<div
+    id="imageModal"
+    class="modal"
+    onclick="closeImageModal(event)"
+>
+
+    <div
+        class="modal-box"
+        onclick="event.stopPropagation()"
+    >
+
+        <div class="modal-header">
+
+            <h3 id="modalTitle">
+                Image Preview
+            </h3>
+
+            <button
+                class="close-modal"
+                onclick="closeImageModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <img
+            id="modalImage"
+            class="modal-image"
+            src=""
+            alt="Preview"
+        >
+
+
+        <div class="modal-url">
+
+            <input
+                id="modalUrl"
+                readonly
+            >
+
+            <button
+                class="small-btn"
+                onclick="copyModalUrl()"
+            >
+                Copy
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     TOAST
+========================================================== -->
+
+<div
+    id="toast"
+    class="toast"
+>
+</div>
+
+
+
+<footer>
+
+    <strong>
+        Development Charity Foundation (DCCF)
+    </strong>
+
+    <br>
+
+    Their Smile • Our Happiness
+
+</footer>
+
+
+
+<script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+'https://fcjvvfbaqnaohbtbljui.supabase.co';
+
+const SUPABASE_KEY =
+'sb_publishable_iSG3Vea2d4Fq1evF2fvbnw_0ri5huMQ';
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =========================================================
+   GLOBAL VARIABLES
+========================================================= */
+
+let activeTab = 'files';
+
+let selectedFiles = [];
+
+let currentUser = null;
+
+let allMedia = [];
+
+let filteredMedia = [];
+
+let currentFolder = 'ALL';
+
+let currentPage = 1;
+
+const MEDIA_PER_PAGE = 24;
+
+
+/* =========================================================
+   SWITCH TAB
+========================================================= */
+
+function switchTab(tab){
+
+    activeTab = tab;
+
+    const fileTab =
+        document.getElementById('fileTab');
+
+    const urlTab =
+        document.getElementById('urlTab');
+
+    const filesSection =
+        document.getElementById('filesSection');
+
+    const linksSection =
+        document.getElementById('linksSection');
+
+
+    if(tab === 'files'){
+
+        fileTab.classList.add('active');
+
+        urlTab.classList.remove('active');
+
+        filesSection.classList.add('active');
+
+        linksSection.classList.remove('active');
+
+    }else{
+
+        urlTab.classList.add('active');
+
+        fileTab.classList.remove('active');
+
+        linksSection.classList.add('active');
+
+        filesSection.classList.remove('active');
+
+    }
+
+}
+
+
+/* =========================================================
+   CHECK ADMIN
+========================================================= */
+
+async function checkAdminStatus(){
+
+    const loadingBox =
+        document.getElementById('loadingBox');
+
+    const form =
+        document.getElementById('mediaForm');
+
+    const denied =
+        document.getElementById('accessDenied');
+
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient.auth.getUser();
+
+
+        if(error){
+
+            throw new Error(
+                'Imeshindikana kusoma Login: ' +
+                error.message
+            );
+
+        }
+
+
+        const user =
+        data.user;
+
+
+        if(!user){
+
+            loadingBox.style.display = 'none';
+
+            denied.style.display = 'block';
+
+            document.getElementById(
+                'accessDesc'
+            ).textContent =
+            'Hujaingia kwenye mfumo. Tafadhali Login kwanza.';
+
+            return;
+
+        }
+
+
+        currentUser = user;
+
+
+        const {
+            data:admins,
+            error:adminError
+        } =
+        await supabaseClient
+            .from('media_admins')
+            .select('user_id')
+            .eq('user_id',user.id);
+
+
+        if(adminError){
+
+            loadingBox.style.display = 'none';
+
+            denied.style.display = 'block';
+
+            document.getElementById(
+                'accessDesc'
+            ).textContent =
+            'Mfumo umeshindwa kuhakiki Admin: ' +
+            adminError.message;
+
+            return;
+
+        }
+
+
+        if(!admins || admins.length === 0){
+
+            loadingBox.style.display = 'none';
+
+            denied.style.display = 'block';
+
+            document.getElementById(
+                'accessDesc'
+            ).textContent =
+            'User yako haipo kwenye media_admins table.';
+
+            return;
+
+        }
+
+
+        loadingBox.style.display = 'none';
+
+        denied.style.display = 'none';
+
+        form.style.display = 'block';
+
+
+        /* -----------------------------------------
+           LOAD MEDIA
+        ----------------------------------------- */
+
+        await loadMediaLibrary();
+
+
+    }catch(error){
+
+        console.error(
+            'CHECK ADMIN FAILED:',
+            error
+        );
+
+
+        loadingBox.style.display = 'none';
+
+        denied.style.display = 'block';
+
+        document.getElementById(
+            'accessDesc'
+        ).textContent =
+        'Kuna tatizo wakati wa kuhakiki Admin: ' +
+        error.message;
+
+    }
+
+}
+
+
+/* =========================================================
+   FILE SELECT
+========================================================= */
+
+document
+.getElementById('photoFiles')
+.addEventListener(
+    'change',
+    function(){
+
+        selectedFiles =
+        Array.from(this.files);
+
+
+        if(selectedFiles.length > 500){
+
+            alert(
+                'Umechagua zaidi ya picha 500. Mfumo utatumia 500 za kwanza.'
+            );
+
+            selectedFiles =
+            selectedFiles.slice(0,500);
+
+        }
+
+
+        document
+        .getElementById('fileInfo')
+        .textContent =
+        selectedFiles.length +
+        ' picha zimechaguliwa.';
+
+
+        updateStats(
+            selectedFiles.length
+        );
+
+    }
+);
+
+
+/* =========================================================
+   LINKS COUNTER
+========================================================= */
+
+document
+.getElementById('imageLinks')
+.addEventListener(
+    'input',
+    function(){
+
+        const links =
+        getLinks();
+
+
+        document
+        .getElementById('linkInfo')
+        .textContent =
+        'Links: ' +
+        links.length;
+
+
+        updateStats(
+            links.length
+        );
+
+    }
+);
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+document
+.getElementById('mediaSearch')
+.addEventListener(
+    'input',
+    function(){
+
+        currentPage = 1;
+
+        applyMediaFilters();
+
+    }
+);
+
+
+/* =========================================================
+   STATUS FILTER
+========================================================= */
+
+document
+.getElementById('mediaStatusFilter')
+.addEventListener(
+    'change',
+    function(){
+
+        currentPage = 1;
+
+        applyMediaFilters();
+
+    }
+);
+
+
+/* =========================================================
+   GET LINKS
+========================================================= */
+
+function getLinks(){
+
+    const text =
+    document
+    .getElementById('imageLinks')
+    .value;
+
+
+    return text
+        .split(/\r?\n/)
+        .map(x => x.trim())
+        .filter(x => x !== '')
+        .slice(0,500);
+
+}
+
+
+/* =========================================================
+   UPDATE UPLOAD STATS
+========================================================= */
+
+function updateStats(total){
+
+    document
+    .getElementById('totalCount')
+    .textContent =
+    total;
+
+}
+
+
+/* =========================================================
+   SAFE FILE NAME
+========================================================= */
+
+function safeFileName(name){
+
+    return name
+        .replace(/[^a-zA-Z0-9._-]/g,'_');
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(value){
+
+    if(value === null || value === undefined){
+
+        return '';
+
+    }
+
+
+    return String(value)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+
+}
+
+
+/* =========================================================
+   UPLOAD SINGLE FILE
+========================================================= */
+
+async function uploadFile(
+    file,
+    category,
+    title,
+    description,
+    status,
+    user
+){
+
+    const uniqueName =
+    Date.now() +
+    '-' +
+    Math.random()
+    .toString(36)
+    .substring(2,10) +
+    '-' +
+    safeFileName(file.name);
+
+
+    const filePath =
+    category.toLowerCase() +
+    '/' +
+    uniqueName;
+
+
+    /* -----------------------------------------
+       STORAGE
+    ----------------------------------------- */
+
+    const {
+        error:uploadError
+    } =
+    await supabaseClient
+    .storage
+    .from('media-bucket')
+    .upload(
+        filePath,
+        file,
+        {
+            cacheControl:'3600',
+            upsert:false
+        }
+    );
+
+
+    if(uploadError){
+
+        throw new Error(
+            'Storage: ' +
+            uploadError.message
+        );
+
+    }
+
+
+    /* -----------------------------------------
+       PUBLIC URL
+    ----------------------------------------- */
+
+    const {
+        data:urlData
+    } =
+    supabaseClient
+    .storage
+    .from('media-bucket')
+    .getPublicUrl(filePath);
+
+
+    const imageUrl =
+    urlData.publicUrl;
+
+
+    /* -----------------------------------------
+       DATABASE
+    ----------------------------------------- */
+
+    const {
+        error:dbError
+    } =
+    await supabaseClient
+    .from('media')
+    .insert({
+
+        title:
+        title ||
+        file.name,
+
+        category:
+        category,
+
+        description:
+        description || null,
+
+        image_url:
+        imageUrl,
+
+        download_url:
+        imageUrl,
+
+        status:
+        status,
+
+        created_by:
+        user.id
+
+    });
+
+
+    if(dbError){
+
+        /* -------------------------------------
+           IF DB FAILS, TRY TO REMOVE STORAGE
+        ------------------------------------- */
+
+        await supabaseClient
+        .storage
+        .from('media-bucket')
+        .remove([filePath]);
+
+
+        throw new Error(
+            'Database: ' +
+            dbError.message
+        );
+
+    }
+
+
+    return imageUrl;
+
+}
+
+
+/* =========================================================
+   SAVE EXTERNAL LINK
+========================================================= */
+
+async function saveLink(
+    imageUrl,
+    category,
+    title,
+    description,
+    status,
+    user,
+    index
+){
+
+    const {
+        error
+    } =
+    await supabaseClient
+    .from('media')
+    .insert({
+
+        title:
+        title
+        ?
+        title + ' - ' + (index + 1)
+        :
+        'Photo ' + (index + 1),
+
+        category:
+        category,
+
+        description:
+        description || null,
+
+        image_url:
+        imageUrl,
+
+        download_url:
+        imageUrl,
+
+        status:
+        status,
+
+        created_by:
+        user.id
+
+    });
+
+
+    if(error){
+
+        throw new Error(
+            error.message
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   BULK UPLOAD
+========================================================= */
+
+async function startBulkUpload(){
+
+    const uploadBtn =
+        document.getElementById('uploadBtn');
+
+    const clearBtn =
+        document.getElementById('clearBtn');
+
+    const progressBox =
+        document.getElementById('progressBox');
+
+    const progressBar =
+        document.getElementById('progressBar');
+
+    const progressText =
+        document.getElementById('progressText');
+
+    const progressPercent =
+        document.getElementById('progressPercent');
+
+    const resultBox =
+        document.getElementById('resultBox');
+
+
+    try{
+
+        uploadBtn.disabled = true;
+
+        clearBtn.disabled = true;
+
+        resultBox.style.display = 'none';
+
+
+        /* -----------------------------------------
+           USER
+        ----------------------------------------- */
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient.auth.getUser();
+
+
+        if(error || !data.user){
+
+            throw new Error(
+                'Tafadhali Login kwanza.'
+            );
+
+        }
+
+
+        const user =
+        data.user;
+
+
+        /* -----------------------------------------
+           FORM DATA
+        ----------------------------------------- */
+
+        const title =
+        document
+        .getElementById('title')
+        .value
+        .trim();
+
+
+        const category =
+        document
+        .getElementById('category')
+        .value;
+
+
+        const description =
+        document
+        .getElementById('description')
+        .value
+        .trim();
+
+
+        const status =
+        document
+        .getElementById('status')
+        .value;
+
+
+        let items = [];
+
+
+        /* -----------------------------------------
+           FILE MODE
+        ----------------------------------------- */
+
+        if(activeTab === 'files'){
+
+            items =
+            selectedFiles
+            .slice(0,500);
+
+
+            if(items.length === 0){
+
+                throw new Error(
+                    'Chagua picha kwanza.'
+                );
+
+            }
+
+        }
+
+
+        /* -----------------------------------------
+           LINK MODE
+        ----------------------------------------- */
+
+        else{
+
+            items =
+            getLinks();
+
+
+            if(items.length === 0){
+
+                throw new Error(
+                    'Weka links za picha kwanza.'
+                );
+
+            }
+
+        }
+
+
+        const total =
+        items.length;
+
+
+        let success = 0;
+
+        let failed = 0;
+
+        const errors = [];
+
+
+        progressBox.style.display =
+        'block';
+
+
+        document
+        .getElementById('totalCount')
+        .textContent =
+        total;
+
+
+        document
+        .getElementById('successCount')
+        .textContent =
+        '0';
+
+
+        document
+        .getElementById('failedCount')
+        .textContent =
+        '0';
+
+
+        /* -----------------------------------------
+           PROCESS
+        ----------------------------------------- */
+
+        for(
+            let i = 0;
+            i < total;
+            i++
+        ){
+
+            const item =
+            items[i];
+
+
+            progressText.textContent =
+            'Inapakia picha ' +
+            (i + 1) +
+            ' / ' +
+            total;
+
+
+            try{
+
+                if(activeTab === 'files'){
+
+                    await uploadFile(
+                        item,
+                        category,
+                        title,
+                        description,
+                        status,
+                        user
+                    );
+
+                }else{
+
+                    await saveLink(
+                        item,
+                        category,
+                        title,
+                        description,
+                        status,
+                        user,
+                        i
+                    );
+
+                }
+
+
+                success++;
+
+
+            }catch(err){
+
+                failed++;
+
+
+                errors.push({
+                    item:
+                    activeTab === 'files'
+                    ?
+                    item.name
+                    :
+                    item,
+
+                    error:
+                    err.message
+                });
+
+
+                console.error(
+                    'Upload failed:',
+                    err
+                );
+
+            }
+
+
+            const percent =
+            Math.round(
+                ((i + 1) / total) * 100
+            );
+
+
+            progressBar.style.width =
+            percent + '%';
+
+
+            progressPercent.textContent =
+            percent + '%';
+
+
+            document
+            .getElementById('successCount')
+            .textContent =
+            success;
+
+
+            document
+            .getElementById('failedCount')
+            .textContent =
+            failed;
+
+        }
+
+
+        progressText.textContent =
+        'Upload imekamilika.';
+
+
+        resultBox.style.display =
+        'block';
+
+
+        if(failed === 0){
+
+            resultBox.className =
+            'result-box result-success';
+
+
+            resultBox.innerHTML =
+            '<strong>✓ Imekamilika!</strong><br>' +
+            success +
+            ' picha zimehifadhiwa kikamilifu kwenye mfumo.';
+
+
+            showToast(
+                success +
+                ' picha zimeongezwa kwenye Media Library.'
+            );
+
+        }else{
+
+            resultBox.className =
+            'result-box result-error';
+
+
+            resultBox.innerHTML =
+            '<strong>Upload imekamilika kwa sehemu.</strong><br>' +
+            'Uploaded: ' +
+            success +
+            '<br>' +
+            'Failed: ' +
+            failed;
+
+
+            showToast(
+                success +
+                ' uploaded, ' +
+                failed +
+                ' failed.',
+                true
+            );
+
+        }
+
+
+        /* -----------------------------------------
+           IMPORTANT:
+           LOAD MEDIA AGAIN
+        ----------------------------------------- */
+
+        await loadMediaLibrary();
+
+
+    }catch(error){
+
+        console.error(
+            'BULK UPLOAD ERROR:',
+            error
+        );
+
+
+        resultBox.style.display =
+        'block';
+
+
+        resultBox.className =
+        'result-box result-error';
+
+
+        resultBox.innerHTML =
+        '<strong>✕ Upload imeshindikana.</strong><br>' +
+        escapeHtml(error.message);
+
+
+        showToast(
+            error.message,
+            true
+        );
+
+
+    }finally{
+
+        uploadBtn.disabled =
+        false;
+
+        clearBtn.disabled =
+        false;
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD MEDIA LIBRARY
+========================================================= */
+
+async function loadMediaLibrary(){
+
+    const grid =
+    document.getElementById('mediaGrid');
+
+    const empty =
+    document.getElementById('emptyLibrary');
+
+
+    grid.innerHTML =
+    '<div style="grid-column:1/-1;text-align:center;padding:50px;color:#758079;">⏳ Inapakia Media Library...</div>';
+
+    empty.style.display = 'none';
+
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+        .from('media')
+        .select('*')
+        .order(
+            'created_at',
+            {
+                ascending:false
+            }
+        );
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        allMedia =
+        data || [];
+
+
+        document
+        .getElementById('libraryTotal')
+        .textContent =
+        allMedia.length;
+
+
+        buildFolderBrowser();
+
+
+        applyMediaFilters();
+
+
+    }catch(error){
+
+        console.error(
+            'MEDIA LIBRARY ERROR:',
+            error
+        );
+
+
+        grid.innerHTML =
+        '<div style="grid-column:1/-1;text-align:center;padding:50px;color:#a93232;">' +
+        'Imeshindikana kupakia Media Library.<br><br>' +
+        escapeHtml(error.message) +
+        '</div>';
+
+    }
+
+}
+
+
+/* =========================================================
+   BUILD FOLDER BROWSER
+========================================================= */
+
+function buildFolderBrowser(){
+
+    const browser =
+    document.getElementById('folderBrowser');
+
+
+    browser.innerHTML = '';
+
+
+    /* -----------------------------------------
+       ALL
+    ----------------------------------------- */
+
+    const allButton =
+    document.createElement('button');
+
+
+    allButton.className =
+    'folder-btn ' +
+    (
+        currentFolder === 'ALL'
+        ?
+        'active'
+        :
+        ''
+    );
+
+
+    allButton.innerHTML =
+    '🗂️ All Media <span class="folder-count">(' +
+    allMedia.length +
+    ')</span>';
+
+
+    allButton.onclick =
+    function(){
+
+        currentFolder = 'ALL';
+
+        currentPage = 1;
+
+        buildFolderBrowser();
+
+        applyMediaFilters();
+
+    };
+
+
+    browser.appendChild(
+        allButton
+    );
+
+
+    /* -----------------------------------------
+       FOLDERS FROM CATEGORY
+    ----------------------------------------- */
+
+    const folderMap = {};
+
+
+    allMedia.forEach(
+        item => {
+
+            const category =
+            item.category ||
+            'Other';
+
+
+            if(!folderMap[category]){
+
+                folderMap[category] = 0;
+
+            }
+
+
+            folderMap[category]++;
+
+        }
+    );
+
+
+    Object.keys(folderMap)
+    .sort()
+    .forEach(
+        category => {
+
+            const button =
+            document.createElement('button');
+
+
+            button.className =
+            'folder-btn ' +
+            (
+                currentFolder === category
+                ?
+                'active'
+                :
+                ''
+            );
+
+
+            button.innerHTML =
+            '📁 ' +
+            escapeHtml(category) +
+            ' <span class="folder-count">(' +
+            folderMap[category] +
+            ')</span>';
+
+
+            button.onclick =
+            function(){
+
+                currentFolder =
+                category;
+
+                currentPage = 1;
+
+                buildFolderBrowser();
+
+                applyMediaFilters();
+
+            };
+
+
+            browser.appendChild(
+                button
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   FILTER MEDIA
+========================================================= */
+
+function applyMediaFilters(){
+
+    const search =
+    document
+    .getElementById('mediaSearch')
+    .value
+    .trim()
+    .toLowerCase();
+
+
+    const status =
+    document
+    .getElementById('mediaStatusFilter')
+    .value;
+
+
+    filteredMedia =
+    allMedia.filter(
+        item => {
+
+            const matchesFolder =
+            currentFolder === 'ALL'
+            ||
+            (item.category || 'Other')
+            ===
+            currentFolder;
+
+
+            const text =
+            (
+                (item.title || '') +
+                ' ' +
+                (item.category || '') +
+                ' ' +
+                (item.description || '') +
+                ' ' +
+                (item.image_url || '')
+            ).toLowerCase();
+
+
+            const matchesSearch =
+            !search ||
+            text.includes(search);
+
+
+            const matchesStatus =
+            !status ||
+            item.status === status;
+
+
+            return (
+                matchesFolder &&
+                matchesSearch &&
+                matchesStatus
+            );
+
+        }
+    );
+
+
+    renderMedia();
+
+}
+
+
+/* =========================================================
+   RENDER MEDIA
+========================================================= */
+
+function renderMedia(){
+
+    const grid =
+    document.getElementById('mediaGrid');
+
+    const empty =
+    document.getElementById('emptyLibrary');
+
+    const pagination =
+    document.getElementById('pagination');
+
+
+    grid.innerHTML = '';
+
+    pagination.innerHTML = '';
+
+
+    document
+    .getElementById('libraryTotal')
+    .textContent =
+    allMedia.length;
+
+
+    document
+    .getElementById('showingCount')
+    .textContent =
+    filteredMedia.length;
+
+
+    if(filteredMedia.length === 0){
+
+        empty.style.display =
+        'block';
+
+        return;
+
+    }
+
+
+    empty.style.display =
+    'none';
+
+
+    const totalPages =
+    Math.ceil(
+        filteredMedia.length /
+        MEDIA_PER_PAGE
+    );
+
+
+    if(currentPage > totalPages){
+
+        currentPage =
+        totalPages;
+
+    }
+
+
+    const start =
+    (currentPage - 1) *
+    MEDIA_PER_PAGE;
+
+
+    const end =
+    start +
+    MEDIA_PER_PAGE;
+
+
+    const pageItems =
+    filteredMedia.slice(
+        start,
+        end
+    );
+
+
+    pageItems.forEach(
+        item => {
+
+            grid.appendChild(
+                createMediaCard(item)
+            );
+
+        }
+    );
+
+
+    renderPagination(
+        totalPages
+    );
+
+}
+
+
+/* =========================================================
+   CREATE MEDIA CARD
+========================================================= */
+
+function createMediaCard(item){
+
+    const card =
+    document.createElement('div');
+
+
+    card.className =
+    'media-card';
+
+
+    const url =
+    item.image_url ||
+    item.download_url ||
+    '';
+
+
+    const title =
+    item.title ||
+    'Untitled Photo';
+
+
+    const category =
+    item.category ||
+    'Other';
+
+
+    const description =
+    item.description ||
+    '';
+
+
+    const date =
+    item.created_at
+    ?
+    formatDate(item.created_at)
+    :
+    '';
+
+
+    card.innerHTML = `
+
+        <div class="media-image">
+
+            <img
+                src="${escapeHtml(url)}"
+                alt="${escapeHtml(title)}"
+                loading="lazy"
+                onerror="this.style.display='none';this.parentElement.innerHTML='<div style=&quot;height:100%;display:flex;align-items:center;justify-content:center;color:#89938e;font-size:12px;&quot;>Image unavailable</div>'"
+            >
+
+            <div class="media-badge">
+                📁 ${escapeHtml(category)}
+            </div>
+
+        </div>
+
+
+        <div class="media-content">
+
+            <div
+                class="media-title"
+                title="${escapeHtml(title)}"
+            >
+                ${escapeHtml(title)}
+            </div>
+
+
+            <div class="media-description">
+                ${escapeHtml(description)}
+            </div>
+
+
+            <div
+                class="media-url"
+                title="${escapeHtml(url)}"
+            >
+                ${escapeHtml(url)}
+            </div>
+
+
+            <div class="media-actions">
+
+                <button
+                    class="media-action"
+                    onclick="copyImageLink('${encodeURIComponent(url)}')"
+                >
+                    🔗 Copy
+                </button>
+
+
+                <button
+                    class="media-action open"
+                    onclick="openImage('${encodeURIComponent(url)}','${encodeURIComponent(title)}')"
+                >
+                    👁 Open
+                </button>
+
+
+                <button
+                    class="media-action delete"
+                    onclick="deleteMedia('${item.id}','${encodeURIComponent(url)}')"
+                >
+                    🗑 Delete
+                </button>
+
+            </div>
+
+
+            <div class="media-meta">
+
+                <span>
+                    ${escapeHtml(date)}
+                </span>
+
+                <span>
+                    ${escapeHtml(item.status || '')}
+                </span>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    return card;
+
+}
+
+
+/* =========================================================
+   FORMAT DATE
+========================================================= */
+
+function formatDate(dateString){
+
+    try{
+
+        const date =
+        new Date(dateString);
+
+
+        return date.toLocaleDateString(
+            'en-GB',
+            {
+                day:'2-digit',
+                month:'short',
+                year:'numeric'
+            }
+        );
+
+    }catch(e){
+
+        return '';
+
+    }
+
+}
+
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+function renderPagination(totalPages){
+
+    const pagination =
+    document.getElementById('pagination');
+
+
+    if(totalPages <= 1){
+
+        return;
+
+    }
+
+
+    const previous =
+    document.createElement('button');
+
+
+    previous.className =
+    'page-btn';
+
+
+    previous.textContent =
+    '‹';
+
+
+    previous.disabled =
+    currentPage === 1;
+
+
+    previous.onclick =
+    function(){
+
+        if(currentPage > 1){
+
+            currentPage--;
+
+            renderMedia();
+
+        }
+
+    };
+
+
+    pagination.appendChild(
+        previous
+    );
+
+
+    const maxButtons = 7;
+
+
+    let startPage =
+    Math.max(
+        1,
+        currentPage - 3
+    );
+
+
+    let endPage =
+    Math.min(
+        totalPages,
+        startPage + maxButtons - 1
+    );
+
+
+    if(
+        endPage - startPage + 1
+        <
+        maxButtons
+    ){
+
+        startPage =
+        Math.max(
+            1,
+            endPage - maxButtons + 1
+        );
+
+    }
+
+
+    for(
+        let i = startPage;
+        i <= endPage;
+        i++
+    ){
+
+        const button =
+        document.createElement('button');
+
+
+        button.className =
+        'page-btn ' +
+        (
+            i === currentPage
+            ?
+            'active'
+            :
+            ''
+        );
+
+
+        button.textContent =
+        i;
+
+
+        button.onclick =
+        function(){
+
+            currentPage =
+            i;
+
+            renderMedia();
+
+        };
+
+
+        pagination.appendChild(
+            button
+        );
+
+    }
+
+
+    const next =
+    document.createElement('button');
+
+
+    next.className =
+    'page-btn';
+
+
+    next.textContent =
+    '›';
+
+
+    next.disabled =
+    currentPage === totalPages;
+
+
+    next.onclick =
+    function(){
+
+        if(currentPage < totalPages){
+
+            currentPage++;
+
+            renderMedia();
+
+        }
+
+    };
+
+
+    pagination.appendChild(
+        next
+    );
+
+}
+
+
+/* =========================================================
+   COPY IMAGE LINK
+========================================================= */
+
+async function copyImageLink(encodedUrl){
+
+    const url =
+    decodeURIComponent(encodedUrl);
+
+
+    try{
+
+        await navigator.clipboard.writeText(
+            url
+        );
+
+
+        showToast(
+            '✓ Image link imenakiliwa.'
+        );
+
+    }catch(error){
+
+        /* -------------------------------------
+           FALLBACK
+        ------------------------------------- */
+
+        const temp =
+        document.createElement('textarea');
+
+
+        temp.value =
+        url;
+
+
+        document.body.appendChild(
+            temp
+        );
+
+
+        temp.select();
+
+        document.execCommand(
+            'copy'
+        );
+
+
+        temp.remove();
+
+
+        showToast(
+            '✓ Image link imenakiliwa.'
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   OPEN IMAGE
+========================================================= */
+
+function openImage(
+    encodedUrl,
+    encodedTitle
+){
+
+    const url =
+    decodeURIComponent(encodedUrl);
+
+
+    const title =
+    decodeURIComponent(encodedTitle);
+
+
+    document
+    .getElementById('modalImage')
+    .src =
+    url;
+
+
+    document
+    .getElementById('modalTitle')
+    .textContent =
+    title;
+
+
+    document
+    .getElementById('modalUrl')
+    .value =
+    url;
+
+
+    document
+    .getElementById('imageModal')
+    .classList
+    .add('show');
+
+}
+
+
+/* =========================================================
+   CLOSE MODAL
+========================================================= */
+
+function closeImageModal(event){
+
+    if(
+        event &&
+        event.target &&
+        event.target.id !== 'imageModal'
+    ){
+
+        return;
+
+    }
+
+
+    document
+    .getElementById('imageModal')
+    .classList
+    .remove('show');
+
+}
+
+
+/* =========================================================
+   COPY MODAL URL
+========================================================= */
+
+function copyModalUrl(){
+
+    const url =
+    document
+    .getElementById('modalUrl')
+    .value;
+
+
+    copyImageLink(
+        encodeURIComponent(url)
+    );
+
+}
+
+
+/* =========================================================
+   DELETE MEDIA
+========================================================= */
+
+async function deleteMedia(
+    mediaId,
+    encodedUrl
+){
+
+    const url =
+    decodeURIComponent(encodedUrl);
+
+
+    const confirmed =
+    confirm(
+        'Una uhakika unataka kufuta picha hii?\n\n' +
+        'Record ya media na file ya Storage ikiwa ni ya DCCF itafutwa.'
+    );
+
+
+    if(!confirmed){
+
+        return;
+
+    }
+
+
+    try{
+
+        showToast(
+            'Inafuta picha...'
+        );
+
+
+        /* -----------------------------------------
+           1. DELETE STORAGE FILE IF IT BELONGS
+              TO OUR SUPABASE BUCKET
+        ----------------------------------------- */
+
+        const storagePath =
+        extractStoragePath(
+            url
+        );
+
+
+        if(storagePath){
+
+            const {
+                error:storageError
+            } =
+            await supabaseClient
+            .storage
+            .from('media-bucket')
+            .remove([
+                storagePath
+            ]);
+
+
+            if(storageError){
+
+                console.warn(
+                    'Storage delete warning:',
+                    storageError
+                );
+
+            }
+
+        }
+
+
+        /* -----------------------------------------
+           2. DELETE DATABASE RECORD
+        ----------------------------------------- */
+
+        const {
+            error:dbError
+        } =
+        await supabaseClient
+        .from('media')
+        .delete()
+        .eq(
+            'id',
+            mediaId
+        );
+
+
+        if(dbError){
+
+            throw dbError;
+
+        }
+
+
+        showToast(
+            '✓ Picha imefutwa.'
+        );
+
+
+        /* -----------------------------------------
+           RELOAD
+        ----------------------------------------- */
+
+        await loadMediaLibrary();
+
+
+    }catch(error){
+
+        console.error(
+            'DELETE MEDIA ERROR:',
+            error
+        );
+
+
+        showToast(
+            'Delete imeshindikana: ' +
+            error.message,
+            true
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   EXTRACT SUPABASE STORAGE PATH
+========================================================= */
+
+function extractStoragePath(url){
+
+    if(!url){
+
+        return null;
+
+    }
+
+
+    const marker =
+    '/storage/v1/object/public/media-bucket/';
+
+
+    const index =
+    url.indexOf(marker);
+
+
+    if(index === -1){
+
+        return null;
+
+    }
+
+
+    return decodeURIComponent(
+        url.substring(
+            index + marker.length
+        )
+    );
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer = null;
+
+
+function showToast(
+    message,
+    isError = false
+){
+
+    const toast =
+    document.getElementById('toast');
+
+
+    toast.textContent =
+    message;
+
+
+    toast.classList.toggle(
+        'error',
+        isError
+    );
+
+
+    toast.classList.add(
+        'show'
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+    setTimeout(
+        function(){
+
+            toast.classList.remove(
+                'show'
+            );
+
+        },
+        3500
+    );
+
+}
+
+
+/* =========================================================
+   CLEAR FORM
+========================================================= */
+
+function clearForm(){
+
+    selectedFiles = [];
+
+
+    document
+    .getElementById('photoFiles')
+    .value = '';
+
+
+    document
+    .getElementById('imageLinks')
+    .value = '';
+
+
+    document
+    .getElementById('title')
+    .value = '';
+
+
+    document
+    .getElementById('description')
+    .value = '';
+
+
+    document
+    .getElementById('fileInfo')
+    .textContent =
+    'Hakuna picha zilizochaguliwa.';
+
+
+    document
+    .getElementById('linkInfo')
+    .textContent =
+    'Links: 0';
+
+
+    document
+    .getElementById('totalCount')
+    .textContent =
+    '0';
+
+
+    document
+    .getElementById('successCount')
+    .textContent =
+    '0';
+
+
+    document
+    .getElementById('failedCount')
+    .textContent =
+    '0';
+
+
+    document
+    .getElementById('progressBox')
+    .style.display =
+    'none';
+
+
+    document
+    .getElementById('progressBar')
+    .style.width =
+    '0%';
+
+
+    document
+    .getElementById('progressPercent')
+    .textContent =
+    '0%';
+
+
+    document
+    .getElementById('resultBox')
+    .style.display =
+    'none';
+
+
+    showToast(
+        'Form ime-clear.'
+    );
+
+}
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    function(){
+
+        checkAdminStatus();
+
+    }
+);
+
+</script>
+<script src="js/i18n.js"></script>
+</body>
+</html>

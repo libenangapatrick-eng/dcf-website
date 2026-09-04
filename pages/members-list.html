@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Members - DCF Online System</title>
+        <!-- TAILWIND -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dcf-green': '#174a35',
+                        'dcf-light-green': '#4C9A2A',
+                        'dcf-dark-green': '#0d3022',
+                        'dcf-hover': '#28723E',
+                        'dcf-gold': '#c9a227'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
+    <script src="../js/supabase.js"></script> 
+    <script src="../js/role-guard.js"></script> 
+    <style> 
+        * { 
+            font-family: "Times New Roman", Times, serif; 
+        } 
+        body { 
+            background: #f5f7f6; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+        } 
+        ::-webkit-scrollbar { 
+            width: 7px; 
+            height: 7px; 
+        } 
+        ::-webkit-scrollbar-track { 
+            background: #eeeeee; 
+        } 
+        ::-webkit-scrollbar-thumb { 
+            background: #174a35; 
+            border-radius: 20px; 
+        } 
+        .modal-hidden { 
+            display: none !important; 
+        } 
+        .modal-visible { 
+            display: flex !important; 
+        } 
+        .member-row { 
+            transition: all .15s ease; 
+        } 
+        .member-row:hover { 
+            background: #f0fdf4; 
+        } 
+        .stat-card { 
+            transition: transform .2s ease, box-shadow .2s ease; 
+        } 
+        .stat-card:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 25px rgba(0,0,0,.08); 
+        } 
+        .tab-active { 
+            background: #174a35 !important; 
+            color: white !important; 
+        } 
+        .page-btn { 
+            min-width: 32px; 
+            height: 32px; 
+            border-radius: 7px; 
+            font-size: 11px; 
+            font-weight: bold; 
+        } 
+        .status-active { 
+            background: #dcfce7; 
+            color: #15803d; 
+        } 
+        .status-inactive { 
+            background: #fee2e2; 
+            color: #b91c1c; 
+        } 
+        .status-pending { 
+            background: #fef3c7; 
+            color: #b45309; 
+        } 
+ 
+        .brand-gradient{background:linear-gradient(135deg,#0d3022 0%,#174a35 55%,#28723E 100%)} 
+        .page-shell{background:linear-gradient(180deg,#f7faf8 0%,#f5f7f6 100%)} 
+        .stat-card{position:relative;overflow:hidden;border-color:#e5ebe7} 
+        .stat-card::after{content:"";position:absolute;right:-22px;top:-22px;width:75px;height:75px;border-radius:50%;background:rgba(76,154,42,.07)} 
+        .toolbar-card{border-color:#e1e9e3} 
+        .table-head th{font-size:10px;letter-spacing:.35px} 
+        .member-row td{vertical-align:middle} 
+        .member-avatar{box-shadow:0 0 0 3px #fff,0 0 0 4px #d9eadc} 
+        .member-name{max-width:230px} 
+        .action-btn{min-width:31px;height:31px;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;transition:.15s} 
+        .action-btn:hover{transform:translateY(-1px)} 
+        .status-badge{display:inline-flex;align-items:center;gap:5px} 
+        .status-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor} 
+        .status-pending{background:#fef3c7;color:#b45309} 
+        .filter-chip{border:1px solid #dce6df;background:#fff} 
+        .filter-chip:focus{border-color:#174a35;box-shadow:0 0 0 3px rgba(23,74,53,.08)} 
+        .profile-hero{background:linear-gradient(135deg,#174a35,#28723E)} 
+        .detail-box{transition:.15s ease} 
+        .detail-box:hover{transform:translateY(-1px);box-shadow:0 5px 15px rgba(0,0,0,.04)} 
+        .donation-total{background:linear-gradient(135deg,#ecfdf3,#f0fdf4);border:1px solid #d8f0df} 
+        .modal-backdrop{backdrop-filter:blur(3px)} 
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            scroll-behavior: smooth;
+        }
+
+        button, input, select, textarea {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        button {
+            touch-action: manipulation;
+        }
+
+        .action-btn,
+        .page-btn {
+            min-width: 40px;
+            min-height: 40px;
+        }
+
+        @media(max-width:768px){
+            body { overflow: hidden; }
+            .member-name{max-width:150px}
+            header { min-height: 64px; }
+            main { padding: 12px !important; }
+            .stat-card { padding: 12px !important; }
+            .action-btn { min-width: 42px; min-height: 42px; }
+            .page-btn { min-width: 40px; min-height: 40px; }
+            #add-member-modal > div,
+            #member-modal > div {
+                max-height: calc(100dvh - 20px);
+            }
+            #add-member-modal,
+            #member-modal {
+                padding: 10px;
+            }
+        }
+
+        @media(max-width:480px){
+            header { padding-left: 10px !important; padding-right: 10px !important; }
+            header h2 { font-size: 14px !important; }
+            header .text-\[10px\] { font-size: 9px !important; }
+            header button { min-height: 42px; }
+            #print-all-btn span,
+            #add-member-btn span { display:none !important; }
+            .grid { min-width: 0; }
+            .action-btn { min-width: 44px; min-height: 44px; }
+            .page-btn { min-width: 42px; min-height: 42px; }
+            #pagination { flex-wrap: wrap; justify-content: center; }
+            input, select, textarea { font-size: 16px !important; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                transition: none !important;
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+            }
+        }
+
+        @media(max-width:768px){ 
+            .member-name{max-width:150px} 
+        } 
+ 
+        @media print { 
+            body * { 
+                visibility: hidden !important; 
+            } 
+            #print-area, #print-area * { 
+                visibility: visible !important; 
+            } 
+            #print-area { 
+                position: absolute; 
+                left: 0; 
+                top: 0; 
+                width: 100%; 
+                display: block !important; 
+            } 
+            .no-print { 
+                display: none !important; 
+            } 
+        } 
+    </style> 
+</head> 
+<body 
+    class="h-screen w-screen overflow-hidden bg-gray-100 flex" 
+    data-allowed-roles="admin,staff,auditor"> 
+ 
+<!-- MOBILE OVERLAY --> 
+<div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div> 
+<!-- MAIN LAYOUT WRAPPER --> 
+<div class="flex w-full h-full overflow-hidden"> 
+    <!-- SIDEBAR --> 
+    <aside id="sidebar" class="fixed md:relative z-40 left-0 top-0 bottom-0 w-64 bg-dcf-green text-white flex flex-col shadow-xl transform -translate-x-full md:translate-x-0 transition-transform duration-200 h-full"> 
+        <!-- LOGO --> 
+        <div class="p-4 bg-dcf-dark-green border-b border-green-800 flex items-center gap-3 shrink-0"> 
+            <div class="w-11 h-11 rounded-full bg-white overflow-hidden flex items-center justify-center shrink-0"> 
+                <img src="../assets/images/logo.png" alt="DCF" class="w-full h-full object-contain" onerror="this.style.display='none'"> 
+            </div> 
+            <div class="min-w-0"> 
+                <h1 class="font-bold text-sm text-white truncate">DCF ONLINE SYSTEM</h1> 
+                <p class="text-[10px] text-green-300 truncate">Development Charity Foundation</p> 
+            </div> 
+        </div> 
+         
+        <!-- NAVIGATION --> 
+        <div class="flex-1 overflow-y-auto p-3"> 
+            <nav class="space-y-5 text-xs"> 
+                <div> 
+                    <p class="text-green-300 uppercase text-[10px] font-bold px-2 mb-2 tracking-wider">Kuu</p> 
+                    <a href="../dashboard.html" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-dcf-hover text-green-100"> 
+                        <i class="fas fa-th-large w-4"></i> Dashboard 
+                    </a> 
+                </div> 
+                <div> 
+                    <p class="text-green-300 uppercase text-[10px] font-bold px-2 mb-2 tracking-wider">Jamii & Wanachama</p> 
+                    <div class="space-y-1"> 
+                        <a href="members.html" class="flex items-center gap-3 px-3 py-2 rounded bg-dcf-hover border-l-4 border-green-400 font-bold"> 
+                            <i class="fas fa-users w-4 text-green-300"></i> Wanachama 
+                        </a> 
+                        <a href="volunteers.html" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-dcf-hover text-green-100"> 
+                            <i class="fas fa-hands-helping w-4 text-green-300"></i> Wajitolea 
+                        </a> 
+                        <a href="beneficiaries.html" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-dcf-hover text-green-100"> 
+                            <i class="fas fa-gift w-4 text-green-300"></i> Wafaidika 
+                        </a> 
+                    </div> 
+                </div> 
+                <div> 
+                    <p class="text-green-300 uppercase text-[10px] font-bold px-2 mb-2 tracking-wider">Miradi & Matukio</p> 
+                    <div class="space-y-1"> 
+                        <a href="projects.html" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-dcf-hover text-green-100"> 
+                            <i class="fas fa-folder w-4 text-green-300"></i> Miradi 
+                        </a> 
+                        <a href="activities.html" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-dcf-hover text-green-100"> 
+                            <i class="fas fa-calendar-alt w-4 text-green-300"></i> Shughuli 
+                        </a> 
+                    </div> 
+                </div> 
+                <div> 
+                    <p class="text-green-300 uppercase text-[10px] font-bold px-2 mb-2 tracking-wider">Fedha & Ripoti</p> 
+                    <div class="space-y-1"> 
+                        <a href="donations.html" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-dcf-hover text-green-100"> 
+                            <i class="fas fa-hand-holding-usd w-4 text-green-300"></i> Michango 
+                        </a> 
+                        <a href="donation-reports.html" class="flex items-center gap-3 px-3 py-2 rounded hover:bg-dcf-hover text-green-100"> 
+                            <i class="fas fa-file-invoice-dollar w-4 text-green-300"></i> Ripoti za Michango 
+                        </a> 
+                    </div> 
+                </div> 
+            </nav> 
+        </div> 
+        <!-- USER --> 
+        <div class="p-3 bg-dcf-dark-green border-t border-green-800 shrink-0"> 
+            <div class="flex items-center justify-between"> 
+                <div class="flex items-center gap-2 min-w-0"> 
+                    <div id="user-avatar" class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center font-bold shrink-0">U</div> 
+                    <div class="min-w-0"> 
+                        <p id="sidebar-user-name" class="font-bold text-xs truncate">User</p> 
+                        <p id="sidebar-user-role" class="text-[9px] text-green-300 uppercase">User</p> 
+                    </div> 
+                </div> 
+                <button type="button" onclick="logoutUser()" class="text-green-300 hover:text-white" title="Logout"> 
+                    <i class="fas fa-sign-out-alt"></i> 
+                </button> 
+            </div> 
+        </div> 
+    </aside> 
+    <!-- MAIN CONTENT AREA --> 
+    <div class="flex-1 flex flex-col h-full overflow-hidden min-w-0"> 
+        <!-- TOP BAR --> 
+        <header class="bg-white border-b border-gray-200 px-4 md:px-6 py-3 flex items-center justify-between shadow-sm shrink-0 sticky top-0 z-20"> 
+            <div class="flex items-center gap-3"> 
+                <button id="mobile-menu" type="button" class="md:hidden text-dcf-green text-xl"> 
+                    <i class="fas fa-bars"></i> 
+                </button> 
+                <div> 
+                    <h2 class="text-lg md:text-xl font-bold text-gray-800 uppercase">Usimamizi wa Wanachama</h2> 
+                    <div class="flex items-center gap-2"><p class="text-[10px] md:text-xs text-dcf-green italic">Member Management & Information</p><span class="hidden sm:inline-flex text-[9px] font-bold px-2 py-1 rounded-full bg-green-50 text-dcf-green border border-green-100">DCF MEMBERS</span></div> 
+                </div> 
+            </div> 
+            <div class="flex items-center gap-2"> 
+                <button id="print-all-btn" type="button" onclick="printAllMembers()" class="bg-gray-800 hover:bg-black text-white px-3 py-2 rounded text-xs font-bold flex items-center gap-2"> 
+                    <i class="fas fa-print"></i> 
+                    <span class="hidden sm:inline">PRINT ALL</span> 
+                </button> 
+                <button id="add-member-btn" type="button" onclick="openAddMember()" class="bg-dcf-green hover:bg-dcf-dark-green text-white px-3 py-2 rounded text-xs font-bold flex items-center gap-2"> 
+                    <i class="fas fa-user-plus"></i> 
+                    <span class="hidden sm:inline">Mwanachama Mpya</span> 
+                </button> 
+            </div> 
+        </header> 
+        <!-- MAIN BODY --> 
+        <main class="flex-1 overflow-y-auto p-4 md:p-6 page-shell"> 
+            <!-- STATS --> 
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5"> 
+                <div class="stat-card bg-white border border-gray-200 rounded-xl p-4"> 
+                    <div class="flex items-center justify-between"> 
+                        <div> 
+                            <p class="text-[10px] uppercase font-bold text-gray-500">Wanachama Wote</p> 
+                            <h3 id="stat-total" class="text-2xl font-bold text-dcf-green mt-1">0</h3> 
+                        </div> 
+                        <div class="w-11 h-11 rounded-full bg-green-100 text-dcf-green flex items-center justify-center"> 
+                            <i class="fas fa-users text-lg"></i> 
+                        </div> 
+                    </div> 
+                </div> 
+                <div class="stat-card bg-white border border-gray-200 rounded-xl p-4"> 
+                    <div class="flex items-center justify-between"> 
+                        <div> 
+                            <p class="text-[10px] uppercase font-bold text-gray-500">Active</p> 
+                            <h3 id="stat-active" class="text-2xl font-bold text-green-600 mt-1">0</h3> 
+                        </div> 
+                        <div class="w-11 h-11 rounded-full bg-green-100 text-green-600 flex items-center justify-center"> 
+                            <i class="fas fa-user-check"></i> 
+                        </div> 
+                    </div> 
+                </div> 
+                <div class="stat-card bg-white border border-gray-200 rounded-xl p-4"> 
+                    <div class="flex items-center justify-between"> 
+                        <div> 
+                            <p class="text-[10px] uppercase font-bold text-gray-500">Inactive</p> 
+                            <h3 id="stat-inactive" class="text-2xl font-bold text-red-600 mt-1">0</h3> 
+                        </div> 
+                        <div class="w-11 h-11 rounded-full bg-red-100 text-red-600 flex items-center justify-center"> 
+                            <i class="fas fa-user-times"></i> 
+                        </div> 
+                    </div> 
+                </div> 
+                <div class="stat-card bg-white border border-gray-200 rounded-xl p-4"> 
+                    <div class="flex items-center justify-between"> 
+                        <div> 
+                            <p class="text-[10px] uppercase font-bold text-gray-500">Wenye Email</p> 
+                            <h3 id="stat-email" class="text-2xl font-bold text-blue-600 mt-1">0</h3> 
+                        </div> 
+                        <div class="w-11 h-11 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"> 
+                            <i class="fas fa-envelope"></i> 
+                        </div> 
+                    </div> 
+                </div> 
+                <div class="stat-card bg-white border border-gray-200 rounded-xl p-4"> 
+                    <div class="flex items-center justify-between"> 
+                        <div> 
+                            <p class="text-[10px] uppercase font-bold text-gray-500">Mwezi Huu</p> 
+                            <h3 id="stat-month" class="text-2xl font-bold text-purple-600 mt-1">0</h3> 
+                        </div> 
+                        <div class="w-11 h-11 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center"> 
+                            <i class="fas fa-user-clock"></i> 
+                        </div> 
+                    </div> 
+                </div> 
+            </section> 
+            <!-- SEARCH / FILTER --> 
+            <section class="bg-white border border-gray-200 rounded-xl p-4 mb-5 shadow-sm"> 
+                <div class="flex flex-col xl:flex-row gap-3 xl:items-end xl:justify-between"> 
+                    <div> 
+                        <h3 class="font-bold text-gray-800">Orodha ya Wanachama</h3> 
+                        <p class="text-[10px] text-gray-500">Tafuta kwa jina, ID, simu, NIDA, passport au email.</p> 
+                    </div> 
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2"> 
+                        <div class="relative lg:col-span-2"> 
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400 text-xs"></i> 
+                            <input id="searchInput" type="text" oninput="filterMembers()" placeholder="Tafuta mwanachama..." class="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-200 focus:border-dcf-green"> 
+                        </div> 
+                        <select id="statusFilter" onchange="filterMembers()" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-dcf-green"> 
+                            <option value="">Hali Zote</option> 
+                            <option value="Active">Active</option> 
+                            <option value="Inactive">Inactive</option> 
+                        </select> 
+                        <select id="genderFilter" onchange="filterMembers()" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-dcf-green"> 
+                            <option value="">Jinsia Zote</option> 
+                            <option value="Male">Male</option> 
+                            <option value="Female">Female</option> 
+                        </select> 
+                        <select id="typeFilter" onchange="filterMembers()" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-dcf-green"> 
+                            <option value="">Aina Zote</option> 
+                            <option value="Mwanachama wa Kawaida">Mwanachama wa Kawaida</option> 
+                            <option value="Mwanachama wa Taasisi">Mwanachama wa Taasisi</option> 
+                            <option value="Volunteer Member">Volunteer Member</option> 
+                        </select> 
+                        <select id="pageSizeSelect" onchange="changePageSize()" class="border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-dcf-green"> 
+                            <option value="25">25 / ukurasa</option> 
+                            <option value="50">50 / ukurasa</option> 
+                            <option value="100">100 / ukurasa</option> 
+                        </select> 
+                    </div> 
+                </div> 
+                <div class="mt-3 flex flex-wrap items-center justify-between gap-2"> 
+                    <div id="active-filter-summary" class="text-[10px] text-gray-500">Inaonyesha wanachama wote</div> 
+                    <div class="flex gap-2"> 
+                        <button type="button" onclick="printAllMembers()" class="bg-gray-800 hover:bg-black text-white px-3 py-2 rounded-lg text-xs font-bold"> 
+                            <i class="fas fa-print mr-1"></i> Print Matokeo 
+                        </button> 
+                        <button type="button" onclick="resetFilters()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-xs font-bold"> 
+                            <i class="fas fa-rotate-left mr-1"></i> Reset Filters 
+                        </button> 
+                    </div> 
+                </div> 
+            </section> 
+            <!-- TABLE --> 
+            <section class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden mb-6"> 
+                <div class="overflow-x-auto"> 
+                    <table class="w-full text-left text-xs"> 
+                        <thead class="bg-dcf-green text-white table-head"> 
+                            <tr> 
+                                <th class="p-3 whitespace-nowrap">#</th> 
+                                <th class="p-3 whitespace-nowrap">Picha</th> 
+                                <th class="p-3 whitespace-nowrap">Member ID</th> 
+                                <th class="p-3 whitespace-nowrap">Jina Kamili</th> 
+                                <th class="p-3 whitespace-nowrap">Simu</th> 
+                                <th class="p-3 whitespace-nowrap">Email</th> 
+                                <th class="p-3 whitespace-nowrap">Aina</th> 
+                                <th class="p-3 whitespace-nowrap">Status</th> 
+                                <th class="p-3 text-center whitespace-nowrap">Kitendo</th> 
+                            </tr> 
+                        </thead> 
+                        <tbody id="membersTableBody" class="divide-y divide-gray-100"> 
+                            <tr> 
+                                <td colspan="9" class="p-10 text-center text-gray-500"> 
+                                    <i class="fas fa-spinner fa-spin mr-2"></i> Inapakia wanachama... 
+                                </td> 
+                            </tr> 
+                        </tbody> 
+                    </table> 
+                </div> 
+                <div class="p-3 bg-gray-50 border-t flex flex-col sm:flex-row gap-3 items-center justify-between"> 
+                    <p id="result-count" class="text-[10px] text-gray-500">0 wanachama</p> 
+                    <div id="pagination" class="flex items-center gap-1"></div> 
+                </div> 
+            </section> 
+        </main> 
+    </div> 
+</div> 
+ 
+<!-- MEMBER PROFILE MODAL --> 
+<div id="member-modal" class="fixed inset-0 z-50 bg-black/60 items-center justify-center p-4 modal-hidden modal-backdrop"> 
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-hidden"> 
+        <div class="bg-dcf-green text-white p-4 flex items-center justify-between"> 
+            <div class="flex items-center gap-3"> 
+                <div id="modal-avatar" class="w-14 h-14 rounded-full bg-white text-dcf-green flex items-center justify-center font-bold overflow-hidden"> 
+                    <i class="fas fa-user"></i> 
+                </div> 
+                <div> 
+                    <h2 id="modal-member-name" class="font-bold text-lg">Taarifa za Mwanachama</h2> 
+                    <p id="modal-member-id" class="text-[10px] text-green-200">-</p> 
+                </div> 
+            </div> 
+            <button type="button" onclick="closeMemberModal()" class="text-white hover:text-red-200 text-2xl">&times;</button> 
+        </div> 
+        <div class="border-b bg-white px-4 pt-3 flex gap-2 overflow-x-auto"> 
+            <button id="tab-profile" onclick="showTab('profile')" class="tab-active px-4 py-2 rounded-t-lg text-xs font-bold whitespace-nowrap"> 
+                <i class="fas fa-user mr-1"></i> Profile 
+            </button> 
+            <button id="tab-membership" onclick="showTab('membership')" class="px-4 py-2 rounded-t-lg text-xs font-bold whitespace-nowrap"> 
+                <i class="fas fa-id-card mr-1"></i> Uanachama 
+            </button> 
+            <button id="tab-donations" onclick="showTab('donations')" class="px-4 py-2 rounded-t-lg text-xs font-bold whitespace-nowrap"> 
+                <i class="fas fa-hand-holding-dollar mr-1"></i> Michango 
+            </button> 
+        </div> 
+        <div id="member-details-content" class="p-5 overflow-y-auto max-h-[65vh]"></div> 
+        <div class="p-3 border-t bg-gray-50 flex flex-wrap justify-end gap-2"> 
+            <button type="button" onclick="closeMemberModal()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-lg text-xs font-bold">Funga</button> 
+            <button id="modal-edit-btn" type="button" onclick="editCurrentMember()" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-bold"> 
+                <i class="fas fa-pen"></i> Edit 
+            </button> 
+            <button id="modal-print-btn" type="button" onclick="printCurrentMember()" class="px-4 py-2 bg-dcf-green hover:bg-dcf-dark-green text-white rounded-lg text-xs font-bold"> 
+                <i class="fas fa-print"></i> Print Taarifa 
+            </button> 
+        </div> 
+    </div> 
+</div> 
+ 
+<!-- ADD / EDIT MEMBER MODAL --> 
+<div id="add-member-modal" class="fixed inset-0 z-50 bg-black/60 items-center justify-center p-4 modal-hidden modal-backdrop"> 
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[95vh] overflow-y-auto"> 
+        <div class="bg-dcf-green text-white p-4 flex justify-between items-center sticky top-0 z-10"> 
+            <div> 
+                <h2 id="form-title" class="font-bold">Sajili Mwanachama Mpya</h2> 
+                <p id="form-subtitle" class="text-[10px] text-green-200">Jaza taarifa za mwanachama</p> 
+            </div> 
+            <button type="button" onclick="closeAddMember()" class="text-2xl">&times;</button> 
+        </div> 
+        <form id="add-member-form" onsubmit="saveMember(event)" class="p-5 space-y-4"> 
+            <input type="hidden" id="edit-member-db-id"> 
+             
+            <!-- UPAKAJI WA PICHA (PHOTO UPLOAD) --> 
+            <div class="flex flex-col sm:flex-row items-center gap-4 p-3 bg-gray-50 border rounded-xl"> 
+                <div id="photo-preview-container" class="w-20 h-20 rounded-full border-2 border-dcf-green bg-gray-200 flex items-center justify-center overflow-hidden shrink-0"> 
+                    <i class="fas fa-user text-2xl text-gray-400" id="photo-placeholder"></i> 
+                    <img id="photo-preview" class="w-full h-full object-cover hidden" alt="Preview"> 
+                </div> 
+                <div class="flex-1"> 
+                    <label class="block text-xs font-bold mb-1">Picha ya Mwanachama / Passport Size</label> 
+                    <input type="file" id="new-photo" accept="image/*" onchange="previewSelectedPhoto(event)" class="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-dcf-green file:text-white hover:file:bg-dcf-dark-green cursor-pointer"> 
+                    <p class="text-[10px] text-gray-400 mt-1">Format: JPG, PNG (Max 2MB)</p> 
+                </div> 
+            </div> 
+ 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4"> 
+                <div> 
+                    <label class="block text-xs font-bold mb-1">Member ID *</label> 
+                    <div class="flex gap-1"> 
+                        <input id="new-member-id" required class="w-full border rounded-lg p-2 text-xs focus:ring-2 focus:ring-green-200 focus:outline-none" placeholder="DCF001"> 
+                        <button type="button" onclick="generateAutoMemberId()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2 rounded text-xs font-bold" title="Generate ID">Auto</button> 
+                    </div> 
+                </div> 
+                <div> 
+                    <label class="block text-xs font-bold mb-1">Jina Kamili *</label> 
+                    <input id="new-full-name" required class="w-full border rounded-lg p-2 text-xs focus:ring-2 focus:ring-green-200 focus:outline-none"> 
+                </div> 
+                <div> 
+                    <label class="block text-xs font-bold mb-1">Simu *</label> 
+                    <input id="new-phone" required class="w-full border rounded-lg p-2 text-xs focus:ring-2 focus:ring-green-200 focus:outline-none"> 
+                </div> 
+                <div> 
+                    <label class="block text-xs font-bold mb-1">Email</label> 
+                    <input id="new-email" type="email" class="w-full border rounded-lg p-2 text-xs focus:ring-2 focus:ring-green-200 focus:outline-none"> 
+                </div> 
+                <div> 
+                    <label class="block text-xs font-bold mb-1">Jinsia</label> 
+                    <select id="new-gender" class="w-full border rounded-lg p-2 text-xs"> 
+                        <option value="">Chagua</option> 
+                        <option value="Male">Male</option> 
+                        <option value="Female">Female</option> 
+                    </select> 
+                </div> 
+                <div> 
+                    <label class="block text-xs font-bold mb-1">Tarehe ya Kuzaliwa</label> 
+                    <input id="new-dob" type="date" class="w-full border rounded-lg p-2 text-xs"> 
+                </div> 
+                <div> 
+                    <label class="block text-xs font-bold mb-1">NIDA Number</label> 
+                    <input id="new-nida" class="w-full border rounded-lg p-2 text-xs"> 
+                </div> 
+                <div> 
+                    <label class="block text-xs font-bold mb-1">Passport Number</label> 
+                    <input id="new-passport" class="w-full border rounded-lg p-2 text-xs"> 
+                </div> 
+                <div> 
+                    <label class="block text-xs font-bold mb-1">Occupation</label> 
+                    <input id="new-occupation" class="w-full border rounded-lg p-2 text-xs"> 
+                </div> 
+                <div> 
+                    <label class="block text-xs font-bold mb-1">Nationality</label> 
+                    <input id="new-nationality" value="Tanzanian" class="w-full border rounded-lg p-2 text-xs"> 
+                </div> 
+                <div> 
+                    <label class="block text-xs font-bold mb-1">Country</label> 
+                    <input id="new-country" value="Tanzania" class="w-full border rounded-lg p-2 text-xs"> 
+                </div> 
+                <div> 
+                    <label class="block text-xs font-bold mb-1">Member Type</label> 
+                    <select id="new-member-type" class="w-full border rounded-lg p-2 text-xs"> 
+                        <option value="Mwanachama wa Kawaida">Mwanachama wa Kawaida</option> 
+                        <option value="Mwanachama wa Taasisi">Mwanachama wa Taasisi</option> 
+                        <option value="Volunteer Member">Volunteer Member</option> 
+                    </select> 
+                </div> 
+                <div> 
+                    <label class="block text-xs font-bold mb-1">Status</label> 
+                    <select id="new-status" class="w-full border rounded-lg p-2 text-xs"> 
+                        <option value="Active">Active</option> 
+                        <option value="Inactive">Inactive</option> 
+                    </select> 
+                </div> 
+                <div> 
+                    <label class="block text-xs font-bold mb-1">Joining Date</label> 
+                    <input id="new-joining-date" type="date" class="w-full border rounded-lg p-2 text-xs"> 
+                </div> 
+            </div> 
+            <div> 
+                <label class="block text-xs font-bold mb-1">Address</label> 
+                <textarea id="new-address" rows="2" class="w-full border rounded-lg p-2 text-xs focus:ring-2 focus:ring-green-200 focus:outline-none"></textarea> 
+            </div> 
+            <div class="flex justify-end gap-2 pt-3 border-t"> 
+                <button type="button" onclick="closeAddMember()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-lg text-xs font-bold">Ghairi</button> 
+                <button type="submit" id="save-member-btn" class="px-5 py-2 bg-dcf-green hover:bg-dcf-dark-green text-white rounded-lg text-xs font-bold">Hifadhi Mwanachama</button> 
+            </div> 
+        </form> 
+    </div> 
+</div> 
+ 
+<!-- PRINT AREA --> 
+<div id="print-area" class="hidden"></div> 
+ 
+<!-- JAVASCRIPT --> 
+<script> 
+let allMembers = []; 
+let filteredMembers = []; 
+let currentMember = null; 
+let currentRole = ''; 
+let currentUserEmail = ''; 
+let currentPage = 1; 
+let pageSize = 25; 
+let uploadedPhotoUrl = null; 
+
+function safeErrorMessage(error, fallback = 'Unknown error') {
+    if (!error) return fallback;
+    return String(error.message || error.error_description || error.details || error.hint || error);
+}
+
+function generateUniqueId() {
+    try {
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+            return window.generateUniqueId();
+        }
+    } catch (_) {}
+    return 'id-' + Date.now().toString(36) + '-' +
+        Math.random().toString(36).slice(2, 10);
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function showBusy(button, text) {
+    if (!button) return;
+    button.disabled = true;
+    button.dataset.originalText = button.dataset.originalText || button.innerText;
+    button.innerText = text;
+    button.classList.add('opacity-60', 'cursor-wait');
+}
+
+function hideBusy(button) {
+    if (!button) return;
+    button.disabled = false;
+    if (button.dataset.originalText) button.innerText = button.dataset.originalText;
+    button.classList.remove('opacity-60', 'cursor-wait');
+}
+
+function escapeHTML(value) { 
+    if (value === null || value === undefined) return ''; 
+    return String(value) 
+        .replace(/&/g, '&amp;') 
+        .replace(/</g, '&lt;') 
+        .replace(/>/g, '&gt;') 
+        .replace(/"/g, '&quot;') 
+        .replace(/'/g, '&#039;'); 
+} 
+ 
+function formatMoney(value) { 
+    const amount = Number(value || 0); 
+    return amount.toLocaleString('en-US') + ' TZS'; 
+} 
+ 
+function formatDate(value) { 
+    if (!value) return '-'; 
+    try { 
+        return new Date(value).toLocaleDateString('en-GB'); 
+    } catch { 
+        return '-'; 
+    } 
+} 
+ 
+function todayISO() { 
+    return new Date().toISOString().split('T')[0]; 
+} 
+ 
+function getSessionValues() { 
+    currentRole = (sessionStorage.getItem('userRole') || '').toLowerCase().trim(); 
+    currentUserEmail = (sessionStorage.getItem('userEmail') || sessionStorage.getItem('email') || sessionStorage.getItem('user_email') || '').toLowerCase().trim(); 
+} 
+ 
+function isAdmin() { return currentRole === 'admin'; } 
+function isStaff() { return currentRole === 'staff'; } 
+function isAuditor() { return currentRole === 'auditor'; } 
+function isMember() { return currentRole === 'member'; } 
+function canManageMembers() { return isAdmin() || isStaff(); } 
+function canDeleteMembers() { return isAdmin(); } 
+
+function ensureSupabaseReady() {
+    if (typeof _supabase === 'undefined' || !_supabase) {
+        throw new Error(
+            'Supabase client is not loaded. Check js/supabase.js and the deployed file paths on Netlify.'
+        );
+    }
+}
+
+async function checkAuthentication() { 
+    getSessionValues(); 
+    try { 
+        const { data } = await _supabase.auth.getUser(); 
+        if (data && data.user) { 
+            if (!currentUserEmail) { 
+                currentUserEmail = (data.user.email || '').toLowerCase().trim(); 
+            } 
+        } 
+    } catch (error) { 
+        console.warn('Supabase auth check:', error); 
+    } 
+    if (!currentRole) { 
+        window.location.href = '../login.html'; 
+        return false; 
+    } 
+    updateUserDisplay(); 
+    applyPermissions(); 
+    return true; 
+} 
+ 
+function updateUserDisplay() { 
+    const name = sessionStorage.getItem('userName') || sessionStorage.getItem('full_name') || (isMember() ? 'Mwanachama' : 'User'); 
+    const avatar = document.getElementById('user-avatar'); 
+    const sidebarName = document.getElementById('sidebar-user-name'); 
+    const sidebarRole = document.getElementById('sidebar-user-role'); 
+    if (sidebarName) sidebarName.innerText = name; 
+    if (sidebarRole) sidebarRole.innerText = currentRole; 
+    if (avatar) avatar.innerText = name.charAt(0).toUpperCase(); 
+} 
+ 
+function applyPermissions() { 
+    const addBtn = document.getElementById('add-member-btn'); 
+    const printBtn = document.getElementById('print-all-btn'); 
+    const editBtn = document.getElementById('modal-edit-btn'); 
+    if (canManageMembers()) { 
+        addBtn.style.display = ''; 
+        printBtn.style.display = ''; 
+        return; 
+    } 
+    if (isAuditor()) { 
+        addBtn.style.display = 'none'; 
+        printBtn.style.display = ''; 
+        return; 
+    } 
+    if (isMember()) { 
+        addBtn.style.display = 'none'; 
+        printBtn.style.display = 'none'; 
+        if (editBtn) editBtn.style.display = 'none'; 
+    } 
+} 
+ 
+async function loadMembers() {
+    ensureSupabaseReady(); 
+    const tableBody = document.getElementById('membersTableBody'); 
+    tableBody.innerHTML = ` 
+        <tr> 
+            <td colspan="9" class="p-10 text-center text-gray-500"> 
+                <i class="fas fa-spinner fa-spin mr-2"></i> Inapakia wanachama... 
+            </td> 
+        </tr> 
+    `; 
+    try { 
+        const { data, error } = await _supabase 
+            .from('members') 
+            .select(` 
+                id, member_id, full_name, gender, dob, nida_no, passport_no, passport_image_url, phone, email, occupation, nationality, country, address, member_type, joining_date, status, created_at 
+            `) 
+            .order('created_at', { ascending: false }); 
+        if (error) throw error; 
+        allMembers = data || []; 
+        if (isMember()) { 
+            allMembers = allMembers.filter(member => ((member.email || '').toLowerCase().trim()) === currentUserEmail); 
+        } 
+        filteredMembers = [...allMembers]; 
+        currentPage = 1; 
+        updateStats(); 
+        renderMembers(); 
+    } catch (error) { 
+        console.error(error); 
+        tableBody.innerHTML = ` 
+            <tr> 
+                <td colspan="9" class="p-10 text-center text-red-500"> 
+                    <i class="fas fa-triangle-exclamation mr-2"></i> Imeshindikana kupakia wanachama. 
+                    <div class="text-xs mt-2">${escapeHTML(error.message)}</div> 
+                </td> 
+            </tr> 
+        `; 
+    } 
+} 
+ 
+function updateStats() { 
+    const total = allMembers.length; 
+    const active = allMembers.filter(m => (m.status || '').toLowerCase() === 'active').length; 
+    const inactive = allMembers.filter(m => (m.status || '').toLowerCase() !== 'active').length; 
+    const withEmail = allMembers.filter(m => m.email).length; 
+    const now = new Date(); 
+    const month = now.getMonth(); 
+    const year = now.getFullYear(); 
+    const newThisMonth = allMembers.filter(m => { 
+        if (!m.created_at) return false; 
+        const d = new Date(m.created_at); 
+        return d.getMonth() === month && d.getFullYear() === year; 
+    }).length; 
+    document.getElementById('stat-total').innerText = total; 
+    document.getElementById('stat-active').innerText = active; 
+    document.getElementById('stat-inactive').innerText = inactive; 
+    document.getElementById('stat-email').innerText = withEmail; 
+    document.getElementById('stat-month').innerText = newThisMonth; 
+} 
+ 
+function renderMembers() { 
+    const tableBody = document.getElementById('membersTableBody'); 
+    const resultCount = document.getElementById('result-count'); 
+    const total = filteredMembers.length; 
+    resultCount.innerText = `${total.toLocaleString()} ${total === 1 ? 'mwanachama' : 'wanachama'} wamepatikana`; 
+    if (total === 0) { 
+        tableBody.innerHTML = ` 
+            <tr> 
+                <td colspan="9" class="p-10 text-center text-gray-500"> 
+                    <div class="text-4xl mb-2"><i class="fas fa-users-slash"></i></div> 
+                    <p class="font-bold">Hakuna mwanachama aliyepatikana.</p> 
+                </td> 
+            </tr> 
+        `; 
+        renderPagination(); 
+        return; 
+    } 
+    const start = (currentPage - 1) * pageSize; 
+    const end = start + pageSize; 
+    const pageMembers = filteredMembers.slice(start, end); 
+    tableBody.innerHTML = ''; 
+    pageMembers.forEach((member, index) => { 
+        const photo = member.passport_image_url 
+            ? `<img src="${escapeHTML(member.passport_image_url)}" class="member-avatar w-10 h-10 rounded-full object-cover border-2 border-green-100 mx-auto" alt="Member">` 
+            : `<div class="member-avatar w-10 h-10 rounded-full bg-green-100 text-dcf-green flex items-center justify-center mx-auto font-bold">${escapeHTML((member.full_name || 'M').charAt(0).toUpperCase())}</div>`; 
+        const status = member.status || 'Active'; 
+        const statusKey = status.toLowerCase(); 
+        const statusClass = statusKey === 'active' ? 'status-active' : (statusKey === 'pending' ? 'status-pending' : 'status-inactive'); 
+        let actions = ` 
+            <button type="button" onclick="viewMember('${escapeHTML(member.id)}')" class="action-btn bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold" title="View"><i class="fas fa-eye"></i></button> 
+            <button type="button" onclick="printMember('${escapeHTML(member.id)}')" class="action-btn bg-green-100 hover:bg-green-200 text-green-700 font-bold" title="Print"><i class="fas fa-print"></i></button> 
+        `; 
+        if (canManageMembers()) { 
+            actions += ` 
+                <button type="button" onclick="editMember('${escapeHTML(member.id)}')" class="action-btn bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold" title="Edit"><i class="fas fa-pen"></i></button> 
+                <button type="button" onclick="toggleMemberStatus('${escapeHTML(member.id)}')" class="action-btn bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold" title="Badili status"><i class="fas fa-power-off"></i></button> 
+            `; 
+        } 
+        if (canDeleteMembers()) { 
+            actions += ` 
+                <button type="button" onclick="deleteMember('${escapeHTML(member.id)}')" class="action-btn bg-red-100 hover:bg-red-200 text-red-700 font-bold" title="Delete"><i class="fas fa-trash"></i></button> 
+            `; 
+        } 
+        const row = document.createElement('tr'); 
+        row.className = 'member-row border-b border-gray-100'; 
+        row.innerHTML = ` 
+            <td class="p-3 text-gray-500 font-bold">${start + index + 1}</td> 
+            <td class="p-3">${photo}</td> 
+            <td class="p-3 font-bold text-dcf-green whitespace-nowrap">${escapeHTML(member.member_id || '-')}</td> 
+            <td class="p-3"> 
+                <button type="button" onclick="viewMember('${escapeHTML(member.id)}')" class="text-left font-bold text-gray-800 hover:text-dcf-green hover:underline"> 
+                    ${escapeHTML(member.full_name || '-')} 
+                </button> 
+            </td> 
+            <td class="p-3 whitespace-nowrap">${member.phone ? `<a href="tel:${escapeHTML(member.phone)}" class="text-gray-700 hover:text-dcf-green">${escapeHTML(member.phone)}</a>` : '-'}</td> 
+            <td class="p-3">${member.email ? `<a href="mailto:${escapeHTML(member.email)}" class="text-blue-600 hover:underline break-all">${escapeHTML(member.email)}</a>` : '-'}</td> 
+            <td class="p-3">${escapeHTML(member.member_type || '-')}</td> 
+            <td class="p-3"><span class="status-badge ${statusClass} px-2.5 py-1 rounded-full text-[10px] font-bold">${escapeHTML(status)}</span></td> 
+            <td class="p-3"><div class="flex justify-center gap-1.5">${actions}</div></td> 
+        `; 
+        tableBody.appendChild(row); 
+    }); 
+    renderPagination(); 
+} 
+ 
+function renderPagination() { 
+    const container = document.getElementById('pagination'); 
+    const totalPages = Math.ceil(filteredMembers.length / pageSize); 
+    if (totalPages <= 1) { 
+        container.innerHTML = ''; 
+        return; 
+    } 
+    let html = ` 
+        <button type="button" onclick="goToPage(${currentPage - 1})" class="page-btn bg-white border hover:bg-gray-100 ${currentPage === 1 ? 'opacity-40 cursor-not-allowed' : ''}" ${currentPage === 1 ? 'disabled' : ''}> 
+            <i class="fas fa-chevron-left"></i> 
+        </button> 
+    `; 
+    const maxButtons = 5; 
+    let start = Math.max(1, currentPage - 2); 
+    let end = Math.min(totalPages, start + maxButtons - 1); 
+    if (end - start < maxButtons - 1) { 
+        start = Math.max(1, end - maxButtons + 1); 
+    } 
+    for (let page = start; page <= end; page++) { 
+        html += ` 
+            <button type="button" onclick="goToPage(${page})" class="page-btn ${page === currentPage ? 'bg-dcf-green text-white' : 'bg-white border hover:bg-gray-100'}"> 
+                ${page} 
+            </button> 
+        `; 
+    } 
+    html += ` 
+        <button type="button" onclick="goToPage(${currentPage + 1})" class="page-btn bg-white border hover:bg-gray-100 ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed' : ''}" ${currentPage === totalPages ? 'disabled' : ''}> 
+            <i class="fas fa-chevron-right"></i> 
+        </button> 
+    `; 
+    container.innerHTML = html; 
+} 
+ 
+function goToPage(page) { 
+    const totalPages = Math.ceil(filteredMembers.length / pageSize); 
+    if (page < 1 || page > totalPages) return; 
+    currentPage = page; 
+    renderMembers(); 
+} 
+ 
+function filterMembers() { 
+    const search = (document.getElementById('searchInput').value || '').toLowerCase().trim(); 
+    const status = document.getElementById('statusFilter').value; 
+    const gender = document.getElementById('genderFilter').value; 
+    const type = document.getElementById('typeFilter').value; 
+    filteredMembers = allMembers.filter(member => { 
+        const searchable = [ 
+            member.full_name, member.member_id, member.phone, member.email, 
+            member.nida_no, member.passport_no, member.occupation, member.nationality, member.country 
+        ].filter(Boolean).join(' ').toLowerCase(); 
+        const matchesSearch = !search || searchable.includes(search); 
+        const matchesStatus = !status || (member.status || '') === status; 
+        const matchesGender = !gender || (member.gender || '') === gender; 
+        const matchesType = !type || (member.member_type || '') === type; 
+        return matchesSearch && matchesStatus && matchesGender && matchesType; 
+    }); 
+    currentPage = 1; 
+    updateFilterSummary(); 
+    renderMembers(); 
+} 
+ 
+function resetFilters() { 
+    document.getElementById('searchInput').value = ''; 
+    document.getElementById('statusFilter').value = ''; 
+    document.getElementById('genderFilter').value = ''; 
+    document.getElementById('typeFilter').value = ''; 
+    filteredMembers = [...allMembers]; 
+    currentPage = 1; 
+    renderMembers(); 
+} 
+function updateFilterSummary() { 
+    const box = document.getElementById('active-filter-summary'); 
+    if (!box) return; 
+    const search = (document.getElementById('searchInput').value || '').trim(); 
+    const status = document.getElementById('statusFilter').value; 
+    const gender = document.getElementById('genderFilter').value; 
+    const type = document.getElementById('typeFilter').value; 
+    const parts = []; 
+    if (search) parts.push(`Tafuta: "${search}"`); 
+    if (status) parts.push(`Status: ${status}`); 
+    if (gender) parts.push(`Jinsia: ${gender}`); 
+    if (type) parts.push(`Aina: ${type}`); 
+    box.innerText = parts.length ? parts.join(' • ') : 'Inaonyesha wanachama wote'; 
+} 
+ 
+function changePageSize() { 
+    const value = parseInt(document.getElementById('pageSizeSelect')?.value || '25', 10); 
+    pageSize = [25,50,100].includes(value) ? value : 25; 
+    currentPage = 1; 
+    renderMembers(); 
+} 
+
+function findMemberById(id) { 
+    return allMembers.find(member => String(member.id) === String(id)); 
+} 
+ 
+async function viewMember(id) { 
+    const member = findMemberById(id); 
+    if (!member) { 
+        alert('Mwanachama hakupatikana.'); 
+        return; 
+    } 
+    if (isMember() && ((member.email || '').toLowerCase().trim()) !== currentUserEmail) { 
+        alert('Huna ruhusa ya kuona taarifa za mwanachama huyu.'); 
+        return; 
+    } 
+    currentMember = member; 
+    document.getElementById('modal-member-name').innerText = member.full_name || 'Mwanachama'; 
+    document.getElementById('modal-member-id').innerText = 'Member ID: ' + (member.member_id || '-'); 
+     
+    const avatar = document.getElementById('modal-avatar'); 
+    if (member.passport_image_url) { 
+        avatar.innerHTML = `<img src="${escapeHTML(member.passport_image_url)}" class="w-full h-full object-cover" alt="Member">`; 
+    } else { 
+        avatar.innerHTML = `<span>${escapeHTML((member.full_name || 'M').charAt(0).toUpperCase())}</span>`; 
+    } 
+    const modal = document.getElementById('member-modal'); 
+    modal.classList.remove('modal-hidden'); 
+    modal.classList.add('modal-visible'); 
+    await loadMemberDetails(member); 
+    showTab('profile'); 
+} 
+ 
+async function loadMemberDetails(member) { 
+    let donations = []; 
+    try { 
+        const { data, error } = await _supabase 
+            .from('donations') 
+            .select(`id, receipt_no, donor_name, donation_type, amount, payment_method, donation_date, notes`) 
+            .ilike('donor_name', member.full_name || '') 
+            .order('donation_date', { ascending: false }); 
+        if (!error) donations = data || []; 
+    } catch (error) { 
+        console.error('Donation loading error:', error); 
+    } 
+    member._donations = donations; 
+    renderProfileTab(member); 
+} 
+ 
+function showTab(tab) { 
+    if (!currentMember) return; 
+    document.querySelectorAll('[id^="tab-"]').forEach(button => button.classList.remove('tab-active')); 
+    const active = document.getElementById('tab-' + tab); 
+    if (active) active.classList.add('tab-active'); 
+    if (tab === 'profile') renderProfileTab(currentMember); 
+    if (tab === 'membership') renderMembershipTab(currentMember); 
+    if (tab === 'donations') renderDonationsTab(currentMember); 
+} 
+ 
+function detailBox(label, value, type = 'text') { 
+    let content = escapeHTML(value || '-'); 
+    if (type === 'email' && value) { 
+        content = `<a href="mailto:${escapeHTML(value)}" class="text-blue-600 hover:underline break-all">${escapeHTML(value)}</a>`; 
+    } 
+    if (type === 'tel' && value) { 
+        content = `<a href="tel:${escapeHTML(value)}" class="text-dcf-green hover:underline">${escapeHTML(value)}</a>`; 
+    } 
+    return ` 
+        <div class="detail-box bg-gray-50 border border-gray-200 rounded-lg p-3"> 
+            <p class="text-[9px] uppercase font-bold text-gray-400 mb-1">${escapeHTML(label)}</p> 
+            <div class="text-xs font-semibold text-gray-800 break-words">${content}</div> 
+        </div> 
+    `; 
+} 
+ 
+function renderProfileTab(member) { 
+    const content = document.getElementById('member-details-content'); 
+    content.innerHTML = ` 
+        <div class="profile-hero text-white rounded-xl p-4 mb-5 shadow-sm"> 
+            <div class="flex items-center justify-between gap-3"> 
+                <div> 
+                    <p class="text-[9px] uppercase font-bold text-green-100 tracking-wider">DCF Member Profile</p> 
+                    <h3 class="font-bold text-lg">${escapeHTML(member.full_name || 'Mwanachama')}</h3> 
+                    <p class="text-[10px] text-green-100">${escapeHTML(member.member_id || '-')} • ${escapeHTML(member.member_type || '-')}</p> 
+                </div> 
+                <span class="px-2.5 py-1 rounded-full bg-white/15 border border-white/20 text-[10px] font-bold">${escapeHTML(member.status || 'Active')}</span> 
+            </div> 
+        </div> 
+        <div class="mb-5"> 
+            <div class="flex items-center gap-2 mb-3"> 
+                <div class="w-8 h-8 rounded-lg bg-green-100 text-dcf-green flex items-center justify-center"><i class="fas fa-user"></i></div> 
+                <h3 class="font-bold text-gray-800">Taarifa Binafsi</h3> 
+            </div> 
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"> 
+                ${detailBox('Jina Kamili', member.full_name)} 
+                ${detailBox('Member ID', member.member_id)} 
+                ${detailBox('Jinsia', member.gender)} 
+                ${detailBox('Tarehe ya Kuzaliwa', formatDate(member.dob))} 
+                ${detailBox('NIDA Number', member.nida_no)} 
+                ${detailBox('Passport Number', member.passport_no)} 
+                ${detailBox('Nationality', member.nationality)} 
+                ${detailBox('Country', member.country)} 
+                ${detailBox('Occupation', member.occupation)} 
+            </div> 
+        </div> 
+        <div> 
+            <div class="flex items-center gap-2 mb-3"> 
+                <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fas fa-address-book"></i></div> 
+                <h3 class="font-bold text-gray-800">Mawasiliano</h3> 
+            </div> 
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"> 
+                ${detailBox('Simu', member.phone, 'tel')} 
+                ${detailBox('Email', member.email, 'email')} 
+                ${detailBox('Address', member.address)} 
+            </div> 
+        </div> 
+    `; 
+} 
+ 
+function renderMembershipTab(member) { 
+    const content = document.getElementById('member-details-content'); 
+    const status = member.status || 'Active'; 
+    content.innerHTML = ` 
+        <div class="mb-5"> 
+            <div class="flex items-center gap-2 mb-3"> 
+                <div class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center"><i class="fas fa-id-card"></i></div> 
+                <h3 class="font-bold text-gray-800">Taarifa za Uanachama</h3> 
+            </div> 
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"> 
+                ${detailBox('Member ID', member.member_id)} 
+                ${detailBox('Member Type', member.member_type)} 
+                ${detailBox('Joining Date', formatDate(member.joining_date))} 
+                ${detailBox('Status', status)} 
+                ${detailBox('Created', formatDate(member.created_at))} 
+            </div> 
+        </div> 
+        <div class="border border-gray-200 rounded-xl p-5 bg-gray-50"> 
+            <div class="flex items-center gap-3"> 
+                <div class="w-10 h-10 rounded-full ${status.toLowerCase() === 'active' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} flex items-center justify-center"> 
+                    <i class="fas fa-user-check"></i> 
+                </div> 
+                <div> 
+                    <p class="text-[10px] uppercase text-gray-500 font-bold">Current Status</p> 
+                    <p class="font-bold text-gray-800">${escapeHTML(status)}</p> 
+                </div> 
+            </div> 
+        </div> 
+    `; 
+} 
+ 
+function renderDonationsTab(member) { 
+    const donations = member._donations || []; 
+    const total = donations.reduce((sum, d) => sum + Number(d.amount || 0), 0); 
+    const content = document.getElementById('member-details-content'); 
+    content.innerHTML = ` 
+        <div> 
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4"> 
+                <div class="flex items-center gap-2"> 
+                    <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center"><i class="fas fa-hand-holding-dollar"></i></div> 
+                    <div> 
+                        <h3 class="font-bold text-gray-800">Historia ya Michango</h3> 
+                        <p class="text-[9px] text-gray-500">${donations.length} rekodi ya michango</p> 
+                    </div> 
+                </div> 
+                <div class="donation-total px-4 py-2 rounded-lg text-xs font-bold text-dcf-green"> 
+                    <span class="block text-[9px] uppercase text-gray-500 mb-0.5">Jumla ya Michango</span> 
+                    <span class="text-base">${formatMoney(total)}</span> 
+                </div> 
+            </div> 
+            ${donations.length ? ` 
+                <div class="border border-gray-200 rounded-xl overflow-hidden"> 
+                    <div class="overflow-x-auto"> 
+                        <table class="w-full text-xs"> 
+                            <thead class="bg-gray-100"> 
+                                <tr> 
+                                    <th class="p-3 text-left">Receipt</th> 
+                                    <th class="p-3 text-left">Aina</th> 
+                                    <th class="p-3 text-left">Kiasi</th> 
+                                    <th class="p-3 text-left">Njia</th> 
+                                    <th class="p-3 text-left">Tarehe</th> 
+                                </tr> 
+                            </thead> 
+                            <tbody> 
+                                ${donations.map(d => ` 
+                                    <tr class="border-t hover:bg-gray-50"> 
+                                        <td class="p-3 font-bold text-dcf-green">${escapeHTML(d.receipt_no || '-')}</td> 
+                                        <td class="p-3">${escapeHTML(d.donation_type || '-')}</td> 
+                                        <td class="p-3 font-bold">${formatMoney(d.amount)}</td> 
+                                        <td class="p-3">${escapeHTML(d.payment_method || '-')}</td> 
+                                        <td class="p-3">${formatDate(d.donation_date)}</td> 
+                                    </tr> 
+                                `).join('')} 
+                            </tbody> 
+                        </table> 
+                    </div> 
+                </div> 
+            ` : ` 
+                <div class="border border-dashed border-gray-300 rounded-xl p-8 text-center text-gray-500"> 
+                    <i class="fas fa-receipt text-3xl mb-3"></i> 
+                    <p class="font-bold text-xs">Hakuna rekodi ya michango iliyopatikana.</p> 
+                </div> 
+            `} 
+        </div> 
+    `; 
+} 
+ 
+function closeMemberModal() { 
+    const modal = document.getElementById('member-modal'); 
+    modal.classList.remove('modal-visible'); 
+    modal.classList.add('modal-hidden'); 
+    currentMember = null; 
+} 
+ 
+function previewSelectedPhoto(event) { 
+    const file = event.target.files[0]; 
+    const preview = document.getElementById('photo-preview'); 
+    const placeholder = document.getElementById('photo-placeholder'); 
+    if (file) { 
+        const reader = new FileReader(); 
+        reader.onload = function(e) { 
+            preview.src = e.target.result; 
+            preview.classList.remove('hidden'); 
+            placeholder.classList.add('hidden'); 
+        }; 
+        reader.readAsDataURL(file); 
+    } 
+} 
+ 
+function generateAutoMemberId() { 
+    const count = allMembers.length + 1; 
+    const formatted = 'DCF' + String(count).padStart(3, '0'); 
+    document.getElementById('new-member-id').value = formatted; 
+} 
+ 
+function openAddMember() { 
+    if (!canManageMembers()) { 
+        alert('Huna ruhusa ya kuongeza mwanachama.'); 
+        return; 
+    } 
+    document.getElementById('add-member-form').reset(); 
+    document.getElementById('edit-member-db-id').value = ''; 
+    document.getElementById('photo-preview').classList.add('hidden'); 
+    document.getElementById('photo-placeholder').classList.remove('hidden'); 
+    uploadedPhotoUrl = null; 
+ 
+    document.getElementById('form-title').innerText = 'Sajili Mwanachama Mpya'; 
+    document.getElementById('form-subtitle').innerText = 'Jaza taarifa za mwanachama'; 
+    document.getElementById('save-member-btn').innerText = 'Hifadhi Mwanachama'; 
+    document.getElementById('new-nationality').value = 'Tanzanian'; 
+    document.getElementById('new-country').value = 'Tanzania'; 
+    document.getElementById('new-joining-date').value = todayISO(); 
+     
+    generateAutoMemberId(); 
+ 
+    const modal = document.getElementById('add-member-modal'); 
+    modal.classList.remove('modal-hidden'); 
+    modal.classList.add('modal-visible'); 
+} 
+ 
+function editMember(id) { 
+    if (!canManageMembers()) { 
+        alert('Huna ruhusa ya kuhariri mwanachama.'); 
+        return; 
+    } 
+    const member = findMemberById(id); 
+    if (!member) { 
+        alert('Mwanachama hakupatikana.'); 
+        return; 
+    } 
+    document.getElementById('edit-member-db-id').value = member.id; 
+    document.getElementById('new-member-id').value = member.member_id || ''; 
+    document.getElementById('new-full-name').value = member.full_name || ''; 
+    document.getElementById('new-phone').value = member.phone || ''; 
+    document.getElementById('new-email').value = member.email || ''; 
+    document.getElementById('new-gender').value = member.gender || ''; 
+    document.getElementById('new-dob').value = member.dob ? String(member.dob).substring(0, 10) : ''; 
+    document.getElementById('new-nida').value = member.nida_no || ''; 
+    document.getElementById('new-passport').value = member.passport_no || ''; 
+    document.getElementById('new-occupation').value = member.occupation || ''; 
+    document.getElementById('new-nationality').value = member.nationality || ''; 
+    document.getElementById('new-country').value = member.country || ''; 
+    document.getElementById('new-member-type').value = member.member_type || 'Mwanachama wa Kawaida'; 
+    document.getElementById('new-status').value = member.status || 'Active'; 
+    document.getElementById('new-joining-date').value = member.joining_date ? String(member.joining_date).substring(0, 10) : ''; 
+    document.getElementById('new-address').value = member.address || ''; 
+     
+    uploadedPhotoUrl = member.passport_image_url || null; 
+    const preview = document.getElementById('photo-preview'); 
+    const placeholder = document.getElementById('photo-placeholder'); 
+    if (uploadedPhotoUrl) { 
+        preview.src = uploadedPhotoUrl; 
+        preview.classList.remove('hidden'); 
+        placeholder.classList.add('hidden'); 
+    } else { 
+        preview.classList.add('hidden'); 
+        placeholder.classList.remove('hidden'); 
+    } 
+ 
+    document.getElementById('form-title').innerText = 'Hariri Mwanachama'; 
+    document.getElementById('form-subtitle').innerText = 'Badilisha taarifa za mwanachama'; 
+    document.getElementById('save-member-btn').innerText = 'Hifadhi Mabadiliko'; 
+    const modal = document.getElementById('add-member-modal'); 
+    modal.classList.remove('modal-hidden'); 
+    modal.classList.add('modal-visible'); 
+} 
+ 
+function editCurrentMember() { 
+    if (!currentMember) return; 
+    const id = currentMember.id; 
+    closeMemberModal(); 
+    editMember(id); 
+} 
+ 
+function closeAddMember() { 
+    const modal = document.getElementById('add-member-modal'); 
+    modal.classList.remove('modal-visible'); 
+    modal.classList.add('modal-hidden'); 
+async function uploadPhotoIfSelected() {
+    ensureSupabaseReady();
+
+    const photoInput = document.getElementById('new-photo');
+    if (!photoInput || !photoInput.files || photoInput.files.length === 0) {
+        return uploadedPhotoUrl;
+    }
+
+    const file = photoInput.files[0];
+
+    if (!file.type || !file.type.startsWith('image/')) {
+        throw new Error('Please select a valid image file.');
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+        throw new Error('Image is too large. Maximum allowed size is 2MB.');
+    }
+
+    const fileExt = (file.name.split('.').pop() || 'jpg')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
+
+    const fileName = `${Date.now()}_${Math.random().toString(36).slice(2, 10)}.${fileExt}`;
+    const filePath = `passports/${fileName}`;
+
+    const { error: uploadError } = await _supabase.storage
+        .from('member-passports')
+        .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false,
+            contentType: file.type
+        });
+
+    if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        throw new Error(
+            'Photo upload failed: ' + safeErrorMessage(uploadError) +
+            '. Check the member-passports Storage policies on Supabase.'
+        );
+    }
+
+    const { data: urlData } = _supabase.storage
+        .from('member-passports')
+        .getPublicUrl(filePath);
+
+    return urlData?.publicUrl || uploadedPhotoUrl;
+}
+
+async function saveMember(event) {
+    event.preventDefault();
+
+    if (!canManageMembers()) {
+        alert('You do not have permission to save members.');
+        return;
+    }
+
+    ensureSupabaseReady();
+
+    const button = document.getElementById('save-member-btn');
+    const dbId = document.getElementById('edit-member-db-id').value.trim();
+
+    showBusy(button, 'Saving...');
+
+    try {
+        const photoUrl = await uploadPhotoIfSelected();
+
+        const payload = {
+            member_id: document.getElementById('new-member-id').value.trim(),
+            full_name: document.getElementById('new-full-name').value.trim(),
+            phone: document.getElementById('new-phone').value.trim(),
+            email: document.getElementById('new-email').value.trim() || null,
+            gender: document.getElementById('new-gender').value || null,
+            dob: document.getElementById('new-dob').value || null,
+            nida_no: document.getElementById('new-nida').value.trim() || null,
+            passport_no: document.getElementById('new-passport').value.trim() || null,
+            passport_image_url: photoUrl || null,
+            occupation: document.getElementById('new-occupation').value.trim() || null,
+            nationality: document.getElementById('new-nationality').value.trim() || null,
+            country: document.getElementById('new-country').value.trim() || null,
+            member_type: document.getElementById('new-member-type').value,
+            status: document.getElementById('new-status').value,
+            joining_date: document.getElementById('new-joining-date').value || null,
+            address: document.getElementById('new-address').value.trim() || null
+        };
+
+        if (!payload.member_id || !payload.full_name || !payload.phone) {
+            throw new Error('Please fill Member ID, Full Name and Phone.');
+        }
+
+        let error;
+
+        if (dbId) {
+            const response = await _supabase
+                .from('members')
+                .update(payload)
+                .eq('id', dbId);
+
+            error = response.error;
+        } else {
+            const response = await _supabase
+                .from('members')
+                .insert([payload]);
+
+            error = response.error;
+        }
+
+        if (error) {
+            console.error('Supabase save error:', error);
+            throw error;
+        }
+
+        alert(dbId ? 'Member updated successfully.' : 'Member registered successfully.');
+        closeAddMember();
+        await loadMembers();
+
+    } catch (error) {
+        console.error('Save member error:', error);
+        alert(
+            'Save failed.\n\n' +
+            safeErrorMessage(error) +
+            '\n\nIf the problem appears only on Netlify, check Supabase RLS and Storage policies.'
+        );
+    } finally {
+        hideBusy(button);
+        button.innerText = dbId ? 'Hifadhi Mabadiliko' : 'Hifadhi Mwanachama';
+    }
+}
+
+async function toggleMemberStatus(id) {
+    if (!canManageMembers()) {
+        alert('You do not have permission to change member status.');
+        return;
+    }
+
+    ensureSupabaseReady();
+
+    const member = findMemberById(id);
+    if (!member) {
+        alert('Member not found.');
+        return;
+    }
+
+    const oldStatus = member.status || 'Active';
+    const newStatus = oldStatus.toLowerCase() === 'active' ? 'Inactive' : 'Active';
+
+    if (!window.confirm(`Change "${member.full_name}" from ${oldStatus} to ${newStatus}?`)) {
+        return;
+    }
+
+    try {
+        const { data, error } = await _supabase
+            .from('members')
+            .update({ status: newStatus })
+            .eq('id', id)
+            .select('id, status')
+            .single();
+
+        if (error) {
+            console.error('Supabase status update error:', error);
+            throw error;
+        }
+
+        const index = allMembers.findIndex(m => String(m.id) === String(id));
+        if (index >= 0) allMembers[index].status = data?.status || newStatus;
+
+        filterMembers();
+        alert(`Status changed to ${newStatus}.`);
+    } catch (error) {
+        console.error('Status update error:', error);
+        alert(
+            'Status update failed.\n\n' +
+            safeErrorMessage(error) +
+            '\n\nCheck the Supabase RLS UPDATE policy if this only fails after deployment.'
+        );
+    }
+}
+
+async function deleteMember(id) {
+    if (!canDeleteMembers()) {
+        alert('Only an Admin can delete a member.');
+        return;
+    }
+
+    ensureSupabaseReady();
+
+    const member = findMemberById(id);
+    if (!member) {
+        alert('Member not found.');
+        return;
+    }
+
+    const confirmed = window.confirm(
+        `WARNING!\n\nAre you sure you want to permanently delete "${member.full_name}"?\n\nThis action cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    const buttons = document.querySelectorAll(`button[onclick*="deleteMember('${CSS.escape(String(id))}')"]`);
+    buttons.forEach(btn => showBusy(btn, '...'));
+
+    try {
+        const { error } = await _supabase
+            .from('members')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.error('Supabase delete error:', error);
+            throw error;
+        }
+
+        allMembers = allMembers.filter(m => String(m.id) !== String(id));
+        filteredMembers = filteredMembers.filter(m => String(m.id) !== String(id));
+        updateStats();
+        if (currentPage > Math.max(1, Math.ceil(filteredMembers.length / pageSize))) {
+            currentPage = Math.max(1, Math.ceil(filteredMembers.length / pageSize));
+        }
+        renderMembers();
+
+        alert('Member deleted successfully.');
+    } catch (error) {
+        console.error('Delete member error:', error);
+        alert(
+            'Delete failed.\n\n' +
+            safeErrorMessage(error) +
+            '\n\nIf this works locally but not on Netlify, check the Supabase RLS DELETE policy for the members table.'
+        );
+    } finally {
+        buttons.forEach(btn => hideBusy(btn));
+    }
+}
+
+} 
+ 
+async function printMember(id) { 
+    const member = findMemberById(id); 
+    if (!member) { 
+        alert('Mwanachama hakupatikana.'); 
+        return; 
+    } 
+    if (isMember() && ((member.email || '').toLowerCase().trim()) !== currentUserEmail) { 
+        alert('Huna ruhusa ya kuchapisha taarifa hii.'); 
+        return; 
+    } 
+    let donations = []; 
+    try { 
+        const { data } = await _supabase 
+            .from('donations') 
+            .select(`receipt_no, donor_name, donation_type, amount, payment_method, donation_date`) 
+            .ilike('donor_name', member.full_name || '') 
+            .order('donation_date', { ascending: false }); 
+        donations = data || []; 
+    } catch { 
+        donations = []; 
+    } 
+    createPrintPage(member, donations); 
+    window.print(); 
+} 
+ 
+function printCurrentMember() { 
+    if (currentMember) printMember(currentMember.id); 
+} 
+ 
+function createPrintPage(member, donations) { 
+    const total = donations.reduce((sum, d) => sum + Number(d.amount || 0), 0); 
+    const donationRows = donations.length 
+        ? donations.map(d => ` 
+            <tr> 
+                <td>${escapeHTML(d.receipt_no || '-')}</td> 
+                <td>${escapeHTML(d.donation_type || '-')}</td> 
+                <td>${formatMoney(d.amount)}</td> 
+                <td>${escapeHTML(d.payment_method || '-')}</td> 
+                <td>${formatDate(d.donation_date)}</td> 
+            </tr> 
+        `).join('') 
+        : `<tr><td colspan="5" style="text-align:center">Hakuna rekodi ya michango.</td></tr>`; 
+    document.getElementById('print-area').innerHTML = ` 
+        <div style="padding:35px;font-family:Arial,sans-serif;color:#222;"> 
+            <div style="text-align:center;border-bottom:3px solid #174a35;padding-bottom:15px;margin-bottom:20px;"> 
+                <h1 style="color:#174a35;margin:0;font-size:24px;">DEVELOPMENT CHARITY FOUNDATION</h1> 
+                <p style="margin:5px 0;font-size:12px;">DCF ONLINE SYSTEM</p> 
+                <p style="margin:5px 0;font-size:12px;">MEMBER INFORMATION REPORT</p> 
+            </div> 
+            <div style="text-align:center;margin-bottom:20px;"> 
+                ${member.passport_image_url ? `<img src="${escapeHTML(member.passport_image_url)}" style="width:100px;height:100px;border-radius:50%;object-fit:cover;margin-bottom:10px;border:2px solid #174a35;">` : ''} 
+                <h2 style="margin:0">${escapeHTML(member.full_name || '-')}</h2> 
+                <p>Member ID: <strong>${escapeHTML(member.member_id || '-')}</strong></p> 
+            </div> 
+            <table style="width:100%;border-collapse:collapse;margin-bottom:25px;font-size:11px;"> 
+                <tr> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">Jina</td> 
+                    <td style="border:1px solid #ddd;padding:8px">${escapeHTML(member.full_name)}</td> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">Member ID</td> 
+                    <td style="border:1px solid #ddd;padding:8px">${escapeHTML(member.member_id || '-')}</td> 
+                </tr> 
+                <tr> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">Simu</td> 
+                    <td style="border:1px solid #ddd;padding:8px">${escapeHTML(member.phone || '-')}</td> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">Email</td> 
+                    <td style="border:1px solid #ddd;padding:8px">${escapeHTML(member.email || '-')}</td> 
+                </tr> 
+                <tr> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">Jinsia</td> 
+                    <td style="border:1px solid #ddd;padding:8px">${escapeHTML(member.gender || '-')}</td> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">Occupation</td> 
+                    <td style="border:1px solid #ddd;padding:8px">${escapeHTML(member.occupation || '-')}</td> 
+                </tr> 
+                <tr> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">NIDA</td> 
+                    <td style="border:1px solid #ddd;padding:8px">${escapeHTML(member.nida_no || '-')}</td> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">Passport</td> 
+                    <td style="border:1px solid #ddd;padding:8px">${escapeHTML(member.passport_no || '-')}</td> 
+                </tr> 
+                <tr> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">Date of Birth</td> 
+                    <td style="border:1px solid #ddd;padding:8px">${formatDate(member.dob)}</td> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">Nationality</td> 
+                    <td style="border:1px solid #ddd;padding:8px">${escapeHTML(member.nationality || '-')}</td> 
+                </tr> 
+                <tr> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">Address</td> 
+                    <td colspan="3" style="border:1px solid #ddd;padding:8px">${escapeHTML(member.address || '-')}</td> 
+                </tr> 
+                <tr> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">Member Type</td> 
+                    <td style="border:1px solid #ddd;padding:8px">${escapeHTML(member.member_type || '-')}</td> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">Status</td> 
+                    <td style="border:1px solid #ddd;padding:8px">${escapeHTML(member.status || '-')}</td> 
+                </tr> 
+                <tr> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">Joining Date</td> 
+                    <td style="border:1px solid #ddd;padding:8px">${formatDate(member.joining_date)}</td> 
+                    <td style="border:1px solid #ddd;padding:8px;font-weight:bold">Country</td> 
+                    <td style="border:1px solid #ddd;padding:8px">${escapeHTML(member.country || '-')}</td> 
+                </tr> 
+            </table> 
+            <h3 style="color:#174a35;border-bottom:1px solid #174a35;padding-bottom:5px;">HISTORIA YA MICHANGO</h3> 
+            <table style="width:100%;border-collapse:collapse;font-size:10px;"> 
+                <thead> 
+                    <tr style="background:#174a35;color:white;"> 
+                        <th style="padding:7px;text-align:left">Receipt</th> 
+                        <th style="padding:7px;text-align:left">Aina</th> 
+                        <th style="padding:7px;text-align:left">Kiasi</th> 
+                        <th style="padding:7px;text-align:left">Njia</th> 
+                        <th style="padding:7px;text-align:left">Tarehe</th> 
+                    </tr> 
+                </thead> 
+                <tbody>${donationRows}</tbody> 
+            </table> 
+            <div style="text-align:right;margin-top:15px;font-size:15px;font-weight:bold;"> 
+                Jumla ya Michango: ${formatMoney(total)} 
+            </div> 
+            <div style="margin-top:45px;display:flex;justify-content:space-between;font-size:10px;"> 
+                <span>Printed: ${new Date().toLocaleString()}</span> 
+                <span>DCF Online System</span> 
+            </div> 
+        </div> 
+    `; 
+} 
+ 
+function printAllMembers() { 
+    if (isMember()) { 
+        alert('Member haruhusiwi kutumia PRINT ALL.'); 
+        return; 
+    } 
+    if (!filteredMembers.length) { 
+        alert('Hakuna wanachama wa kuchapisha.'); 
+        return; 
+    } 
+    const rows = filteredMembers.map((member, index) => ` 
+        <tr> 
+            <td>${index + 1}</td> 
+            <td>${escapeHTML(member.member_id || '-')}</td> 
+            <td>${escapeHTML(member.full_name || '-')}</td> 
+            <td>${escapeHTML(member.phone || '-')}</td> 
+            <td>${escapeHTML(member.email || '-')}</td> 
+            <td>${escapeHTML(member.member_type || '-')}</td> 
+            <td>${escapeHTML(member.status || '-')}</td> 
+        </tr> 
+    `).join(''); 
+    document.getElementById('print-area').innerHTML = ` 
+        <div style="padding:25px;font-family:Arial,sans-serif;"> 
+            <div style="text-align:center;border-bottom:3px solid #174a35;padding-bottom:12px;margin-bottom:20px;"> 
+                <h1 style="margin:0;color:#174a35;">DEVELOPMENT CHARITY FOUNDATION</h1> 
+                <p>ORODHA YA WANACHAMA</p> 
+            </div> 
+            <table style="width:100%;border-collapse:collapse;font-size:10px;"> 
+                <thead> 
+                    <tr style="background:#174a35;color:#fff;"> 
+                        <th style="padding:6px">#</th> 
+                        <th style="padding:6px">Member ID</th> 
+                        <th style="padding:6px">Jina</th> 
+                        <th style="padding:6px">Simu</th> 
+                        <th style="padding:6px">Email</th> 
+                        <th style="padding:6px">Aina</th> 
+                        <th style="padding:6px">Status</th> 
+                    </tr> 
+                </thead> 
+                <tbody>${rows}</tbody> 
+            </table> 
+            <p style="margin-top:15px;font-size:10px;">Total: <strong>${filteredMembers.length}</strong> wanachama</p> 
+            <p style="margin-top:35px;font-size:9px;">Printed: ${new Date().toLocaleString()}</p> 
+        </div> 
+    `; 
+    window.print(); 
+} 
+ 
+async function logoutUser() { 
+    try { 
+        if (typeof _supabase !== 'undefined') { 
+            await _supabase.auth.signOut(); 
+        } 
+    } catch (error) { 
+        console.warn(error); 
+    } 
+    sessionStorage.clear(); 
+    window.location.href = '../login.html'; 
+} 
+ 
+document.getElementById('mobile-menu').addEventListener('click', () => { 
+    const sidebar = document.getElementById('sidebar'); 
+    const overlay = document.getElementById('mobile-overlay'); 
+    sidebar.classList.remove('-translate-x-full'); 
+    overlay.classList.remove('hidden'); 
+}); 
+ 
+document.getElementById('mobile-overlay').addEventListener('click', closeMobileMenu);
+
+document.querySelectorAll('#sidebar a').forEach(link => {
+    link.addEventListener('click', closeMobileMenu);
+}); 
+ 
+function closeMobileMenu() { 
+    document.getElementById('sidebar').classList.add('-translate-x-full'); 
+    document.getElementById('mobile-overlay').classList.add('hidden'); 
+} 
+ 
+document.addEventListener('click', event => { 
+    const memberModal = document.getElementById('member-modal'); 
+    const addModal = document.getElementById('add-member-modal'); 
+    if (event.target === memberModal) closeMemberModal(); 
+    if (event.target === addModal) closeAddMember(); 
+}); 
+ 
+document.addEventListener('keydown', event => { 
+    if (event.key === 'Escape') { 
+        closeMemberModal(); 
+        closeAddMember(); 
+    } 
+}); 
+ 
+document.addEventListener('DOMContentLoaded', async () => { 
+    const authenticated = await checkAuthentication(); 
+    if (authenticated) { 
+        await loadMembers(); 
+        updateFilterSummary(); 
+    } 
+}); 
+</script> 
+</body> 
+</html> 

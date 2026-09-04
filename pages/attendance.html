@@ -1,0 +1,3335 @@
+<!DOCTYPE html>
+<html lang="sw">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Mahudhurio | DCF MIS</title>
+
+    <!-- =====================================================
+         TAILWIND
+    ====================================================== -->
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+
+        tailwind.config = {
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        dcf: {
+                            50: '#f3f8f5',
+                            100: '#e4f0e9',
+                            200: '#c8e2d3',
+                            300: '#9fc8b1',
+                            500: '#2e7d58',
+                            600: '#236044',
+                            700: '#1b4f38',
+                            800: '#174a35',
+                            900: '#103a29'
+                        }
+
+                    },
+
+                    boxShadow: {
+
+                        card:
+                            '0 2px 12px rgba(16,58,41,.06)',
+
+                        soft:
+                            '0 8px 30px rgba(16,58,41,.10)'
+
+                    }
+
+                }
+
+            }
+
+        };
+
+    </script>
+
+
+    <!-- =====================================================
+         SUPABASE
+    ====================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="../js/supabase.js"></script>
+<script src="../js/role-guard.js"></script>
+
+    <!-- =====================================================
+         STYLE
+    ====================================================== -->
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+
+            margin: 0;
+
+            background: #f5f7f6;
+
+            color: #1f2937;
+
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+        }
+
+        .field {
+
+            width: 100%;
+
+            height: 42px;
+
+            border: 1px solid #d9e2dd;
+
+            background: white;
+
+            border-radius: 8px;
+
+            padding: 0 12px;
+
+            font-size: 12px;
+
+            outline: none;
+
+            transition: .18s ease;
+
+        }
+
+        .field:focus {
+
+            border-color: #236044;
+
+            box-shadow:
+                0 0 0 3px rgba(35,96,68,.08);
+
+        }
+
+        .member-row {
+
+            transition: .15s ease;
+
+        }
+
+        .member-row:hover {
+
+            background: #fafcfb;
+
+        }
+
+        .status-btn {
+
+            min-width: 86px;
+
+            height: 32px;
+
+            border-radius: 7px;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            border: 1px solid #dce4df;
+
+            transition: .15s ease;
+
+        }
+
+        .status-btn:hover {
+
+            transform: translateY(-1px);
+
+        }
+
+        .status-present {
+
+            background: #e7f5ed;
+
+            color: #17613d;
+
+            border-color: #b9dec9;
+
+        }
+
+        .status-absent {
+
+            background: #fff0ef;
+
+            color: #b42318;
+
+            border-color: #f1c7c3;
+
+        }
+
+        .status-apology {
+
+            background: #fff7df;
+
+            color: #946200;
+
+            border-color: #ead89d;
+
+        }
+
+        .avatar {
+
+            width: 42px;
+
+            height: 42px;
+
+            border-radius: 50%;
+
+            object-fit: cover;
+
+            border: 1px solid #dce5df;
+
+            background: #edf3ef;
+
+        }
+
+        .avatar-placeholder {
+
+            width: 42px;
+
+            height: 42px;
+
+            border-radius: 50%;
+
+            background: #e4f0e9;
+
+            color: #174a35;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            border: 1px solid #c8e2d3;
+
+        }
+
+        .spinner {
+
+            width: 16px;
+
+            height: 16px;
+
+            border: 2px solid rgba(255,255,255,.35);
+
+            border-top-color: white;
+
+            border-radius: 50%;
+
+            animation: spin .7s linear infinite;
+
+        }
+
+        @keyframes spin {
+
+            to {
+                transform: rotate(360deg);
+            }
+
+        }
+
+        .modal {
+
+            opacity: 0;
+
+            visibility: hidden;
+
+            pointer-events: none;
+
+            transition: .18s ease;
+
+        }
+
+        .modal.active {
+
+            opacity: 1;
+
+            visibility: visible;
+
+            pointer-events: auto;
+
+        }
+
+        .modal-box {
+
+            transform: translateY(12px) scale(.98);
+
+            transition: .18s ease;
+
+        }
+
+        .modal.active .modal-box {
+
+            transform: translateY(0) scale(1);
+
+        }
+
+        .loading {
+
+            animation: pulseLoading 1.4s infinite;
+
+        }
+
+        @keyframes pulseLoading {
+
+            0%,100% {
+                opacity: .45;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+        }
+
+        @media print {
+
+            body {
+
+                background: white !important;
+
+            }
+
+            .no-print {
+
+                display: none !important;
+
+            }
+
+            .print-area {
+
+                box-shadow: none !important;
+
+                border: none !important;
+
+            }
+
+            table {
+
+                width: 100% !important;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body data-allowed-roles="admin,staff,auditor">
+
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header class="no-print bg-dcf-800 text-white">
+
+    <div class="max-w-[1500px] mx-auto px-5 lg:px-8">
+
+        <div class="h-[70px] flex items-center justify-between">
+
+            <div class="flex items-center gap-3">
+
+                <div
+                    class="w-10 h-10 rounded-lg bg-white text-dcf-800 flex items-center justify-center font-black text-xs"
+                >
+                    DCF
+                </div>
+
+                <div>
+
+                    <div class="text-[15px] font-bold">
+                        DCF MIS SYSTEM
+                    </div>
+
+                    <div class="text-[10px] text-green-100/70 uppercase tracking-widest">
+                        Management Information System
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="flex items-center gap-3">
+
+                <div class="hidden md:block text-right">
+
+                    <div
+                        id="currentUserName"
+                        class="text-[12px] font-bold"
+                    >
+                        Mfumo
+                    </div>
+
+                    <div
+                        id="currentUserRole"
+                        class="text-[10px] text-green-100/70 uppercase"
+                    >
+                        User
+                    </div>
+
+                </div>
+
+                <div
+                    id="userInitial"
+                    class="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-xs font-bold"
+                >
+                    U
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main class="max-w-[1500px] mx-auto px-5 lg:px-8 py-7">
+
+
+    <!-- PAGE HEADER -->
+
+    <div class="no-print flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 mb-6">
+
+        <div>
+
+            <div class="text-[10px] text-gray-400 mb-2">
+                DCF MIS / Mahudhurio
+            </div>
+
+            <h1 class="text-[25px] font-bold text-gray-800">
+                Usimamizi wa Mahudhurio
+            </h1>
+
+            <p class="text-[12px] text-gray-500 mt-1">
+                Chagua wanachama kutoka kwenye mfumo wa Members na weka hali ya mahudhurio.
+            </p>
+
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+
+            <button
+                type="button"
+                onclick="goDashboard()"
+                class="h-10 px-4 rounded-lg bg-white border border-gray-200 text-gray-700 text-[11px] font-bold hover:bg-gray-50"
+            >
+                ← Dashboard
+            </button>
+
+            <button
+                type="button"
+                onclick="refreshMembers()"
+                class="h-10 px-4 rounded-lg bg-white border border-gray-200 text-gray-700 text-[11px] font-bold hover:bg-gray-50"
+            >
+                ↻ Refresh
+            </button>
+
+            <button
+                type="button"
+                onclick="printAttendance()"
+                class="h-10 px-4 rounded-lg bg-dcf-800 text-white text-[11px] font-bold hover:bg-dcf-900"
+            >
+                Print
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MEETING DETAILS
+    ====================================================== -->
+
+    <section class="no-print bg-white border border-gray-200 rounded-xl shadow-card p-5 mb-5">
+
+        <div class="flex items-center justify-between mb-4">
+
+            <div>
+
+                <h2 class="text-[14px] font-bold text-gray-800">
+                    Taarifa za Kikao / Shughuli
+                </h2>
+
+                <p class="text-[10px] text-gray-400 mt-1">
+                    Weka taarifa hizi kabla ya kuanza kuweka mahudhurio.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+            <div>
+
+                <label class="block text-[10px] font-bold text-gray-500 mb-1.5">
+                    Jina la Kikao / Shughuli
+                </label>
+
+                <input
+                    id="activityName"
+                    type="text"
+                    class="field"
+                    placeholder="Mfano: Kikao cha Wanachama"
+                >
+
+            </div>
+
+            <div>
+
+                <label class="block text-[10px] font-bold text-gray-500 mb-1.5">
+                    Tarehe
+                </label>
+
+                <input
+                    id="attendanceDate"
+                    type="date"
+                    class="field"
+                >
+
+            </div>
+
+            <div>
+
+                <label class="block text-[10px] font-bold text-gray-500 mb-1.5">
+                    Search Member
+                </label>
+
+                <input
+                    id="memberSearch"
+                    type="search"
+                    class="field"
+                    placeholder="Tafuta jina, simu, email au Member ID..."
+                >
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         STATISTICS
+    ====================================================== -->
+
+    <section class="no-print grid grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+
+        <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-card">
+
+            <p class="text-[9px] font-bold uppercase tracking-wider text-gray-400">
+                Wanachama
+            </p>
+
+            <div
+                id="totalMembers"
+                class="text-[25px] font-bold text-dcf-800 mt-2"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="bg-white border border-green-100 rounded-xl p-4 shadow-card">
+
+            <p class="text-[9px] font-bold uppercase tracking-wider text-gray-400">
+                Wamehudhuria
+            </p>
+
+            <div
+                id="presentCount"
+                class="text-[25px] font-bold text-green-700 mt-2"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="bg-white border border-red-100 rounded-xl p-4 shadow-card">
+
+            <p class="text-[9px] font-bold uppercase tracking-wider text-gray-400">
+                Hawajahudhuria
+            </p>
+
+            <div
+                id="absentCount"
+                class="text-[25px] font-bold text-red-600 mt-2"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="bg-white border border-yellow-100 rounded-xl p-4 shadow-card">
+
+            <p class="text-[9px] font-bold uppercase tracking-wider text-gray-400">
+                Udhuru
+            </p>
+
+            <div
+                id="apologyCount"
+                class="text-[25px] font-bold text-yellow-700 mt-2"
+            >
+                0
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MAIN GRID
+    ====================================================== -->
+
+    <div class="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-5">
+
+
+        <!-- ATTENDANCE TABLE -->
+
+        <section class="bg-white border border-gray-200 rounded-xl shadow-card overflow-hidden print-area">
+
+            <div class="no-print px-5 py-4 border-b border-gray-200">
+
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+
+                    <div>
+
+                        <h2 class="text-[14px] font-bold text-gray-800">
+                            Orodha ya Wanachama
+                        </h2>
+
+                        <p class="text-[10px] text-gray-400 mt-1">
+                            Weka hali ya kila mshiriki wa kikao.
+                        </p>
+
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+
+                        <button
+                            type="button"
+                            onclick="markAll('Present')"
+                            class="h-8 px-3 rounded-md bg-green-50 text-green-700 border border-green-200 text-[10px] font-bold"
+                        >
+                            ✓ Wote Wamehudhuria
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="markAll('Absent')"
+                            class="h-8 px-3 rounded-md bg-red-50 text-red-700 border border-red-200 text-[10px] font-bold"
+                        >
+                            ✕ Wote Hawapo
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="markAll('Apology')"
+                            class="h-8 px-3 rounded-md bg-yellow-50 text-yellow-700 border border-yellow-200 text-[10px] font-bold"
+                        >
+                            ! Wote Udhuru
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="resetAttendance()"
+                            class="h-8 px-3 rounded-md bg-gray-50 text-gray-600 border border-gray-200 text-[10px] font-bold"
+                        >
+                            Reset
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PRINT TITLE -->
+
+            <div class="hidden print:block p-6">
+
+                <div class="text-center">
+
+                    <h1 class="text-xl font-bold text-dcf-800">
+                        DCF MIS SYSTEM
+                    </h1>
+
+                    <h2 class="text-lg font-bold mt-1">
+                        ORODHA YA MAHUDHURIO
+                    </h2>
+
+                    <p class="text-sm mt-2">
+                        Kikao:
+                        <strong id="printActivity"></strong>
+                    </p>
+
+                    <p class="text-sm">
+                        Tarehe:
+                        <strong id="printAttendanceDate"></strong>
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- TABLE -->
+
+            <div class="overflow-x-auto">
+
+                <table class="w-full min-w-[850px]">
+
+                    <thead>
+
+                        <tr class="bg-gray-50 border-b border-gray-200">
+
+                            <th class="px-5 py-3 text-left text-[9px] font-bold uppercase text-gray-500">
+                                #
+                            </th>
+
+                            <th class="px-3 py-3 text-left text-[9px] font-bold uppercase text-gray-500">
+                                Member
+                            </th>
+
+                            <th class="px-3 py-3 text-left text-[9px] font-bold uppercase text-gray-500">
+                                Simu
+                            </th>
+
+                            <th class="px-3 py-3 text-center text-[9px] font-bold uppercase text-gray-500">
+                                Hali ya Mahudhurio
+                            </th>
+
+                            <th class="no-print px-5 py-3 text-right text-[9px] font-bold uppercase text-gray-500">
+                                Ujumbe
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="memberTable">
+
+                        <tr>
+
+                            <td
+                                colspan="5"
+                                class="px-5 py-14 text-center text-gray-400 text-xs loading"
+                            >
+                                Inapakia wanachama...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+            <!-- SAVE BAR -->
+
+            <div class="no-print px-5 py-4 border-t border-gray-200 bg-gray-50/60 flex flex-col sm:flex-row gap-3 justify-between items-center">
+
+                <div class="text-[11px] text-gray-500">
+
+                    Umeweka hali kwa
+
+                    <strong id="markedCount">0</strong>
+
+                    /
+
+                    <strong id="markedTotal">0</strong>
+
+                    wanachama.
+
+                </div>
+
+                <button
+                    id="saveAttendanceBtn"
+                    type="button"
+                    onclick="saveAttendance()"
+                    class="h-10 px-6 rounded-lg bg-dcf-800 hover:bg-dcf-900 text-white text-[11px] font-bold flex items-center gap-2"
+                >
+
+                    <span
+                        id="saveSpinner"
+                        class="hidden spinner"
+                    ></span>
+
+                    <span id="saveText">
+                        Hifadhi Mahudhurio
+                    </span>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             RIGHT SIDE
+        ================================================== -->
+
+        <aside class="no-print space-y-5">
+
+
+            <!-- MESSAGE -->
+
+            <section class="bg-white border border-gray-200 rounded-xl shadow-card overflow-hidden">
+
+                <div class="px-5 py-4 border-b border-gray-200">
+
+                    <h2 class="text-[14px] font-bold text-gray-800">
+                        Tuma Ujumbe wa Kikao
+                    </h2>
+
+                    <p class="text-[10px] text-gray-400 mt-1">
+                        Tuma taarifa kwa wanachama wenye namba za simu.
+                    </p>
+
+                </div>
+
+                <div class="p-5 space-y-4">
+
+                    <div>
+
+                        <label class="block text-[10px] font-bold text-gray-500 mb-1.5">
+                            Ujumbe
+                        </label>
+
+                        <textarea
+                            id="meetingMessage"
+                            rows="7"
+                            class="w-full border border-gray-200 rounded-lg p-3 text-[12px] outline-none focus:border-dcf-600 resize-none"
+                            placeholder="Ndugu mwanachama, tunakukumbusha kuwa kikao chetu kitafanyika..."
+                        ></textarea>
+
+                    </div>
+
+                    <div class="bg-dcf-50 border border-dcf-100 rounded-lg p-3">
+
+                        <div class="flex justify-between text-[10px]">
+
+                            <span class="text-gray-500">
+                                Wenye simu
+                            </span>
+
+                            <strong
+                                id="phoneMembers"
+                                class="text-dcf-800"
+                            >
+                                0
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        onclick="prepareMessage()"
+                        class="w-full h-10 rounded-lg bg-dcf-800 hover:bg-dcf-900 text-white text-[11px] font-bold"
+                    >
+                        Tuma / Fungua WhatsApp
+                    </button>
+
+                    <p class="text-[9px] text-gray-400 leading-4">
+                        Mfumo utaandaa ujumbe na kufungua WhatsApp kwa mwanachama mwenye namba.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- QUICK ACTIONS -->
+
+            <section class="bg-white border border-gray-200 rounded-xl shadow-card p-5">
+
+                <h2 class="text-[14px] font-bold text-gray-800 mb-4">
+                    Vitendo vya Haraka
+                </h2>
+
+                <div class="space-y-2">
+
+                    <button
+                        type="button"
+                        onclick="openHistory()"
+                        class="w-full h-10 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-[11px] font-bold text-left px-3"
+                    >
+                        ◷ Historia ya Mahudhurio
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="printAttendance()"
+                        class="w-full h-10 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-[11px] font-bold text-left px-3"
+                    >
+                        🖨 Print Orodha
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="goDashboard()"
+                        class="w-full h-10 rounded-lg bg-gray-800 hover:bg-gray-900 text-white text-[11px] font-bold text-left px-3"
+                    >
+                        ← Rudi Dashboard
+                    </button>
+
+                </div>
+
+            </section>
+
+        </aside>
+
+    </div>
+
+</main>
+
+
+<!-- =========================================================
+     HISTORY MODAL
+========================================================= -->
+
+<div
+    id="historyModal"
+    class="modal fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
+>
+
+    <div class="modal-box bg-white rounded-xl shadow-soft w-full max-w-[850px] max-h-[85vh] overflow-hidden">
+
+        <div class="px-5 py-4 border-b flex justify-between items-center">
+
+            <div>
+
+                <h3 class="font-bold text-gray-800 text-[14px]">
+                    Historia ya Mahudhurio
+                </h3>
+
+                <p class="text-[10px] text-gray-400 mt-1">
+                    Rekodi zilizohifadhiwa kwenye mfumo.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                onclick="closeHistory()"
+                class="w-8 h-8 rounded-md bg-gray-100 text-gray-600"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div class="overflow-auto max-h-[65vh]">
+
+            <table class="w-full min-w-[650px]">
+
+                <thead class="sticky top-0 bg-gray-50 border-b">
+
+                    <tr>
+
+                        <th class="p-3 text-left text-[9px] uppercase text-gray-500">
+                            Member
+                        </th>
+
+                        <th class="p-3 text-left text-[9px] uppercase text-gray-500">
+                            Kikao
+                        </th>
+
+                        <th class="p-3 text-left text-[9px] uppercase text-gray-500">
+                            Tarehe
+                        </th>
+
+                        <th class="p-3 text-left text-[9px] uppercase text-gray-500">
+                            Hali
+                        </th>
+
+                        <th class="p-3 text-right text-[9px] uppercase text-gray-500">
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="historyTable">
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="p-8 text-center text-gray-400"
+                        >
+                            Inapakia...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     MESSAGE MODAL
+========================================================= -->
+
+<div
+    id="messageModal"
+    class="modal fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
+>
+
+    <div class="modal-box bg-white rounded-xl shadow-soft w-full max-w-[520px]">
+
+        <div class="p-6">
+
+            <h3 class="font-bold text-gray-800 text-[15px]">
+                Tuma Ujumbe
+            </h3>
+
+            <p class="text-[11px] text-gray-500 mt-1">
+                Mfumo utatumia namba za simu zilizopo kwenye Members.
+            </p>
+
+            <div
+                id="messagePreview"
+                class="mt-4 bg-gray-50 border border-gray-200 rounded-lg p-4 text-[12px] text-gray-700 whitespace-pre-wrap"
+            ></div>
+
+        </div>
+
+        <div class="px-6 py-4 bg-gray-50 border-t flex justify-end gap-2">
+
+            <button
+                type="button"
+                onclick="closeMessageModal()"
+                class="h-9 px-4 rounded-md border border-gray-200 bg-white text-[11px] font-bold"
+            >
+                Ghairi
+            </button>
+
+            <button
+                type="button"
+                onclick="sendToSelected()"
+                class="h-9 px-4 rounded-md bg-dcf-800 text-white text-[11px] font-bold"
+            >
+                Endelea WhatsApp
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     TOAST
+========================================================= -->
+
+<div
+    id="toast"
+    class="fixed right-5 bottom-5 z-[100] hidden"
+>
+
+    <div
+        id="toastContent"
+        class="px-4 py-3 rounded-lg shadow-soft text-white text-[11px] font-semibold"
+    ></div>
+
+</div>
+
+
+<script>
+
+/* ============================================================
+   GLOBAL VARIABLES
+============================================================ */
+
+let members = [];
+
+let attendanceState = {};
+
+let savedAttendance = {};
+
+let selectedMessageMembers = [];
+
+let currentRole = '';
+
+
+
+/* ============================================================
+   START SYSTEM
+============================================================ */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    initializePage
+);
+
+
+async function initializePage() {
+
+    const isLoggedIn =
+        sessionStorage.getItem('userLoggedIn');
+
+    const userRole =
+        sessionStorage.getItem('userRole');
+
+
+    if (!isLoggedIn || !userRole) {
+
+        window.location.href =
+            '../login.html';
+
+        return;
+
+    }
+
+
+    currentRole =
+        String(userRole).toLowerCase();
+
+
+    const userName =
+        sessionStorage.getItem('userName') ||
+        sessionStorage.getItem('fullName') ||
+        'Mfumo';
+
+
+    document.getElementById(
+        'currentUserName'
+    ).textContent = userName;
+
+
+    document.getElementById(
+        'currentUserRole'
+    ).textContent = currentRole;
+
+
+    document.getElementById(
+        'userInitial'
+    ).textContent =
+        getInitials(userName);
+
+
+    setToday();
+
+
+    document.getElementById(
+        'memberSearch'
+    ).addEventListener(
+        'input',
+        renderMembers
+    );
+
+
+    document.getElementById(
+        'activityName'
+    ).addEventListener(
+        'change',
+        loadExistingAttendance
+    );
+
+
+    document.getElementById(
+        'attendanceDate'
+    ).addEventListener(
+        'change',
+        loadExistingAttendance
+    );
+
+
+    applyPermissions();
+
+
+    await loadMembers();
+
+}
+
+
+
+/* ============================================================
+   DASHBOARD
+============================================================ */
+
+function goDashboard() {
+
+    window.location.href =
+        '../dashboard.html';
+
+}
+
+
+
+/* ============================================================
+   DATE
+============================================================ */
+
+function setToday() {
+
+    const today =
+        new Date();
+
+    const year =
+        today.getFullYear();
+
+    const month =
+        String(
+            today.getMonth() + 1
+        ).padStart(2, '0');
+
+    const day =
+        String(
+            today.getDate()
+        ).padStart(2, '0');
+
+    document.getElementById(
+        'attendanceDate'
+    ).value =
+        `${year}-${month}-${day}`;
+
+}
+
+
+
+/* ============================================================
+   LOAD MEMBERS
+   MUHIMU:
+   TABLE NI MEMBERS
+   PHOTO_URL IMEONDOLEWA
+============================================================ */
+
+async function loadMembers() {
+
+    const tbody =
+        document.getElementById(
+            'memberTable'
+        );
+
+
+    tbody.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="5"
+                class="px-5 py-14 text-center text-gray-400 text-xs loading"
+            >
+                Inapakia wanachama...
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try {
+
+        /*
+         * MUHIMU SANA:
+         *
+         * HATUTUMII:
+         * photo_url
+         *
+         * Kwa sababu column hiyo haipo kwenye members.
+         *
+         * Tunatumia passport_image_url ambayo ipo
+         * kwenye database yako.
+         */
+
+        const {
+            data,
+            error
+        } = await _supabase
+
+            .from('members')
+
+            .select(`
+                id,
+                member_id,
+                full_name,
+                phone,
+                email,
+                passport_image_url,
+                status,
+                member_type,
+                joining_date
+            `)
+
+            .order(
+                'full_name',
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        members =
+            data || [];
+
+
+        attendanceState = {};
+
+
+        members.forEach(
+            member => {
+
+                attendanceState[
+                    String(member.id)
+                ] = '';
+
+            }
+        );
+
+
+        document.getElementById(
+            'totalMembers'
+        ).textContent =
+            members.length;
+
+
+        updateStatistics();
+
+
+        renderMembers();
+
+
+        /*
+         * Baada ya Members kupakiwa,
+         * tunatafuta attendance ya kikao
+         */
+
+        await loadExistingAttendance();
+
+
+        if (!members.length) {
+
+            tbody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="5"
+                        class="px-5 py-14 text-center"
+                    >
+
+                        <div class="text-gray-700 font-bold text-[12px]">
+                            Hakuna wanachama
+                        </div>
+
+                        <div class="text-gray-400 text-[10px] mt-2">
+                            Hakuna taarifa zilizopatikana kwenye table members.
+                        </div>
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            'Load members error:',
+            error
+        );
+
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="5"
+                    class="px-5 py-14 text-center"
+                >
+
+                    <div class="text-red-600 font-bold text-[12px]">
+                        Imeshindikana kupakia wanachama.
+                    </div>
+
+                    <div class="text-gray-500 text-[10px] mt-2 max-w-xl mx-auto">
+                        ${escapeHTML(error.message)}
+                    </div>
+
+                    <div class="text-gray-400 text-[9px] mt-2">
+                        Hakikisha table "members" ina columns:
+                        id, member_id, full_name, phone, email.
+                    </div>
+
+                    <button
+                        type="button"
+                        onclick="loadMembers()"
+                        class="mt-4 px-4 py-2 bg-dcf-800 text-white rounded-lg text-[10px] font-bold"
+                    >
+                        Jaribu Tena
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+
+/* ============================================================
+   LOAD EXISTING ATTENDANCE
+============================================================ */
+
+async function loadExistingAttendance() {
+
+    const activity =
+        document.getElementById(
+            'activityName'
+        ).value.trim();
+
+
+    const date =
+        document.getElementById(
+            'attendanceDate'
+        ).value;
+
+
+    if (!activity || !date) {
+
+        return;
+
+    }
+
+
+    if (!members.length) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await _supabase
+
+            .from('attendance_records')
+
+            .select(`
+                id,
+                member_id,
+                status
+            `)
+
+            .eq(
+                'activity_name',
+                activity
+            )
+
+            .eq(
+                'attendance_date',
+                date
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        savedAttendance = {};
+
+
+        /*
+         * Kwanza tunafuta hali zilizopita
+         */
+
+        members.forEach(
+            member => {
+
+                attendanceState[
+                    String(member.id)
+                ] = '';
+
+            }
+        );
+
+
+        /*
+         * Kisha tunaweka zilizohifadhiwa
+         */
+
+        (data || []).forEach(
+            row => {
+
+                savedAttendance[
+                    String(row.member_id)
+                ] = {
+
+                    id:
+                        row.id,
+
+                    status:
+                        row.status
+
+                };
+
+
+                attendanceState[
+                    String(row.member_id)
+                ] =
+                    row.status;
+
+            }
+        );
+
+
+        renderMembers();
+
+
+        updateStatistics();
+
+
+    } catch (error) {
+
+        console.error(
+            'Existing attendance error:',
+            error
+        );
+
+    }
+
+}
+
+
+
+/* ============================================================
+   RENDER MEMBERS
+============================================================ */
+
+function renderMembers() {
+
+    const tbody =
+        document.getElementById(
+            'memberTable'
+        );
+
+
+    const search =
+        document.getElementById(
+            'memberSearch'
+        ).value
+            .trim()
+            .toLowerCase();
+
+
+    const filtered =
+        members.filter(
+            member => {
+
+                const text = [
+
+                    member.full_name,
+                    member.phone,
+                    member.email,
+                    member.member_id,
+                    member.member_type
+
+                ]
+
+                    .filter(Boolean)
+
+                    .join(' ')
+
+                    .toLowerCase();
+
+
+                return text.includes(search);
+
+            }
+        );
+
+
+    if (!filtered.length) {
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="5"
+                    class="px-5 py-14 text-center text-gray-400 text-xs"
+                >
+
+                    Hakuna member anayelingana na utafutaji.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        updateStatistics();
+
+        return;
+
+    }
+
+
+    tbody.innerHTML =
+        filtered.map(
+            (member, index) => {
+
+                const id =
+                    String(member.id);
+
+
+                const status =
+                    attendanceState[id] || '';
+
+
+                const name =
+                    escapeHTML(
+                        member.full_name || '-'
+                    );
+
+
+                const phone =
+                    escapeHTML(
+                        member.phone || '-'
+                    );
+
+
+                /*
+                 * Tunatumia passport_image_url,
+                 * si photo_url.
+                 */
+
+                let avatar = '';
+
+
+                if (
+                    member.passport_image_url
+                ) {
+
+                    avatar = `
+
+                        <img
+                            src="${escapeAttribute(member.passport_image_url)}"
+                            class="avatar"
+                            alt="Member"
+                            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                        >
+
+                        <div
+                            class="avatar-placeholder"
+                            style="display:none"
+                        >
+                            ${getInitials(member.full_name)}
+                        </div>
+
+                    `;
+
+                } else {
+
+                    avatar = `
+
+                        <div class="avatar-placeholder">
+                            ${getInitials(member.full_name)}
+                        </div>
+
+                    `;
+
+                }
+
+
+                return `
+
+                    <tr
+                        class="member-row border-b border-gray-100"
+                        data-member-id="${escapeAttribute(id)}"
+                    >
+
+                        <td
+                            class="px-5 py-4 text-[10px] text-gray-400"
+                        >
+                            ${index + 1}
+                        </td>
+
+
+                        <td class="px-3 py-4">
+
+                            <div class="flex items-center gap-3">
+
+                                <div class="shrink-0">
+                                    ${avatar}
+                                </div>
+
+
+                                <div>
+
+                                    <div
+                                        class="text-[12px] font-bold text-gray-800"
+                                    >
+                                        ${name}
+                                    </div>
+
+
+                                    ${
+                                        member.member_id
+
+                                        ?
+
+                                        `<div
+                                            class="text-[9px] text-dcf-600 font-semibold mt-1"
+                                        >
+                                            ID: ${escapeHTML(member.member_id)}
+                                        </div>`
+
+                                        :
+
+                                        ''
+                                    }
+
+
+                                    ${
+                                        member.email
+
+                                        ?
+
+                                        `<div
+                                            class="text-[9px] text-gray-400 mt-1"
+                                        >
+                                            ${escapeHTML(member.email)}
+                                        </div>`
+
+                                        :
+
+                                        ''
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        </td>
+
+
+                        <td class="px-3 py-4">
+
+                            <span
+                                class="text-[11px] text-gray-600"
+                            >
+                                ${phone}
+                            </span>
+
+                        </td>
+
+
+                        <td class="px-3 py-4">
+
+                            <div
+                                class="flex items-center justify-center gap-1.5 flex-wrap"
+                            >
+
+                                <button
+                                    type="button"
+                                    onclick="setAttendance('${escapeAttribute(id)}','Present')"
+                                    class="status-btn ${
+                                        status === 'Present'
+                                        ? 'status-present'
+                                        : 'bg-white text-gray-500'
+                                    }"
+                                >
+                                    ✓ Present
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    onclick="setAttendance('${escapeAttribute(id)}','Absent')"
+                                    class="status-btn ${
+                                        status === 'Absent'
+                                        ? 'status-absent'
+                                        : 'bg-white text-gray-500'
+                                    }"
+                                >
+                                    ✕ Absent
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    onclick="setAttendance('${escapeAttribute(id)}','Apology')"
+                                    class="status-btn ${
+                                        status === 'Apology'
+                                        ? 'status-apology'
+                                        : 'bg-white text-gray-500'
+                                    }"
+                                >
+                                    ! Udhuru
+                                </button>
+
+                            </div>
+
+                        </td>
+
+
+                        <td class="no-print px-5 py-4 text-right">
+
+                            ${
+                                member.phone
+
+                                ?
+
+                                `<button
+                                    type="button"
+                                    onclick="messageMember('${escapeAttribute(id)}')"
+                                    class="w-8 h-8 rounded-md border border-green-200 bg-green-50 text-green-700 text-[11px] font-bold"
+                                    title="WhatsApp"
+                                >
+                                    W
+                                </button>`
+
+                                :
+
+                                `<span class="text-[9px] text-gray-300">
+                                    No phone
+                                </span>`
+
+                            }
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            }
+
+        ).join('');
+
+
+    updateStatistics();
+
+}
+
+
+
+/* ============================================================
+   SET ATTENDANCE
+============================================================ */
+
+function setAttendance(
+    memberId,
+    status
+) {
+
+    if (
+        currentRole === 'auditor'
+    ) {
+
+        return;
+
+    }
+
+
+    attendanceState[
+        String(memberId)
+    ] =
+        status;
+
+
+    renderMembers();
+
+    updateStatistics();
+
+}
+
+
+
+/* ============================================================
+   MARK ALL
+============================================================ */
+
+function markAll(
+    status
+) {
+
+    if (
+        currentRole === 'auditor'
+    ) {
+
+        return;
+
+    }
+
+
+    members.forEach(
+        member => {
+
+            attendanceState[
+                String(member.id)
+            ] =
+                status;
+
+        }
+    );
+
+
+    renderMembers();
+
+
+    showToast(
+        `Wanachama wote wamewekwa ${status}.`
+    );
+
+}
+
+
+
+/* ============================================================
+   RESET
+============================================================ */
+
+function resetAttendance() {
+
+    if (
+        currentRole === 'auditor'
+    ) {
+
+        return;
+
+    }
+
+
+    members.forEach(
+        member => {
+
+            attendanceState[
+                String(member.id)
+            ] = '';
+
+        }
+    );
+
+
+    renderMembers();
+
+    updateStatistics();
+
+}
+
+
+
+/* ============================================================
+   STATISTICS
+============================================================ */
+
+function updateStatistics() {
+
+    const total =
+        members.length;
+
+
+    const present =
+        Object.values(
+            attendanceState
+        )
+            .filter(
+                status =>
+                    status === 'Present'
+            )
+            .length;
+
+
+    const absent =
+        Object.values(
+            attendanceState
+        )
+            .filter(
+                status =>
+                    status === 'Absent'
+            )
+            .length;
+
+
+    const apology =
+        Object.values(
+            attendanceState
+        )
+            .filter(
+                status =>
+                    status === 'Apology'
+            )
+            .length;
+
+
+    const marked =
+        present +
+        absent +
+        apology;
+
+
+    document.getElementById(
+        'totalMembers'
+    ).textContent =
+        total;
+
+
+    document.getElementById(
+        'presentCount'
+    ).textContent =
+        present;
+
+
+    document.getElementById(
+        'absentCount'
+    ).textContent =
+        absent;
+
+
+    document.getElementById(
+        'apologyCount'
+    ).textContent =
+        apology;
+
+
+    document.getElementById(
+        'markedCount'
+    ).textContent =
+        marked;
+
+
+    document.getElementById(
+        'markedTotal'
+    ).textContent =
+        total;
+
+
+    document.getElementById(
+        'phoneMembers'
+    ).textContent =
+        members.filter(
+            member =>
+                member.phone
+        ).length;
+
+}
+
+
+
+/* ============================================================
+   SAVE ATTENDANCE
+============================================================ */
+
+async function saveAttendance() {
+
+    if (
+        currentRole === 'auditor'
+    ) {
+
+        showToast(
+            'Auditor hana ruhusa ya kuhifadhi.',
+            true
+        );
+
+        return;
+
+    }
+
+
+    const activity =
+        document.getElementById(
+            'activityName'
+        ).value.trim();
+
+
+    const date =
+        document.getElementById(
+            'attendanceDate'
+        ).value;
+
+
+    if (!activity) {
+
+        showToast(
+            'Weka jina la kikao kwanza.',
+            true
+        );
+
+        return;
+
+    }
+
+
+    if (!date) {
+
+        showToast(
+            'Chagua tarehe ya kikao.',
+            true
+        );
+
+        return;
+
+    }
+
+
+    const records =
+        members
+
+            .filter(
+                member =>
+                    attendanceState[
+                        String(member.id)
+                    ]
+            )
+
+            .map(
+                member => ({
+
+                    member_id:
+                        member.id,
+
+                    activity_name:
+                        activity,
+
+                    attendance_date:
+                        date,
+
+                    status:
+                        attendanceState[
+                            String(member.id)
+                        ]
+
+                })
+            );
+
+
+    if (!records.length) {
+
+        showToast(
+            'Weka Present, Absent au Udhuru kwa angalau member mmoja.',
+            true
+        );
+
+        return;
+
+    }
+
+
+    const button =
+        document.getElementById(
+            'saveAttendanceBtn'
+        );
+
+
+    const spinner =
+        document.getElementById(
+            'saveSpinner'
+        );
+
+
+    const text =
+        document.getElementById(
+            'saveText'
+        );
+
+
+    button.disabled = true;
+
+    spinner.classList.remove(
+        'hidden'
+    );
+
+    text.textContent =
+        'Inahifadhi...';
+
+
+    try {
+
+        /*
+         * attendance_records.member_id
+         * sasa inapaswa kuwa FK ya members.id
+         */
+
+        const {
+            error
+        } = await _supabase
+
+            .from('attendance_records')
+
+            .upsert(
+                records,
+                {
+                    onConflict:
+                        'member_id,activity_name,attendance_date'
+                }
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        await loadExistingAttendance();
+
+
+        showToast(
+            `Mahudhurio ${records.length} yamehifadhiwa kikamilifu.`
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            'Save attendance error:',
+            error
+        );
+
+
+        showToast(
+            'Imeshindikana kuhifadhi: ' +
+            error.message,
+            true
+        );
+
+
+    } finally {
+
+        button.disabled = false;
+
+        spinner.classList.add(
+            'hidden'
+        );
+
+        text.textContent =
+            'Hifadhi Mahudhurio';
+
+    }
+
+}
+
+
+
+/* ============================================================
+   REFRESH
+============================================================ */
+
+async function refreshMembers() {
+
+    await loadMembers();
+
+
+    showToast(
+        'Taarifa za Members zimehuishwa.'
+    );
+
+}
+
+
+
+/* ============================================================
+   MESSAGE PREPARATION
+============================================================ */
+
+function prepareMessage() {
+
+    if (
+        currentRole === 'auditor'
+    ) {
+
+        showToast(
+            'Auditor hana ruhusa ya kutuma ujumbe.',
+            true
+        );
+
+        return;
+
+    }
+
+
+    const message =
+        document.getElementById(
+            'meetingMessage'
+        ).value.trim();
+
+
+    if (!message) {
+
+        showToast(
+            'Andika ujumbe kwanza.',
+            true
+        );
+
+        return;
+
+    }
+
+
+    const activity =
+        document.getElementById(
+            'activityName'
+        ).value.trim();
+
+
+    if (!activity) {
+
+        showToast(
+            'Weka jina la kikao kwanza.',
+            true
+        );
+
+        return;
+
+    }
+
+
+    selectedMessageMembers =
+        members.filter(
+            member =>
+                member.phone
+        );
+
+
+    if (!selectedMessageMembers.length) {
+
+        showToast(
+            'Hakuna wanachama wenye namba za simu.',
+            true
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        'messagePreview'
+    ).textContent =
+
+        `Kikao: ${activity}\n\n` +
+        message +
+        `\n\nWapokeaji: ${selectedMessageMembers.length}`;
+
+
+    document.getElementById(
+        'messageModal'
+    ).classList.add(
+        'active'
+    );
+
+}
+
+
+
+/* ============================================================
+   CLOSE MESSAGE MODAL
+============================================================ */
+
+function closeMessageModal() {
+
+    document.getElementById(
+        'messageModal'
+    ).classList.remove(
+        'active'
+    );
+
+}
+
+
+
+/* ============================================================
+   SEND TO SELECTED
+============================================================ */
+
+function sendToSelected() {
+
+    const message =
+        document.getElementById(
+            'meetingMessage'
+        ).value.trim();
+
+
+    if (!message) {
+
+        return;
+
+    }
+
+
+    if (!selectedMessageMembers.length) {
+
+        return;
+
+    }
+
+
+    closeMessageModal();
+
+
+    const member =
+        selectedMessageMembers[0];
+
+
+    openWhatsApp(
+        member,
+        message
+    );
+
+
+    if (
+        selectedMessageMembers.length > 1
+    ) {
+
+        showToast(
+            `Ujumbe umeandaliwa kwa ${selectedMessageMembers.length} wenye namba. WhatsApp itafunguliwa mmoja mmoja.`
+        );
+
+    }
+
+}
+
+
+
+/* ============================================================
+   MESSAGE SINGLE MEMBER
+============================================================ */
+
+function messageMember(
+    memberId
+) {
+
+    if (
+        currentRole === 'auditor'
+    ) {
+
+        return;
+
+    }
+
+
+    const member =
+        members.find(
+            item =>
+                String(item.id) ===
+                String(memberId)
+        );
+
+
+    if (
+        !member ||
+        !member.phone
+    ) {
+
+        showToast(
+            'Member hana namba ya simu.',
+            true
+        );
+
+        return;
+
+    }
+
+
+    const message =
+        document.getElementById(
+            'meetingMessage'
+        ).value.trim();
+
+
+    if (!message) {
+
+        showToast(
+            'Andika ujumbe kwanza kwenye sehemu ya ujumbe.',
+            true
+        );
+
+
+        document.getElementById(
+            'meetingMessage'
+        ).focus();
+
+
+        return;
+
+    }
+
+
+    openWhatsApp(
+        member,
+        message
+    );
+
+}
+
+
+
+/* ============================================================
+   OPEN WHATSAPP
+============================================================ */
+
+function openWhatsApp(
+    member,
+    message
+) {
+
+    const phone =
+        normalizePhone(
+            member.phone
+        );
+
+
+    if (!phone) {
+
+        showToast(
+            'Namba ya simu si sahihi.',
+            true
+        );
+
+        return;
+
+    }
+
+
+    const text =
+        encodeURIComponent(
+            message
+        );
+
+
+    const url =
+        `https://wa.me/${phone}?text=${text}`;
+
+
+    window.open(
+        url,
+        '_blank'
+    );
+
+}
+
+
+
+/* ============================================================
+   NORMALIZE TANZANIA PHONE
+============================================================ */
+
+function normalizePhone(
+    phone
+) {
+
+    let value =
+        String(phone || '')
+            .replace(
+                /[^0-9+]/g,
+                ''
+            );
+
+
+    if (
+        value.startsWith('+255')
+    ) {
+
+        return value.substring(1);
+
+    }
+
+
+    if (
+        value.startsWith('255')
+    ) {
+
+        return value;
+
+    }
+
+
+    if (
+        value.startsWith('0')
+    ) {
+
+        return '255' +
+            value.substring(1);
+
+    }
+
+
+    return value;
+
+}
+
+
+
+/* ============================================================
+   HISTORY
+   MUHIMU:
+   JOIN NI MEMBERS, SIO VOLUNTEERS
+============================================================ */
+
+async function openHistory() {
+
+    const modal =
+        document.getElementById(
+            'historyModal'
+        );
+
+
+    modal.classList.add(
+        'active'
+    );
+
+
+    const tbody =
+        document.getElementById(
+            'historyTable'
+        );
+
+
+    tbody.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="5"
+                class="p-8 text-center text-gray-400"
+            >
+                Inapakia historia...
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try {
+
+        /*
+         * MUHIMU:
+         *
+         * attendance_records.member_id
+         * -> members.id
+         *
+         * Kwa hiyo tunatumia:
+         * members(full_name, member_id)
+         */
+
+        const {
+            data,
+            error
+        } = await _supabase
+
+            .from('attendance_records')
+
+            .select(`
+                id,
+                member_id,
+                activity_name,
+                attendance_date,
+                status,
+                members (
+                    full_name,
+                    member_id,
+                    phone
+                )
+            `)
+
+            .order(
+                'attendance_date',
+                {
+                    ascending: false
+                }
+            )
+
+            .limit(300);
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        if (
+            !data ||
+            !data.length
+        ) {
+
+            tbody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="5"
+                        class="p-8 text-center text-gray-400 text-xs"
+                    >
+                        Hakuna historia ya mahudhurio.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        tbody.innerHTML =
+            data.map(
+                row => {
+
+                    const statusClass =
+
+                        row.status === 'Present'
+
+                        ?
+
+                        'bg-green-50 text-green-700'
+
+                        :
+
+                        row.status === 'Absent'
+
+                        ?
+
+                        'bg-red-50 text-red-700'
+
+                        :
+
+                        'bg-yellow-50 text-yellow-700';
+
+
+                    const memberName =
+                        row.members?.full_name ||
+                        'Member #' + row.member_id;
+
+
+                    return `
+
+                        <tr class="border-b border-gray-100">
+
+                            <td class="p-3">
+
+                                <div class="text-[11px] font-bold text-gray-800">
+                                    ${escapeHTML(memberName)}
+                                </div>
+
+                                ${
+                                    row.members?.member_id
+
+                                    ?
+
+                                    `<div class="text-[9px] text-dcf-600 mt-1">
+                                        ID: ${escapeHTML(row.members.member_id)}
+                                    </div>`
+
+                                    :
+
+                                    ''
+                                }
+
+                            </td>
+
+
+                            <td class="p-3 text-[11px] text-gray-600">
+
+                                ${escapeHTML(
+                                    row.activity_name
+                                )}
+
+                            </td>
+
+
+                            <td class="p-3 text-[11px] text-gray-600">
+
+                                ${escapeHTML(
+                                    row.attendance_date
+                                )}
+
+                            </td>
+
+
+                            <td class="p-3">
+
+                                <span
+                                    class="inline-flex px-2 py-1 rounded text-[9px] font-bold ${statusClass}"
+                                >
+
+                                    ${escapeHTML(
+                                        row.status
+                                    )}
+
+                                </span>
+
+                            </td>
+
+
+                            <td class="p-3 text-right">
+
+                                ${
+                                    currentRole === 'admin'
+
+                                    ?
+
+                                    `<button
+                                        type="button"
+                                        onclick="deleteAttendance('${escapeAttribute(row.id)}')"
+                                        class="text-red-600 text-[10px] font-bold"
+                                    >
+                                        Futa
+                                    </button>`
+
+                                    :
+
+                                    '-'
+                                }
+
+                            </td>
+
+                        </tr>
+
+                    `;
+
+                }
+
+            ).join('');
+
+
+    } catch (error) {
+
+        console.error(
+            'History error:',
+            error
+        );
+
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="5"
+                    class="p-8 text-center text-red-500 text-xs"
+                >
+
+                    <div class="font-bold">
+                        Imeshindikana kupakia historia.
+                    </div>
+
+                    <div class="text-[10px] mt-2">
+                        ${escapeHTML(error.message)}
+                    </div>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+
+/* ============================================================
+   CLOSE HISTORY
+============================================================ */
+
+function closeHistory() {
+
+    document.getElementById(
+        'historyModal'
+    ).classList.remove(
+        'active'
+    );
+
+}
+
+
+
+/* ============================================================
+   DELETE ATTENDANCE
+============================================================ */
+
+async function deleteAttendance(
+    id
+) {
+
+    if (
+        currentRole !== 'admin'
+    ) {
+
+        showToast(
+            'Huna ruhusa ya kufuta.',
+            true
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !confirm(
+            'Una uhakika unataka kufuta rekodi hii ya mahudhurio?'
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const {
+            error
+        } = await _supabase
+
+            .from('attendance_records')
+
+            .delete()
+
+            .eq(
+                'id',
+                id
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        showToast(
+            'Rekodi imefutwa.'
+        );
+
+
+        await openHistory();
+
+
+        await loadExistingAttendance();
+
+
+    } catch (error) {
+
+        showToast(
+            'Imeshindikana kufuta: ' +
+            error.message,
+            true
+        );
+
+    }
+
+}
+
+
+
+/* ============================================================
+   PRINT
+============================================================ */
+
+function printAttendance() {
+
+    const activity =
+        document.getElementById(
+            'activityName'
+        ).value.trim();
+
+
+    const date =
+        document.getElementById(
+            'attendanceDate'
+        ).value;
+
+
+    document.getElementById(
+        'printActivity'
+    ).textContent =
+        activity || 'Kikao';
+
+
+    document.getElementById(
+        'printAttendanceDate'
+    ).textContent =
+        date || '-';
+
+
+    window.print();
+
+}
+
+
+
+/* ============================================================
+   PERMISSIONS
+============================================================ */
+
+function applyPermissions() {
+
+    document.body.dataset.role =
+        currentRole;
+
+
+    const saveButton =
+        document.getElementById(
+            'saveAttendanceBtn'
+        );
+
+
+    if (
+        currentRole === 'auditor'
+    ) {
+
+        saveButton.style.display =
+            'none';
+
+
+        document.querySelectorAll(
+            'input, textarea, select'
+        ).forEach(
+            element => {
+
+                element.disabled =
+                    true;
+
+                element.classList.add(
+                    'bg-gray-100',
+                    'cursor-not-allowed'
+                );
+
+            }
+        );
+
+
+        document.querySelectorAll(
+            '.status-btn'
+        ).forEach(
+            button => {
+
+                button.disabled =
+                    true;
+
+                button.classList.add(
+                    'opacity-60',
+                    'cursor-not-allowed'
+                );
+
+            }
+        );
+
+    }
+
+}
+
+
+
+/* ============================================================
+   TOAST
+============================================================ */
+
+function showToast(
+    message,
+    isError = false
+) {
+
+    const toast =
+        document.getElementById(
+            'toast'
+        );
+
+
+    const content =
+        document.getElementById(
+            'toastContent'
+        );
+
+
+    content.textContent =
+        message;
+
+
+    content.className =
+
+        isError
+
+        ?
+
+        'px-4 py-3 rounded-lg shadow-soft text-white text-[11px] font-semibold bg-red-600'
+
+        :
+
+        'px-4 py-3 rounded-lg shadow-soft text-white text-[11px] font-semibold bg-gray-900';
+
+
+    toast.classList.remove(
+        'hidden'
+    );
+
+
+    clearTimeout(
+        window.toastTimer
+    );
+
+
+    window.toastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.add(
+                    'hidden'
+                );
+
+            },
+            4000
+        );
+
+}
+
+
+
+/* ============================================================
+   INITIALS
+============================================================ */
+
+function getInitials(
+    name
+) {
+
+    if (!name) {
+
+        return 'M';
+
+    }
+
+
+    return String(name)
+
+        .trim()
+
+        .split(/\s+/)
+
+        .slice(0, 2)
+
+        .map(
+            part =>
+                part
+                    .charAt(0)
+                    .toUpperCase()
+        )
+
+        .join('');
+
+}
+
+
+
+/* ============================================================
+   ESCAPE HTML
+============================================================ */
+
+function escapeHTML(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return '';
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            '&amp;'
+        )
+
+        .replace(
+            /</g,
+            '&lt;'
+        )
+
+        .replace(
+            />/g,
+            '&gt;'
+        )
+
+        .replace(
+            /"/g,
+            '&quot;'
+        )
+
+        .replace(
+            /'/g,
+            '&#039;'
+        );
+
+}
+
+
+
+/* ============================================================
+   ESCAPE ATTRIBUTE
+============================================================ */
+
+function escapeAttribute(
+    value
+) {
+
+    return escapeHTML(
+        value
+    );
+
+}
+
+
+
+/* ============================================================
+   MODAL EVENTS
+============================================================ */
+
+document.getElementById(
+    'historyModal'
+).addEventListener(
+    'click',
+    function(event) {
+
+        if (
+            event.target === this
+        ) {
+
+            closeHistory();
+
+        }
+
+    }
+);
+
+
+document.getElementById(
+    'messageModal'
+).addEventListener(
+    'click',
+    function(event) {
+
+        if (
+            event.target === this
+        ) {
+
+            closeMessageModal();
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    'keydown',
+    function(event) {
+
+        if (
+            event.key === 'Escape'
+        ) {
+
+            closeHistory();
+
+            closeMessageModal();
+
+        }
+
+    }
+);
+
+</script>
+
+<script src="js/i18n.js"></script>
+</body>
+
+</html>

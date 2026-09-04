@@ -1,0 +1,3452 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usimamizi wa Michango - DCF Online System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "dcf-green": "#174a35",
+                        "dcf-light-green": "#4C9A2A",
+                        "dcf-dark-green": "#0d3022",
+                        "dcf-hover": "#28723E"
+                    }
+                }
+            }
+        };
+    </script>
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/role-guard.js"></script>
+    <style>
+        * {
+            font-family: "Times New Roman", Times, serif !important;
+        }
+        body {
+            font-size: 14px;
+        }
+        .modal-scroll {
+            max-height: 92vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .donation-form-scroll {
+            overflow-y: auto;
+            max-height: calc(92vh - 64px);
+            overscroll-behavior: contain;
+            scrollbar-width: thin;
+            scrollbar-color: #4C9A2A #eef4f0;
+        }
+        .donation-form-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .donation-form-scroll::-webkit-scrollbar-track {
+            background: #eef4f0;
+            border-radius: 10px;
+        }
+        .donation-form-scroll::-webkit-scrollbar-thumb {
+            background: #4C9A2A;
+            border-radius: 10px;
+        }
+        .donation-form-scroll::-webkit-scrollbar-thumb:hover {
+            background: #174a35;
+        }
+        .permission-hidden {
+            display: none !important;
+        }
+        .table-row {
+            transition: all .15s ease;
+        }
+        .table-row:hover {
+            background: #f8fafc;
+        }
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: .2s;
+        }
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+        .form-section {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .form-section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: #f3f7f4;
+            border-bottom: 1px solid #e5e7eb;
+            color: #174a35;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+            font-size: 11px;
+        }
+        .form-section-title i {
+            color: #4C9A2A;
+        }
+        .form-section-body {
+            padding: 13px;
+        }
+        .field-label {
+            display: block;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+        .field-help {
+            display: block;
+            color: #6b7280;
+            font-size: 10px;
+            margin-top: 4px;
+        }
+        .required-mark {
+            color: #dc2626;
+        }
+        .conditional-field {
+            display: none;
+        }
+        .conditional-field.show {
+            display: block;
+        }
+        .donation-ref-box {
+            background: #ecfdf3;
+            border: 1px dashed #4C9A2A;
+            border-radius: 8px;
+            padding: 9px 11px;
+        }
+        .donation-ref-value {
+            font-family: monospace !important;
+            font-weight: 900;
+            color: #174a35;
+            letter-spacing: .7px;
+        }
+        .status-flow {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+        }
+        .status-step {
+            text-align: center;
+            padding: 7px 4px;
+            border-radius: 6px;
+            background: #f3f4f6;
+            color: #6b7280;
+            font-size: 9px;
+            font-weight: 800;
+        }
+        .status-step.active {
+            background: #174a35;
+            color: #fff;
+        }
+        .receipt-preview {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: #fff;
+            padding: 12px;
+        }
+        .donor-search-results {
+            display: none;
+            margin-top: 7px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            overflow: hidden;
+            background: #fff;
+            max-height: 170px;
+            overflow-y: auto;
+        }
+        .donor-search-results.show {
+            display: block;
+        }
+        .photo-preview {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #d1e7d8;
+            display: none;
+        }
+        .member-selected {
+            border: 2px solid #4C9A2A !important;
+            background: #ecfdf5 !important;
+        }
+        .toast {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 100;
+            min-width: 280px;
+            max-width: 420px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 10px 35px rgba(0,0,0,.2);
+            transform: translateY(120px);
+            opacity: 0;
+            pointer-events: none;
+            transition: .3s;
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .toast.success {
+            background: #166534;
+        }
+        .toast.error {
+            background: #b91c1c;
+        }
+        @media(max-width:640px) {
+            .status-flow {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media print {
+            #sidebar,
+            header,
+            .no-print,
+            #donation-modal,
+            .mobile-only,
+            .action-column {
+                display: none !important;
+            }
+            body {
+                background: white !important;
+                overflow: visible !important;
+            }
+            main {
+                overflow: visible !important;
+            }
+            .print-area {
+                display: block !important;
+            }
+            table {
+                width: 100% !important;
+                font-size: 10px !important;
+            }
+        }
+
+        /* =========================================================
+           GLOBAL RESPONSIVE / NETLIFY SAFE UI
+        ========================================================== */
+        html, body { min-height: 100%; }
+        button, input, select, textarea { font: inherit; }
+        button { -webkit-tap-highlight-color: transparent; }
+        .table-wrap {
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+        .action-btn {
+            min-width: 34px;
+            min-height: 34px;
+            touch-action: manipulation;
+        }
+        .delete-action-btn {
+            background: #fee2e2 !important;
+            color: #b91c1c !important;
+            border: 1px solid #fecaca;
+        }
+        .delete-action-btn:hover {
+            background: #fecaca !important;
+            color: #991b1b !important;
+        }
+        .edit-action-btn {
+            background: #ecfdf5 !important;
+            color: #166534 !important;
+            border: 1px solid #bbf7d0;
+        }
+        .view-action-btn {
+            background: #eff6ff !important;
+            color: #1d4ed8 !important;
+            border: 1px solid #bfdbfe;
+        }
+        .mobile-action-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+        }
+        @media (max-width: 768px) {
+            body { font-size: 13px; }
+            #sidebar { z-index: 60; }
+            header { min-height: 58px; }
+            main { padding: 12px !important; }
+            .modal-scroll {
+                width: 100%;
+                max-height: 96vh;
+                border-radius: 12px;
+            }
+            .donation-form-scroll {
+                max-height: calc(96vh - 60px);
+                padding: 12px !important;
+            }
+            .form-section-body { padding: 10px; }
+            .action-btn {
+                width: 36px;
+                height: 36px;
+            }
+            table { min-width: 980px; }
+            #toast {
+                left: 12px;
+                right: 12px;
+                bottom: 12px;
+                min-width: 0;
+                max-width: none;
+            }
+        }
+        @media (max-width: 420px) {
+            .status-flow { gap: 4px; }
+            .status-step { padding: 8px 5px; }
+            #add-donation-btn { padding-left: 10px; padding-right: 10px; }
+            #add-donation-btn span { display: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+        }
+
+    </style>
+</head>
+<body
+    class="bg-gray-100 flex h-screen overflow-hidden"
+    data-allowed-roles="admin,staff,auditor"
+>
+<!-- =========================================================
+     SIDEBAR
+========================================================= -->
+<aside
+    id="sidebar"
+    class="w-64 bg-dcf-green text-white flex flex-col shadow-xl z-30
+           flex-shrink-0 absolute inset-y-0 left-0
+           transform -translate-x-full md:relative md:translate-x-0
+           transition duration-200 ease-in-out"
+>
+    <div class="p-4 bg-dcf-dark-green flex items-center gap-3 border-b border-green-800">
+        <div
+            class="w-11 h-11 bg-white rounded-full p-0.5
+                   flex items-center justify-center shadow-md
+                   shrink-0 overflow-hidden"
+        >
+            <img
+                src="../assets/images/logo.png"
+                alt="DCF Logo"
+                class="w-full h-full object-contain"
+            >
+        </div>
+        <div class="overflow-hidden">
+            <h1 class="font-bold text-sm leading-tight text-white truncate">
+                DCF System
+            </h1>
+            <p class="text-[10px] text-green-300 font-medium truncate">
+                Development Charity
+            </p>
+        </div>
+    </div>
+    <div class="p-3 flex-1 overflow-y-auto">
+        <nav class="space-y-5 text-xs font-medium pr-1">
+            <!-- MAIN -->
+            <div>
+                <p
+                    class="text-green-300 font-bold uppercase
+                           text-[10px] tracking-wider mb-2 px-2"
+                >
+                    Kuu
+                </p>
+                <a
+                    href="../dashboard.html"
+                    class="flex items-center gap-2.5
+                           text-green-100 hover:bg-dcf-hover
+                           px-3 py-2 rounded transition"
+                >
+                    <i class="fas fa-th-large text-green-300 w-4"></i>
+                    Dashboard
+                </a>
+            </div>
+            <!-- MEMBERS -->
+            <div>
+                <p
+                    class="text-green-300 font-bold uppercase
+                           text-[10px] tracking-wider mb-2 px-2"
+                >
+                    Jamii & Wanachama
+                </p>
+                <div class="space-y-1">
+                    <a
+                        href="members.html"
+                        class="flex items-center gap-2.5
+                               text-green-100 hover:bg-dcf-hover
+                               px-3 py-1.5 rounded transition"
+                    >
+                        <i class="fas fa-users w-4 text-green-300"></i>
+                        Wanachama
+                    </a>
+                    <a
+                        href="volunteers.html"
+                        class="flex items-center gap-2.5
+                               text-green-100 hover:bg-dcf-hover
+                               px-3 py-1.5 rounded transition"
+                    >
+                        <i class="fas fa-hands-helping w-4 text-green-300"></i>
+                        Wajitolea
+                    </a>
+                    <a
+                        href="beneficiaries.html"
+                        class="flex items-center gap-2.5
+                               text-green-100 hover:bg-dcf-hover
+                               px-3 py-1.5 rounded transition"
+                    >
+                        <i class="fas fa-gift w-4 text-green-300"></i>
+                        Wafaidika
+                    </a>
+                </div>
+            </div>
+            <!-- PROJECTS -->
+            <div>
+                <p
+                    class="text-green-300 font-bold uppercase
+                           text-[10px] tracking-wider mb-2 px-2"
+                >
+                    Miradi & Matukio
+                </p>
+                <div class="space-y-1">
+                    <a
+                        href="projects.html"
+                        class="flex items-center gap-2.5
+                               text-green-100 hover:bg-dcf-hover
+                               px-3 py-1.5 rounded transition"
+                    >
+                        <i class="fas fa-folder w-4 text-green-300"></i>
+                        Miradi
+                    </a>
+                    <a
+                        href="activities.html"
+                        class="flex items-center gap-2.5
+                               text-green-100 hover:bg-dcf-hover
+                               px-3 py-1.5 rounded transition"
+                    >
+                        <i class="fas fa-calendar-alt w-4 text-green-300"></i>
+                        Shughuli
+                    </a>
+                </div>
+            </div>
+            <!-- FINANCE -->
+            <div>
+                <p
+                    class="text-green-300 font-bold uppercase
+                           text-[10px] tracking-wider mb-2 px-2"
+                >
+                    Fedha & Ripoti
+                </p>
+                <div class="space-y-1">
+                    <a
+                        href="donations.html"
+                        class="flex items-center gap-2.5
+                               bg-dcf-hover text-white
+                               px-3 py-2 rounded font-bold
+                               shadow-sm border-l-4 border-green-400"
+                    >
+                        <i class="fas fa-hand-holding-usd w-4 text-green-300"></i>
+                        Michango
+                    </a>
+                    <a
+                        href="donation-reports.html"
+                        class="flex items-center gap-2.5
+                               text-green-100 hover:bg-dcf-hover
+                               px-3 py-1.5 rounded transition"
+                    >
+                        <i class="fas fa-file-invoice-dollar w-4 text-green-300"></i>
+                        Ripoti za Michango
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div
+        class="p-3 bg-dcf-dark-green
+               border-t border-green-800
+               flex items-center justify-between text-xs"
+    >
+        <div class="flex items-center gap-2 overflow-hidden">
+            <div
+                id="user-avatar"
+                class="w-7 h-7 rounded-full
+                       bg-green-500 flex items-center
+                       justify-center font-bold
+                       text-white text-xs"
+            >
+                U
+            </div>
+            <div class="truncate">
+                <p
+                    id="current-user-name"
+                    class="font-semibold text-white truncate"
+                >
+                    User
+                </p>
+                <p
+                    id="current-user-role"
+                    class="text-[10px] text-green-300 truncate"
+                >
+                    Role
+                </p>
+            </div>
+        </div>
+        <a
+            href="../index.html"
+            class="text-green-300 hover:text-white p-1 rounded transition"
+            title="Log Out"
+        >
+            <i class="fas fa-sign-out-alt text-sm"></i>
+        </a>
+    </div>
+</aside>
+<!-- =========================================================
+     MAIN
+========================================================= -->
+<div class="flex-1 flex flex-col overflow-hidden w-full">
+    <!-- HEADER -->
+    <header
+        class="bg-white border-b border-gray-200
+               px-4 md:px-6 py-3
+               flex items-center justify-between shadow-sm"
+    >
+        <div class="flex items-center gap-3">
+            <button
+                id="mobile-menu-btn"
+                class="md:hidden text-dcf-green text-xl
+                       focus:outline-none pr-2"
+            >
+                <i class="fas fa-bars"></i>
+            </button>
+            <div>
+                <h2
+                    class="text-sm md:text-xl font-bold
+                           text-gray-800 leading-tight uppercase"
+                >
+                    Usimamizi wa Michango
+                </h2>
+                <p
+                    class="text-[10px] md:text-[11px]
+                           text-dcf-green italic font-medium"
+                >
+                    Rekodi na Usimamie Michango Yote ya DCF
+                </p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button
+                onclick="printDonations()"
+                class="no-print bg-gray-700 hover:bg-gray-900
+                       text-white font-bold text-xs px-3 py-2
+                       rounded shadow transition flex items-center gap-1.5"
+            >
+                <i class="fas fa-print"></i>
+                <span class="hidden sm:inline">Print</span>
+            </button>
+            <button
+                id="add-donation-btn"
+                data-action="create"
+                onclick="openAddModal()"
+                class="bg-dcf-green hover:bg-dcf-dark-green
+                       text-white font-bold text-xs px-3.5 py-2
+                       rounded shadow transition
+                       flex items-center gap-1.5"
+            >
+                <i class="fas fa-plus-circle"></i>
+                <span>Rekodi Mchango Mpya</span>
+            </button>
+        </div>
+    </header>
+    <!-- =====================================================
+         CONTENT
+    ====================================================== -->
+    <main
+        class="flex-1 overflow-y-auto p-4 md:p-6
+               bg-gray-50 print-area"
+    >
+        <!-- PAGE TITLE -->
+        <div class="mb-5">
+            <div
+                class="flex flex-col md:flex-row
+                       md:items-center md:justify-between gap-2"
+            >
+                <div>
+                    <h1 class="text-lg font-bold text-gray-800">
+                        Orodha ya Michango
+                    </h1>
+                    <p class="text-xs text-gray-500">
+                        Taarifa zote za michango iliyopokelewa na DCF.
+                    </p>
+                </div>
+                <div
+                    id="permission-badge"
+                    class="text-xs font-bold px-3 py-1.5
+                           rounded-full bg-green-100
+                           text-green-700 w-fit"
+                >
+                    Role: -
+                </div>
+            </div>
+        </div>
+        <!-- STATISTICS -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div
+                class="bg-white p-4 rounded-lg
+                       border border-gray-200
+                       shadow-sm flex items-center justify-between"
+            >
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase">
+                        Jumla ya Michango
+                    </p>
+                    <h3
+                        id="total-donations"
+                        class="text-lg font-bold
+                               text-dcf-green mt-1"
+                    >
+                        TZS 0
+                    </h3>
+                </div>
+                <div
+                    class="w-10 h-10 rounded-full
+                           bg-green-100 text-dcf-green
+                           flex items-center justify-center font-bold"
+                >
+                    <i class="fas fa-coins text-lg"></i>
+                </div>
+            </div>
+            <div
+                class="bg-white p-4 rounded-lg
+                       border border-gray-200
+                       shadow-sm flex items-center justify-between"
+            >
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase">
+                        Michango ya Mwezi Huu
+                    </p>
+                    <h3
+                        id="monthly-donations"
+                        class="text-lg font-bold
+                               text-dcf-green mt-1"
+                    >
+                        TZS 0
+                    </h3>
+                </div>
+                <div
+                    class="w-10 h-10 rounded-full
+                           bg-blue-100 text-blue-700
+                           flex items-center justify-center font-bold"
+                >
+                    <i class="fas fa-calendar-check text-lg"></i>
+                </div>
+            </div>
+            <div
+                class="bg-white p-4 rounded-lg
+                       border border-gray-200
+                       shadow-sm flex items-center justify-between"
+            >
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase">
+                        Idadi ya Michango
+                    </p>
+                    <h3
+                        id="donation-count"
+                        class="text-lg font-bold
+                               text-dcf-green mt-1"
+                    >
+                        0
+                    </h3>
+                </div>
+                <div
+                    class="w-10 h-10 rounded-full
+                           bg-orange-100 text-orange-700
+                           flex items-center justify-center font-bold"
+                >
+                    <i class="fas fa-receipt text-lg"></i>
+                </div>
+            </div>
+        </div>
+        <!-- SEARCH -->
+        <div
+            class="bg-white p-4 rounded
+                   border border-gray-200
+                   shadow-sm mb-6
+                   flex flex-col lg:flex-row
+                   items-center justify-between gap-4"
+        >
+            <div class="relative w-full lg:w-96">
+                <input
+                    type="text"
+                    id="search-input"
+                    placeholder="Tafuta jina, Member ID, email, simu au risiti..."
+                    class="w-full bg-gray-50
+                           text-xs border border-gray-300
+                           rounded pl-8 pr-3 py-2.5
+                           focus:outline-none
+                           focus:border-dcf-green"
+                >
+                <i
+                    class="fas fa-search absolute
+                           left-2.5 top-3
+                           text-gray-400 text-xs"
+                ></i>
+            </div>
+            <div
+                class="flex flex-wrap items-center
+                       gap-3 w-full lg:w-auto
+                       justify-end text-xs"
+            >
+                <label class="font-bold text-gray-600">
+                    Aina:
+                </label>
+                <select
+                    id="type-filter"
+                    class="bg-gray-50 border
+                           border-gray-300 rounded
+                           px-3 py-2.5
+                           focus:outline-none
+                           focus:border-dcf-green"
+                >
+                    <option value="ALL">
+                        Aina Zote
+                    </option>
+                    <option value="Ada ya Uanachama">
+                        Ada ya Uanachama
+                    </option>
+                    <option value="Michango ya Mradi">
+                        Michango ya Mradi
+                    </option>
+                    <option value="Sadaka/Hiyari">
+                        Sadaka / Hiyari
+                    </option>
+                    <option value="Nyinginezo">
+                        Nyinginezo
+                    </option>
+                </select>
+            </div>
+        </div>
+        <!-- TABLE -->
+        <div
+            class="bg-white rounded
+                   border border-gray-200
+                   shadow-sm overflow-hidden"
+        >
+            <div
+                class="p-4 border-b border-gray-200
+                       flex items-center justify-between
+                       bg-gray-50"
+            >
+                <div>
+                    <h3
+                        class="font-bold text-gray-800
+                               text-xs uppercase"
+                    >
+                        Orodha ya Michango Ilivyopokelewa
+                    </h3>
+                    <p class="text-[10px] text-gray-500 mt-1">
+                        Admin na Staff wanaweza kusimamia taarifa.
+                    </p>
+                </div>
+                <div
+                    id="loading-indicator"
+                    class="hidden text-xs
+                           text-dcf-green font-bold"
+                >
+                    <i class="fas fa-spinner fa-spin mr-1"></i>
+                    Inapakia...
+                </div>
+            </div>
+            <div class="overflow-x-auto table-wrap">
+                <table
+                    class="w-full text-left
+                           border-collapse text-xs"
+                >
+                    <thead>
+                        <tr
+                            class="bg-gray-100
+                                   text-gray-700
+                                   border-b border-gray-200"
+                        >
+                            <th class="py-2.5 px-3 font-bold border text-center">
+                                Picha
+                            </th>
+                            <th class="py-2.5 px-3 font-bold border">
+                                Namba ya Risiti
+                            </th>
+                            <th class="py-2.5 px-3 font-bold border">
+                                Mchangiaji
+                            </th>
+                            <th class="py-2.5 px-3 font-bold border">
+                                Member ID
+                            </th>
+                            <th class="py-2.5 px-3 font-bold border">
+                                Email
+                            </th>
+                            <th class="py-2.5 px-3 font-bold border">
+                                Aina ya Mchango
+                            </th>
+                            <th class="py-2.5 px-3 font-bold border">
+                                Kiasi (TZS)
+                            </th>
+                            <th class="py-2.5 px-3 font-bold border">
+                                Njia ya Malipo
+                            </th>
+                            <th class="py-2.5 px-3 font-bold border">
+                                Tarehe
+                            </th>
+                            <th class="py-2.5 px-3 font-bold border">
+                                Hali
+                            </th>
+                            <th class="py-2.5 px-3 font-bold border text-center action-column">
+                                Vitendo
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody
+                        id="donations-table-body"
+                        class="divide-y divide-gray-200"
+                    >
+                        <tr>
+                            <td
+                                colspan="11"
+                                class="py-8 text-center
+                                       text-gray-500 italic"
+                            >
+                                Inapakia taarifa za michango kutoka database...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+<!-- =========================================================
+     DONATION MODAL
+========================================================= -->
+<div
+    id="donation-modal"
+    class="fixed inset-0 bg-black/50
+           backdrop-blur-sm z-50 hidden
+           items-center justify-center p-4"
+>
+    <div
+        class="bg-white rounded-lg shadow-xl
+               w-full max-w-2xl
+               overflow-hidden modal-scroll"
+    >
+        <!-- HEADER -->
+        <div
+            class="bg-dcf-green text-white p-4
+                   flex items-center justify-between"
+        >
+            <h3
+                id="modal-title"
+                class="font-bold text-sm
+                       uppercase flex items-center gap-2"
+            >
+                <i class="fas fa-hand-holding-usd"></i>
+                Rekodi Mchango Mpya
+            </h3>
+            <button
+                type="button"
+                onclick="closeModal()"
+                class="text-white
+                       hover:text-red-300
+                       text-lg font-bold"
+            >
+                ×
+            </button>
+        </div>
+        <!-- FORM -->
+        <form
+            id="donation-form"
+            class="donation-form-scroll
+                   p-5 space-y-4 text-xs"
+        >
+            <input type="hidden" id="donation_id">
+            <input
+                type="hidden"
+                id="donation_reference"
+            >
+            <!-- HII NDIYO MEMBERS TABLE ID -->
+            <input
+                type="hidden"
+                id="existing_donor_id"
+                name="existing_donor_id"
+                value=""
+            >
+            <!-- =================================================
+                 1 DONOR
+            ================================================== -->
+            <section class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-user-circle"></i>
+                    1. Taarifa za Mchangiaji
+                </div>
+                <div class="form-section-body space-y-3">
+                    <div
+                        class="grid grid-cols-1 sm:grid-cols-2 gap-3"
+                    >
+                        <div>
+                            <label class="field-label">
+                                Aina ya Mchangiaji
+                                <span class="required-mark">*</span>
+                            </label>
+                            <select
+                                id="donor_type"
+                                required
+                                class="w-full border border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                                <option value="">
+                                    -- Chagua --
+                                </option>
+                                <option value="Individual">
+                                    Individual / Mtu Binafsi
+                                </option>
+                                <option value="Organization">
+                                    Organization / Taasisi
+                                </option>
+                                <option value="Company">
+                                    Company / Kampuni
+                                </option>
+                                <option value="Anonymous">
+                                    Anonymous / Asiyejulikana
+                                </option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <label
+                                class="inline-flex items-center
+                                       gap-2 cursor-pointer"
+                            >
+                                <input
+                                    type="checkbox"
+                                    id="existing_donor"
+                                    class="w-4 h-4 accent-green-700"
+                                >
+                                <span class="font-bold text-gray-700">
+                                    Existing Member / Donor
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- EXISTING MEMBER -->
+                    <div
+                        id="existing-donor-search"
+                        class="conditional-field"
+                    >
+                        <div
+                            class="rounded-lg
+                                   border border-green-200
+                                   bg-green-50 p-3"
+                        >
+                            <div
+                                class="flex flex-col sm:flex-row
+                                       sm:items-center
+                                       sm:justify-between
+                                       gap-2 mb-2"
+                            >
+                                <div>
+                                    <label
+                                        class="field-label mb-0"
+                                    >
+                                        Chagua Mwanachama Aliyepo
+                                    </label>
+                                    <span class="field-help mt-1">
+                                        Tafuta kwa jina, namba ya usajili,
+                                        simu au email.
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    id="load-members-btn"
+                                    onclick="loadExistingMembers()"
+                                    class="shrink-0 px-3 py-2
+                                           bg-dcf-green
+                                           hover:bg-dcf-dark-green
+                                           text-white rounded
+                                           font-bold text-[10px]"
+                                >
+                                    <i class="fas fa-users mr-1"></i>
+                                    ONA WANACHAMA WOTE
+                                </button>
+                            </div>
+                            <div class="relative">
+                                <input
+                                    type="text"
+                                    id="donor_search"
+                                    autocomplete="off"
+                                    placeholder="Tafuta kwa jina, Member ID, simu au email..."
+                                    class="w-full border
+                                           border-gray-300
+                                           bg-white p-2.5 rounded
+                                           focus:outline-none
+                                           focus:border-dcf-green"
+                                >
+                                <i
+                                    class="fas fa-search
+                                           absolute right-3 top-3
+                                           text-gray-400"
+                                ></i>
+                            </div>
+                            <div
+                                id="donor-search-results"
+                                class="donor-search-results"
+                            ></div>
+                        </div>
+                    </div>
+                    <!-- MEMBER PICKER -->
+                    <div
+                        id="member-picker-panel"
+                        class="hidden rounded-lg
+                               border border-gray-200
+                               bg-white shadow-sm
+                               overflow-hidden"
+                    >
+                        <div
+                            class="px-3 py-2
+                                   bg-dcf-green text-white
+                                   flex items-center
+                                   justify-between"
+                        >
+                            <div class="font-bold text-[11px] uppercase">
+                                <i class="fas fa-users mr-1"></i>
+                                Orodha ya Wanachama
+                            </div>
+                            <span
+                                id="member-picker-count"
+                                class="text-[10px]
+                                       bg-white/15
+                                       px-2 py-1 rounded"
+                            >
+                                0
+                            </span>
+                        </div>
+                        <div
+                            class="p-2 border-b
+                                   border-gray-200
+                                   bg-gray-50"
+                        >
+                            <div class="relative">
+                                <input
+                                    type="text"
+                                    id="member-list-search"
+                                    placeholder="Tafuta ndani ya wanachama..."
+                                    class="w-full border
+                                           border-gray-300
+                                           p-2 rounded text-xs
+                                           focus:outline-none
+                                           focus:border-dcf-green"
+                                >
+                                <i
+                                    class="fas fa-search
+                                           absolute right-3 top-2.5
+                                           text-gray-400"
+                                ></i>
+                            </div>
+                        </div>
+                        <div
+                            id="member-picker-list"
+                            class="max-h-64
+                                   overflow-y-auto
+                                   divide-y divide-gray-100"
+                        ></div>
+                    </div>
+                    <!-- NAME + MEMBER ID -->
+                    <div
+                        class="grid grid-cols-1
+                               sm:grid-cols-2 gap-3"
+                    >
+                        <div>
+                            <label class="field-label">
+                                Full Name / Organization Name
+                                <span class="required-mark">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="donor_name"
+                                required
+                                placeholder="Jina kamili au jina la taasisi"
+                                class="w-full border border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                Donor ID / Member ID
+                            </label>
+                            <input
+                                type="text"
+                                id="donor_id"
+                                name="donor_id"
+                                readonly
+                                placeholder="Itajazwa ukichagua mwanachama"
+                                class="w-full border border-gray-300
+                                       p-2.5 rounded
+                                       bg-gray-50
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                    </div>
+                    <!-- PHONE + EMAIL -->
+                    <div
+                        class="grid grid-cols-1
+                               sm:grid-cols-2 gap-3"
+                    >
+                        <div>
+                            <label class="field-label">
+                                Phone Number
+                            </label>
+                            <input
+                                type="tel"
+                                id="donor_phone"
+                                placeholder="+255..."
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                id="donor_email"
+                                placeholder="email@example.com"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                    </div>
+                    <!-- ADDRESS + COUNTRY -->
+                    <div
+                        class="grid grid-cols-1
+                               sm:grid-cols-2 gap-3"
+                    >
+                        <div>
+                            <label class="field-label">
+                                Address
+                            </label>
+                            <input
+                                type="text"
+                                id="donor_address"
+                                placeholder="Anuani"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                Country
+                            </label>
+                            <input
+                                type="text"
+                                id="donor_country"
+                                value="Tanzania"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                    </div>
+                    <!-- PHOTO -->
+                    <div>
+                        <label class="field-label">
+                            Link / URL ya Picha ya Mchangiaji
+                        </label>
+                        <div class="flex items-center gap-3">
+                            <img
+                                id="donor-photo-preview"
+                                class="photo-preview"
+                                alt="Donor photo preview"
+                            >
+                            <input
+                                type="url"
+                                id="donor_photo"
+                                placeholder="https://..."
+                                class="flex-1 border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- =================================================
+                 2 DONATION
+            ================================================== -->
+            <section class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-hand-holding-heart"></i>
+                    2. Taarifa za Mchango
+                </div>
+                <div class="form-section-body space-y-3">
+                    <div
+                        class="grid grid-cols-1
+                               sm:grid-cols-2 gap-3"
+                    >
+                        <div class="donation-ref-box">
+                            <label class="field-label">
+                                Donation Reference No.
+                            </label>
+                            <div
+                                class="flex items-center
+                                       justify-between gap-2"
+                            >
+                                <span
+                                    id="donation-reference-display"
+                                    class="donation-ref-value"
+                                >
+                                    Itatengenezwa na mfumo
+                                </span>
+                                <button
+                                    type="button"
+                                    id="generate-reference-btn"
+                                    class="text-dcf-green
+                                           hover:text-dcf-dark-green"
+                                >
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                Donation Date
+                                <span class="required-mark">*</span>
+                            </label>
+                            <input
+                                type="date"
+                                id="donation_date"
+                                required
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                    </div>
+                    <div
+                        class="grid grid-cols-1
+                               sm:grid-cols-2 gap-3"
+                    >
+                        <div>
+                            <label class="field-label">
+                                Donation Type
+                                <span class="required-mark">*</span>
+                            </label>
+                            <select
+                                id="donation_type"
+                                required
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                                <option value="">
+                                    -- Chagua Aina --
+                                </option>
+                                <option value="Cash">
+                                    Cash / Taslimu
+                                </option>
+                                <option value="Bank Transfer">
+                                    Bank Transfer
+                                </option>
+                                <option value="Mobile Money">
+                                    Mobile Money
+                                </option>
+                                <option value="Cheque">
+                                    Cheque
+                                </option>
+                                <option value="In-kind">
+                                    In-kind / Vifaa
+                                </option>
+                                <option value="Other">
+                                    Other / Nyingine
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                Currency
+                                <span class="required-mark">*</span>
+                            </label>
+                            <select
+                                id="currency"
+                                required
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                                <option value="TZS">
+                                    TZS - Tanzanian Shilling
+                                </option>
+                                <option value="USD">
+                                    USD - US Dollar
+                                </option>
+                                <option value="EUR">
+                                    EUR - Euro
+                                </option>
+                                <option value="GBP">
+                                    GBP - Pound Sterling
+                                </option>
+                                <option value="Other">
+                                    Other
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div
+                        id="cash-amount-fields"
+                        class="grid grid-cols-1
+                               sm:grid-cols-2 gap-3"
+                    >
+                        <div>
+                            <label class="field-label">
+                                Amount
+                                <span class="required-mark">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                id="amount"
+                                min="0"
+                                step="0.01"
+                                placeholder="Mfano: 50000"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                Payment Reference / Transaction ID
+                            </label>
+                            <input
+                                type="text"
+                                id="payment_reference"
+                                placeholder="Transaction ID / reference"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                    </div>
+                    <div
+                        class="grid grid-cols-1
+                               sm:grid-cols-2 gap-3"
+                    >
+                        <div>
+                            <label class="field-label">
+                                Bank / Mobile Money Provider
+                            </label>
+                            <select
+                                id="payment_provider"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                                <option value="">
+                                    -- Chagua Provider --
+                                </option>
+                                <option value="CRDB">CRDB</option>
+                                <option value="NMB">NMB</option>
+                                <option value="NBC">NBC</option>
+                                <option value="M-Pesa">M-Pesa</option>
+                                <option value="Airtel Money">
+                                    Airtel Money
+                                </option>
+                                <option value="Mixx by Yas">
+                                    Mixx by Yas
+                                </option>
+                                <option value="HaloPesa">
+                                    HaloPesa
+                                </option>
+                                <option value="Other">
+                                    Other
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                Supporting Document / Payment Proof
+                            </label>
+                            <input
+                                type="file"
+                                id="payment_proof"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2 rounded
+                                       bg-gray-50"
+                            >
+                        </div>
+                    </div>
+                    <div>
+                        <label class="field-label">
+                            Description / Notes
+                        </label>
+                        <textarea
+                            id="notes"
+                            rows="3"
+                            placeholder="Maelezo ya ziada kuhusu mchango..."
+                            class="w-full border
+                                   border-gray-300
+                                   p-2.5 rounded
+                                   focus:outline-none
+                                   focus:border-dcf-green"
+                        ></textarea>
+                    </div>
+                </div>
+            </section>
+            <!-- =================================================
+                 3 ALLOCATION
+            ================================================== -->
+            <section class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-bullseye"></i>
+                    3. Mchango Unaelekezwa Wapi?
+                </div>
+                <div class="form-section-body space-y-3">
+                    <div>
+                        <label class="field-label">
+                            Donation Purpose / Allocation
+                            <span class="required-mark">*</span>
+                        </label>
+                        <select
+                            id="allocation_type"
+                            required
+                            class="w-full border
+                                   border-gray-300
+                                   p-2.5 rounded
+                                   focus:outline-none
+                                   focus:border-dcf-green"
+                        >
+                            <option value="">
+                                -- Chagua Mahali Mchango Uelekezwe --
+                            </option>
+                            <option value="General Fund">
+                                General Fund
+                            </option>
+                            <option value="Specific Project">
+                                Specific Project
+                            </option>
+                            <option value="Specific Activity">
+                                Specific Activity
+                            </option>
+                            <option value="Emergency/Relief">
+                                Emergency / Relief
+                            </option>
+                            <option value="Education">
+                                Education
+                            </option>
+                            <option value="Health">
+                                Health
+                            </option>
+                            <option value="Community Development">
+                                Community Development
+                            </option>
+                            <option value="Other">
+                                Other
+                            </option>
+                        </select>
+                    </div>
+                    <div
+                        id="project-field"
+                        class="conditional-field"
+                    >
+                        <label class="field-label">
+                            Specific Project
+                            <span class="required-mark">*</span>
+                        </label>
+                        <select
+                            id="project_id"
+                            class="w-full border
+                                   border-gray-300
+                                   p-2.5 rounded
+                                   focus:outline-none
+                                   focus:border-dcf-green"
+                        >
+                            <option value="">
+                                -- Chagua Project --
+                            </option>
+                        </select>
+                    </div>
+                    <div
+                        id="activity-field"
+                        class="conditional-field"
+                    >
+                        <label class="field-label">
+                            Specific Activity
+                            <span class="required-mark">*</span>
+                        </label>
+                        <select
+                            id="activity_id"
+                            class="w-full border
+                                   border-gray-300
+                                   p-2.5 rounded
+                                   focus:outline-none
+                                   focus:border-dcf-green"
+                        >
+                            <option value="">
+                                -- Chagua Activity --
+                            </option>
+                        </select>
+                    </div>
+                    <div
+                        id="allocation-other-field"
+                        class="conditional-field"
+                    >
+                        <label class="field-label">
+                            Eleza Mahali Mchango Uelekezwe
+                        </label>
+                        <input
+                            type="text"
+                            id="allocation_other"
+                            placeholder="Eleza purpose nyingine"
+                            class="w-full border
+                                   border-gray-300
+                                   p-2.5 rounded
+                                   focus:outline-none
+                                   focus:border-dcf-green"
+                        >
+                    </div>
+                </div>
+            </section>
+            <!-- =================================================
+                 4 IN KIND
+            ================================================== -->
+            <section
+                id="inkind-section"
+                class="form-section conditional-field"
+            >
+                <div class="form-section-title">
+                    <i class="fas fa-box-open"></i>
+                    4. Taarifa za In-kind Donation
+                </div>
+                <div class="form-section-body space-y-3">
+                    <div
+                        class="grid grid-cols-1
+                               sm:grid-cols-2 gap-3"
+                    >
+                        <div>
+                            <label class="field-label">
+                                Item Name
+                                <span class="required-mark">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="item_name"
+                                placeholder="Mfano: Mchele"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                Category
+                            </label>
+                            <input
+                                type="text"
+                                id="item_category"
+                                placeholder="Chakula / Vifaa / Mavazi..."
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                    </div>
+                    <div
+                        class="grid grid-cols-1
+                               sm:grid-cols-3 gap-3"
+                    >
+                        <div>
+                            <label class="field-label">
+                                Quantity
+                                <span class="required-mark">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                id="item_quantity"
+                                min="0"
+                                step="0.01"
+                                placeholder="50"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                Unit
+                            </label>
+                            <input
+                                type="text"
+                                id="item_unit"
+                                placeholder="Bags / Kg / Pieces"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                Estimated Value
+                            </label>
+                            <input
+                                type="number"
+                                id="estimated_value"
+                                min="0"
+                                step="0.01"
+                                placeholder="4000000"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                    </div>
+                    <div
+                        class="grid grid-cols-1
+                               sm:grid-cols-2 gap-3"
+                    >
+                        <div>
+                            <label class="field-label">
+                                Condition
+                            </label>
+                            <select
+                                id="item_condition"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                                <option value="">
+                                    -- Chagua --
+                                </option>
+                                <option value="New">
+                                    New / Mpya
+                                </option>
+                                <option value="Good">
+                                    Good / Nzuri
+                                </option>
+                                <option value="Used">
+                                    Used / Imetumika
+                                </option>
+                                <option value="Damaged">
+                                    Damaged / Imeharibika
+                                </option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                Date Received
+                            </label>
+                            <input
+                                type="date"
+                                id="date_received"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                    </div>
+                    <div
+                        class="grid grid-cols-1
+                               sm:grid-cols-2 gap-3"
+                    >
+                        <div>
+                            <label class="field-label">
+                                Storage / Location
+                            </label>
+                            <input
+                                type="text"
+                                id="storage_location"
+                                placeholder="Store / Office / Location"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                Supporting Document / Photo
+                            </label>
+                            <input
+                                type="file"
+                                id="inkind_document"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2 rounded
+                                       bg-gray-50"
+                            >
+                        </div>
+                    </div>
+                    <div>
+                        <label class="field-label">
+                            Item Description
+                        </label>
+                        <textarea
+                            id="item_description"
+                            rows="2"
+                            placeholder="Mfano: 50 bags of rice - 50 × 25kg"
+                            class="w-full border
+                                   border-gray-300
+                                   p-2.5 rounded
+                                   focus:outline-none
+                                   focus:border-dcf-green"
+                        ></textarea>
+                    </div>
+                </div>
+            </section>
+            <!-- =================================================
+                 5 VERIFICATION
+            ================================================== -->
+            <section class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-user-check"></i>
+                    5. Payment / Verification
+                </div>
+                <div class="form-section-body space-y-3">
+                    <div>
+                        <label class="field-label">
+                            Donation Status
+                        </label>
+                        <select
+                            id="donation_status"
+                            class="w-full border
+                                   border-gray-300
+                                   p-2.5 rounded
+                                   focus:outline-none
+                                   focus:border-dcf-green"
+                        >
+                            <option value="Pending">
+                                Pending
+                            </option>
+                            <option value="Verified">
+                                Verified
+                            </option>
+                            <option value="Received">
+                                Received
+                            </option>
+                            <option value="Allocated">
+                                Allocated
+                            </option>
+                            <option value="Used/Disbursed">
+                                Used / Disbursed
+                            </option>
+                        </select>
+                    </div>
+                    <div class="status-flow">
+                        <div class="status-step active">
+                            Pending
+                        </div>
+                        <div class="status-step">
+                            Verified
+                        </div>
+                        <div class="status-step">
+                            Received
+                        </div>
+                        <div class="status-step">
+                            Allocated
+                        </div>
+                        <div class="status-step">
+                            Used/Disbursed
+                        </div>
+                    </div>
+                    <div
+                        class="grid grid-cols-1
+                               sm:grid-cols-2 gap-3"
+                    >
+                        <div>
+                            <label class="field-label">
+                                Verified By
+                            </label>
+                            <input
+                                type="text"
+                                id="verified_by"
+                                readonly
+                                placeholder="Mtumiaji anayeverify"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       bg-gray-50"
+                            >
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                Verification Date
+                            </label>
+                            <input
+                                type="date"
+                                id="verification_date"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                    </div>
+                    <div
+                        class="grid grid-cols-1
+                               sm:grid-cols-2 gap-3"
+                    >
+                        <div>
+                            <label class="field-label">
+                                Receipt Number
+                            </label>
+                            <input
+                                type="text"
+                                id="receipt_number"
+                                placeholder="Itatengenezwa baada ya verification"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                        <div>
+                            <label class="field-label">
+                                Receipt Date
+                            </label>
+                            <input
+                                type="date"
+                                id="receipt_date"
+                                class="w-full border
+                                       border-gray-300
+                                       p-2.5 rounded
+                                       focus:outline-none
+                                       focus:border-dcf-green"
+                            >
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- =================================================
+                 6 RECEIPT
+            ================================================== -->
+            <section class="form-section">
+                <div class="form-section-title">
+                    <i class="fas fa-file-invoice"></i>
+                    6. Receipt
+                </div>
+                <div class="form-section-body">
+                    <div class="receipt-preview">
+                        <div
+                            class="flex items-center
+                                   justify-between gap-3
+                                   border-b pb-2 mb-3"
+                        >
+                            <div
+                                class="flex items-center gap-2"
+                            >
+                                <img
+                                    src="../assets/images/logo.png"
+                                    alt="DCF Logo"
+                                    class="w-10 h-10 object-contain"
+                                >
+                                <div>
+                                    <div
+                                        class="font-bold
+                                               text-dcf-green"
+                                    >
+                                        DCF OFFICIAL DONATION RECEIPT
+                                    </div>
+                                    <div
+                                        class="text-[9px]
+                                               text-gray-500"
+                                    >
+                                        Development Charity Foundation
+                                    </div>
+                                </div>
+                            </div>
+                            <span
+                                id="receipt-preview-status"
+                                class="text-[9px]
+                                       font-bold px-2 py-1
+                                       rounded
+                                       bg-yellow-100
+                                       text-yellow-700"
+                            >
+                                PENDING
+                            </span>
+                        </div>
+                        <div
+                            class="grid grid-cols-2
+                                   gap-2 text-[10px]"
+                        >
+                            <div>
+                                <span class="text-gray-500">
+                                    Receipt No.
+                                </span>
+                                <div
+                                    id="receipt-preview-number"
+                                    class="font-bold"
+                                >
+                                    —
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">
+                                    Reference
+                                </span>
+                                <div
+                                    id="receipt-preview-reference"
+                                    class="font-bold"
+                                >
+                                    —
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">
+                                    Donor
+                                </span>
+                                <div
+                                    id="receipt-preview-donor"
+                                    class="font-bold"
+                                >
+                                    —
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">
+                                    Member ID
+                                </span>
+                                <div
+                                    id="receipt-preview-member-id"
+                                    class="font-bold"
+                                >
+                                    —
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">
+                                    Email
+                                </span>
+                                <div
+                                    id="receipt-preview-email"
+                                    class="font-bold break-all"
+                                >
+                                    —
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">
+                                    Amount
+                                </span>
+                                <div
+                                    id="receipt-preview-amount"
+                                    class="font-bold"
+                                >
+                                    —
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">
+                                    Payment Method
+                                </span>
+                                <div
+                                    id="receipt-preview-payment"
+                                    class="font-bold"
+                                >
+                                    —
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-gray-500">
+                                    Purpose / Project
+                                </span>
+                                <div
+                                    id="receipt-preview-purpose"
+                                    class="font-bold"
+                                >
+                                    —
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="grid grid-cols-2
+                                   gap-4 mt-5 pt-3
+                                   border-t text-[9px]"
+                        >
+                            <div>
+                                <div class="h-7 border-b border-gray-400"></div>
+                                <div class="mt-1 text-gray-500">
+                                    Received By
+                                </div>
+                            </div>
+                            <div>
+                                <div class="h-7 border-b border-gray-400"></div>
+                                <div class="mt-1 text-gray-500">
+                                    Authorized By
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="mt-3 text-center
+                                   text-[9px] text-gray-500"
+                        >
+                            QR / Reference Verification Code:
+                            <strong id="receipt-preview-qr">
+                                —
+                            </strong>
+                        </div>
+                    </div>
+                    <div
+                        class="mt-3 flex items-center
+                               gap-2 text-[10px]
+                               text-gray-500"
+                    >
+                        <i class="fas fa-info-circle text-dcf-green"></i>
+                        Receipt rasmi itolewe baada ya mchango kuthibitishwa.
+                    </div>
+                </div>
+            </section>
+            <!-- ACTIONS -->
+            <div
+                class="flex flex-wrap items-center
+                       justify-end gap-3 pt-3
+                       border-t border-gray-200"
+            >
+                <button
+                    type="button"
+                    onclick="closeModal()"
+                    class="px-4 py-2 bg-gray-300
+                           text-gray-700 font-bold
+                           rounded hover:bg-gray-400"
+                >
+                    Ghairi
+                </button>
+                <button
+                    type="button"
+                    id="save-draft-btn"
+                    class="px-4 py-2 bg-gray-600
+                           text-white font-bold
+                           rounded hover:bg-gray-700"
+                >
+                    <i class="fas fa-save mr-1"></i>
+                    Save Draft
+                </button>
+                <button
+                    type="submit"
+                    id="save-btn"
+                    class="px-5 py-2 bg-dcf-green
+                           text-white font-bold
+                           rounded hover:bg-dcf-dark-green"
+                >
+                    <i class="fas fa-check-circle mr-1"></i>
+                    Hifadhi Mchango
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- TOAST -->
+<div id="toast" class="toast">
+    <div class="flex items-start gap-3">
+        <i id="toast-icon" class="fas fa-check-circle mt-0.5"></i>
+        <div>
+            <div id="toast-title" class="font-bold"></div>
+            <div id="toast-message" class="text-xs mt-1"></div>
+        </div>
+    </div>
+</div>
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+<script>
+(function () {
+    "use strict";
+    /* =====================================================
+       HELPERS & UTILS
+    ====================================================== */
+    const $ = id => document.getElementById(id);
+    const today = () => {
+        const d = new Date();
+        const local = new Date(
+            d.getTime() -
+            d.getTimezoneOffset() * 60000
+        );
+        return local.toISOString().slice(0, 10);
+    };
+    /* =========================================================
+       ESCAPE HTML
+       ========================================================= */
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+    const money = value => {
+        const n = Number(value || 0);
+        return n.toLocaleString("en-US");
+    };
+    function toast(title, message, type = "success") {
+        const el = $("toast");
+        if (!el) return;
+        $("toast-title").textContent = title;
+        $("toast-message").textContent = message;
+        el.className = "toast " + type + " show";
+        $("toast-icon").className =
+            type === "success"
+                ? "fas fa-check-circle mt-0.5"
+                : "fas fa-exclamation-triangle mt-0.5";
+        setTimeout(() => {
+            el.classList.remove("show");
+        }, 4000);
+    }
+    /* =====================================================
+       DONATION REFERENCE
+    ====================================================== */
+    function generateDonationReference() {
+        const reference =
+            "DCF-DON-" +
+            today().replaceAll("-", "") +
+            "-" +
+            Math.floor(
+                100000 +
+                Math.random() * 900000
+            );
+        if ($("donation_reference")) {
+            $("donation_reference").value =
+                reference;
+        }
+        if ($("donation-reference-display")) {
+            $("donation-reference-display")
+                .textContent = reference;
+        }
+        preview();
+        return reference;
+    }
+    /* =====================================================
+       CONDITIONAL UI
+    ====================================================== */
+    function show(id, state) {
+        const element = $(id);
+        if (!element) return;
+        element.classList.toggle(
+            "show",
+            Boolean(state)
+        );
+    }
+    function updateDonationTypeUI() {
+        const type =
+            $("donation_type")?.value || "";
+        const isInKind =
+            type === "In-kind";
+        show(
+            "inkind-section",
+            isInKind
+        );
+        if ($("amount")) {
+            $("amount").required =
+                !isInKind;
+        }
+        if ($("item_name")) {
+            $("item_name").required =
+                isInKind;
+        }
+        if ($("item_quantity")) {
+            $("item_quantity").required =
+                isInKind;
+        }
+    }
+    function updateAllocationUI() {
+        const value =
+            $("allocation_type")?.value || "";
+        const needsProject =
+            value === "Specific Project" ||
+            value === "Specific Activity";
+        const needsActivity =
+            value === "Specific Activity";
+        show(
+            "project-field",
+            needsProject
+        );
+        show(
+            "activity-field",
+            needsActivity
+        );
+        show(
+            "allocation-other-field",
+            value === "Other"
+        );
+        if ($("project_id")) {
+            $("project_id").required =
+                needsProject;
+        }
+        if ($("activity_id")) {
+            $("activity_id").required =
+                needsActivity;
+        }
+        preview();
+    }
+    function updateExistingDonorUI() {
+        const checked =
+            $("existing_donor")?.checked;
+
+        show(
+            "existing-donor-search",
+            checked
+        );
+
+        if (!checked) {
+            $("member-picker-panel")
+                ?.classList.add("hidden");
+            $("donor-search-results")
+                ?.classList.remove("show");
+            if ($("donor_search")) {
+                $("donor_search").value = "";
+            }
+            if ($("member-list-search")) {
+                $("member-list-search").value = "";
+            }
+            return;
+        }
+
+        /* Fungua orodha ya wanachama HAPO HAPO ndani ya fomu */
+        loadExistingMembers();
+    }
+    function updateStatusUI() {
+        const status =
+            $("donation_status")?.value ||
+            "Pending";
+        const order = [
+            "Pending",
+            "Verified",
+            "Received",
+            "Allocated",
+            "Used/Disbursed"
+        ];
+        const index =
+            order.indexOf(status);
+        document
+            .querySelectorAll(".status-step")
+            .forEach((element, i) => {
+                element.classList.toggle(
+                    "active",
+                    i <= index
+                );
+            });
+        const previewStatus =
+            $("receipt-preview-status");
+        if (previewStatus) {
+            previewStatus.textContent =
+                status.toUpperCase();
+            previewStatus.className =
+                "text-[9px] font-bold px-2 py-1 rounded " +
+                (
+                    status === "Pending"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-green-100 text-green-700"
+                );
+        }
+        preview();
+    }
+    /* =====================================================
+       RECEIPT PREVIEW
+    ====================================================== */
+    function preview() {
+        const donor =
+            $("donor_name")?.value || "—";
+        const memberId =
+            $("donor_id")?.value || "—";
+        const email =
+            $("donor_email")?.value || "—";
+        const amount =
+            $("amount")?.value || "";
+        const currency =
+            $("currency")?.value || "TZS";
+        const set = (id, value) => {
+            if ($(id)) {
+                $(id).textContent =
+                    value;
+            }
+        };
+        set(
+            "receipt-preview-number",
+            $("receipt_number")?.value || "—"
+        );
+        set(
+            "receipt-preview-reference",
+            $("donation_reference")?.value || "—"
+        );
+        set(
+            "receipt-preview-donor",
+            donor
+        );
+        set(
+            "receipt-preview-member-id",
+            memberId
+        );
+        set(
+            "receipt-preview-email",
+            email
+        );
+        set(
+            "receipt-preview-amount",
+            amount
+                ? money(amount) + " " + currency
+                : "—"
+        );
+        set(
+            "receipt-preview-payment",
+            $("donation_type")?.value || "—"
+        );
+        set(
+            "receipt-preview-purpose",
+            $("allocation_type")?.value || "—"
+        );
+        set(
+            "receipt-preview-qr",
+            $("donation_reference")?.value || "—"
+        );
+    }
+    /* =========================================================
+       MEMBER DISPLAY HELPERS
+       ========================================================= */
+    function memberDisplayName(member) {
+        return (
+            member?.full_name ||
+            member?.name ||
+            member?.organization_name ||
+            member?.member_name ||
+            "Jina halijapatikana"
+        );
+    }
+    function memberIdValue(member) {
+        return (
+            member?.member_id ||
+            member?.registration_number ||
+            member?.registration_no ||
+            member?.donor_id ||
+            member?.id ||
+            ""
+        );
+    }
+    function memberEmail(member) {
+        return (
+            member?.email ||
+            ""
+        );
+    }
+    function memberPhone(member) {
+        return (
+            member?.phone ||
+            member?.phone_number ||
+            member?.mobile ||
+            ""
+        );
+    }
+    function memberPhoto(member) {
+        return (
+            member?.photo_url ||
+            member?.photo ||
+            member?.avatar_url ||
+            member?.profile_photo ||
+            ""
+        );
+    }
+    /* =====================================================
+       MEMBERS STATE & FUNCTIONS
+    ====================================================== */
+    let allMembersForDonation = [];
+    let memberPickerLoaded = false;
+    let selectedMember = null;
+    /* =========================================================
+       RENDER MEMBER LIST
+       ========================================================= */
+    function renderMemberList(search = "") {
+        const list =
+            $("member-picker-list");
+        const count =
+            $("member-picker-count");
+        if (!list) return;
+        const query =
+            String(search || "")
+                .trim()
+                .toLowerCase();
+        const filtered =
+            allMembersForDonation.filter(member => {
+                const name =
+                    memberDisplayName(member)
+                        .toLowerCase();
+                const memberId =
+                    memberIdValue(member)
+                        .toString()
+                        .toLowerCase();
+                const email =
+                    memberEmail(member)
+                        .toLowerCase();
+                const phone =
+                    memberPhone(member)
+                        .toLowerCase();
+                return (
+                    !query ||
+                    name.includes(query) ||
+                    memberId.includes(query) ||
+                    email.includes(query) ||
+                    phone.includes(query)
+                );
+            });
+        if (count) {
+            count.textContent =
+                filtered.length +
+                " / " +
+                allMembersForDonation.length;
+        }
+        if (!filtered.length) {
+            list.innerHTML = `
+                <div class="p-5 text-center text-xs text-gray-500">
+                    <i class="fas fa-search mb-2 block text-lg"></i>
+                    Hakuna mwanachama anayelingana na utafutaji.
+                </div>
+            `;
+            return;
+        }
+        list.innerHTML =
+            filtered.map((member) => {
+                const originalIndex =
+                    allMembersForDonation.indexOf(member);
+                const name =
+                    memberDisplayName(member);
+                const memberId =
+                    memberIdValue(member);
+                const email =
+                    memberEmail(member);
+                const phone =
+                    memberPhone(member);
+                const photo =
+                    memberPhoto(member);
+                const initials =
+                    escapeHtml(
+                        name.trim().charAt(0).toUpperCase() || "M"
+                    );
+                return `
+                    <button
+                        type="button"
+                        class="donation-member-option w-full text-left px-3 py-3 hover:bg-green-50 transition flex items-center justify-between gap-3"
+                        data-member-index="${originalIndex}"
+                    >
+                        <div class="flex items-center gap-3 min-w-0 flex-1">
+                            ${
+                                photo
+                                    ? `
+                                        <img
+                                            src="${escapeHtml(photo)}"
+                                            class="w-10 h-10 rounded-full object-cover border border-green-200 shrink-0"
+                                            onerror="
+                                                this.style.display='none';
+                                                this.nextElementSibling.style.display='flex';
+                                            "
+                                        >
+                                      `
+                                    : ""
+                            }
+                            <span
+                                class="w-10 h-10 rounded-full bg-dcf-green text-white items-center justify-center font-bold shrink-0 ${photo ? "hidden" : "flex"}"
+                            >
+                                ${initials}
+                            </span>
+                            <span class="min-w-0 flex-1">
+                                <span class="block text-xs font-bold text-gray-800 truncate">
+                                    ${escapeHtml(name)}
+                                </span>
+                                ${
+                                    memberId
+                                        ? `
+                                            <span class="block text-[10px] text-dcf-green font-semibold truncate">
+                                                <i class="fas fa-id-card mr-1"></i>
+                                                ${escapeHtml(memberId)}
+                                            </span>
+                                          `
+                                        : ""
+                                }
+                                ${
+                                    email
+                                        ? `
+                                            <span class="block text-[10px] text-gray-400 truncate">
+                                                <i class="fas fa-envelope mr-1"></i>
+                                                ${escapeHtml(email)}
+                                            </span>
+                                          `
+                                        : ""
+                                }
+                                ${
+                                    phone
+                                        ? `
+                                            <span class="block text-[10px] text-gray-400 truncate">
+                                                <i class="fas fa-phone mr-1"></i>
+                                                ${escapeHtml(phone)}
+                                            </span>
+                                          `
+                                        : ""
+                                }
+                            </span>
+                        </div>
+                        <i class="fas fa-chevron-right text-dcf-green text-[10px]"></i>
+                    </button>
+                `;
+            }).join("");
+        /* -----------------------------------------
+           SELECT MEMBER EVENT BINDING
+        ----------------------------------------- */
+        list
+            .querySelectorAll(
+                ".donation-member-option"
+            )
+            .forEach(button => {
+                button.addEventListener(
+                    "click",
+                    () => {
+                        const index =
+                            Number(
+                                button.dataset.memberIndex
+                            );
+                        selectExistingMember(
+                            allMembersForDonation[index]
+                        );
+                    }
+                );
+            });
+    }
+    function selectExistingMember(member) {
+        if (!member) return;
+        selectedMember = member;
+        const name =
+            memberDisplayName(member);
+        const memberId =
+            memberIdValue(member);
+        const phone =
+            memberPhone(member);
+        const email =
+            memberEmail(member);
+        const photo =
+            memberPhoto(member);
+        /*
+         * HII NDIYO LINK KUU:
+         * member table ID
+         * + member_id
+         * + email
+         */
+        if ($("existing_donor_id")) {
+            $("existing_donor_id").value =
+                member.id || "";
+        }
+        if ($("donor_name")) {
+            $("donor_name").value =
+                name;
+        }
+        if ($("donor_id")) {
+            $("donor_id").value =
+                memberId;
+        }
+        if ($("donor_phone")) {
+            $("donor_phone").value =
+                phone;
+        }
+        if ($("donor_email")) {
+            $("donor_email").value =
+                email;
+        }
+        if (
+            $("donor_address") &&
+            (member.address || member.location)
+        ) {
+            $("donor_address").value =
+                member.address ||
+                member.location;
+        }
+        if (
+            $("donor_country") &&
+            member.country
+        ) {
+            $("donor_country").value =
+                member.country;
+        }
+        if ($("donor_photo")) {
+            $("donor_photo").value =
+                photo;
+        }
+        if ($("donor-photo-preview")) {
+            if (photo) {
+                $("donor-photo-preview").src =
+                    photo;
+                $("donor-photo-preview")
+                    .style.display = "block";
+            } else {
+                $("donor-photo-preview")
+                    .style.display = "none";
+            }
+        }
+        if ($("donor_type")) {
+            $("donor_type").value =
+                "Individual";
+        }
+        if ($("donor_search")) {
+            $("donor_search").value =
+                name +
+                (
+                    memberId
+                        ? " (" + memberId + ")"
+                        : ""
+                );
+        }
+        $("member-picker-panel")
+            ?.classList.add("hidden");
+        $("donor-search-results")
+            ?.classList.remove("show");
+        preview();
+        toast(
+            "Mwanachama amechaguliwa",
+            name +
+            (
+                memberId
+                    ? " — " + memberId
+                    : ""
+            ),
+            "success"
+        );
+    }
+    /* =========================================================
+       LOAD EXISTING MEMBERS
+       ========================================================= */
+    async function loadExistingMembers() {
+        const list = $("member-picker-list");
+        const panel = $("member-picker-panel");
+        const btn = $("load-members-btn");
+        if (!list || !panel) return;
+        panel.classList.remove("hidden");
+        list.innerHTML = `
+            <div class="p-5 text-center text-xs text-dcf-green">
+                <i class="fas fa-spinner fa-spin mr-1"></i>
+                Inapakia wanachama...
+            </div>
+        `;
+        if (btn) {
+            btn.disabled = true;
+        }
+        try {
+            /* -----------------------------------------
+               CHECK SUPABASE CLIENT
+            ----------------------------------------- */
+            if (
+                typeof supabase === "undefined" ||
+                !supabase.from
+            ) {
+                throw new Error(
+                    "Supabase client haijapatikana."
+                );
+            }
+            /* -----------------------------------------
+               CHECK LOGIN SESSION
+            ----------------------------------------- */
+            const {
+                data: sessionData,
+                error: sessionError
+            } = await supabase.auth.getSession();
+            if (sessionError) {
+                throw sessionError;
+            }
+            if (!sessionData || !sessionData.session) {
+                throw new Error(
+                    "Hujaingia kwenye mfumo. Tafadhali login kwanza."
+                );
+            }
+            /* -----------------------------------------
+               LOAD MEMBERS
+            ----------------------------------------- */
+            const { data: members, error } = await supabase
+              .from('members')
+              .select('*')
+              .order("full_name", {
+                  ascending: true
+              });
+
+            if (error) {
+              console.error('Hitilafu:', error.message);
+              throw error;
+            } else {
+              console.log('Wanachama wamepatikana:', members);
+            }
+
+            /* -----------------------------------------
+               SAVE MEMBERS
+            ----------------------------------------- */
+            allMembersForDonation = Array.isArray(members)
+                ? members
+                : [];
+            memberPickerLoaded = true;
+            /* -----------------------------------------
+               EMPTY MEMBERS
+            ----------------------------------------- */
+            if (allMembersForDonation.length === 0) {
+                list.innerHTML = `
+                    <div class="p-5 text-center text-xs text-gray-500">
+                        <i class="fas fa-users-slash text-lg mb-2 block"></i>
+                        Hakuna wanachama waliopatikana.
+                    </div>
+                `;
+                const count =
+                    $("member-picker-count");
+                if (count) {
+                    count.textContent = "0";
+                }
+                return;
+            }
+            /* -----------------------------------------
+               RENDER MEMBERS
+            ----------------------------------------- */
+            renderMemberList(
+                $("member-list-search")?.value || ""
+            );
+        } catch (err) {
+            console.error(
+                "Failed to load members:",
+                err
+            );
+            /* -----------------------------------------
+               FRIENDLY ERROR
+            ----------------------------------------- */
+            let message =
+                "Imeshindikana kupakia wanachama.";
+            if (err?.message) {
+                message += `
+                    <br>
+                    <span class="text-[10px] text-gray-500">
+                        ${escapeHtml(err.message)}
+                    </span>
+                `;
+            }
+            list.innerHTML = `
+                <div class="p-5 text-center text-xs text-red-600">
+                    <i class="fas fa-exclamation-triangle text-lg mb-2 block"></i>
+                    ${message}
+                </div>
+            `;
+            toast(
+                "Hitilafu",
+                "Wanachama hawakuweza kupakiwa.",
+                "error"
+            );
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+            }
+        }
+    }
+    /* =====================================================
+       OPEN / CLOSE MODAL
+    ====================================================== */
+    window.openAddModal = function () {
+        const modal =
+            $("donation-modal");
+        if (!modal) return;
+        $("donation-form")?.reset();
+        $("donation_id").value = "";
+        $("existing_donor_id").value = "";
+        if ($("donation_date")) {
+            $("donation_date").value =
+                today();
+        }
+        if ($("date_received")) {
+            $("date_received").value =
+                today();
+        }
+        if ($("donation_status")) {
+            $("donation_status").value =
+                "Pending";
+        }
+        if ($("currency")) {
+            $("currency").value =
+                "TZS";
+        }
+        generateDonationReference();
+        selectedMember = null;
+        memberPickerLoaded = false;
+        allMembersForDonation = [];
+
+        if ($("donor_search")) {
+            $("donor_search").value = "";
+        }
+
+        if ($("member-list-search")) {
+            $("member-list-search").value = "";
+        }
+
+        if ($("member-picker-list")) {
+            $("member-picker-list").innerHTML = "";
+        }
+
+        if ($("member-picker-count")) {
+            $("member-picker-count").textContent = "0";
+        }
+
+        if ($("member-picker-panel")) {
+            $("member-picker-panel")
+                .classList.add("hidden");
+        }
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        updateDonationTypeUI();
+        updateAllocationUI();
+        updateExistingDonorUI();
+        updateStatusUI();
+        preview();
+    };
+    window.closeModal = function () {
+        const modal =
+            $("donation-modal");
+        if (!modal) return;
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+    };
+    /* =====================================================
+       PRINT
+    ====================================================== */
+    window.printDonations = function () {
+        window.print();
+    };
+    /* =====================================================
+       EVENTS
+    ====================================================== */
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+            if (
+                $("donation_date") &&
+                !$("donation_date").value
+            ) {
+                $("donation_date").value =
+                    today();
+            }
+            if (
+                $("date_received") &&
+                !$("date_received").value
+            ) {
+                $("date_received").value =
+                    today();
+            }
+            if (
+                $("verification_date") &&
+                !$("verification_date").value
+            ) {
+                $("verification_date").value =
+                    today();
+            }
+            if (
+                $("receipt_date") &&
+                !$("receipt_date").value
+            ) {
+                $("receipt_date").value =
+                    today();
+            }
+            if (
+                !$("donation_reference")?.value
+            ) {
+                generateDonationReference();
+            }
+            $("generate-reference-btn")
+                ?.addEventListener(
+                    "click",
+                    generateDonationReference
+                );
+            $("donation_type")
+                ?.addEventListener(
+                    "change",
+                    updateDonationTypeUI
+                );
+            $("allocation_type")
+                ?.addEventListener(
+                    "change",
+                    updateAllocationUI
+                );
+            $("existing_donor")
+                ?.addEventListener(
+                    "change",
+                    updateExistingDonorUI
+                );
+            $("donation_status")
+                ?.addEventListener(
+                    "change",
+                    updateStatusUI
+                );
+            [
+                "donor_name",
+                "donor_id",
+                "donor_email",
+                "amount",
+                "currency",
+                "donation_type",
+                "donation_reference",
+                "receipt_number",
+                "allocation_type"
+            ]
+                .forEach(id => {
+                    $(id)?.addEventListener(
+                        "input",
+                        preview
+                    );
+                    $(id)?.addEventListener(
+                        "change",
+                        preview
+                    );
+                });
+            $("donor_photo")
+                ?.addEventListener(
+                    "input",
+                    function () {
+                        const image =
+                            $("donor-photo-preview");
+                        const value =
+                            this.value.trim();
+                        if (!value) {
+                            image.style.display =
+                                "none";
+                            return;
+                        }
+                        image.src = value;
+                        image.style.display =
+                            "block";
+                        image.onerror =
+                            () => {
+                                image.style.display =
+                                    "none";
+                            };
+                    }
+                );
+            /* =========================================================
+               MEMBER SEARCH EVENTS
+               ========================================================= */
+            $("load-members-btn")
+                ?.addEventListener(
+                    "click",
+                    function () {
+                        loadExistingMembers();
+                    }
+                );
+            $("member-list-search")
+                ?.addEventListener(
+                    "input",
+                    function () {
+                        renderMemberList(
+                            this.value
+                        );
+                    }
+                );
+            $("donor_search")
+                ?.addEventListener(
+                    "input",
+                    function () {
+                        const query =
+                            this.value.trim();
+                        /*
+                         * Fungua existing members
+                         * pale user anapoanza kuandika
+                         */
+                        if (
+                            query.length >= 2 &&
+                            !memberPickerLoaded
+                        ) {
+                            loadExistingMembers();
+                        }
+                        if (
+                            memberPickerLoaded
+                        ) {
+                            $("member-picker-panel")
+                                ?.classList.remove("hidden");
+                            renderMemberList(
+                                query
+                            );
+                        }
+                    }
+                );
+            $("project_id")
+                ?.addEventListener(
+                    "change",
+                    function () {
+                        const activity =
+                            $("activity_id");
+                        if (!activity) return;
+                        if (!this.value) {
+                            activity.innerHTML =
+                                `
+                                    <option value="">
+                                        -- Chagua Activity --
+                                    </option>
+                                `;
+                        } else {
+                            activity.innerHTML =
+                                `
+                                    <option value="">
+                                        -- Activities za Project hii zitapakiwa --
+                                    </option>
+                                `;
+                        }
+                    }
+                );
+            /* MOBILE SIDEBAR */
+            $("mobile-menu-btn")
+                ?.addEventListener(
+                    "click",
+                    function () {
+                        $("sidebar")
+                            ?.classList.toggle(
+                                "-translate-x-full"
+                            );
+                    }
+                );
+            updateDonationTypeUI();
+            updateAllocationUI();
+            updateExistingDonorUI();
+            updateStatusUI();
+            preview();
+        }
+    );
+    /* =====================================================
+       PUBLIC FUNCTIONS
+    ====================================================== */
+    window.generateDonationReference =
+        generateDonationReference;
+    window.updateDonationFormUI =
+        function () {
+            updateDonationTypeUI();
+            updateAllocationUI();
+            updateExistingDonorUI();
+            updateStatusUI();
+            preview();
+        };
+})();
+</script>
+<!-- =========================================================
+     EXISTING DONATIONS ENGINE
+========================================================= -->
+<script src="js/i18n.js"></script>
+<script src="../js/donations.js"></script>
+
+<!-- =========================================================
+     DCF DONATIONS COMPATIBILITY + DELETE FIX
+     - Works with Supabase v2
+     - Uses event delegation, so dynamically-rendered rows work
+     - Exposes window.deleteDonation for existing onclick handlers
+     - Reloads the list after a successful delete
+     - Does not depend on Tailwind JS or browser-specific APIs
+========================================================= -->
+<script>
+(function () {
+    "use strict";
+
+    const byId = (id) => document.getElementById(id);
+
+    function safeToast(title, message, type) {
+        if (typeof window.toast === "function") {
+            window.toast(title, message, type || "success");
+            return;
+        }
+
+        const box = byId("toast");
+        if (!box) {
+            alert(title + "\n" + message);
+            return;
+        }
+
+        const titleEl = byId("toast-title");
+        const messageEl = byId("toast-message");
+        const iconEl = byId("toast-icon");
+
+        if (titleEl) titleEl.textContent = title;
+        if (messageEl) messageEl.textContent = message;
+        if (iconEl) {
+            iconEl.className =
+                type === "error"
+                    ? "fas fa-exclamation-triangle mt-0.5"
+                    : "fas fa-check-circle mt-0.5";
+        }
+
+        box.className = "toast " + (type || "success") + " show";
+        window.setTimeout(function () {
+            box.classList.remove("show");
+        }, 4000);
+    }
+
+    function getSupabaseClient() {
+        if (window.supabase && typeof window.supabase.from === "function") {
+            return window.supabase;
+        }
+
+        /*
+         * Some projects expose the client under a custom global.
+         * Support the common names without breaking the existing app.
+         */
+        if (window.supabaseClient &&
+            typeof window.supabaseClient.from === "function") {
+            return window.supabaseClient;
+        }
+
+        return null;
+    }
+
+    function normalizeId(value) {
+        if (value === undefined || value === null) return "";
+        return String(value).trim();
+    }
+
+    function findDonationIdFromElement(element) {
+        if (!element) return "";
+
+        const attrs = [
+            "data-donation-id",
+            "data-id",
+            "data-record-id",
+            "data-row-id"
+        ];
+
+        for (const attr of attrs) {
+            const value = element.getAttribute(attr);
+            if (value) return normalizeId(value);
+        }
+
+        const parent = element.closest(
+            "[data-donation-id], [data-id], [data-record-id], [data-row-id]"
+        );
+
+        if (parent) {
+            for (const attr of attrs) {
+                const value = parent.getAttribute(attr);
+                if (value) return normalizeId(value);
+            }
+        }
+
+        return "";
+    }
+
+    async function refreshDonations() {
+        /*
+         * Reuse the project's existing loader whenever it exists.
+         * Multiple common names are supported because the existing
+         * donations engine is external to this HTML page.
+         */
+        const candidates = [
+            "loadDonations",
+            "fetchDonations",
+            "loadDonationData",
+            "refreshDonations",
+            "renderDonations"
+        ];
+
+        for (const name of candidates) {
+            if (typeof window[name] === "function") {
+                try {
+                    await window[name]();
+                    return true;
+                } catch (error) {
+                    console.error("Donation refresh failed:", error);
+                }
+            }
+        }
+
+        /*
+         * If the external engine does not expose a loader, a full reload
+         * is still reliable on Netlify and guarantees fresh database data.
+         */
+        window.location.reload();
+        return true;
+    }
+
+    async function performDeleteDonation(rawId, sourceElement) {
+        const id = normalizeId(rawId) || findDonationIdFromElement(sourceElement);
+
+        if (!id) {
+            safeToast(
+                "Delete failed",
+                "Donation ID haikupatikana. Hakikisha row ina data-donation-id au data-id.",
+                "error"
+            );
+            return false;
+        }
+
+        const client = getSupabaseClient();
+        if (!client) {
+            safeToast(
+                "Database error",
+                "Supabase client haijapatikana. Angalia ../js/supabase.js na Netlify paths.",
+                "error"
+            );
+            return false;
+        }
+
+        const confirmed = window.confirm(
+            "Una uhakika unataka kufuta mchango huu?\n\n" +
+            "Kitendo hiki hakiwezi kurudishwa baada ya kufanikiwa."
+        );
+
+        if (!confirmed) return false;
+
+        const button = sourceElement && sourceElement.closest("button");
+        const oldHTML = button ? button.innerHTML : "";
+        if (button) {
+            button.disabled = true;
+            button.setAttribute("aria-busy", "true");
+            button.innerHTML =
+                '<i class="fas fa-spinner fa-spin"></i>';
+        }
+
+        try {
+            /*
+             * IMPORTANT:
+             * Delete by the primary key only. Do not delete by receipt,
+             * donor name, amount, or date because those are not unique.
+             */
+            const result = await client
+                .from("donations")
+                .delete()
+                .eq("id", id);
+
+            if (result.error) {
+                throw result.error;
+            }
+
+            safeToast(
+                "Mchango umefutwa",
+                "Rekodi ya mchango imeondolewa kwenye database.",
+                "success"
+            );
+
+            await refreshDonations();
+            return true;
+
+        } catch (error) {
+            console.error("DELETE donations error:", error);
+
+            let message =
+                error && error.message
+                    ? error.message
+                    : "Imeshindikana kufuta mchango.";
+
+            /*
+             * Make the most common Supabase RLS problem explicit.
+             */
+            if (/row-level security|permission|not allowed|policy/i.test(message)) {
+                message =
+                    "Supabase imekataa DELETE kutokana na RLS policy. " +
+                    "Weka DELETE policy kwenye donations table kwa role inayotumia mfumo.";
+            }
+
+            safeToast("Delete failed", message, "error");
+
+            if (button) {
+                button.disabled = false;
+                button.removeAttribute("aria-busy");
+                button.innerHTML = oldHTML;
+            }
+
+            return false;
+        }
+    }
+
+    /*
+     * Public API: supports existing buttons using onclick="deleteDonation(id)"
+     * and buttons rendered later by the external donations.js.
+     */
+    window.deleteDonation = function (id, element) {
+        return performDeleteDonation(id, element);
+    };
+
+    /*
+     * Event delegation: catches dynamically generated Delete buttons.
+     * Recognizes:
+     *   data-action="delete"
+     *   data-action="remove"
+     *   data-delete="true"
+     *   title="Delete"
+     *   aria-label containing "delete"
+     *   button text containing Delete/Futa
+     */
+    document.addEventListener("click", function (event) {
+        const button = event.target.closest("button, a");
+        if (!button) return;
+
+        const action =
+            (button.getAttribute("data-action") || "").toLowerCase();
+        const deleteFlag =
+            (button.getAttribute("data-delete") || "").toLowerCase();
+        const title =
+            (button.getAttribute("title") || "").toLowerCase();
+        const aria =
+            (button.getAttribute("aria-label") || "").toLowerCase();
+        const text =
+            (button.textContent || "").trim().toLowerCase();
+
+        const looksLikeDelete =
+            action === "delete" ||
+            action === "remove" ||
+            deleteFlag === "true" ||
+            title.includes("delete") ||
+            title.includes("futa") ||
+            aria.includes("delete") ||
+            aria.includes("futa") ||
+            text === "delete" ||
+            text === "futa" ||
+            text.includes("delete donation") ||
+            text.includes("futa mchango");
+
+        if (!looksLikeDelete) return;
+
+        /*
+         * If the existing engine already has its own onclick handler,
+         * don't execute twice when it explicitly uses window.deleteDonation.
+         */
+        const inlineCode = button.getAttribute("onclick") || "";
+        if (/deleteDonation\s*\(/i.test(inlineCode)) return;
+
+        const id = findDonationIdFromElement(button);
+
+        if (!id) {
+            /*
+             * Try to extract a UUID/numeric ID from the row if the engine
+             * stores it in a hidden element or a data attribute on <tr>.
+             */
+            const row = button.closest("tr");
+            const rowId = findDonationIdFromElement(row);
+            if (rowId) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                performDeleteDonation(rowId, button);
+            }
+            return;
+        }
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        performDeleteDonation(id, button);
+    }, true);
+
+    /*
+     * Add a visible, accessible delete marker to any dynamically created
+     * action button whose markup uses common delete identifiers.
+     */
+    function decorateDeleteButtons() {
+        document.querySelectorAll(
+            '[data-action="delete"], [data-action="remove"], [data-delete="true"]'
+        ).forEach(function (button) {
+            button.classList.add("delete-action-btn");
+            if (!button.getAttribute("aria-label")) {
+                button.setAttribute("aria-label", "Delete donation");
+            }
+            if (!button.getAttribute("title")) {
+                button.setAttribute("title", "Delete donation");
+            }
+        });
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", decorateDeleteButtons);
+    } else {
+        decorateDeleteButtons();
+    }
+
+    /*
+     * Observe rows inserted by donations.js so the delete styling keeps
+     * working without requiring changes to the external script.
+     */
+    if (window.MutationObserver) {
+        const tableBody = byId("donations-table-body");
+        if (tableBody) {
+            new MutationObserver(decorateDeleteButtons)
+                .observe(tableBody, { childList: true, subtree: true });
+        }
+    }
+})();
+</script>
+
+
+<script>
+(function () {
+    "use strict";
+    const form = document.getElementById("donation-form");
+    if (!form) return;
+
+    form.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" &&
+            event.target &&
+            event.target.tagName === "INPUT" &&
+            event.target.type !== "submit" &&
+            event.target.type !== "textarea") {
+            event.preventDefault();
+        }
+    });
+})();
+</script>
+
+</body>
+</html>

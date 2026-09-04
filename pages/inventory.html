@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#174a35">
+<title>Stoo & Vifaa - DCF MIS</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{
+"dcf-green":"#174a35","dcf-dark-green":"#0d3022",
+"dcf-light-green":"#4C9A2A","dcf-hover":"#28723E"
+}}}};
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/role-guard.js"></script>
+
+<style>
+*{box-sizing:border-box;font-family:"Times New Roman",Times,serif!important}
+html,body{min-height:100%;margin:0}
+body{background:#f5f7f6;overflow-x:hidden}
+button,input,select{font:inherit}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.sidebar-link{transition:.18s}
+.sidebar-link:hover{background:#28723E;color:#fff}
+.modal{opacity:0;visibility:hidden;pointer-events:none;transition:.18s}
+.modal.show{opacity:1;visibility:visible;pointer-events:auto}
+.modal-card{transform:translateY(18px) scale(.98);transition:.18s}
+.modal.show .modal-card{transform:none}
+.stat-card{transition:.18s}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(0,0,0,.07)}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.action-btn{width:40px;height:40px;min-width:40px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center}
+.btn-view{color:#166534!important;background:#f0fdf4;border:1px solid #bbf7d0}
+.btn-edit{color:#2563eb!important;background:#eff6ff;border:1px solid #bfdbfe}
+.btn-delete{color:#dc2626!important;background:#fef2f2;border:1px solid #fecaca}
+.btn-delete:hover{background:#fee2e2!important;color:#991b1b!important}
+#toast{transition:.2s;transform:translateY(20px);opacity:0;pointer-events:none}
+#toast.show{transform:none;opacity:1;pointer-events:auto}
+@media(max-width:767px){
+ main{padding:12px!important}
+ .modal{padding:8px!important}
+ .modal-card{max-height:calc(100vh - 16px);display:flex;flex-direction:column}
+ #invForm{overflow-y:auto}
+ table{min-width:730px}
+}
+@media(max-width:420px){
+ .stat-card{padding:12px!important}
+ .form-actions{flex-direction:column-reverse}
+ .form-actions button{width:100%;min-height:44px}
+ .modal-card{border-radius:10px}
+}
+@media print{
+ body *{visibility:hidden!important}
+ #print-area,#print-area *{visibility:visible!important}
+ #print-area{position:absolute;left:0;top:0;width:100%}
+ .no-print{display:none!important}
+}
+</style>
+
+<style>
+    @media (max-width: 640px) {
+        .modal {
+            align-items: flex-end;
+            padding: 0;
+        }
+        .modal-card {
+            max-height: 94vh;
+            overflow-y: auto;
+            border-radius: 1.25rem 1.25rem 0 0;
+        }
+    }
+    button, a {
+        -webkit-tap-highlight-color: transparent;
+    }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+        outline: 2px solid #4C9A2A;
+        outline-offset: 2px;
+    }
+</style>
+
+
+<style id="fast-loader-style">
+#page-loader{
+    position:fixed;inset:0;z-index:9999;background:#f5f7f6;
+    display:flex;align-items:center;justify-content:center;
+    opacity:1;visibility:visible;
+    transition:opacity .15s ease,visibility .15s ease;
+}
+#page-loader.loaded{opacity:0;visibility:hidden;pointer-events:none}
+.loader-box{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 16px;background:#fff;border:1px solid #e5e7eb;
+    border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.06);
+    color:#174a35;font-size:12px;font-weight:700;
+}
+.loader-spinner{
+    width:18px;height:18px;border:2px solid #dbe8e1;
+    border-top-color:#174a35;border-radius:50%;
+    animation:fastspin .55s linear infinite;
+}
+@keyframes fastspin{to{transform:rotate(360deg)}}
+</style>
+
+
+<link rel="preconnect" href="https://cdn.tailwindcss.com">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="//cdn.tailwindcss.com">
+<link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+<link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+
+</head>
+
+
+<div id="page-loader" aria-label="Inapakia">
+    <div class="loader-box">
+        <div class="loader-spinner"></div>
+        <span>Inapakia...</span>
+    </div>
+</div>
+
+<body class="min-h-screen" data-allowed-roles="admin,staff,auditor">
+
+
+
+
+
+<div class="md:ml-64">
+<header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-3 sm:px-5 md:px-7 sticky top-0 z-30 shadow-sm">
+    <div class="flex items-center gap-3 min-w-0">
+        
+        <div class="min-w-0">
+            <h2 class="font-bold text-base md:text-xl text-gray-800 truncate">Stoo & Vifaa</h2>
+            <p class="hidden md:block text-[11px] text-gray-500">Usimamizi wa vifaa na mali za taasisi</p>
+        </div>
+    </div>
+    <div class="flex items-center gap-2 shrink-0">
+        <button type="button" onclick="printInventory()" class="hidden sm:flex items-center gap-2 px-3 py-2 border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 rounded text-xs font-bold"><i class="fas fa-print"></i>Print</button>
+        <button id="btn-add" type="button" onclick="openInventoryModal()" data-action="create" class="bg-dcf-green hover:bg-dcf-dark-green text-white px-3 md:px-4 py-2.5 rounded-lg text-xs font-bold flex items-center gap-2 shadow-sm"><i class="fas fa-plus"></i><span>Sajili Kifaa</span></button>
+    </div>
+</header>
+
+<main class="p-3 sm:p-4 md:p-6 max-w-7xl mx-auto w-full">
+<div class="mb-5">
+    <h1 class="text-lg md:text-2xl font-bold text-gray-800">Muhtasari wa Stoo</h1>
+    <p class="text-xs text-gray-500 mt-1">Fuatilia vifaa vilivyopo, hali yake na idadi.</p>
+</div>
+
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
+    <div class="stat-card bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between"><div><p class="text-[10px] uppercase font-bold text-gray-500">Aina za Vifaa</p><h3 id="stat-items" class="text-2xl font-bold text-dcf-green mt-1">0</h3></div><div class="w-10 h-10 rounded-full bg-green-100 text-dcf-green flex items-center justify-center"><i class="fas fa-box"></i></div></div>
+    <div class="stat-card bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between"><div><p class="text-[10px] uppercase font-bold text-gray-500">Jumla ya Idadi</p><h3 id="stat-quantity" class="text-2xl font-bold text-blue-600 mt-1">0</h3></div><div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fas fa-layer-group"></i></div></div>
+    <div class="stat-card bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between"><div><p class="text-[10px] uppercase font-bold text-gray-500">Vifaa Vizuri</p><h3 id="stat-good" class="text-2xl font-bold text-green-600 mt-1">0</h3></div><div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center"><i class="fas fa-circle-check"></i></div></div>
+    <div class="stat-card bg-white border border-gray-200 rounded-lg p-4 flex items-center justify-between"><div><p class="text-[10px] uppercase font-bold text-gray-500">Vifaa Vibovu</p><h3 id="stat-damaged" class="text-2xl font-bold text-red-600 mt-1">0</h3></div><div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center"><i class="fas fa-triangle-exclamation"></i></div></div>
+</div>
+
+<section id="print-area" class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+<div class="p-4 border-b border-gray-200 bg-gray-50 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <div><h3 class="font-bold text-gray-800 text-sm">Orodha ya Vifaa</h3><p class="text-[10px] text-gray-500 mt-1">Vifaa vyote vilivyosajiliwa kwenye stoo</p></div>
+    <div class="relative w-full md:w-72 no-print">
+        <input id="search-input" type="search" oninput="filterInventory()" placeholder="Tafuta kifaa..." class="w-full border border-gray-300 rounded-xl pl-10 pr-3 py-3 text-sm bg-white focus:outline-none focus:border-dcf-green focus:ring-1 focus:ring-dcf-green">
+        <i class="fas fa-search absolute left-3 top-3 text-gray-400 text-xs"></i>
+    </div>
+</div>
+
+<div class="table-scroll">
+<table class="w-full text-left text-xs border-collapse">
+<thead><tr class="bg-gray-100 border-b border-gray-200 text-gray-700">
+<th class="px-4 py-3 font-bold">Na.</th><th class="px-4 py-3 font-bold">Jina la Kifaa</th>
+<th class="px-4 py-3 font-bold">Idadi</th><th class="px-4 py-3 font-bold">Kipimo</th>
+<th class="px-4 py-3 font-bold">Hali</th><th class="px-4 py-3 font-bold">Tarehe</th>
+<th class="px-4 py-3 font-bold text-center no-print">Kitendo</th>
+</tr></thead>
+<tbody id="invTable"><tr><td colspan="7" class="p-8 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Inapakia taarifa...</td></tr></tbody>
+</table>
+</div>
+</section>
+</main>
+</div>
+
+<div id="inventory-modal" class="modal fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4">
+<div class="modal-card bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+<div class="bg-dcf-green text-white px-5 py-4 flex items-center justify-between shrink-0">
+<div><h3 id="modal-title" class="font-bold text-sm">Sajili Kifaa Kipya</h3><p class="text-[10px] text-green-200">Ingiza taarifa za kifaa</p></div>
+<button type="button" onclick="closeInventoryModal()" aria-label="Funga" class="text-white text-xl p-2"><i class="fas fa-times"></i></button>
+</div>
+<form id="invForm" class="p-5 sm:p-6 space-y-5">
+<input type="hidden" id="inventory-id">
+<div><label class="block text-xs font-bold text-gray-700 mb-1.5">Jina la Kifaa <span class="text-red-500">*</span></label>
+<input type="text" id="iName" required maxlength="150" placeholder="Mfano: Viti vya plastiki" class="w-full border border-gray-300 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-dcf-green"></div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div><label class="block text-xs font-bold text-gray-700 mb-1.5">Idadi <span class="text-red-500">*</span></label>
+<input type="number" id="iQty" required min="0" step="1" inputmode="numeric" class="w-full border border-gray-300 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-dcf-green"></div>
+<div><label class="block text-xs font-bold text-gray-700 mb-1.5">Kipimo <span class="text-red-500">*</span></label>
+<input type="text" id="iUnit" required maxlength="50" placeholder="Pcs, Katoni..." class="w-full border border-gray-300 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-dcf-green"></div>
+</div>
+<div><label class="block text-xs font-bold text-gray-700 mb-1.5">Hali ya Kifaa</label>
+<select id="iCond" class="w-full border border-gray-300 rounded-xl px-3 py-3 text-sm bg-white focus:outline-none focus:border-dcf-green">
+<option value="Kipya">Kipya</option><option value="Kizuri">Kizuri</option><option value="Kibovu">Kibovu</option>
+</select></div>
+<div class="bg-green-50 border border-green-100 rounded-lg p-3 text-[10px] text-gray-600">Jaza taarifa muhimu tu: jina, idadi, kipimo na hali.</div>
+<div class="form-actions flex justify-end gap-2 border-t pt-4">
+<button type="button" onclick="closeInventoryModal()" class="px-4 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 text-xs font-bold">Ghairi</button>
+<button type="submit" id="save-btn" class="bg-dcf-green hover:bg-dcf-dark-green text-white px-5 py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2"><i class="fas fa-save"></i>Hifadhi</button>
+</div>
+</form>
+</div></div>
+
+<div id="view-modal" class="modal fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4">
+<div class="modal-card bg-white w-full max-w-md rounded-xl shadow-2xl overflow-hidden">
+<div class="bg-dcf-green text-white px-5 py-4 flex justify-between items-center"><h3 class="font-bold text-sm">Taarifa za Kifaa</h3><button type="button" onclick="closeViewModal()" class="text-xl p-2"><i class="fas fa-times"></i></button></div>
+<div id="view-content" class="p-5"></div>
+<div class="px-5 py-3 border-t flex justify-end"><button type="button" onclick="closeViewModal()" class="px-4 py-2 bg-gray-100 rounded-lg text-xs font-bold">Funga</button></div>
+</div></div>
+
+<div id="toast" class="fixed left-3 right-3 sm:left-auto sm:right-5 bottom-5 z-[200]">
+<div class="bg-white border border-gray-200 rounded-xl shadow-2xl px-4 py-3 flex items-start gap-3 max-w-md ml-auto">
+<div id="toast-icon" class="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center shrink-0"><i class="fas fa-check"></i></div>
+<div class="min-w-0"><p id="toast-title" class="font-bold text-sm text-gray-800"></p><p id="toast-message" class="text-xs text-gray-500 mt-0.5 break-words"></p></div>
+<button type="button" onclick="hideToast()" class="ml-auto text-gray-400 p-1" aria-label="Funga"><i class="fas fa-times"></i></button>
+</div></div>
+
+<script>
+"use strict";
+
+let inventoryList=[];
+
+function esc(v){
+    return v==null?"":String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+
+function showToast(title,message,type="success"){
+    const t=document.getElementById("toast");
+    document.getElementById("toast-title").textContent=title;
+    document.getElementById("toast-message").textContent=message;
+    const icon=document.getElementById("toast-icon");
+    icon.className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 "+(type==="error"?"bg-red-100 text-red-700":"bg-green-100 text-green-700");
+    icon.innerHTML=type==="error"?'<i class="fas fa-exclamation-triangle"></i>':'<i class="fas fa-check"></i>';
+    t.classList.add("show");
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer=setTimeout(hideToast,4500);
+}
+function hideToast(){document.getElementById("toast").classList.remove("show");}
+
+async function loadInventory(){
+    const table=document.getElementById("invTable");
+    table.innerHTML='<tr><td colspan="7" class="p-8 text-center text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Inapakia taarifa...</td></tr>';
+    try{
+        if(!window._supabase)throw new Error("Supabase client haijapatikana. Kagua ../js/supabase.js.");
+        const {data,error}=await _supabase.from("inventory").select("*").order("id",{ascending:false});
+        if(error)throw error;
+        inventoryList=data||[];
+        renderInventory(inventoryList);
+        updateStats(inventoryList);
+    }catch(e){
+        console.error(e);
+        table.innerHTML='<tr><td colspan="7" class="p-8 text-center text-red-600"><i class="fas fa-triangle-exclamation mr-2"></i>Imeshindikana kupakia taarifa.<br><small>'+esc(e.message)+'</small></td></tr>';
+    }
+}
+
+function renderInventory(data){
+    const table=document.getElementById("invTable");
+    if(!data.length){
+        table.innerHTML='<tr><td colspan="7" class="p-10 text-center text-gray-500"><i class="fas fa-box-open text-2xl mb-2"></i><br><b>Hakuna vifaa vilivyosajiliwa</b><br><small>Bonyeza Sajili Kifaa kuongeza kifaa.</small></td></tr>';
+        return;
+    }
+    table.innerHTML=data.map((item,index)=>{
+        let cls="bg-gray-100 text-gray-700",icon="fa-box";
+        if(item.condition==="Kipya"){cls="bg-blue-100 text-blue-700";icon="fa-sparkles";}
+        if(item.condition==="Kizuri"||item.condition==="Kinzuri"){cls="bg-green-100 text-green-700";icon="fa-circle-check";}
+        if(item.condition==="Kibovu"){cls="bg-red-100 text-red-700";icon="fa-triangle-exclamation";}
+        const date=item.last_updated?new Date(item.last_updated).toLocaleDateString("en-GB"):"-";
+        return `<tr class="border-b border-gray-100 hover:bg-green-50/40">
+<td class="px-4 py-3 text-gray-500 font-bold">${index+1}</td>
+<td class="px-4 py-3"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-lg bg-green-50 text-dcf-green flex items-center justify-center shrink-0"><i class="fas fa-box"></i></div><div><p class="font-bold text-gray-800">${esc(item.item_name)}</p><p class="text-[9px] text-gray-400">ID: ${esc(item.id)}</p></div></div></td>
+<td class="px-4 py-3 font-bold">${esc(item.quantity)}</td>
+<td class="px-4 py-3 text-gray-600">${esc(item.unit)}</td>
+<td class="px-4 py-3"><span class="${cls} inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-bold"><i class="fas ${icon}"></i>${esc(item.condition)}</span></td>
+<td class="px-4 py-3 text-gray-500">${date}</td>
+<td class="px-4 py-3 text-center no-print"><div class="flex justify-center gap-1">
+<button type="button" onclick="viewInventory('${esc(item.id)}')" title="Angalia" aria-label="Angalia" class="btn-view action-btn"><i class="fas fa-eye"></i></button>
+<button type="button" onclick="editInventory('${esc(item.id)}')" data-action="update" title="Hariri" aria-label="Hariri" class="btn-edit action-btn"><i class="fas fa-pen"></i></button>
+<button type="button" onclick="deleteInventory('${esc(item.id)}',this)" data-action="delete" data-delete="true" title="Futa" aria-label="Futa" class="btn-delete action-btn"><i class="fas fa-trash"></i></button>
+</div></td></tr>`;
+    }).join("");
+    if(typeof applyPageActionPermissions==="function")applyPageActionPermissions(sessionStorage.getItem("userRole"));
+}
+
+function updateStats(data){
+    document.getElementById("stat-items").textContent=data.length;
+    document.getElementById("stat-quantity").textContent=data.reduce((s,x)=>s+Number(x.quantity||0),0);
+    document.getElementById("stat-good").textContent=data.filter(x=>x.condition==="Kizuri"||x.condition==="Kinzuri").length;
+    document.getElementById("stat-damaged").textContent=data.filter(x=>x.condition==="Kibovu").length;
+}
+
+function openInventoryModal(){
+    document.getElementById("invForm").reset();
+    document.getElementById("inventory-id").value="";
+    document.getElementById("modal-title").textContent="Sajili Kifaa Kipya";
+    document.getElementById("save-btn").innerHTML='<i class="fas fa-save"></i>Hifadhi';
+    document.getElementById("inventory-modal").classList.add("show");
+    setTimeout(()=>document.getElementById("iName").focus(),100);
+}
+function closeInventoryModal(){document.getElementById("inventory-modal").classList.remove("show");}
+
+document.getElementById("invForm").addEventListener("submit",async function(e){
+    e.preventDefault();
+    const id=document.getElementById("inventory-id").value;
+    const name=document.getElementById("iName").value.trim();
+    const quantity=Number(document.getElementById("iQty").value);
+    const unit=document.getElementById("iUnit").value.trim();
+    const condition=document.getElementById("iCond").value;
+    if(!name||!unit||!Number.isFinite(quantity)||quantity<0){
+        showToast("Kagua taarifa","Jaza jina, idadi na kipimo kwa usahihi.","error");return;
+    }
+    const btn=document.getElementById("save-btn");
+    btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i>Inahifadhi...';
+    try{
+        const payload={item_name:name,quantity,unit,condition,last_updated:new Date().toISOString().split("T")[0]};
+        const result=id
+            ?await _supabase.from("inventory").update(payload).eq("id",id)
+            :await _supabase.from("inventory").insert([payload]);
+        if(result.error)throw result.error;
+        closeInventoryModal();
+        await loadInventory();
+        showToast(id?"Imesasishwa":"Imehifadhiwa",id?"Taarifa za kifaa zimesasishwa.":"Kifaa kimesajiliwa.");
+    }catch(e){
+        console.error(e);
+        showToast("Imeshindikana",e.message||"Imeshindikana kuhifadhi.","error");
+    }finally{
+        btn.disabled=false;btn.innerHTML='<i class="fas fa-save"></i>Hifadhi';
+    }
+});
+
+function editInventory(id){
+    const item=inventoryList.find(x=>String(x.id)===String(id));
+    if(!item){showToast("Kosa","Kifaa hakijapatikana.","error");return;}
+    document.getElementById("inventory-id").value=item.id;
+    document.getElementById("iName").value=item.item_name||"";
+    document.getElementById("iQty").value=item.quantity??"";
+    document.getElementById("iUnit").value=item.unit||"";
+    document.getElementById("iCond").value=item.condition||"Kipya";
+    document.getElementById("modal-title").textContent="Hariri Kifaa";
+    document.getElementById("save-btn").innerHTML='<i class="fas fa-save"></i>Sasisha';
+    document.getElementById("inventory-modal").classList.add("show");
+    setTimeout(()=>document.getElementById("iName").focus(),100);
+}
+
+function viewInventory(id){
+    const item=inventoryList.find(x=>String(x.id)===String(id));
+    if(!item)return;
+    const date=item.last_updated?new Date(item.last_updated).toLocaleDateString("en-GB"):"-";
+    document.getElementById("view-content").innerHTML=`
+<div class="space-y-4">
+<div class="p-4 bg-green-50 rounded-lg flex items-center gap-3"><div class="w-12 h-12 rounded-lg bg-white text-dcf-green flex items-center justify-center"><i class="fas fa-box text-lg"></i></div><div><h4 class="font-bold text-gray-800">${esc(item.item_name)}</h4><p class="text-[10px] text-gray-500">Kifaa cha Stoo</p></div></div>
+<div class="grid grid-cols-2 gap-3">
+<div class="border rounded-lg p-3"><p class="text-[9px] uppercase text-gray-400 font-bold">Idadi</p><p class="font-bold mt-1">${esc(item.quantity)} ${esc(item.unit)}</p></div>
+<div class="border rounded-lg p-3"><p class="text-[9px] uppercase text-gray-400 font-bold">Hali</p><p class="font-bold mt-1">${esc(item.condition)}</p></div>
+<div class="border rounded-lg p-3"><p class="text-[9px] uppercase text-gray-400 font-bold">ID</p><p class="font-bold mt-1 break-all">${esc(item.id)}</p></div>
+<div class="border rounded-lg p-3"><p class="text-[9px] uppercase text-gray-400 font-bold">Tarehe</p><p class="font-bold mt-1">${date}</p></div>
+</div></div>`;
+    document.getElementById("view-modal").classList.add("show");
+}
+function closeViewModal(){document.getElementById("view-modal").classList.remove("show");}
+
+async function deleteInventory(id,button){
+    const item=inventoryList.find(x=>String(x.id)===String(id));
+    if(!item){showToast("Kosa","Kifaa hakijapatikana.","error");return;}
+    if(!window.confirm('TAHADHARI\n\nUnataka kufuta kifaa "'+(item.item_name||"")+'"?\n\nKitendo hiki hakiwezi kurudishwa.'))return;
+
+    const original=button?button.innerHTML:"";
+    if(button){button.disabled=true;button.innerHTML='<i class="fas fa-spinner fa-spin"></i>';}
+
+    try{
+        if(!window._supabase||typeof _supabase.from!=="function")throw new Error("Supabase client haijapatikana.");
+        const {error}=await _supabase.from("inventory").delete().eq("id",id);
+        if(error)throw error;
+
+        // Update UI immediately after the database confirms deletion.
+        inventoryList=inventoryList.filter(x=>String(x.id)!==String(id));
+        renderInventory(inventoryList);
+        updateStats(inventoryList);
+        showToast("Kimefutwa",'Kifaa "'+(item.item_name||"")+'" kimefutwa kikamilifu.');
+    }catch(e){
+        console.error("DELETE inventory:",e);
+        let msg=e.message||"Imeshindikana kufuta kifaa.";
+        if(/row-level security|permission|policy|not allowed/i.test(msg))
+            msg="Supabase imezuia DELETE. Weka DELETE RLS policy kwenye inventory.";
+        showToast("Imeshindikana kufuta",msg,"error");
+        if(button){button.disabled=false;button.innerHTML=original;}
+    }
+}
+
+function filterInventory(){
+    const q=document.getElementById("search-input").value.toLowerCase().trim();
+    if(!q){renderInventory(inventoryList);return;}
+    renderInventory(inventoryList.filter(x=>
+        String(x.item_name||"").toLowerCase().includes(q)||
+        String(x.unit||"").toLowerCase().includes(q)||
+        String(x.condition||"").toLowerCase().includes(q)
+    ));
+}
+function printInventory(){window.print();}
+
+function applyPageActionPermissions(role){
+    document.querySelectorAll(".btn-add,.btn-edit,.btn-delete,[data-action='create'],[data-action='update'],[data-action='delete']").forEach(el=>el.style.display="");
+    if(role==="staff")document.querySelectorAll(".btn-delete,[data-action='delete']").forEach(el=>el.style.display="none");
+    if(role==="auditor"||role==="member"){
+        document.querySelectorAll(".btn-add,.btn-edit,.btn-delete,[data-action='create'],[data-action='update'],[data-action='delete']").forEach(el=>el.style.display="none");
+    }
+}
+
+document.addEventListener("click",function(e){
+    if(e.target===document.getElementById("inventory-modal"))closeInventoryModal();
+    if(e.target===document.getElementById("view-modal"))closeViewModal();
+});
+document.addEventListener("keydown",e=>{
+    if(e.key==="Escape"){closeInventoryModal();closeViewModal();}
+});
+
+document.addEventListener("DOMContentLoaded",async()=>{
+    const role=sessionStorage.getItem("userRole");
+    const logged=sessionStorage.getItem("userLoggedIn");
+    if(!logged||!role){window.location.href="../login.html";return;}
+    document.getElementById("sidebar-role").textContent=role.toUpperCase();
+    applyPageActionPermissions(role);
+    await loadInventory();
+});
+</script>
+
+<script>
+(function(){
+    const loader = document.getElementById('page-loader');
+
+    function hideLoader(){
+        if(loader) loader.classList.add('loaded');
+    }
+
+    // Hide as soon as the page is usable; don't keep the user waiting for slow extras.
+    if(document.readyState === 'loading'){
+        document.addEventListener('DOMContentLoaded', () => {
+            requestAnimationFrame(hideLoader);
+        }, {once:true});
+    } else {
+        requestAnimationFrame(hideLoader);
+    }
+
+    // Safety fallback.
+    window.setTimeout(hideLoader, 1800);
+
+    // Prevent repeated form clicks while saving.
+    document.addEventListener('submit', function(e){
+        const btn = e.target && e.target.querySelector('button[type="submit"]');
+        if(btn) btn.disabled = true;
+    }, true);
+})();
+</script>
+
+</body>
+</html>
