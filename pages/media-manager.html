@@ -1,0 +1,2170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Media Manager | DCF</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Arial', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            background: #f5f7fa;
+        }
+
+        .media-card {
+            transition: .2s ease;
+        }
+
+        .media-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .preview-box {
+            background:
+                linear-gradient(45deg,#eee 25%,transparent 25%),
+                linear-gradient(-45deg,#eee 25%,transparent 25%),
+                linear-gradient(45deg,transparent 75%,#eee 75%),
+                linear-gradient(-45deg,transparent 75%,#eee 75%);
+            background-size: 20px 20px;
+            background-position: 0 0,0 10px,10px -10px,-10px 0;
+        }
+
+        .loader {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #ddd;
+            border-top-color: #111827;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body class="text-gray-800">
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header class="bg-white border-b sticky top-0 z-40">
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+            <div>
+                <h1 class="text-2xl font-bold">
+                    Media Manager
+                </h1>
+
+                <p class="text-sm text-gray-500">
+                    Manage images, videos, audio and events
+                </p>
+            </div>
+
+            <div class="flex items-center gap-3">
+
+                <span id="userEmail"
+                      class="text-sm text-gray-500">
+                    Checking login...
+                </span>
+
+                <button
+                    onclick="logout()"
+                    class="px-4 py-2 rounded-lg bg-gray-900 text-white text-sm hover:bg-gray-700">
+                    Logout
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+    <!-- ACCESS ERROR -->
+
+    <div id="accessError"
+         class="hidden bg-red-50 border border-red-200 text-red-700 rounded-xl p-5 mb-6">
+
+        <h2 class="font-bold mb-1">
+            Access denied
+        </h2>
+
+        <p class="text-sm">
+            You must be logged in as Admin or Staff to manage site media.
+        </p>
+
+    </div>
+
+    <!-- DASHBOARD -->
+
+    <div id="dashboard" class="hidden">
+
+        <!-- =================================================
+             STATISTICS
+        ================================================== -->
+
+        <section class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+
+            <div class="bg-white rounded-2xl p-5 shadow-sm border">
+                <p class="text-sm text-gray-500">Total Media</p>
+                <p id="totalMedia" class="text-3xl font-bold mt-2">0</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 shadow-sm border">
+                <p class="text-sm text-gray-500">Images</p>
+                <p id="totalImages" class="text-3xl font-bold mt-2">0</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 shadow-sm border">
+                <p class="text-sm text-gray-500">Videos</p>
+                <p id="totalVideos" class="text-3xl font-bold mt-2">0</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 shadow-sm border">
+                <p class="text-sm text-gray-500">Audio</p>
+                <p id="totalAudio" class="text-3xl font-bold mt-2">0</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 shadow-sm border">
+                <p class="text-sm text-gray-500">Events</p>
+                <p id="totalEvents" class="text-3xl font-bold mt-2">0</p>
+            </div>
+
+        </section>
+
+        <!-- =================================================
+             TABS
+        ================================================== -->
+
+        <div class="flex gap-2 mb-6 border-b overflow-x-auto">
+
+            <button
+                id="tabMedia"
+                onclick="showTab('media')"
+                class="tab-button px-5 py-3 border-b-2 border-gray-900 font-semibold whitespace-nowrap">
+                Media Library
+            </button>
+
+            <button
+                id="tabUpload"
+                onclick="showTab('upload')"
+                class="tab-button px-5 py-3 border-b-2 border-transparent text-gray-500 whitespace-nowrap">
+                Upload Media
+            </button>
+
+            <button
+                id="tabEvents"
+                onclick="showTab('events')"
+                class="tab-button px-5 py-3 border-b-2 border-transparent text-gray-500 whitespace-nowrap">
+                Events
+            </button>
+
+        </div>
+
+        <!-- =================================================
+             MEDIA LIBRARY
+        ================================================== -->
+
+        <section id="mediaTab">
+
+            <div class="bg-white rounded-2xl shadow-sm border p-5 mb-6">
+
+                <div class="flex flex-col lg:flex-row gap-3">
+
+                    <input
+                        id="searchMedia"
+                        oninput="filterMedia()"
+                        type="search"
+                        placeholder="Search media..."
+                        class="flex-1 border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-gray-300">
+
+                    <select
+                        id="filterType"
+                        onchange="filterMedia()"
+                        class="border rounded-xl px-4 py-3">
+
+                        <option value="">All media</option>
+                        <option value="image">Images</option>
+                        <option value="video">Videos</option>
+                        <option value="audio">Audio</option>
+
+                    </select>
+
+                    <select
+                        id="filterPublished"
+                        onchange="filterMedia()"
+                        class="border rounded-xl px-4 py-3">
+
+                        <option value="">All status</option>
+                        <option value="published">Published</option>
+                        <option value="draft">Draft</option>
+
+                    </select>
+
+                    <button
+                        onclick="loadMedia()"
+                        class="px-5 py-3 bg-gray-900 text-white rounded-xl">
+                        Refresh
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div id="mediaLoading"
+                 class="flex justify-center py-10">
+
+                <div class="loader"></div>
+
+            </div>
+
+            <div
+                id="mediaGrid"
+                class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            </div>
+
+        </section>
+
+        <!-- =================================================
+             UPLOAD
+        ================================================== -->
+
+        <section id="uploadTab" class="hidden">
+
+            <div class="bg-white rounded-2xl shadow-sm border p-6">
+
+                <div class="mb-6">
+
+                    <h2 class="text-xl font-bold">
+                        Upload New Media
+                    </h2>
+
+                    <p class="text-sm text-gray-500">
+                        Add images, videos or audio to your website.
+                    </p>
+
+                </div>
+
+                <form id="uploadForm"
+                      onsubmit="uploadMedia(event)"
+                      class="space-y-6">
+
+                    <!-- FILE -->
+
+                    <div>
+
+                        <label class="block font-semibold mb-2">
+                            Select File
+                        </label>
+
+                        <input
+                            id="mediaFile"
+                            type="file"
+                            required
+                            accept="image/*,video/*,audio/*"
+                            onchange="previewSelectedFile()"
+                            class="w-full border rounded-xl p-3">
+
+                        <p class="text-xs text-gray-500 mt-2">
+                            Images, videos and audio are supported.
+                        </p>
+
+                    </div>
+
+                    <!-- PREVIEW -->
+
+                    <div id="uploadPreview"
+                         class="hidden preview-box rounded-2xl overflow-hidden border">
+
+                    </div>
+
+                    <!-- TITLE -->
+
+                    <div>
+
+                        <label class="block font-semibold mb-2">
+                            Title
+                        </label>
+
+                        <input
+                            id="mediaTitle"
+                            required
+                            type="text"
+                            placeholder="Example: DCF Community Outreach"
+                            class="w-full border rounded-xl px-4 py-3">
+
+                    </div>
+
+                    <!-- DESCRIPTION -->
+
+                    <div>
+
+                        <label class="block font-semibold mb-2">
+                            Description
+                        </label>
+
+                        <textarea
+                            id="mediaDescription"
+                            rows="4"
+                            placeholder="Describe this media..."
+                            class="w-full border rounded-xl px-4 py-3"></textarea>
+
+                    </div>
+
+                    <!-- CAPTION -->
+
+                    <div>
+
+                        <label class="block font-semibold mb-2">
+                            Caption
+                        </label>
+
+                        <input
+                            id="mediaCaption"
+                            type="text"
+                            placeholder="Caption shown below media"
+                            class="w-full border rounded-xl px-4 py-3">
+
+                    </div>
+
+                    <!-- ALT -->
+
+                    <div>
+
+                        <label class="block font-semibold mb-2">
+                            Alt Text
+                        </label>
+
+                        <input
+                            id="mediaAlt"
+                            type="text"
+                            placeholder="Accessibility description"
+                            class="w-full border rounded-xl px-4 py-3">
+
+                    </div>
+
+                    <!-- CATEGORY -->
+
+                    <div class="grid md:grid-cols-2 gap-5">
+
+                        <div>
+
+                            <label class="block font-semibold mb-2">
+                                Category
+                            </label>
+
+                            <input
+                                id="mediaCategory"
+                                type="text"
+                                placeholder="Events, Community, Education..."
+                                class="w-full border rounded-xl px-4 py-3">
+
+                        </div>
+
+                        <div>
+
+                            <label class="block font-semibold mb-2">
+                                Event
+                            </label>
+
+                            <select
+                                id="mediaEvent"
+                                class="w-full border rounded-xl px-4 py-3">
+
+                                <option value="">
+                                    No event
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <!-- OPTIONS -->
+
+                    <div class="grid md:grid-cols-3 gap-5">
+
+                        <div>
+
+                            <label class="block font-semibold mb-2">
+                                Display Order
+                            </label>
+
+                            <input
+                                id="mediaOrder"
+                                type="number"
+                                value="0"
+                                class="w-full border rounded-xl px-4 py-3">
+
+                        </div>
+
+                        <label class="flex items-center gap-3 border rounded-xl p-4 cursor-pointer">
+
+                            <input
+                                id="mediaPublished"
+                                type="checkbox"
+                                class="w-5 h-5">
+
+                            <div>
+                                <div class="font-semibold">
+                                    Publish
+                                </div>
+
+                                <div class="text-xs text-gray-500">
+                                    Show on public website
+                                </div>
+                            </div>
+
+                        </label>
+
+                        <label class="flex items-center gap-3 border rounded-xl p-4 cursor-pointer">
+
+                            <input
+                                id="mediaFeatured"
+                                type="checkbox"
+                                class="w-5 h-5">
+
+                            <div>
+                                <div class="font-semibold">
+                                    Featured
+                                </div>
+
+                                <div class="text-xs text-gray-500">
+                                    Highlight on homepage
+                                </div>
+                            </div>
+
+                        </label>
+
+                    </div>
+
+                    <!-- SUBMIT -->
+
+                    <button
+                        id="uploadButton"
+                        type="submit"
+                        class="w-full md:w-auto px-8 py-3 bg-gray-900 text-white rounded-xl font-semibold hover:bg-gray-700">
+
+                        Upload Media
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+        <!-- =================================================
+             EVENTS
+        ================================================== -->
+
+        <section id="eventsTab" class="hidden">
+
+            <div class="grid lg:grid-cols-2 gap-6">
+
+                <!-- EVENT FORM -->
+
+                <div class="bg-white rounded-2xl border shadow-sm p-6">
+
+                    <h2 class="text-xl font-bold mb-1">
+                        Create Event
+                    </h2>
+
+                    <p class="text-sm text-gray-500 mb-6">
+                        Create an event and attach multiple media files to it.
+                    </p>
+
+                    <form
+                        onsubmit="createEvent(event)"
+                        class="space-y-5">
+
+                        <div>
+
+                            <label class="block font-semibold mb-2">
+                                Event Title
+                            </label>
+
+                            <input
+                                id="eventTitle"
+                                required
+                                type="text"
+                                class="w-full border rounded-xl px-4 py-3">
+
+                        </div>
+
+                        <div>
+
+                            <label class="block font-semibold mb-2">
+                                Event Date
+                            </label>
+
+                            <input
+                                id="eventDate"
+                                type="date"
+                                class="w-full border rounded-xl px-4 py-3">
+
+                        </div>
+
+                        <div>
+
+                            <label class="block font-semibold mb-2">
+                                Location
+                            </label>
+
+                            <input
+                                id="eventLocation"
+                                type="text"
+                                class="w-full border rounded-xl px-4 py-3">
+
+                        </div>
+
+                        <div>
+
+                            <label class="block font-semibold mb-2">
+                                Summary
+                            </label>
+
+                            <textarea
+                                id="eventSummary"
+                                rows="3"
+                                class="w-full border rounded-xl px-4 py-3"></textarea>
+
+                        </div>
+
+                        <div>
+
+                            <label class="block font-semibold mb-2">
+                                Full Description
+                            </label>
+
+                            <textarea
+                                id="eventDescription"
+                                rows="6"
+                                class="w-full border rounded-xl px-4 py-3"></textarea>
+
+                        </div>
+
+                        <div class="flex gap-4">
+
+                            <label class="flex items-center gap-2">
+                                <input
+                                    id="eventPublished"
+                                    type="checkbox"
+                                    class="w-5 h-5">
+                                Published
+                            </label>
+
+                            <label class="flex items-center gap-2">
+                                <input
+                                    id="eventFeatured"
+                                    type="checkbox"
+                                    class="w-5 h-5">
+                                Featured
+                            </label>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="w-full bg-gray-900 text-white rounded-xl py-3 font-semibold">
+
+                            Create Event
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <!-- EVENT LIST -->
+
+                <div class="bg-white rounded-2xl border shadow-sm p-6">
+
+                    <h2 class="text-xl font-bold mb-5">
+                        Events
+                    </h2>
+
+                    <div id="eventsList"
+                         class="space-y-3">
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
+<!-- =====================================================
+     EDIT MEDIA MODAL
+===================================================== -->
+
+<div
+    id="editModal"
+    class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+
+        <div class="p-6 border-b flex justify-between items-center">
+
+            <h2 class="text-xl font-bold">
+                Edit Media
+            </h2>
+
+            <button
+                onclick="closeEditModal()"
+                class="text-2xl text-gray-500">
+                &times;
+            </button>
+
+        </div>
+
+        <form
+            id="editForm"
+            onsubmit="saveMedia(event)"
+            class="p-6 space-y-5">
+
+            <input
+                id="editId"
+                type="hidden">
+
+            <div>
+
+                <label class="block font-semibold mb-2">
+                    Title
+                </label>
+
+                <input
+                    id="editTitle"
+                    required
+                    class="w-full border rounded-xl px-4 py-3">
+
+            </div>
+
+            <div>
+
+                <label class="block font-semibold mb-2">
+                    Description
+                </label>
+
+                <textarea
+                    id="editDescription"
+                    rows="4"
+                    class="w-full border rounded-xl px-4 py-3"></textarea>
+
+            </div>
+
+            <div>
+
+                <label class="block font-semibold mb-2">
+                    Caption
+                </label>
+
+                <input
+                    id="editCaption"
+                    class="w-full border rounded-xl px-4 py-3">
+
+            </div>
+
+            <div>
+
+                <label class="block font-semibold mb-2">
+                    Alt Text
+                </label>
+
+                <input
+                    id="editAlt"
+                    class="w-full border rounded-xl px-4 py-3">
+
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+
+                <div>
+
+                    <label class="block font-semibold mb-2">
+                        Category
+                    </label>
+
+                    <input
+                        id="editCategory"
+                        class="w-full border rounded-xl px-4 py-3">
+
+                </div>
+
+                <div>
+
+                    <label class="block font-semibold mb-2">
+                        Event
+                    </label>
+
+                    <select
+                        id="editEvent"
+                        class="w-full border rounded-xl px-4 py-3">
+
+                        <option value="">
+                            No event
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div>
+
+                <label class="block font-semibold mb-2">
+                    Display Order
+                </label>
+
+                <input
+                    id="editOrder"
+                    type="number"
+                    class="w-full border rounded-xl px-4 py-3">
+
+            </div>
+
+            <div class="flex gap-6">
+
+                <label class="flex items-center gap-2">
+                    <input
+                        id="editPublished"
+                        type="checkbox"
+                        class="w-5 h-5">
+                    Published
+                </label>
+
+                <label class="flex items-center gap-2">
+                    <input
+                        id="editFeatured"
+                        type="checkbox"
+                        class="w-5 h-5">
+                    Featured
+                </label>
+
+            </div>
+
+            <button
+                type="submit"
+                class="w-full bg-gray-900 text-white py-3 rounded-xl font-semibold">
+
+                Save Changes
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+const SUPABASE_URL = "https://fcjvvfbaqnaohbtbljui.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_iSG3Vea2d4Fq1evF2fvbnw_0ri5huMQ";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+
+let currentUser = null;
+let mediaData = [];
+let eventsData = [];
+
+// ========================================================
+// START
+// ========================================================
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+    await checkAuth();
+
+});
+
+// ========================================================
+// AUTH
+// ========================================================
+
+async function checkAuth() {
+
+    try {
+
+        const {
+            data: { user }
+        } = await supabaseClient.auth.getUser();
+
+        if (!user) {
+
+            showAccessDenied();
+
+            return;
+        }
+
+        currentUser = user;
+
+        document.getElementById("userEmail").textContent =
+            user.email || "Authenticated";
+
+        const { data: profile, error } =
+            await supabaseClient
+                .from("profiles")
+                .select("id, role")
+                .eq("id", user.id)
+                .maybeSingle();
+
+        if (error) {
+
+            console.error(error);
+
+            showAccessDenied();
+
+            return;
+        }
+
+        if (
+            !profile ||
+            !["admin", "staff"].includes(
+                String(profile.role || "").toLowerCase()
+            )
+        ) {
+
+            showAccessDenied();
+
+            return;
+        }
+
+        document
+            .getElementById("dashboard")
+            .classList.remove("hidden");
+
+        await loadEvents();
+
+        await loadMedia();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showAccessDenied();
+
+    }
+
+}
+
+function showAccessDenied() {
+
+    document
+        .getElementById("accessError")
+        .classList.remove("hidden");
+
+}
+
+// ========================================================
+// LOGOUT
+// ========================================================
+
+async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href = "login.html";
+
+}
+
+// ========================================================
+// TABS
+// ========================================================
+
+function showTab(tab) {
+
+    const mediaTab =
+        document.getElementById("mediaTab");
+
+    const uploadTab =
+        document.getElementById("uploadTab");
+
+    const eventsTab =
+        document.getElementById("eventsTab");
+
+    mediaTab.classList.add("hidden");
+    uploadTab.classList.add("hidden");
+    eventsTab.classList.add("hidden");
+
+    document
+        .querySelectorAll(".tab-button")
+        .forEach(button => {
+
+            button.classList.remove(
+                "border-gray-900",
+                "font-semibold"
+            );
+
+            button.classList.add(
+                "border-transparent",
+                "text-gray-500"
+            );
+
+        });
+
+    if (tab === "media") {
+
+        mediaTab.classList.remove("hidden");
+
+        activateTab("tabMedia");
+
+    }
+
+    if (tab === "upload") {
+
+        uploadTab.classList.remove("hidden");
+
+        activateTab("tabUpload");
+
+    }
+
+    if (tab === "events") {
+
+        eventsTab.classList.remove("hidden");
+
+        activateTab("tabEvents");
+
+    }
+
+}
+
+function activateTab(id) {
+
+    const button =
+        document.getElementById(id);
+
+    button.classList.add(
+        "border-gray-900",
+        "font-semibold"
+    );
+
+    button.classList.remove(
+        "border-transparent",
+        "text-gray-500"
+    );
+
+}
+
+// ========================================================
+// LOAD EVENTS
+// ========================================================
+
+async function loadEvents() {
+
+    const { data, error } =
+        await supabaseClient
+            .from("site_events")
+            .select("*")
+            .order("display_order", { ascending: true })
+            .order("event_date", { ascending: false });
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+    }
+
+    eventsData = data || [];
+
+    document.getElementById("totalEvents").textContent =
+        eventsData.length;
+
+    renderEventSelects();
+
+    renderEvents();
+
+}
+
+// ========================================================
+// EVENT SELECTS
+// ========================================================
+
+function renderEventSelects() {
+
+    const selects = [
+        document.getElementById("mediaEvent"),
+        document.getElementById("editEvent")
+    ];
+
+    selects.forEach(select => {
+
+        if (!select) return;
+
+        select.innerHTML =
+            `<option value="">No event</option>`;
+
+        eventsData.forEach(event => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = event.id;
+
+            option.textContent = event.title;
+
+            select.appendChild(option);
+
+        });
+
+    });
+
+}
+
+// ========================================================
+// CREATE EVENT
+// ========================================================
+
+async function createEvent(e) {
+
+    e.preventDefault();
+
+    const button =
+        e.target.querySelector("button");
+
+    button.disabled = true;
+
+    button.textContent = "Creating...";
+
+    const payload = {
+
+        title:
+            document
+                .getElementById("eventTitle")
+                .value
+                .trim(),
+
+        summary:
+            document
+                .getElementById("eventSummary")
+                .value
+                .trim(),
+
+        description:
+            document
+                .getElementById("eventDescription")
+                .value
+                .trim(),
+
+        event_date:
+            document
+                .getElementById("eventDate")
+                .value || null,
+
+        location:
+            document
+                .getElementById("eventLocation")
+                .value
+                .trim(),
+
+        is_published:
+            document
+                .getElementById("eventPublished")
+                .checked,
+
+        is_featured:
+            document
+                .getElementById("eventFeatured")
+                .checked,
+
+        created_by:
+            currentUser.id
+    };
+
+    const { error } =
+        await supabaseClient
+            .from("site_events")
+            .insert(payload);
+
+    if (error) {
+
+        alert(
+            "Failed to create event:\n" +
+            error.message
+        );
+
+    } else {
+
+        alert("Event created successfully.");
+
+        e.target.reset();
+
+        await loadEvents();
+
+    }
+
+    button.disabled = false;
+
+    button.textContent = "Create Event";
+
+}
+
+// ========================================================
+// RENDER EVENTS
+// ========================================================
+
+function renderEvents() {
+
+    const container =
+        document.getElementById("eventsList");
+
+    if (!eventsData.length) {
+
+        container.innerHTML = `
+            <div class="text-center text-gray-500 py-10">
+                No events yet.
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        eventsData.map(event => `
+
+            <div class="border rounded-xl p-4">
+
+                <div class="flex justify-between gap-3">
+
+                    <div>
+
+                        <h3 class="font-bold">
+                            ${escapeHtml(event.title)}
+                        </h3>
+
+                        <p class="text-xs text-gray-500 mt-1">
+                            ${escapeHtml(event.location || "")}
+                        </p>
+
+                        <p class="text-xs text-gray-500">
+                            ${event.event_date || ""}
+                        </p>
+
+                    </div>
+
+                    <div>
+
+                        <span class="text-xs px-2 py-1 rounded-full
+                            ${event.is_published
+                                ? "bg-green-100 text-green-700"
+                                : "bg-gray-100 text-gray-600"}">
+
+                            ${event.is_published
+                                ? "Published"
+                                : "Draft"}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="flex gap-2 mt-4">
+
+                    <button
+                        onclick="toggleEventPublish('${event.id}', ${!event.is_published})"
+                        class="text-sm px-3 py-2 border rounded-lg">
+
+                        ${event.is_published
+                            ? "Unpublish"
+                            : "Publish"}
+
+                    </button>
+
+                    <button
+                        onclick="deleteEvent('${event.id}')"
+                        class="text-sm px-3 py-2 border border-red-200 text-red-600 rounded-lg">
+
+                        Delete
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        `).join("");
+
+}
+
+// ========================================================
+// TOGGLE EVENT
+// ========================================================
+
+async function toggleEventPublish(id, value) {
+
+    const { error } =
+        await supabaseClient
+            .from("site_events")
+            .update({
+                is_published: value
+            })
+            .eq("id", id);
+
+    if (error) {
+
+        alert(error.message);
+
+        return;
+    }
+
+    await loadEvents();
+
+}
+
+// ========================================================
+// DELETE EVENT
+// ========================================================
+
+async function deleteEvent(id) {
+
+    const confirmed =
+        confirm(
+            "Delete this event? Media attached to it will remain."
+        );
+
+    if (!confirmed) return;
+
+    const { error } =
+        await supabaseClient
+            .from("site_events")
+            .delete()
+            .eq("id", id);
+
+    if (error) {
+
+        alert(error.message);
+
+        return;
+    }
+
+    await loadEvents();
+
+    await loadMedia();
+
+}
+
+// ========================================================
+// LOAD MEDIA
+// ========================================================
+
+async function loadMedia() {
+
+    const loading =
+        document.getElementById("mediaLoading");
+
+    loading.classList.remove("hidden");
+
+    const { data, error } =
+        await supabaseClient
+            .from("site_media")
+            .select(`
+                *,
+                site_events!site_media_event_id_fkey (
+                    id,
+                    title
+                )
+            `)
+            .order("display_order", {
+                ascending: true
+            })
+            .order("created_at", {
+                ascending: false
+            });
+
+    if (error) {
+
+        console.error(error);
+
+        alert(error.message);
+
+        loading.classList.add("hidden");
+
+        return;
+    }
+
+    mediaData = data || [];
+
+    updateStats();
+
+    renderMedia(mediaData);
+
+    loading.classList.add("hidden");
+
+}
+
+// ========================================================
+// STATS
+// ========================================================
+
+function updateStats() {
+
+    document.getElementById("totalMedia").textContent =
+        mediaData.length;
+
+    document.getElementById("totalImages").textContent =
+        mediaData.filter(x => x.media_type === "image").length;
+
+    document.getElementById("totalVideos").textContent =
+        mediaData.filter(x => x.media_type === "video").length;
+
+    document.getElementById("totalAudio").textContent =
+        mediaData.filter(x => x.media_type === "audio").length;
+
+}
+
+// ========================================================
+// PUBLIC URL
+// ========================================================
+
+function getPublicUrl(bucket, path) {
+
+    const { data } =
+        supabaseClient
+            .storage
+            .from(bucket)
+            .getPublicUrl(path);
+
+    return data.publicUrl;
+
+}
+
+// ========================================================
+// RENDER MEDIA
+// ========================================================
+
+function renderMedia(items) {
+
+    const grid =
+        document.getElementById("mediaGrid");
+
+    if (!items.length) {
+
+        grid.innerHTML = `
+            <div class="col-span-full text-center py-16 text-gray-500">
+                No media found.
+            </div>
+        `;
+
+        return;
+    }
+
+    grid.innerHTML =
+        items.map(media => {
+
+            const url =
+                getPublicUrl(
+                    media.bucket_name,
+                    media.file_path
+                );
+
+            let preview = "";
+
+            if (media.media_type === "image") {
+
+                preview = `
+                    <img
+                        src="${url}"
+                        alt="${escapeHtml(media.alt_text || media.title)}"
+                        class="w-full h-48 object-cover">
+                `;
+
+            }
+
+            if (media.media_type === "video") {
+
+                preview = `
+                    <div class="relative">
+
+                        <video
+                            src="${url}"
+                            class="w-full h-48 object-cover"
+                            controls
+                            preload="metadata">
+                        </video>
+
+                    </div>
+                `;
+
+            }
+
+            if (media.media_type === "audio") {
+
+                preview = `
+                    <div class="h-48 flex flex-col justify-center p-5 bg-gray-100">
+
+                        <div class="text-5xl text-center mb-5">
+                            🎧
+                        </div>
+
+                        <audio
+                            src="${url}"
+                            controls
+                            class="w-full">
+                        </audio>
+
+                    </div>
+                `;
+
+            }
+
+            return `
+
+                <article
+                    class="media-card bg-white rounded-2xl overflow-hidden border shadow-sm">
+
+                    <div>
+                        ${preview}
+                    </div>
+
+                    <div class="p-4">
+
+                        <div class="flex justify-between gap-2 mb-2">
+
+                            <h3 class="font-bold truncate">
+                                ${escapeHtml(media.title)}
+                            </h3>
+
+                            <span class="text-xs px-2 py-1 bg-gray-100 rounded-full">
+                                ${media.media_type}
+                            </span>
+
+                        </div>
+
+                        <p class="text-sm text-gray-500 line-clamp-2">
+                            ${escapeHtml(media.description || "")}
+                        </p>
+
+                        ${
+                            media.site_events
+                            ? `
+                                <p class="text-xs text-gray-500 mt-3">
+                                    Event:
+                                    ${escapeHtml(media.site_events.title)}
+                                </p>
+                            `
+                            : ""
+                        }
+
+                        <div class="flex gap-2 mt-4">
+
+                            <button
+                                onclick="editMedia('${media.id}')"
+                                class="flex-1 px-3 py-2 border rounded-lg text-sm">
+
+                                Edit
+
+                            </button>
+
+                            <button
+                                onclick="togglePublish('${media.id}', ${!media.is_published})"
+                                class="flex-1 px-3 py-2 border rounded-lg text-sm">
+
+                                ${media.is_published
+                                    ? "Unpublish"
+                                    : "Publish"}
+
+                            </button>
+
+                            <button
+                                onclick="deleteMedia('${media.id}')"
+                                class="px-3 py-2 border border-red-200 text-red-600 rounded-lg">
+
+                                Delete
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            `;
+
+        }).join("");
+
+}
+
+// ========================================================
+// FILTER MEDIA
+// ========================================================
+
+function filterMedia() {
+
+    const search =
+        document
+            .getElementById("searchMedia")
+            .value
+            .toLowerCase()
+            .trim();
+
+    const type =
+        document
+            .getElementById("filterType")
+            .value;
+
+    const status =
+        document
+            .getElementById("filterPublished")
+            .value;
+
+    const filtered =
+        mediaData.filter(media => {
+
+            const matchesSearch =
+                !search ||
+                media.title
+                    .toLowerCase()
+                    .includes(search) ||
+                (media.description || "")
+                    .toLowerCase()
+                    .includes(search);
+
+            const matchesType =
+                !type ||
+                media.media_type === type;
+
+            const matchesStatus =
+                !status ||
+                (
+                    status === "published"
+                        ? media.is_published
+                        : !media.is_published
+                );
+
+            return (
+                matchesSearch &&
+                matchesType &&
+                matchesStatus
+            );
+
+        });
+
+    renderMedia(filtered);
+
+}
+
+// ========================================================
+// FILE PREVIEW
+// ========================================================
+
+function previewSelectedFile() {
+
+    const file =
+        document.getElementById("mediaFile").files[0];
+
+    const preview =
+        document.getElementById("uploadPreview");
+
+    if (!file) {
+
+        preview.classList.add("hidden");
+
+        return;
+    }
+
+    const url =
+        URL.createObjectURL(file);
+
+    preview.classList.remove("hidden");
+
+    if (file.type.startsWith("image/")) {
+
+        preview.innerHTML = `
+            <img
+                src="${url}"
+                class="w-full max-h-[450px] object-contain">
+        `;
+
+    }
+
+    else if (file.type.startsWith("video/")) {
+
+        preview.innerHTML = `
+            <video
+                src="${url}"
+                controls
+                class="w-full max-h-[450px]">
+            </video>
+        `;
+
+    }
+
+    else if (file.type.startsWith("audio/")) {
+
+        preview.innerHTML = `
+            <div class="p-10 text-center">
+
+                <div class="text-6xl mb-5">
+                    🎧
+                </div>
+
+                <audio
+                    src="${url}"
+                    controls
+                    class="w-full">
+                </audio>
+
+            </div>
+        `;
+
+    }
+
+}
+
+// ========================================================
+// UPLOAD MEDIA
+// ========================================================
+
+async function uploadMedia(e) {
+
+    e.preventDefault();
+
+    const button =
+        document.getElementById("uploadButton");
+
+    const file =
+        document.getElementById("mediaFile").files[0];
+
+    if (!file) {
+
+        alert("Please select a file.");
+
+        return;
+    }
+
+    button.disabled = true;
+
+    button.textContent = "Uploading...";
+
+    try {
+
+        let mediaType;
+
+        let bucket;
+
+        if (file.type.startsWith("image/")) {
+
+            mediaType = "image";
+            bucket = "site-images";
+
+        }
+
+        else if (file.type.startsWith("video/")) {
+
+            mediaType = "video";
+            bucket = "site-videos";
+
+        }
+
+        else if (file.type.startsWith("audio/")) {
+
+            mediaType = "audio";
+            bucket = "site-audio";
+
+        }
+
+        else {
+
+            throw new Error(
+                "Unsupported media type."
+            );
+
+        }
+
+        const extension =
+            file.name
+                .split(".")
+                .pop()
+                .toLowerCase();
+
+        const safeName =
+            file.name
+                .replace(
+                    /[^a-zA-Z0-9._-]/g,
+                    "-"
+                );
+
+        const path =
+            `${currentUser.id}/${Date.now()}-${crypto.randomUUID()}-${safeName}`;
+
+        // ================================================
+        // UPLOAD FILE
+        // ================================================
+
+        const { error: uploadError } =
+            await supabaseClient
+                .storage
+                .from(bucket)
+                .upload(
+                    path,
+                    file,
+                    {
+                        cacheControl: "3600",
+                        upsert: false,
+                        contentType: file.type
+                    }
+                );
+
+        if (uploadError) {
+
+            throw uploadError;
+
+        }
+
+        // ================================================
+        // SAVE DATABASE RECORD
+        // ================================================
+
+        const eventId =
+            document
+                .getElementById("mediaEvent")
+                .value || null;
+
+        const payload = {
+
+            title:
+                document
+                    .getElementById("mediaTitle")
+                    .value
+                    .trim(),
+
+            description:
+                document
+                    .getElementById("mediaDescription")
+                    .value
+                    .trim(),
+
+            caption:
+                document
+                    .getElementById("mediaCaption")
+                    .value
+                    .trim(),
+
+            alt_text:
+                document
+                    .getElementById("mediaAlt")
+                    .value
+                    .trim(),
+
+            category:
+                document
+                    .getElementById("mediaCategory")
+                    .value
+                    .trim(),
+
+            media_type:
+                mediaType,
+
+            bucket_name:
+                bucket,
+
+            file_path:
+                path,
+
+            mime_type:
+                file.type,
+
+            file_size:
+                file.size,
+
+            event_id:
+                eventId,
+
+            is_published:
+                document
+                    .getElementById("mediaPublished")
+                    .checked,
+
+            is_featured:
+                document
+                    .getElementById("mediaFeatured")
+                    .checked,
+
+            display_order:
+                Number(
+                    document
+                        .getElementById("mediaOrder")
+                        .value || 0
+                ),
+
+            created_by:
+                currentUser.id
+
+        };
+
+        const { error: dbError } =
+            await supabaseClient
+                .from("site_media")
+                .insert(payload);
+
+        if (dbError) {
+
+            // remove uploaded file if DB insert fails
+
+            await supabaseClient
+                .storage
+                .from(bucket)
+                .remove([path]);
+
+            throw dbError;
+
+        }
+
+        alert("Media uploaded successfully.");
+
+        document
+            .getElementById("uploadForm")
+            .reset();
+
+        document
+            .getElementById("uploadPreview")
+            .classList.add("hidden");
+
+        await loadMedia();
+
+        showTab("media");
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Upload failed:\n" +
+            error.message
+        );
+
+    }
+
+    button.disabled = false;
+
+    button.textContent = "Upload Media";
+
+}
+
+// ========================================================
+// EDIT MEDIA
+// ========================================================
+
+function editMedia(id) {
+
+    const media =
+        mediaData.find(
+            item => item.id === id
+        );
+
+    if (!media) return;
+
+    document.getElementById("editId").value =
+        media.id;
+
+    document.getElementById("editTitle").value =
+        media.title || "";
+
+    document.getElementById("editDescription").value =
+        media.description || "";
+
+    document.getElementById("editCaption").value =
+        media.caption || "";
+
+    document.getElementById("editAlt").value =
+        media.alt_text || "";
+
+    document.getElementById("editCategory").value =
+        media.category || "";
+
+    document.getElementById("editEvent").value =
+        media.event_id || "";
+
+    document.getElementById("editOrder").value =
+        media.display_order || 0;
+
+    document.getElementById("editPublished").checked =
+        media.is_published;
+
+    document.getElementById("editFeatured").checked =
+        media.is_featured;
+
+    document
+        .getElementById("editModal")
+        .classList.remove("hidden");
+
+}
+
+function closeEditModal() {
+
+    document
+        .getElementById("editModal")
+        .classList.add("hidden");
+
+}
+
+// ========================================================
+// SAVE MEDIA
+// ========================================================
+
+async function saveMedia(e) {
+
+    e.preventDefault();
+
+    const id =
+        document.getElementById("editId").value;
+
+    const updates = {
+
+        title:
+            document
+                .getElementById("editTitle")
+                .value
+                .trim(),
+
+        description:
+            document
+                .getElementById("editDescription")
+                .value
+                .trim(),
+
+        caption:
+            document
+                .getElementById("editCaption")
+                .value
+                .trim(),
+
+        alt_text:
+            document
+                .getElementById("editAlt")
+                .value
+                .trim(),
+
+        category:
+            document
+                .getElementById("editCategory")
+                .value
+                .trim(),
+
+        event_id:
+            document
+                .getElementById("editEvent")
+                .value || null,
+
+        display_order:
+            Number(
+                document
+                    .getElementById("editOrder")
+                    .value || 0
+            ),
+
+        is_published:
+            document
+                .getElementById("editPublished")
+                .checked,
+
+        is_featured:
+            document
+                .getElementById("editFeatured")
+                .checked
+
+    };
+
+    const { error } =
+        await supabaseClient
+            .from("site_media")
+            .update(updates)
+            .eq("id", id);
+
+    if (error) {
+
+        alert(error.message);
+
+        return;
+    }
+
+    closeEditModal();
+
+    await loadMedia();
+
+}
+
+// ========================================================
+// TOGGLE PUBLISH
+// ========================================================
+
+async function togglePublish(id, value) {
+
+    const { error } =
+        await supabaseClient
+            .from("site_media")
+            .update({
+                is_published: value
+            })
+            .eq("id", id);
+
+    if (error) {
+
+        alert(error.message);
+
+        return;
+    }
+
+    await loadMedia();
+
+}
+
+// ========================================================
+// DELETE MEDIA
+// ========================================================
+
+async function deleteMedia(id) {
+
+    const media =
+        mediaData.find(
+            item => item.id === id
+        );
+
+    if (!media) return;
+
+    const confirmed =
+        confirm(
+            `Delete "${media.title}" permanently?`
+        );
+
+    if (!confirmed) return;
+
+    try {
+
+        // ================================================
+        // DELETE DATABASE RECORD
+        // ================================================
+
+        const { error: dbError } =
+            await supabaseClient
+                .from("site_media")
+                .delete()
+                .eq("id", id);
+
+        if (dbError) {
+
+            throw dbError;
+
+        }
+
+        // ================================================
+        // DELETE STORAGE FILE
+        // ================================================
+
+        const { error: storageError } =
+            await supabaseClient
+                .storage
+                .from(media.bucket_name)
+                .remove([
+                    media.file_path
+                ]);
+
+        if (storageError) {
+
+            console.warn(
+                "Database deleted but storage file could not be removed:",
+                storageError
+            );
+
+        }
+
+        await loadMedia();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Delete failed:\n" +
+            error.message
+        );
+
+    }
+
+}
+
+// ========================================================
+// HTML ESCAPE
+// ========================================================
+
+function escapeHtml(value) {
+
+    return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+// ========================================================
+// ESC TO CLOSE MODAL
+// ========================================================
+
+document.addEventListener(
+    "keydown",
+    e => {
+
+        if (e.key === "Escape") {
+
+            closeEditModal();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
+

@@ -47,6 +47,8 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
 <script>
 
 tailwind.config = {
@@ -269,6 +271,23 @@ button{
 
     }
 
+}
+
+.captcha-wrap{
+    width:100%;
+    overflow:hidden;
+}
+
+@media(max-width:640px){
+    .captcha-wrap{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+    }
+    .cf-turnstile{
+        max-width:100%;
+        overflow:hidden;
+    }
 }
 
 </style>
@@ -661,6 +680,17 @@ class="
 
 </div>
 
+
+<!-- HUMAN VERIFICATION / CAPTCHA -->
+<div class="captcha-wrap mt-2">
+    <div
+        class="cf-turnstile"
+        data-sitekey="0x4AAAAAAEpfJyTywShfS4Mk"
+        data-theme="light"
+        data-size="flexible"
+    ></div>
+    <p class="text-[10px] text-slate-400 mt-1">Please confirm you are not a robot.</p>
+</div>
 
 <!-- REMEMBER / FORGOT -->
 
@@ -1451,13 +1481,9 @@ Country *
 </label>
 
 
-<input
-type="text"
+<select
 id="regCountry"
-value="Tanzania"
-readonly
 required
-maxlength="80"
 class="
     w-full
     px-3.5
@@ -1467,12 +1493,13 @@ class="
     border-slate-300
     rounded-lg
     outline-none
-    bg-slate-100
+    bg-white
     focus:border-dcf-green
     focus:ring-1
     focus:ring-dcf-green
-"
->
+">
+    <option value="Tanzania">Tanzania</option>
+</select>
 
 </div>
 
@@ -1847,6 +1874,17 @@ to log in to the DCF system after registration is completed.
 </div>
 
 
+<!-- HUMAN VERIFICATION / CAPTCHA -->
+<div class="captcha-wrap mt-2">
+    <div
+        class="cf-turnstile"
+        data-sitekey="0x4AAAAAAEpfJyTywShfS4Mk"
+        data-theme="light"
+        data-size="flexible"
+    ></div>
+    <p class="text-[10px] text-slate-400 mt-1">Please confirm you are not a robot.</p>
+</div>
+
 <button
 type="submit"
 id="regBtn"
@@ -2044,6 +2082,17 @@ class="
 
 </div>
 
+
+<!-- HUMAN VERIFICATION / CAPTCHA -->
+<div class="captcha-wrap mt-2">
+    <div
+        class="cf-turnstile"
+        data-sitekey="0x4AAAAAAEpfJyTywShfS4Mk"
+        data-theme="light"
+        data-size="flexible"
+    ></div>
+    <p class="text-[10px] text-slate-400 mt-1">Please confirm you are not a robot.</p>
+</div>
 
 <button
 type="submit"
@@ -3071,13 +3120,9 @@ function createMemberCompletionModal(){
                                 </label>
 
 
-                                <input
-                                    type="text"
+                                <select
                                     id="completionCountry"
-                                    value="Tanzania"
-                                    readonly
                                     required
-                                    maxlength="80"
                                     class="
                                         w-full
                                         px-3.5
@@ -3086,9 +3131,11 @@ function createMemberCompletionModal(){
                                         border
                                         border-slate-300
                                         rounded-xl
-                                        bg-slate-100
+                                        bg-white
                                     "
                                 >
+                                    <option value="Tanzania">Tanzania</option>
+                                </select>
 
                             </div>
 
@@ -4441,6 +4488,21 @@ async function handleMemberCompletionSubmit(
 
     }
 
+    if(!isValidEmailFormat(email)){
+        registerMessage(
+            '⚠️ Please enter a valid email address, for example name@example.com.'
+        );
+        return;
+    }
+
+    if(!getCaptchaToken()){
+        registerMessage(
+            '⚠️ Please complete the human verification first.',
+            'warning'
+        );
+        return;
+    }
+
 
     if(
         nationality ===
@@ -4568,12 +4630,19 @@ async function handleMemberCompletionSubmit(
                     .toLowerCase();
 
 
-            const fileName =
+            const safeMemberId =
                 memberId
                     .replace(
                         /[^a-zA-Z0-9-_]/g,
                         ''
-                    ) +
+                    );
+
+
+            const fileName =
+                'members/' +
+                user.id +
+                '/' +
+                safeMemberId +
                 '_' +
                 Date.now() +
                 '.' +
@@ -4586,7 +4655,7 @@ async function handleMemberCompletionSubmit(
             } =
             await supabaseClient
                 .storage
-                .from('passports')
+                .from('member-photos')
                 .upload(
                     fileName,
                     photo,
@@ -4614,7 +4683,7 @@ async function handleMemberCompletionSubmit(
             } =
             supabaseClient
                 .storage
-                .from('passports')
+                .from('member-photos')
                 .getPublicUrl(
                     fileName
                 );
@@ -4853,6 +4922,180 @@ async function handleMemberCompletionSubmit(
 
 }
 
+
+/* =========================================================
+   SECURITY / VERIFICATION HELPERS
+========================================================= */
+
+const DCF_TURNSTILE_SITE_KEY =
+    'YOUR_CLOUDFLARE_TURNSTILE_SITE_KEY';
+
+function getCaptchaToken(){
+
+    try{
+
+        if(
+            typeof window.turnstile === 'undefined'
+        ){
+            return null;
+        }
+
+        const widgets =
+            document.querySelectorAll(
+                '.cf-turnstile'
+            );
+
+        for(
+            const widget of widgets
+        ){
+
+            const token =
+                window.turnstile.getResponse(
+                    widget
+                );
+
+            if(token){
+                return token;
+            }
+
+        }
+
+    }
+    catch(error){
+        console.error(
+            'TURNSTILE TOKEN ERROR:',
+            error
+        );
+    }
+
+    return null;
+}
+
+function resetCaptcha(){
+
+    try{
+
+        if(
+            typeof window.turnstile !== 'undefined'
+        ){
+
+            window.turnstile.reset();
+
+        }
+
+    }
+    catch(error){
+        console.warn(
+            'TURNSTILE RESET ERROR:',
+            error
+        );
+    }
+}
+
+function isValidEmailFormat(email){
+
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(
+        String(email || '').trim()
+    );
+}
+
+function ensureRealEmailRequirement(){
+
+    const token = getCaptchaToken();
+
+    if(!token){
+        showAlert(
+            '⚠️ Please complete the human verification first.',
+            'warning'
+        );
+        return false;
+    }
+
+    return true;
+}
+
+/* =========================================================
+   UN COUNTRY LIST — 193 MEMBER STATES + 2 OBSERVER STATES
+========================================================= */
+
+const DCF_UN_COUNTRIES = [
+    'Afghanistan','Albania','Algeria','Andorra','Angola','Antigua and Barbuda',
+    'Argentina','Armenia','Australia','Austria','Azerbaijan','Bahamas',
+    'Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin',
+    'Bhutan','Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Brunei',
+    'Bulgaria','Burkina Faso','Burundi','Cabo Verde','Cambodia','Cameroon',
+    'Canada','Central African Republic','Chad','Chile','China','Colombia',
+    'Comoros','Congo','Costa Rica','Côte d’Ivoire','Croatia','Cuba','Cyprus',
+    'Czechia','Democratic Republic of the Congo','Denmark','Djibouti','Dominica',
+    'Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea',
+    'Eritrea','Estonia','Eswatini','Ethiopia','Fiji','Finland','France','Gabon',
+    'Gambia','Georgia','Germany','Ghana','Greece','Grenada','Guatemala','Guinea',
+    'Guinea-Bissau','Guyana','Haiti','Honduras','Hungary','Iceland','India',
+    'Indonesia','Iran','Iraq','Ireland','Israel','Italy','Jamaica','Japan',
+    'Jordan','Kazakhstan','Kenya','Kiribati','Kuwait','Kyrgyzstan','Laos','Latvia',
+    'Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg',
+    'Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands',
+    'Mauritania','Mauritius','Mexico','Micronesia','Moldova','Monaco','Mongolia',
+    'Montenegro','Morocco','Mozambique','Myanmar','Namibia','Nauru','Nepal',
+    'Netherlands','New Zealand','Nicaragua','Niger','Nigeria','North Korea',
+    'North Macedonia','Norway','Oman','Pakistan','Palau','Panama','Papua New Guinea',
+    'Paraguay','Peru','Philippines','Poland','Portugal','Qatar','Romania','Russia',
+    'Rwanda','Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines',
+    'Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal','Serbia',
+    'Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia','Solomon Islands',
+    'Somalia','South Africa','South Korea','South Sudan','Spain','Sri Lanka','Sudan',
+    'Suriname','Sweden','Switzerland','Syria','Tajikistan','Tanzania','Thailand',
+    'Timor-Leste','Togo','Tonga','Trinidad and Tobago','Tunisia','Türkiye','Turkmenistan',
+    'Tuvalu','Uganda','Ukraine','United Arab Emirates','United Kingdom','United States',
+    'Uruguay','Uzbekistan','Vanuatu','Venezuela','Vietnam','Yemen','Zambia','Zimbabwe',
+    'Holy See','State of Palestine'
+];
+
+function populateUNCountrySelect(select){
+
+    if(!select){
+        return;
+    }
+
+    const current =
+        select.value || 'Tanzania';
+
+    select.innerHTML = '';
+
+    DCF_UN_COUNTRIES.forEach(
+        function(country){
+
+            const option =
+                document.createElement('option');
+
+            option.value = country;
+            option.textContent = country;
+
+            if(country === current){
+                option.selected = true;
+            }
+
+            select.appendChild(option);
+
+        }
+    );
+
+    if(!select.value){
+        select.value = 'Tanzania';
+    }
+}
+
+function initializeCountrySelectors(){
+
+    populateUNCountrySelect(
+        getElement('regCountry')
+    );
+
+    populateUNCountrySelect(
+        getElement('completionCountry')
+    );
+
+}
 
 /* =========================================================
    REGISTRATION
@@ -5208,6 +5451,12 @@ async function handleRegistration(
 
                 options:{
 
+                    captchaToken:
+                        getCaptchaToken(),
+
+                    emailRedirectTo:
+                        `${window.location.origin}${window.location.pathname}?verified=1&email=${encodeURIComponent(email)}`,
+
                     data:{
 
                         full_name:
@@ -5266,6 +5515,13 @@ async function handleRegistration(
             throw error;
 
         }
+
+        localStorage.setItem(
+            'pendingRegistrationEmail',
+            email
+        );
+
+        resetCaptcha();
 
 
         if(
@@ -5859,6 +6115,25 @@ async function handleLogin(
 
     }
 
+    if(!isValidEmailFormat(email)){
+        showAlert(
+            '❌ Please enter a valid email address.',
+            'danger'
+        );
+        return;
+    }
+
+    const loginCaptchaToken =
+        getCaptchaToken();
+
+    if(!loginCaptchaToken){
+        showAlert(
+            '⚠️ Please complete the human verification first.',
+            'warning'
+        );
+        return;
+    }
+
 
     loginInProgress =
         true;
@@ -5900,12 +6175,19 @@ async function handleLogin(
                     email,
 
                 password:
-                    password
+                    password,
+
+                options:{
+                    captchaToken:
+                        loginCaptchaToken
+                }
 
             });
 
 
         if(authError){
+
+            resetCaptcha();
 
             showAlert(
                 '❌ Incorrect email address or password.',
@@ -5917,6 +6199,8 @@ async function handleLogin(
 
         }
 
+
+        resetCaptcha();
 
         if(
             !authData ||
@@ -5932,6 +6216,19 @@ async function handleLogin(
 
         const user =
             authData.user;
+
+        if(!user.email_confirmed_at){
+
+            await supabaseClient.auth.signOut();
+
+            showAlert(
+                '📩 Please confirm your email address from the email we sent before logging in.',
+                'warning'
+            );
+
+            return;
+
+        }
 
 
         const userId =
@@ -6355,6 +6652,25 @@ async function handleForgotPass(
 
     }
 
+    if(!isValidEmailFormat(email)){
+        showAlert(
+            '❌ Please enter a valid email address.',
+            'danger'
+        );
+        return;
+    }
+
+    const forgotCaptchaToken =
+        getCaptchaToken();
+
+    if(!forgotCaptchaToken){
+        showAlert(
+            '⚠️ Please complete the human verification first.',
+            'warning'
+        );
+        return;
+    }
+
 
     forgotBtn.disabled =
         true;
@@ -6377,7 +6693,10 @@ async function handleForgotPass(
                 {
 
                     redirectTo:
-                        `${window.location.origin}/reset-password.html`
+                        `${window.location.origin}/reset-password.html`,
+
+                    captchaToken:
+                        forgotCaptchaToken
 
                 }
             );
@@ -6389,6 +6708,8 @@ async function handleForgotPass(
 
         }
 
+
+        resetCaptcha();
 
         closeModal(
             'forgotModal'
@@ -7402,9 +7723,100 @@ if(
    FAST PAGE INITIALIZATION
 ========================================================= */
 
+function restoreVerifiedEmail(){
+
+    try{
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const verified =
+            params.get('verified');
+
+        const email =
+            params.get('email');
+
+        if(verified === '1' && email){
+
+            const normalizedEmail =
+                email.trim().toLowerCase();
+
+            const username =
+                getElement('username');
+
+            if(username){
+                username.value = normalizedEmail;
+            }
+
+            localStorage.setItem(
+                'rememberedEmail',
+                normalizedEmail
+            );
+
+            localStorage.removeItem(
+                'pendingRegistrationEmail'
+            );
+
+            showAlert(
+                '✅ Email verified successfully. You can now log in with your email and password.',
+                'success'
+            );
+
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
+
+        }
+
+    }
+    catch(error){
+        console.warn(
+            'VERIFIED EMAIL HANDLER ERROR:',
+            error
+        );
+    }
+
+}
+
+function restorePendingRegistrationEmail(){
+
+    try{
+
+        const pending =
+            localStorage.getItem(
+                'pendingRegistrationEmail'
+            );
+
+        const username =
+            getElement('username');
+
+        if(pending && username && !username.value){
+            username.value = pending;
+        }
+
+    }
+    catch(error){
+        console.warn(
+            'PENDING EMAIL ERROR:',
+            error
+        );
+    }
+
+}
+
 function initializeLoginPage(){
 
+    initializeCountrySelectors();
+
     restoreRememberedEmail();
+
+    restorePendingRegistrationEmail();
+
+    restoreVerifiedEmail();
 
     setupRegistrationNationality();
 

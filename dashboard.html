@@ -312,6 +312,14 @@ body.ticket-module-open main{ overflow-y:auto; }
   .ticket-module-toolbar{ padding:7px 8px; }
 }
 
+
+/* PAGE SITE POST — DASHBOARD MODULE (same pattern as Ticket Booking) */
+#page-site-post-module{display:none;width:100%;max-width:1500px;margin:0 auto;}
+#page-site-post-module.page-site-post-module-active{display:block;}
+#page-site-post-frame{width:100%;height:calc(100vh - 118px);min-height:680px;border:1px solid var(--dcf-border,#dfe7e2);border-radius:10px;background:#fff;box-shadow:0 2px 8px rgba(13,36,28,.045);display:block;}
+body.page-site-post-module-open main{overflow-y:auto;}
+@media(max-width:767px){#page-site-post-frame{height:calc(100vh - 145px);min-height:600px;}}
+
 /* EVENTS DASHBOARD MODULE — mirrors Ticket Booking */
 #events-module{display:none;width:100%;max-width:1500px;margin:0 auto;}
 #events-module.events-module-active{display:block;}
@@ -380,6 +388,7 @@ body.events-module-open main{overflow-y:auto;}
           <a href="pages/projects.html" class="sidebar-link flex items-center gap-3 px-3 py-2"><i class="fas fa-folder"></i><span>Projects</span></a>
           <a href="pages/activities.html" class="sidebar-link flex items-center gap-3 px-3 py-2"><i class="fas fa-calendar-alt"></i><span>Activities</span></a>
           <a href="pages/media.html" class="sidebar-link flex items-center gap-3 px-3 py-2"><i class="fas fa-images"></i><span>Photo Gallery</span></a>
+          <a href="pages/media-manager.html" class="sidebar-link flex items-center gap-3 px-3 py-2" id="pageSitePostDashboardLink"><i class="fas fa-file-pen"></i><span>Page Site Post</span></a>
           <a href="pages/add-media.html" class="sidebar-link admin-only-link flex items-center gap-3 px-3 py-2"><i class="fas fa-plus-circle"></i><span>Add Photo</span></a>
           <a href="pages/certificate.html" class="sidebar-link flex items-center gap-3 px-3 py-2"><i class="fas fa-certificate"></i><span>Certificates</span></a>
           <a href="pages/ticket-booking.html" class="sidebar-link flex items-center gap-3 px-3 py-2"><i class="fas fa-ticket-alt"></i><span>Ticket Booking</span></a>
@@ -693,6 +702,16 @@ body.events-module-open main{overflow-y:auto;}
       <p class="text-[10px] text-gray-500">Development Charity Foundation</p>
       <p class="text-[10px] text-gray-500">DCF MIS Version 1.0 © 2026</p>
     </footer>
+
+
+    <!-- PAGE SITE POST — DASHBOARD MODULE -->
+    <section id="page-site-post-module" aria-label="Page Site Post Module">
+      <div class="ticket-module-toolbar">
+        <div class="ticket-module-title"><i class="fas fa-file-pen"></i><span>Page Site Post</span></div>
+        <button type="button" id="page-site-post-module-back" class="ticket-module-back"><i class="fas fa-arrow-left"></i> Dashboard</button>
+      </div>
+      <iframe id="page-site-post-frame" title="Page Site Post" src="about:blank" loading="lazy" referrerpolicy="same-origin"></iframe>
+    </section>
 
     <!-- TICKET BOOKING — DASHBOARD MODULE -->
     <section id="ticket-booking-module" aria-label="Ticket Booking Module">
@@ -1572,6 +1591,117 @@ function updateExecutiveRibbon() {
   });
 }
 
+
+/* =========================================================
+   PAGE SITE POST — OPEN AS DASHBOARD MODULE
+   Uses the exact same integration pattern as Ticket Booking.
+========================================================= */
+(function () {
+  const PAGE_SITE_POST_HREF = "pages/media-manager.html";
+
+  async function verifyPageSitePostPage() {
+    try {
+      const response = await fetch(PAGE_SITE_POST_HREF, { method: "HEAD", cache: "no-store" });
+      if (!response.ok) {
+        console.error("Page Site Post is not available:", response.status, PAGE_SITE_POST_HREF);
+        const frame = document.getElementById("page-site-post-frame");
+        if (frame) {
+          frame.removeAttribute("src");
+          frame.srcdoc = `<!doctype html><html lang="en"><body style="font-family:Inter,Arial,sans-serif;padding:40px;color:#17382b;background:#fff"><h2 style="margin:0 0 10px">Page Site Post is unavailable</h2><p style="color:#66756e">The file <strong>media-manager.html</strong> could not be found at the expected location.</p><p style="color:#66756e">Place <strong>media-manager.html</strong> inside the <strong>pages</strong> folder, or update PAGE_SITE_POST_HREF in dashboard.html.</p></body></html>`;
+        }
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error("Unable to verify Page Site Post:", error);
+      return false;
+    }
+  }
+
+  function getPageSitePostLinks() {
+    return Array.from(document.querySelectorAll(`a[href="${PAGE_SITE_POST_HREF}"]`));
+  }
+
+  function dashboardChildren() {
+    const main = document.querySelector('main');
+    const module = document.getElementById('page-site-post-module');
+    if (!main || !module) return [];
+    return Array.from(main.children).filter(el =>
+      el !== module &&
+      el.id !== 'ticket-booking-module' &&
+      el.id !== 'events-module'
+    );
+  }
+
+  function openPageSitePostModule() {
+    const module = document.getElementById('page-site-post-module');
+    const frame = document.getElementById('page-site-post-frame');
+    if (!module || !frame) return;
+
+    dashboardChildren().forEach(el => {
+      el.dataset.pageSitePostModuleHidden = el.style.display || '';
+      el.style.display = 'none';
+    });
+
+    const ticket = document.getElementById('ticket-booking-module');
+    const events = document.getElementById('events-module');
+    if (ticket) ticket.classList.remove('ticket-module-active');
+    if (events) events.classList.remove('events-module-active');
+
+    module.classList.add('page-site-post-module-active');
+    document.body.classList.add('page-site-post-module-open');
+    document.body.classList.remove('ticket-module-open', 'events-module-open');
+
+    if (frame.getAttribute('src') !== PAGE_SITE_POST_HREF) {
+      frame.removeAttribute('srcdoc');
+      frame.setAttribute('src', PAGE_SITE_POST_HREF);
+    }
+
+    verifyPageSitePostPage();
+
+    document.querySelectorAll('.sidebar-link').forEach(link => link.classList.remove('active'));
+    getPageSitePostLinks().forEach(link => link.classList.add('active'));
+
+    const main = document.querySelector('main');
+    if (main) main.scrollTop = 0;
+  }
+
+  function closePageSitePostModule() {
+    const module = document.getElementById('page-site-post-module');
+    if (!module) return;
+
+    module.classList.remove('page-site-post-module-active');
+    document.body.classList.remove('page-site-post-module-open');
+
+    dashboardChildren().forEach(el => {
+      el.style.display = el.dataset.pageSitePostModuleHidden || '';
+      delete el.dataset.pageSitePostModuleHidden;
+    });
+
+    getPageSitePostLinks().forEach(link => link.classList.remove('active'));
+    const dashboardLink = document.querySelector('.sidebar-link[href="dashboard.html"]');
+    if (dashboardLink) dashboardLink.classList.add('active');
+
+    const main = document.querySelector('main');
+    if (main) main.scrollTop = 0;
+  }
+
+  function setupPageSitePostModule() {
+    getPageSitePostLinks().forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        openPageSitePostModule();
+      });
+    });
+
+    const back = document.getElementById('page-site-post-module-back');
+    if (back) back.addEventListener('click', closePageSitePostModule);
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', setupPageSitePostModule);
+  else setupPageSitePostModule();
+})();
+
 /* =========================================================
    TICKET BOOKING — OPEN AS DASHBOARD MODULE
 ========================================================= */
@@ -1730,5 +1860,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 </script>
+<script src="js/i18n.js"></script>
 </body>
 </html>
