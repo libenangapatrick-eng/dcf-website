@@ -290,6 +290,40 @@ button{
     }
 }
 
+
+/* =========================================================
+   MEMBER COMPLETION — ADD MEMBER FORM STYLE
+========================================================= */
+.completion-member-form{background:#f4f7f6;border:1px solid #e5e7eb;border-radius:12px;padding:0;overflow:hidden}
+.completion-member-header{padding:20px 22px;border-bottom:1px solid #e5e7eb;background:#fff}
+.completion-member-brand{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.completion-member-brand-logo{width:52px;height:52px;border:1px solid #dbe5e0;border-radius:50%;background:#fff;padding:4px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto}
+.completion-member-brand-logo img{width:100%;height:100%;object-fit:contain}
+.completion-member-title{font-size:20px;color:#174a35;font-weight:700;line-height:1.25}
+.completion-member-subtitle{font-size:11px;color:#6b7280;line-height:1.5}
+.completion-member-body{padding:22px}
+.completion-section-title{font-size:14px;font-weight:800;color:#174a35;padding-bottom:9px;margin-bottom:16px;border-bottom:1px solid #e5e7eb}
+.completion-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.completion-group{display:flex;flex-direction:column;min-width:0}
+.completion-group.full{grid-column:1/-1}
+.completion-group label{font-size:12px;font-weight:700;color:#374151;margin-bottom:6px}
+.completion-group input,.completion-group select,.completion-group textarea{width:100%;padding:10px 11px;border:1px solid #d1d5db;border-radius:6px;background:#fff;color:#111827;font-size:13px;outline:none;transition:border-color .2s ease,box-shadow .2s ease}
+.completion-group input:focus,.completion-group select:focus,.completion-group textarea:focus{border-color:#174a35;box-shadow:0 0 0 2px rgba(23,74,53,.08)}
+.completion-group input[readonly]{background:#f3f4f6;color:#174a35;font-weight:700;cursor:not-allowed}
+.completion-group textarea{resize:vertical;min-height:82px}
+.completion-photo-box{border:1px dashed #b8c8bf;padding:13px;border-radius:7px;background:#fafcfb}
+.completion-photo-preview-wrap{margin-top:10px;text-align:center}
+#completionPhotoPreview{width:120px;height:140px;border-radius:6px;border:2px solid #174a35;padding:3px;margin:0 auto;object-fit:cover}
+.completion-required-note{font-size:10px;color:#64756d;margin-top:5px;line-height:1.5}
+.completion-action-row{margin-top:20px;padding-top:18px;border-top:1px solid #e5e7eb}
+@media(max-width:700px){
+  .completion-member-body{padding:16px}
+  .completion-member-header{padding:16px}
+  .completion-grid{grid-template-columns:1fr}
+  .completion-group.full{grid-column:auto}
+  .completion-member-title{font-size:18px}
+}
+
 </style>
 
 </head>
@@ -685,6 +719,7 @@ class="
 <div class="captcha-wrap mt-2">
     <div
         class="cf-turnstile"
+        id="loginTurnstile"
         data-sitekey="0x4AAAAAAEpfJyTywShfS4Mk"
         data-theme="light"
         data-size="flexible"
@@ -1570,6 +1605,7 @@ Member Photo
 <input
 type="file"
 id="regPhoto"
+required
 accept="image/jpeg,image/png,image/webp"
 class="
     w-full
@@ -1878,6 +1914,7 @@ to log in to the DCF system after registration is completed.
 <div class="captcha-wrap mt-2">
     <div
         class="cf-turnstile"
+        id="registerTurnstile"
         data-sitekey="0x4AAAAAAEpfJyTywShfS4Mk"
         data-theme="light"
         data-size="flexible"
@@ -2087,6 +2124,7 @@ class="
 <div class="captcha-wrap mt-2">
     <div
         class="cf-turnstile"
+        id="forgotTurnstile"
         data-sitekey="0x4AAAAAAEpfJyTywShfS4Mk"
         data-theme="light"
         data-size="flexible"
@@ -2512,1638 +2550,147 @@ function escapeRegistrationHTML(
 
 function createMemberCompletionModal(){
 
-    if(
-        getElement(
-            'memberCompletionModal'
-        )
-    ){
-
+    if(getElement('memberCompletionModal')){
         return;
-
     }
 
-
-    const modal =
-        document.createElement(
-            'div'
-        );
-
-
-    modal.id =
-        'memberCompletionModal';
-
-
-    modal.className =
-        'fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[99999] flex items-center justify-center p-4';
-
+    const modal = document.createElement('div');
+    modal.id = 'memberCompletionModal';
+    modal.className = 'fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[99999] flex items-center justify-center p-4';
 
     modal.innerHTML = `
-
-        <div
-            class="
-                bg-white
-                rounded-2xl
-                max-w-4xl
-                w-full
-                shadow-2xl
-                max-h-[94vh]
-                overflow-y-auto
-            "
-        >
-
-            <div
-                class="
-                    p-6
-                    md:p-8
-                    border-b
-                    border-slate-200
-                "
-            >
-
-                <div
-                    class="
-                        flex
-                        items-center
-                        gap-4
-                    "
-                >
-
-                    <div
-                        class="
-                            w-12
-                            h-12
-                            rounded-xl
-                            bg-emerald-50
-                            text-dcf-green
-                            flex
-                            items-center
-                            justify-center
-                        "
-                    >
-
-                        <i
-                            class="
-                                fas
-                                fa-user-check
-                                text-xl
-                            "
-                        ></i>
-
+        <div class="bg-white rounded-2xl max-w-4xl w-full shadow-2xl max-h-[94vh] overflow-y-auto modal-animate">
+            <div class="completion-member-form">
+                <div class="completion-member-header">
+                    <div class="completion-member-brand">
+                        <div class="completion-member-brand-logo">
+                            <img src="images/dcf-logo.png" alt="Development Charity Foundation Logo">
+                        </div>
+                        <div>
+                            <div class="completion-member-title">Member Registration Form</div>
+                            <div class="completion-member-subtitle">Development Charity Foundation (DCF)</div>
+                        </div>
                     </div>
-
-
-                    <div>
-
-                        <h2
-                            class="
-                                text-xl
-                                font-bold
-                                text-dcf-green
-                            "
-                        >
-
-                            Complete Member Information
-
-                        </h2>
-
-
-                        <p
-                            class="
-                                text-xs
-                                text-slate-500
-                                mt-1
-                            "
-                        >
-
-                            This step is required before accessing the Member Portal.
-
-                        </p>
-
-                    </div>
-
+                    <div class="completion-member-subtitle">Complete the missing member information before continuing to the Member Portal.</div>
                 </div>
 
-            </div>
+                <div class="completion-member-body">
+                    <div id="completionAlert" class="hidden mb-5 p-3.5 rounded-xl text-xs font-medium border"></div>
 
+                    <form id="memberCompletionForm" class="space-y-5">
+                        <div class="completion-section-title">Basic Member Information</div>
 
-            <div
-                class="
-                    p-6
-                    md:p-8
-                "
-            >
+                        <div class="completion-grid">
+                            <div class="completion-group">
+                                <label for="completionMemberId">Membership Number</label>
+                                <input type="text" id="completionMemberId" readonly value="Generating...">
+                            </div>
 
-                <div
-                    id="completionAlert"
-                    class="
-                        hidden
-                        mb-5
-                        p-3.5
-                        rounded-xl
-                        text-xs
-                        font-medium
-                        border
-                    "
-                >
+                            <div class="completion-group">
+                                <label for="completionFullName">Full Name *</label>
+                                <input type="text" id="completionFullName" maxlength="120" required placeholder="Enter full name">
+                            </div>
+
+                            <div class="completion-group">
+                                <label for="completionGender">Gender *</label>
+                                <select id="completionGender" required>
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                            </div>
+
+                            <div class="completion-group">
+                                <label for="completionDob">Date of Birth *</label>
+                                <input type="date" id="completionDob" required>
+                            </div>
+
+                            <div class="completion-group">
+                                <label for="completionPhone">Phone Number *</label>
+                                <input type="tel" id="completionPhone" maxlength="30" inputmode="tel" autocomplete="tel" required placeholder="Example: 0712345678">
+                            </div>
+
+                            <div class="completion-group">
+                                <label for="completionEmail">Email Address *</label>
+                                <input type="email" id="completionEmail" readonly autocomplete="email">
+                            </div>
+
+                            <div class="completion-group">
+                                <label for="completionOccupation">Occupation / Activity</label>
+                                <input type="text" id="completionOccupation" maxlength="120" placeholder="Example: Farmer, Teacher">
+                            </div>
+
+                            <div class="completion-group">
+                                <label for="completionMemberType">Membership Type *</label>
+                                <select id="completionMemberType" required>
+                                    <option value="">-- Select membership type --</option>
+                                    <option value="kawaida">Regular Member</option>
+                                    <option value="mchangiaji">Donor Member</option>
+                                    <option value="mwanzilishi">Participant / Volunteer</option>
+                                    <option value="Ordinary Member">Ordinary Member</option>
+                                    <option value="Associate Member">Associate Member</option>
+                                    <option value="Volunteer Member">Volunteer Member</option>
+                                    <option value="Youth Member">Youth Member</option>
+                                    <option value="International / Diaspora Member">International / Diaspora Member</option>
+                                </select>
+                            </div>
+
+                            <div class="completion-group">
+                                <label for="completionNationality">Nationality *</label>
+                                <select id="completionNationality" required>
+                                    <option value="Tanzanian">Tanzanian</option>
+                                    <option value="Non-Tanzanian">Non-Tanzanian</option>
+                                </select>
+                            </div>
+
+                            <div class="completion-group">
+                                <label for="completionCountry">Country *</label>
+                                <select id="completionCountry" required></select>
+                            </div>
+
+                            <div class="completion-group" id="completionNidaGroup">
+                                <label for="completionNida">NIDA Number *</label>
+                                <input type="text" id="completionNida" maxlength="30" placeholder="NIDA number">
+                            </div>
+
+                            <div class="completion-group hidden" id="completionPassportGroup">
+                                <label for="completionPassport">Passport Number *</label>
+                                <input type="text" id="completionPassport" maxlength="50" placeholder="Passport number">
+                            </div>
+
+                            <div class="completion-group full">
+                                <label for="completionAddress">Address / Place of Residence *</label>
+                                <textarea id="completionAddress" maxlength="500" required placeholder="Street, Ward, District, Region"></textarea>
+                            </div>
+
+                            <div class="completion-group full">
+                                <label>Member Photo *</label>
+                                <div class="completion-photo-box">
+                                    <input type="file" id="completionPhoto" accept="image/jpeg,image/png,image/webp" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white">
+                                    <p id="completionPhotoRequiredNote" class="completion-required-note">Member photo is required. JPG, PNG or WEBP; maximum 5MB.</p>
+                                    <div class="completion-photo-preview-wrap">
+                                        <img id="completionPhotoPreview" src="#" alt="Member Photo Preview" class="hidden">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="completion-action-row space-y-3">
+                            <button type="submit" id="completionSaveBtn" class="w-full bg-dcf-green hover:bg-dcf-dark-green text-white font-bold py-3.5 rounded-xl text-xs uppercase shadow-lg">
+                                SAVE INFORMATION & CONTINUE
+                            </button>
+                            <button type="button" id="completionLogoutBtn" class="w-full border border-slate-300 text-slate-600 font-semibold py-3 rounded-xl text-xs hover:bg-slate-50">
+                                LOG OUT
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-
-                <form
-                    id="memberCompletionForm"
-                    class="space-y-6"
-                >
-
-
-                    <div>
-
-                        <label
-                            class="
-                                block
-                                text-xs
-                                font-semibold
-                                text-slate-700
-                                uppercase
-                                tracking-wider
-                                mb-1.5
-                            "
-                        >
-
-                            Email Address
-
-                        </label>
-
-
-                        <input
-                            type="email"
-                            id="completionEmail"
-                            readonly
-                            class="
-                                w-full
-                                px-3.5
-                                py-3
-                                text-sm
-                                border
-                                border-slate-300
-                                rounded-xl
-                                bg-slate-100
-                                text-dcf-green
-                                font-semibold
-                            "
-                        >
-
-
-                        <p
-                            class="
-                                text-[10px]
-                                text-slate-400
-                                mt-1
-                            "
-                        >
-
-                            This email comes directly from your authenticated account and cannot be changed.
-
-                        </p>
-
-                    </div>
-
-
-                    <div>
-
-                        <label
-                            class="
-                                block
-                                text-xs
-                                font-semibold
-                                text-slate-700
-                                uppercase
-                                tracking-wider
-                                mb-1.5
-                            "
-                        >
-
-                            Member ID
-
-                        </label>
-
-
-                        <input
-                            type="text"
-                            id="completionMemberId"
-                            readonly
-                            value="Generating..."
-                            class="
-                                w-full
-                                px-3.5
-                                py-3
-                                text-sm
-                                border
-                                border-slate-300
-                                rounded-xl
-                                bg-slate-100
-                                text-dcf-green
-                                font-bold
-                            "
-                        >
-
-                    </div>
-
-
-                    <div>
-
-                        <h3
-                            class="
-                                text-sm
-                                font-bold
-                                text-dcf-green
-                                border-b
-                                border-slate-200
-                                pb-2
-                                mb-4
-                            "
-                        >
-
-                            Basic Information
-
-                        </h3>
-
-
-                        <div
-                            class="
-                                grid
-                                grid-cols-1
-                                md:grid-cols-2
-                                gap-4
-                            "
-                        >
-
-                            <div>
-
-                                <label
-                                    class="
-                                        block
-                                        text-xs
-                                        font-semibold
-                                        text-slate-700
-                                        mb-1.5
-                                    "
-                                >
-
-                                    Full Name *
-
-                                </label>
-
-
-                                <input
-                                    type="text"
-                                    id="completionFullName"
-                                    required
-                                    maxlength="120"
-                                    placeholder="Enter full name"
-                                    class="
-                                        w-full
-                                        px-3.5
-                                        py-3
-                                        text-sm
-                                        border
-                                        border-slate-300
-                                        rounded-xl
-                                        focus:border-dcf-green
-                                        focus:ring-1
-                                        focus:ring-dcf-green
-                                        outline-none
-                                    "
-                                >
-
-                            </div>
-
-
-                            <div>
-
-                                <label
-                                    class="
-                                        block
-                                        text-xs
-                                        font-semibold
-                                        text-slate-700
-                                        mb-1.5
-                                    "
-                                >
-
-                                    Gender *
-
-                                </label>
-
-
-                                <select
-                                    id="completionGender"
-                                    required
-                                    class="
-                                        w-full
-                                        px-3.5
-                                        py-3
-                                        text-sm
-                                        border
-                                        border-slate-300
-                                        rounded-xl
-                                        bg-white
-                                    "
-                                >
-
-                                    <option value="">
-                                        -- Select Gender --
-                                    </option>
-
-                                    <option value="Male">
-                                        Male
-                                    </option>
-
-                                    <option value="Female">
-                                        Female
-                                    </option>
-
-                                </select>
-
-                            </div>
-
-
-                            <div>
-
-                                <label
-                                    class="
-                                        block
-                                        text-xs
-                                        font-semibold
-                                        text-slate-700
-                                        mb-1.5
-                                    "
-                                >
-
-                                    Date of Birth *
-
-                                </label>
-
-
-                                <input
-                                    type="date"
-                                    id="completionDob"
-                                    required
-                                    class="
-                                        w-full
-                                        px-3.5
-                                        py-3
-                                        text-sm
-                                        border
-                                        border-slate-300
-                                        rounded-xl
-                                    "
-                                >
-
-                            </div>
-
-
-                            <div>
-
-                                <label
-                                    class="
-                                        block
-                                        text-xs
-                                        font-semibold
-                                        text-slate-700
-                                        mb-1.5
-                                    "
-                                >
-
-                                    Phone Number *
-
-                                </label>
-
-
-                                <input
-                                    type="tel"
-                                    id="completionPhone"
-                                    required
-                                    inputmode="tel"
-                                    maxlength="30"
-                                    placeholder="0712345678"
-                                    class="
-                                        w-full
-                                        px-3.5
-                                        py-3
-                                        text-sm
-                                        border
-                                        border-slate-300
-                                        rounded-xl
-                                    "
-                                >
-
-                            </div>
-
-
-                            <div>
-
-                                <label
-                                    class="
-                                        block
-                                        text-xs
-                                        font-semibold
-                                        text-slate-700
-                                        mb-1.5
-                                    "
-                                >
-
-                                    Occupation / Activity
-
-                                </label>
-
-
-                                <input
-                                    type="text"
-                                    id="completionOccupation"
-                                    maxlength="120"
-                                    placeholder="Example: Farmer, Teacher"
-                                    class="
-                                        w-full
-                                        px-3.5
-                                        py-3
-                                        text-sm
-                                        border
-                                        border-slate-300
-                                        rounded-xl
-                                    "
-                                >
-
-                            </div>
-
-
-                            <div>
-
-                                <label
-                                    class="
-                                        block
-                                        text-xs
-                                        font-semibold
-                                        text-slate-700
-                                        mb-1.5
-                                    "
-                                >
-
-                                    Membership Type *
-
-                                </label>
-
-
-                                <select
-                                    id="completionMemberType"
-                                    required
-                                    class="
-                                        w-full
-                                        px-3.5
-                                        py-3
-                                        text-sm
-                                        border
-                                        border-slate-300
-                                        rounded-xl
-                                        bg-white
-                                    "
-                                >
-
-                                    <option value="kawaida">
-                                        Regular Member
-                                    </option>
-
-                                    <option value="mchangiaji">
-                                        Donor Member
-                                    </option>
-
-                                    <option value="mwanzilishi">
-                                        Participant / Volunteer
-                                    </option>
-
-                                </select>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div>
-
-                        <h3
-                            class="
-                                text-sm
-                                font-bold
-                                text-dcf-green
-                                border-b
-                                border-slate-200
-                                pb-2
-                                mb-4
-                            "
-                        >
-
-                            Nationality & Identification
-
-                        </h3>
-
-
-                        <div
-                            class="
-                                grid
-                                grid-cols-1
-                                md:grid-cols-2
-                                gap-4
-                            "
-                        >
-
-                            <div>
-
-                                <label
-                                    class="
-                                        block
-                                        text-xs
-                                        font-semibold
-                                        text-slate-700
-                                        mb-1.5
-                                    "
-                                >
-
-                                    Nationality *
-
-                                </label>
-
-
-                                <select
-                                    id="completionNationality"
-                                    required
-                                    class="
-                                        w-full
-                                        px-3.5
-                                        py-3
-                                        text-sm
-                                        border
-                                        border-slate-300
-                                        rounded-xl
-                                        bg-white
-                                    "
-                                >
-
-                                    <option value="Tanzanian">
-                                        Tanzanian
-                                    </option>
-
-                                    <option value="Non-Tanzanian">
-                                        Non-Tanzanian
-                                    </option>
-
-                                </select>
-
-                            </div>
-
-
-                            <div
-                                id="completionCountryGroup"
-                            >
-
-                                <label
-                                    class="
-                                        block
-                                        text-xs
-                                        font-semibold
-                                        text-slate-700
-                                        mb-1.5
-                                    "
-                                >
-
-                                    Country *
-
-                                </label>
-
-
-                                <select
-                                    id="completionCountry"
-                                    required
-                                    class="
-                                        w-full
-                                        px-3.5
-                                        py-3
-                                        text-sm
-                                        border
-                                        border-slate-300
-                                        rounded-xl
-                                        bg-white
-                                    "
-                                >
-                                    <option value="Tanzania">Tanzania</option>
-                                </select>
-
-                            </div>
-
-
-                            <div
-                                id="completionNidaGroup"
-                            >
-
-                                <label
-                                    class="
-                                        block
-                                        text-xs
-                                        font-semibold
-                                        text-slate-700
-                                        mb-1.5
-                                    "
-                                >
-
-                                    NIDA Number *
-
-                                </label>
-
-
-                                <input
-                                    type="text"
-                                    id="completionNida"
-                                    maxlength="30"
-                                    placeholder="Enter NIDA number"
-                                    class="
-                                        w-full
-                                        px-3.5
-                                        py-3
-                                        text-sm
-                                        border
-                                        border-slate-300
-                                        rounded-xl
-                                    "
-                                >
-
-                            </div>
-
-
-                            <div
-                                id="completionPassportGroup"
-                                class="hidden"
-                            >
-
-                                <label
-                                    class="
-                                        block
-                                        text-xs
-                                        font-semibold
-                                        text-slate-700
-                                        mb-1.5
-                                    "
-                                >
-
-                                    Passport Number *
-
-                                </label>
-
-
-                                <input
-                                    type="text"
-                                    id="completionPassport"
-                                    maxlength="50"
-                                    placeholder="Enter passport number"
-                                    class="
-                                        w-full
-                                        px-3.5
-                                        py-3
-                                        text-sm
-                                        border
-                                        border-slate-300
-                                        rounded-xl
-                                    "
-                                >
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div>
-
-                        <label
-                            class="
-                                block
-                                text-xs
-                                font-semibold
-                                text-slate-700
-                                mb-1.5
-                            "
-                        >
-
-                            Address / Place of Residence *
-
-                        </label>
-
-
-                        <textarea
-                            id="completionAddress"
-                            rows="3"
-                            maxlength="500"
-                            required
-                            placeholder="Street, Ward, District, Region"
-                            class="
-                                w-full
-                                px-3.5
-                                py-3
-                                text-sm
-                                border
-                                border-slate-300
-                                rounded-xl
-                            "
-                        ></textarea>
-
-                    </div>
-
-
-                    <div>
-
-                        <h3
-                            class="
-                                text-sm
-                                font-bold
-                                text-dcf-green
-                                border-b
-                                border-slate-200
-                                pb-2
-                                mb-4
-                            "
-                        >
-
-                            Member Photo
-
-                        </h3>
-
-
-                        <input
-                            type="file"
-                            id="completionPhoto"
-                            accept="image/jpeg,image/png,image/webp"
-                            class="
-                                w-full
-                                px-3.5
-                                py-3
-                                text-sm
-                                border
-                                border-slate-300
-                                rounded-xl
-                                bg-white
-                            "
-                        >
-
-
-                        <p
-                            class="
-                                text-[10px]
-                                text-slate-400
-                                mt-1
-                            "
-                        >
-
-                            JPG, PNG or WEBP. Maximum 5MB.
-
-                        </p>
-
-
-                        <div
-                            class="
-                                text-center
-                                mt-4
-                            "
-                        >
-
-                            <img
-                                id="completionPhotoPreview"
-                                src="#"
-                                alt="Member Photo"
-                                decoding="async"
-                                class="
-                                    hidden
-                                    mx-auto
-                                    w-28
-                                    h-32
-                                    object-cover
-                                    rounded-xl
-                                    border-2
-                                    border-dcf-green
-                                "
-                            >
-
-                        </div>
-
-                    </div>
-
-
-                    <div
-                        class="
-                            bg-emerald-50
-                            border
-                            border-emerald-100
-                            rounded-xl
-                            p-4
-                        "
-                    >
-
-                        <p
-                            class="
-                                text-xs
-                                text-emerald-800
-                            "
-                        >
-
-                            <i
-                                class="
-                                    fas
-                                    fa-info-circle
-                                    mr-1
-                                "
-                            ></i>
-
-                            <strong>Important:</strong>
-
-                            Complete all required information.
-                            After saving this information,
-                            you will be redirected to the Member Portal.
-
-                        </p>
-
-                    </div>
-
-
-                    <button
-                        type="submit"
-                        id="completionSaveBtn"
-                        class="
-                            w-full
-                            bg-dcf-green
-                            hover:bg-dcf-dark-green
-                            text-white
-                            font-bold
-                            py-3.5
-                            rounded-xl
-                            text-xs
-                            uppercase
-                            shadow-lg
-                        "
-                    >
-
-                        SAVE INFORMATION & CONTINUE
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        id="completionLogoutBtn"
-                        class="
-                            w-full
-                            border
-                            border-slate-300
-                            text-slate-600
-                            font-semibold
-                            py-3
-                            rounded-xl
-                            text-xs
-                            hover:bg-slate-50
-                        "
-                    >
-
-                        LOG OUT
-
-                    </button>
-
-                </form>
-
             </div>
-
         </div>
-
     `;
 
-
-    document.body.appendChild(
-        modal
-    );
-
-
-    setupMemberCompletionForm();
-
+    document.body.appendChild(modal);
 }
-
-
-/* =========================================================
-   COMPLETION ALERT
-========================================================= */
-
-function showCompletionAlert(
-    message,
-    type = 'danger'
-){
-
-    const box =
-        getElement(
-            'completionAlert'
-        );
-
-
-    if(!box){
-
-        return;
-
-    }
-
-
-    box.className =
-        'mb-5 p-3.5 rounded-xl text-xs font-medium border';
-
-
-    if(
-        type === 'success'
-    ){
-
-        box.classList.add(
-            'bg-emerald-50',
-            'text-emerald-700',
-            'border-emerald-200'
-        );
-
-    }
-
-    else{
-
-        box.classList.add(
-            'bg-red-50',
-            'text-red-700',
-            'border-red-200'
-        );
-
-    }
-
-
-    box.innerHTML =
-        message;
-
-
-    box.classList.remove(
-        'hidden'
-    );
-
-}
-
-
-/* =========================================================
-   NATIONALITY
-========================================================= */
-
-function updateNationalityFields(){
-
-    const nationality =
-        getElement(
-            'completionNationality'
-        );
-
-    const nidaGroup =
-        getElement(
-            'completionNidaGroup'
-        );
-
-    const passportGroup =
-        getElement(
-            'completionPassportGroup'
-        );
-
-    const nida =
-        getElement(
-            'completionNida'
-        );
-
-    const passport =
-        getElement(
-            'completionPassport'
-        );
-
-    const country =
-        getElement(
-            'completionCountry'
-        );
-
-
-    if(!nationality){
-
-        return;
-
-    }
-
-
-    if(
-        nationality.value ===
-        'Tanzanian'
-    ){
-
-        if(nidaGroup){
-
-            nidaGroup.classList.remove(
-                'hidden'
-            );
-
-        }
-
-
-        if(passportGroup){
-
-            passportGroup.classList.add(
-                'hidden'
-            );
-
-        }
-
-
-        if(nida){
-
-            nida.required =
-                true;
-
-        }
-
-
-        if(passport){
-
-            passport.required =
-                false;
-
-            passport.value =
-                '';
-
-        }
-
-
-        if(country){
-
-            country.value =
-                'Tanzania';
-
-            country.readOnly =
-                true;
-
-            country.required =
-                true;
-
-        }
-
-    }
-
-    else{
-
-        if(nidaGroup){
-
-            nidaGroup.classList.add(
-                'hidden'
-            );
-
-        }
-
-
-        if(passportGroup){
-
-            passportGroup.classList.remove(
-                'hidden'
-            );
-
-        }
-
-
-        if(nida){
-
-            nida.required =
-                false;
-
-            nida.value =
-                '';
-
-        }
-
-
-        if(passport){
-
-            passport.required =
-                true;
-
-        }
-
-
-        if(country){
-
-            country.value =
-                '';
-
-            country.readOnly =
-                false;
-
-            country.required =
-                true;
-
-            country.placeholder =
-                'Enter your country';
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   GET NEXT MEMBER ID
-========================================================= */
-
-async function getNextMemberID(){
-
-    const input =
-        getElement(
-            'completionMemberId'
-        );
-
-
-    if(!input){
-
-        return null;
-
-    }
-
-
-    input.value =
-        'Generating...';
-
-
-    try{
-
-        const {
-            data,
-            error
-        } =
-        await supabaseClient
-            .rpc(
-                'generate_dcf_member_id'
-            );
-
-
-        if(error){
-
-            console.error(
-                'MEMBER ID RPC ERROR:',
-                error
-            );
-
-
-            throw new Error(
-                'Member ID could not be generated: ' +
-                error.message
-            );
-
-        }
-
-
-        if(!data){
-
-            throw new Error(
-                'Member ID was not returned.'
-            );
-
-        }
-
-
-        input.value =
-            data;
-
-
-        return data;
-
-    }
-
-    catch(error){
-
-        console.error(
-            'GET MEMBER ID ERROR:',
-            error
-        );
-
-
-        input.value =
-            'Unavailable';
-
-
-        throw error;
-
-    }
-
-}
-
-
-/* =========================================================
-   GET CURRENT USER
-========================================================= */
-
-async function getCurrentUser(){
-
-    if(
-        typeof supabaseClient ===
-        'undefined' ||
-        !supabaseClient
-    ){
-
-        throw new Error(
-            'Supabase is not available.'
-        );
-
-    }
-
-
-    const {
-        data,
-        error
-    } =
-    await supabaseClient
-        .auth
-        .getSession();
-
-
-    if(error){
-
-        throw error;
-
-    }
-
-
-    if(
-        !data ||
-        !data.session ||
-        !data.session.user
-    ){
-
-        return null;
-
-    }
-
-
-    return data.session.user;
-
-}
-
-
-/* =========================================================
-   FIND MEMBER
-========================================================= */
-
-async function findMemberForUser(
-    user
-){
-
-    if(!user){
-
-        return null;
-
-    }
-
-
-    /*
-     * FIRST: USER ID
-     */
-
-    try{
-
-        const {
-            data,
-            error
-        } =
-        await supabaseClient
-            .from('members')
-            .select('*')
-            .eq(
-                'user_id',
-                user.id
-            )
-            .maybeSingle();
-
-
-        if(
-            !error &&
-            data
-        ){
-
-            return data;
-
-        }
-
-    }
-
-    catch(error){
-
-        console.warn(
-            'USER ID MEMBER SEARCH:',
-            error
-        );
-
-    }
-
-
-    /*
-     * SECOND: EMAIL
-     */
-
-    try{
-
-        const {
-            data,
-            error
-        } =
-        await supabaseClient
-            .from('members')
-            .select('*')
-            .ilike(
-                'email',
-                user.email
-            )
-            .limit(
-                1
-            );
-
-
-        if(
-            !error &&
-            data &&
-            data.length
-        ){
-
-            return data[0];
-
-        }
-
-    }
-
-    catch(error){
-
-        console.warn(
-            'EMAIL MEMBER SEARCH:',
-            error
-        );
-
-    }
-
-
-    return null;
-
-}
-
-
-/* =========================================================
-   MEMBER COMPLETE CHECK
-========================================================= */
-
-function isMemberComplete(
-    member
-){
-
-    if(!member){
-
-        return false;
-
-    }
-
-
-    const requiredFields = [
-
-        member.full_name,
-        member.gender,
-        member.dob,
-        member.phone,
-        member.email,
-        member.nationality,
-        member.country,
-        member.address,
-        member.member_id
-
-    ];
-
-
-    const basicComplete =
-        requiredFields.every(
-            function(value){
-
-                return (
-
-                    value !== null &&
-
-                    value !== undefined &&
-
-                    String(
-                        value
-                    ).trim() !== ''
-
-                );
-
-            }
-        );
-
-
-    if(!basicComplete){
-
-        return false;
-
-    }
-
-
-    const nationality =
-        String(
-            member.nationality || ''
-        )
-        .trim()
-        .toLowerCase();
-
-
-    if(
-        nationality ===
-        'tanzanian'
-    ){
-
-        return !!String(
-            member.nida_no || ''
-        ).trim();
-
-    }
-
-
-    return !!String(
-        member.passport_no || ''
-    ).trim();
-
-}
-
-
-/* =========================================================
-   OPEN MEMBER COMPLETION
-========================================================= */
-
-async function openMemberCompletion(
-    user,
-    existingMember = null
-){
-
-    createMemberCompletionModal();
-
-
-    const email =
-        getElement(
-            'completionEmail'
-        );
-
-
-    if(email){
-
-        email.value =
-            user.email || '';
-
-    }
-
-
-    if(existingMember){
-
-        const fields = {
-
-            completionFullName:
-                existingMember.full_name,
-
-            completionGender:
-                existingMember.gender,
-
-            completionDob:
-                existingMember.dob,
-
-            completionPhone:
-                existingMember.phone,
-
-            completionOccupation:
-                existingMember.occupation,
-
-            completionMemberType:
-                existingMember.member_type ||
-                'kawaida',
-
-            completionNationality:
-                existingMember.nationality ||
-                'Tanzanian',
-
-            completionCountry:
-                existingMember.country ||
-                'Tanzania',
-
-            completionNida:
-                existingMember.nida_no,
-
-            completionPassport:
-                existingMember.passport_no,
-
-            completionAddress:
-                existingMember.address
-
-        };
-
-
-        Object.keys(fields)
-            .forEach(
-                function(id){
-
-                    const element =
-                        getElement(
-                            id
-                        );
-
-
-                    if(element){
-
-                        element.value =
-                            fields[id] || '';
-
-                    }
-
-                }
-            );
-
-
-        const memberId =
-            getElement(
-                'completionMemberId'
-            );
-
-
-        if(memberId){
-
-            memberId.value =
-                existingMember.member_id ||
-                'Generating...';
-
-        }
-
-
-        updateNationalityFields();
-
-
-        const preview =
-            getElement(
-                'completionPhotoPreview'
-            );
-
-
-        if(
-            preview &&
-            existingMember.passport_image_url
-        ){
-
-            preview.src =
-                existingMember.passport_image_url;
-
-
-            preview.classList.remove(
-                'hidden'
-            );
-
-        }
-
-    }
-
-    else{
-
-        const memberId =
-            getElement(
-                'completionMemberId'
-            );
-
-
-        if(memberId){
-
-            try{
-
-                await getNextMemberID();
-
-            }
-
-            catch(error){
-
-                showCompletionAlert(
-                    escapeHTML(
-                        error.message
-                    )
-                );
-
-            }
-
-        }
-
-    }
-
-}
-
 
 /* =========================================================
    SETUP COMPLETION FORM
@@ -4151,950 +2698,283 @@ async function openMemberCompletion(
 
 function setupMemberCompletionForm(){
 
-    const nationality =
-        getElement(
-            'completionNationality'
-        );
-
-
+    const nationality = getElement('completionNationality');
     if(nationality){
-
-        nationality.addEventListener(
-            'change',
-            updateNationalityFields
-        );
-
+        nationality.addEventListener('change', updateNationalityFields);
     }
-
 
     updateNationalityFields();
 
+    const photo = getElement('completionPhoto');
+    const preview = getElement('completionPhotoPreview');
 
-    const photo =
-        getElement(
-            'completionPhoto'
-        );
+    if(photo && preview){
+        photo.addEventListener('change', function(){
+            const file = photo.files[0];
 
-
-    const preview =
-        getElement(
-            'completionPhotoPreview'
-        );
-
-
-    if(
-        photo &&
-        preview
-    ){
-
-        photo.addEventListener(
-            'change',
-            function(){
-
-                const file =
-                    photo.files[0];
-
-
-                if(!file){
-
-                    preview.src =
-                        '#';
-
-                    preview.classList.add(
-                        'hidden'
-                    );
-
-                    return;
-
-                }
-
-
-                const allowed = [
-
-                    'image/jpeg',
-                    'image/png',
-                    'image/webp'
-
-                ];
-
-
-                if(
-                    !allowed.includes(
-                        file.type
-                    )
-                ){
-
-                    photo.value =
-                        '';
-
-                    preview.classList.add(
-                        'hidden'
-                    );
-
-
-                    showCompletionAlert(
-                        '⚠️ Photo must be JPG, PNG or WEBP.'
-                    );
-
-
-                    return;
-
-                }
-
-
-                if(
-                    file.size >
-                    5 * 1024 * 1024
-                ){
-
-                    photo.value =
-                        '';
-
-                    preview.classList.add(
-                        'hidden'
-                    );
-
-
-                    showCompletionAlert(
-                        '⚠️ Photo size must not exceed 5MB.'
-                    );
-
-
-                    return;
-
-                }
-
-
-                const objectUrl =
-                    URL.createObjectURL(
-                        file
-                    );
-
-
-                preview.src =
-                    objectUrl;
-
-
-                preview.classList.remove(
-                    'hidden'
-                );
-
-
-                preview.onload =
-                    function(){
-
-                        URL.revokeObjectURL(
-                            objectUrl
-                        );
-
-                    };
-
+            if(!file){
+                return;
             }
-        );
 
+            const allowed = ['image/jpeg','image/png','image/webp'];
+            if(!allowed.includes(file.type)){
+                photo.value = '';
+                showCompletionAlert('⚠️ Photo must be JPG, PNG or WEBP.');
+                return;
+            }
+
+            if(file.size > 5 * 1024 * 1024){
+                photo.value = '';
+                showCompletionAlert('⚠️ Photo size must not exceed 5MB.');
+                return;
+            }
+
+            const objectUrl = URL.createObjectURL(file);
+            preview.src = objectUrl;
+            preview.classList.remove('hidden');
+            const note = getElement('completionPhotoRequiredNote');
+            if(note){
+                note.textContent = 'New photo selected. It will replace the current member photo when saved.';
+            }
+            preview.onload = function(){ URL.revokeObjectURL(objectUrl); };
+        });
     }
 
-
-    const logoutBtn =
-        getElement(
-            'completionLogoutBtn'
-        );
-
-
+    const logoutBtn = getElement('completionLogoutBtn');
     if(logoutBtn){
-
-        logoutBtn.addEventListener(
-            'click',
-            async function(){
-
-                await logoutUser();
-
-            }
-        );
-
+        logoutBtn.addEventListener('click', async function(){
+            await logoutUser();
+        });
     }
 
-
-    const form =
-        getElement(
-            'memberCompletionForm'
-        );
-
-
+    const form = getElement('memberCompletionForm');
     if(form){
-
-        form.addEventListener(
-            'submit',
-            handleMemberCompletionSubmit
-        );
-
+        form.addEventListener('submit', handleMemberCompletionSubmit);
     }
-
 }
-
 
 /* =========================================================
    SAVE MEMBER COMPLETION
 ========================================================= */
-
-async function handleMemberCompletionSubmit(
-    event
-){
+async function handleMemberCompletionSubmit(event){
 
     event.preventDefault();
 
-
-    const button =
-        getElement(
-            'completionSaveBtn'
-        );
-
-
-    const user =
-        await getCurrentUser();
-
+    const button = getElement('completionSaveBtn');
+    const user = await getCurrentUser();
 
     if(!user){
-
-        showCompletionAlert(
-            '❌ Your session has expired. Please log in again.'
-        );
-
-        return;
-
-    }
-
-
-    const fullName =
-        getElement(
-            'completionFullName'
-        )
-        .value
-        .trim();
-
-
-    const gender =
-        getElement(
-            'completionGender'
-        )
-        .value;
-
-
-    const dob =
-        getElement(
-            'completionDob'
-        )
-        .value;
-
-
-    const phone =
-        getElement(
-            'completionPhone'
-        )
-        .value
-        .trim();
-
-
-    const occupation =
-        getElement(
-            'completionOccupation'
-        )
-        .value
-        .trim();
-
-
-    const memberType =
-        getElement(
-            'completionMemberType'
-        )
-        .value;
-
-
-    const nationality =
-        getElement(
-            'completionNationality'
-        )
-        .value;
-
-
-    const country =
-        getElement(
-            'completionCountry'
-        )
-        .value
-        .trim();
-
-
-    const nida =
-        getElement(
-            'completionNida'
-        )
-        .value
-        .trim();
-
-
-    const passport =
-        getElement(
-            'completionPassport'
-        )
-        .value
-        .trim();
-
-
-    const address =
-        getElement(
-            'completionAddress'
-        )
-        .value
-        .trim();
-
-
-    const memberId =
-        getElement(
-            'completionMemberId'
-        )
-        .value
-        .trim();
-
-
-    const photoInput =
-        getElement(
-            'completionPhoto'
-        );
-
-
-    const photo =
-        photoInput &&
-        photoInput.files
-        ? photoInput.files[0]
-        : null;
-
-
-    if(
-        !fullName ||
-        !gender ||
-        !dob ||
-        !phone ||
-        !nationality ||
-        !country ||
-        !address
-    ){
-
-        showCompletionAlert(
-            '⚠️ Please complete all required fields.'
-        );
-
-        return;
-
-    }
-
-    if(!isValidEmailFormat(email)){
-        registerMessage(
-            '⚠️ Please enter a valid email address, for example name@example.com.'
-        );
+        showCompletionAlert('❌ Your session has expired. Please log in again.');
         return;
     }
 
-    if(!getCaptchaToken()){
-        registerMessage(
-            '⚠️ Please complete the human verification first.',
-            'warning'
-        );
+    const fullName = getElement('completionFullName')?.value.trim() || '';
+    const gender = getElement('completionGender')?.value || '';
+    const dob = getElement('completionDob')?.value || '';
+    const phone = getElement('completionPhone')?.value.trim() || '';
+    const occupation = getElement('completionOccupation')?.value.trim() || '';
+    const memberType = getElement('completionMemberType')?.value || '';
+    const nationality = getElement('completionNationality')?.value || '';
+    const country = getElement('completionCountry')?.value.trim() || '';
+    const nida = getElement('completionNida')?.value.trim() || '';
+    const passport = getElement('completionPassport')?.value.trim() || '';
+    const address = getElement('completionAddress')?.value.trim() || '';
+    const memberId = getElement('completionMemberId')?.value.trim() || '';
+    const photoInput = getElement('completionPhoto');
+    const photo = photoInput?.files?.[0] || null;
+    const existingMetadataPhoto = user?.user_metadata?.member_photo_url || null;
+
+    if(!fullName || !gender || !dob || !phone || !nationality || !country || !memberType || !address){
+        showCompletionAlert('⚠️ Please complete all required member information.');
         return;
     }
 
-
-    if(
-        nationality ===
-        'Tanzanian' &&
-        !nida
-    ){
-
-        showCompletionAlert(
-            '⚠️ NIDA number is required for Tanzanian members.'
-        );
-
+    if(nationality === 'Tanzanian' && !nida){
+        showCompletionAlert('⚠️ NIDA number is required for Tanzanian members.');
         return;
-
     }
 
-
-    if(
-        nationality ===
-        'Non-Tanzanian' &&
-        !passport
-    ){
-
-        showCompletionAlert(
-            '⚠️ Passport number is required for non-Tanzanian members.'
-        );
-
+    if(nationality === 'Non-Tanzanian' && !passport){
+        showCompletionAlert('⚠️ Passport number is required for non-Tanzanian members.');
         return;
-
     }
 
-
-    if(
-        !memberId ||
-        memberId ===
-        'Generating...' ||
-        memberId ===
-        'Unavailable'
-    ){
-
-        showCompletionAlert(
-            '⚠️ Member ID is unavailable. Please try again.'
-        );
-
+    if(!memberId || memberId === 'Generating...' || memberId === 'Unavailable'){
+        showCompletionAlert('⚠️ Member ID is unavailable. Please try again.');
         return;
-
     }
-
 
     if(photo){
-
-        const allowed = [
-
-            'image/jpeg',
-            'image/png',
-            'image/webp'
-
-        ];
-
-
-        if(
-            !allowed.includes(
-                photo.type
-            )
-        ){
-
-            showCompletionAlert(
-                '⚠️ Photo must be JPG, PNG or WEBP.'
-            );
-
+        const allowed = ['image/jpeg','image/png','image/webp'];
+        if(!allowed.includes(photo.type)){
+            showCompletionAlert('⚠️ Photo must be JPG, PNG or WEBP.');
             return;
-
         }
-
-
-        if(
-            photo.size >
-            5 * 1024 * 1024
-        ){
-
-            showCompletionAlert(
-                '⚠️ Photo size must not exceed 5MB.'
-            );
-
+        if(photo.size > 5 * 1024 * 1024){
+            showCompletionAlert('⚠️ Photo size must not exceed 5MB.');
             return;
-
         }
-
     }
 
-
-    button.disabled =
-        true;
-
-
-    button.classList.add(
-        'loading'
-    );
-
-
-    button.innerHTML =
-        '<i class="fas fa-spinner fa-spin mr-2"></i>' +
-        'SAVING...';
-
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>SAVING...';
 
     try{
-
-        let existingMember =
-            await findMemberForUser(
-                user
-            );
-
-
-        let imageUrl =
-            existingMember
-            ? existingMember.passport_image_url || null
-            : null;
-
+        const existingMember = await findMemberForUser(user);
+        let imageUrl = existingMember?.passport_image_url || existingMetadataPhoto || null;
 
         if(photo){
+            const extension = photo.name.split('.').pop().toLowerCase();
+            const safeMemberId = memberId.replace(/[^a-zA-Z0-9-_]/g,'');
+            const fileName = 'members/' + user.id + '/' + safeMemberId + '_' + Date.now() + '.' + extension;
 
-            const extension =
-                photo.name
-                    .split('.')
-                    .pop()
-                    .toLowerCase();
-
-
-            const safeMemberId =
-                memberId
-                    .replace(
-                        /[^a-zA-Z0-9-_]/g,
-                        ''
-                    );
-
-
-            const fileName =
-                'members/' +
-                user.id +
-                '/' +
-                safeMemberId +
-                '_' +
-                Date.now() +
-                '.' +
-                extension;
-
-
-            const {
-                error:
-                    uploadError
-            } =
-            await supabaseClient
+            const { error: uploadError } = await supabaseClient
                 .storage
                 .from('member-photos')
-                .upload(
-                    fileName,
-                    photo,
-                    {
-                        upsert:false,
-                        contentType:
-                            photo.type
-                    }
-                );
-
+                .upload(fileName, photo, { upsert:false, contentType:photo.type });
 
             if(uploadError){
-
-                throw new Error(
-                    'Photo upload failed: ' +
-                    uploadError.message
-                );
-
+                throw new Error('Photo upload failed: ' + uploadError.message);
             }
 
-
-            const {
-                data:
-                    publicUrlData
-            } =
-            supabaseClient
+            const { data: publicUrlData } = supabaseClient
                 .storage
                 .from('member-photos')
-                .getPublicUrl(
-                    fileName
-                );
+                .getPublicUrl(fileName);
 
-
-            imageUrl =
-                publicUrlData.publicUrl;
-
+            imageUrl = publicUrlData.publicUrl;
         }
 
+        if(!imageUrl){
+            showCompletionAlert('⚠️ Member photo is required before you can continue.');
+            return;
+        }
 
         const payload = {
-
-            user_id:
-                user.id,
-
-            member_id:
-                existingMember
-                ? existingMember.member_id
-                : memberId,
-
-            full_name:
-                fullName,
-
-            gender:
-                gender,
-
-            dob:
-                dob,
-
-            nida_no:
-                nationality ===
-                'Tanzanian'
-                ? nida
-                : null,
-
-            passport_no:
-                nationality ===
-                'Non-Tanzanian'
-                ? passport
-                : null,
-
-            passport_image_url:
-                imageUrl,
-
-            phone:
-                phone,
-
-            email:
-                user.email,
-
-            occupation:
-                occupation ||
-                null,
-
-            nationality:
-                nationality,
-
-            country:
-                country,
-
-            address:
-                address,
-
-            member_type:
-                memberType,
-
-            joining_date:
-                existingMember &&
-                existingMember.joining_date
-                ? existingMember.joining_date
-                : new Date()
-                    .toISOString()
-                    .slice(
-                        0,
-                        10
-                    ),
-
-            status:
-                existingMember &&
-                existingMember.status
-                ? existingMember.status
-                : 'active'
-
+            user_id: user.id,
+            member_id: existingMember?.member_id || memberId,
+            full_name: fullName,
+            gender: gender,
+            dob: dob,
+            nida_no: nationality === 'Tanzanian' ? nida : null,
+            passport_no: nationality === 'Non-Tanzanian' ? passport : null,
+            passport_image_url: imageUrl,
+            phone: phone,
+            email: user.email,
+            occupation: occupation || null,
+            nationality: nationality,
+            country: country,
+            address: address,
+            member_type: memberType,
+            joining_date: existingMember?.joining_date || new Date().toISOString().slice(0,10),
+            status: existingMember?.status || 'active'
         };
 
+        let dbError = null;
 
         if(existingMember){
-
-            const {
-                error
-            } =
-            await supabaseClient
+            const result = await supabaseClient
                 .from('members')
-                .update(
-                    payload
-                )
-                .eq(
-                    'id',
-                    existingMember.id
-                );
-
-
-            if(error){
-
-                throw error;
-
-            }
-
+                .update(payload)
+                .eq('id', existingMember.id);
+            dbError = result.error;
+        }else{
+            const result = await supabaseClient
+                .from('members')
+                .insert(payload);
+            dbError = result.error;
         }
 
-        else{
-
-            const {
-                error
-            } =
-            await supabaseClient
-                .from('members')
-                .insert(
-                    payload
-                );
-
-
-            if(error){
-
-                if(
-                    error.code ===
-                    '23505'
-                ){
-
-                    throw new Error(
-                        'These member details already exist in the system.'
-                    );
-
-                }
-
-
-                if(
-                    error.code ===
-                    '42501'
-                ){
-
-                    throw new Error(
-                        'RLS prevented the operation. Ensure the members policy allows members to save their own information.'
-                    );
-
-                }
-
-
-                throw error;
-
+        if(dbError){
+            if(dbError.code === '23505'){
+                throw new Error('These member details already exist in the system.');
             }
-
+            if(dbError.code === '42501'){
+                throw new Error('RLS prevented the operation. Check the members table policies.');
+            }
+            throw dbError;
         }
 
+        await supabaseClient.auth.updateUser({
+            data:{
+                full_name:fullName,
+                phone:phone,
+                gender:gender,
+                dob:dob,
+                nida_no:nationality === 'Tanzanian' ? nida : null,
+                passport_no:nationality === 'Non-Tanzanian' ? passport : null,
+                occupation:occupation || null,
+                nationality:nationality,
+                country:country,
+                address:address,
+                member_photo_url:imageUrl,
+                member_type:memberType
+            }
+        });
 
+        showCompletionAlert('🎉 Your member information has been saved successfully. Opening Member Portal...','success');
+        sessionStorage.setItem('memberProfileComplete','true');
+        sessionStorage.setItem('memberId',payload.member_id);
+
+        setTimeout(function(){
+            const modal = getElement('memberCompletionModal');
+            if(modal){ modal.remove(); }
+            window.location.replace('pages/member-portal.html');
+        },650);
+
+    }catch(error){
+        console.error('MEMBER COMPLETION ERROR:',error);
         showCompletionAlert(
-            '🎉 Your information has been saved successfully. Opening Member Portal...',
-            'success'
-        );
-
-
-        sessionStorage.setItem(
-            'memberProfileComplete',
-            'true'
-        );
-
-
-        sessionStorage.setItem(
-            'memberId',
-            payload.member_id
-        );
-
-
-        setTimeout(
-            function(){
-
-                const modal =
-                    getElement(
-                        'memberCompletionModal'
-                    );
-
-
-                if(modal){
-
-                    modal.remove();
-
-                }
-
-
-                window.location.replace(
-                    'pages/member-portal.html'
-                );
-
-            },
-            650
-        );
-
-    }
-
-    catch(error){
-
-        console.error(
-            'MEMBER COMPLETION ERROR:',
-            error
-        );
-
-
-        showCompletionAlert(
-            '❌ Failed to save member information.<br>' +
-            '<small>' +
-            escapeHTML(
-                error.message ||
-                'Please try again.'
-            ) +
+            '❌ Failed to save member information.<br><small>' +
+            escapeHTML(error.message || 'Please try again.') +
             '</small>'
         );
-
+    }finally{
+        button.disabled = false;
+        button.innerHTML = 'SAVE INFORMATION & CONTINUE';
     }
-
-    finally{
-
-        button.disabled =
-            false;
-
-
-        button.classList.remove(
-            'loading'
-        );
-
-
-        button.innerHTML =
-            'SAVE INFORMATION & CONTINUE';
-
-    }
-
-}
-
-
-/* =========================================================
-   SECURITY / VERIFICATION HELPERS
-========================================================= */
-
-const DCF_TURNSTILE_SITE_KEY =
-    'YOUR_CLOUDFLARE_TURNSTILE_SITE_KEY';
-
-function getCaptchaToken(){
-
-    try{
-
-        if(
-            typeof window.turnstile === 'undefined'
-        ){
-            return null;
-        }
-
-        const widgets =
-            document.querySelectorAll(
-                '.cf-turnstile'
-            );
-
-        for(
-            const widget of widgets
-        ){
-
-            const token =
-                window.turnstile.getResponse(
-                    widget
-                );
-
-            if(token){
-                return token;
-            }
-
-        }
-
-    }
-    catch(error){
-        console.error(
-            'TURNSTILE TOKEN ERROR:',
-            error
-        );
-    }
-
-    return null;
-}
-
-function resetCaptcha(){
-
-    try{
-
-        if(
-            typeof window.turnstile !== 'undefined'
-        ){
-
-            window.turnstile.reset();
-
-        }
-
-    }
-    catch(error){
-        console.warn(
-            'TURNSTILE RESET ERROR:',
-            error
-        );
-    }
-}
-
-function isValidEmailFormat(email){
-
-    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(
-        String(email || '').trim()
-    );
-}
-
-function ensureRealEmailRequirement(){
-
-    const token = getCaptchaToken();
-
-    if(!token){
-        showAlert(
-            '⚠️ Please complete the human verification first.',
-            'warning'
-        );
-        return false;
-    }
-
-    return true;
 }
 
 /* =========================================================
-   UN COUNTRY LIST — 193 MEMBER STATES + 2 OBSERVER STATES
+   PENDING REGISTRATION PHOTO
 ========================================================= */
+async function uploadPendingRegistrationPhoto(photo){
 
-const DCF_UN_COUNTRIES = [
-    'Afghanistan','Albania','Algeria','Andorra','Angola','Antigua and Barbuda',
-    'Argentina','Armenia','Australia','Austria','Azerbaijan','Bahamas',
-    'Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin',
-    'Bhutan','Bolivia','Bosnia and Herzegovina','Botswana','Brazil','Brunei',
-    'Bulgaria','Burkina Faso','Burundi','Cabo Verde','Cambodia','Cameroon',
-    'Canada','Central African Republic','Chad','Chile','China','Colombia',
-    'Comoros','Congo','Costa Rica','Côte d’Ivoire','Croatia','Cuba','Cyprus',
-    'Czechia','Democratic Republic of the Congo','Denmark','Djibouti','Dominica',
-    'Dominican Republic','Ecuador','Egypt','El Salvador','Equatorial Guinea',
-    'Eritrea','Estonia','Eswatini','Ethiopia','Fiji','Finland','France','Gabon',
-    'Gambia','Georgia','Germany','Ghana','Greece','Grenada','Guatemala','Guinea',
-    'Guinea-Bissau','Guyana','Haiti','Honduras','Hungary','Iceland','India',
-    'Indonesia','Iran','Iraq','Ireland','Israel','Italy','Jamaica','Japan',
-    'Jordan','Kazakhstan','Kenya','Kiribati','Kuwait','Kyrgyzstan','Laos','Latvia',
-    'Lebanon','Lesotho','Liberia','Libya','Liechtenstein','Lithuania','Luxembourg',
-    'Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Marshall Islands',
-    'Mauritania','Mauritius','Mexico','Micronesia','Moldova','Monaco','Mongolia',
-    'Montenegro','Morocco','Mozambique','Myanmar','Namibia','Nauru','Nepal',
-    'Netherlands','New Zealand','Nicaragua','Niger','Nigeria','North Korea',
-    'North Macedonia','Norway','Oman','Pakistan','Palau','Panama','Papua New Guinea',
-    'Paraguay','Peru','Philippines','Poland','Portugal','Qatar','Romania','Russia',
-    'Rwanda','Saint Kitts and Nevis','Saint Lucia','Saint Vincent and the Grenadines',
-    'Samoa','San Marino','Sao Tome and Principe','Saudi Arabia','Senegal','Serbia',
-    'Seychelles','Sierra Leone','Singapore','Slovakia','Slovenia','Solomon Islands',
-    'Somalia','South Africa','South Korea','South Sudan','Spain','Sri Lanka','Sudan',
-    'Suriname','Sweden','Switzerland','Syria','Tajikistan','Tanzania','Thailand',
-    'Timor-Leste','Togo','Tonga','Trinidad and Tobago','Tunisia','Türkiye','Turkmenistan',
-    'Tuvalu','Uganda','Ukraine','United Arab Emirates','United Kingdom','United States',
-    'Uruguay','Uzbekistan','Vanuatu','Venezuela','Vietnam','Yemen','Zambia','Zimbabwe',
-    'Holy See','State of Palestine'
-];
-
-function populateUNCountrySelect(select){
-
-    if(!select){
-        return;
+    if(!photo){
+        return null;
     }
 
-    const current =
-        select.value || 'Tanzania';
+    const extension =
+        photo.name.split('.').pop().toLowerCase();
 
-    select.innerHTML = '';
+    const randomId =
+        (window.crypto && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : String(Date.now()) + '_' + Math.random().toString(36).slice(2);
 
-    DCF_UN_COUNTRIES.forEach(
-        function(country){
+    const fileName =
+        'pending/' + randomId + '.' + extension;
 
-            const option =
-                document.createElement('option');
+    const { error } =
+        await supabaseClient
+            .storage
+            .from('member-photos')
+            .upload(fileName, photo, {
+                upsert:false,
+                contentType:photo.type
+            });
 
-            option.value = country;
-            option.textContent = country;
-
-            if(country === current){
-                option.selected = true;
-            }
-
-            select.appendChild(option);
-
-        }
-    );
-
-    if(!select.value){
-        select.value = 'Tanzania';
+    if(error){
+        throw new Error('Photo upload failed: ' + error.message);
     }
-}
 
-function initializeCountrySelectors(){
+    const { data } =
+        supabaseClient
+            .storage
+            .from('member-photos')
+            .getPublicUrl(fileName);
 
-    populateUNCountrySelect(
-        getElement('regCountry')
-    );
-
-    populateUNCountrySelect(
-        getElement('completionCountry')
-    );
-
+    return data?.publicUrl || null;
 }
 
 /* =========================================================
@@ -5364,6 +3244,17 @@ async function handleRegistration(
     }
 
 
+    const registrationCaptchaToken = getCaptchaToken('registerTurnstile');
+    if(!registrationCaptchaToken){
+        registerMessage('⚠️ Please complete the human verification first.','warning');
+        return;
+    }
+
+    if(!photo){
+        registerMessage('⚠️ Member photo is required for registration.','warning');
+        return;
+    }
+
     btn.disabled =
         true;
 
@@ -5387,6 +3278,15 @@ async function handleRegistration(
 
         }
 
+
+        let pendingPhotoUrl = null;
+
+        if(photo){
+            pendingPhotoUrl = await uploadPendingRegistrationPhoto(photo);
+            if(!pendingPhotoUrl){
+                throw new Error('Member photo could not be uploaded.');
+            }
+        }
 
         /*
          * DUPLICATE EMAIL CHECK
@@ -5452,7 +3352,7 @@ async function handleRegistration(
                 options:{
 
                     captchaToken:
-                        getCaptchaToken(),
+                        registrationCaptchaToken,
 
                     emailRedirectTo:
                         `${window.location.origin}${window.location.pathname}?verified=1&email=${encodeURIComponent(email)}`,
@@ -5500,6 +3400,9 @@ async function handleRegistration(
                         member_type:
                             memberType,
 
+                        member_photo_url:
+                            pendingPhotoUrl,
+
                         role:
                             'member'
 
@@ -5521,7 +3424,7 @@ async function handleRegistration(
             email
         );
 
-        resetCaptcha();
+        resetCaptcha('registerTurnstile');
 
 
         if(
@@ -6124,7 +4027,7 @@ async function handleLogin(
     }
 
     const loginCaptchaToken =
-        getCaptchaToken();
+        getCaptchaToken('loginTurnstile');
 
     if(!loginCaptchaToken){
         showAlert(
@@ -6187,7 +4090,7 @@ async function handleLogin(
 
         if(authError){
 
-            resetCaptcha();
+            resetCaptcha('loginTurnstile');
 
             showAlert(
                 '❌ Incorrect email address or password.',
@@ -6200,7 +4103,7 @@ async function handleLogin(
         }
 
 
-        resetCaptcha();
+        resetCaptcha('loginTurnstile');
 
         if(
             !authData ||
@@ -6661,7 +4564,7 @@ async function handleForgotPass(
     }
 
     const forgotCaptchaToken =
-        getCaptchaToken();
+        getCaptchaToken('forgotTurnstile');
 
     if(!forgotCaptchaToken){
         showAlert(
@@ -6709,7 +4612,7 @@ async function handleForgotPass(
         }
 
 
-        resetCaptcha();
+        resetCaptcha('forgotTurnstile');
 
         closeModal(
             'forgotModal'
@@ -7858,7 +5761,6 @@ else{
 ========================================================= -->
 
 <script
-    src="js/i18n.js"
     defer
 ></script>
 
