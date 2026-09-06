@@ -290,6 +290,10 @@ button{
     }
 }
 
+.turnstile-status{
+    min-height: 14px;
+}
+
 
 /* =========================================================
    MEMBER COMPLETION — ADD MEMBER FORM STYLE
@@ -324,6 +328,20 @@ button{
   .completion-member-title{font-size:18px}
 }
 
+/* =========================================================
+   EMAIL OTP CONFIRMATION MODAL
+========================================================= */
+.otp-inputs{display:flex;gap:8px;justify-content:center;margin:18px 0}
+.otp-inputs input{
+    width:46px;height:56px;text-align:center;font-size:22px;font-weight:700;
+    border:1.5px solid #d1d5db;border-radius:10px;color:#174a35;outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+}
+.otp-inputs input:focus{border-color:#174a35;box-shadow:0 0 0 3px rgba(23,74,53,.12)}
+.otp-inputs input.filled{border-color:#4C9A2A}
+@media(max-width:400px){
+    .otp-inputs input{width:38px;height:48px;font-size:18px}
+}
 </style>
 
 </head>
@@ -581,8 +599,7 @@ class="
     left-3.5
     top-3.5
     text-slate-400
-    text-xs
-">
+    text-xs">
 </i>
 
 
@@ -651,8 +668,7 @@ class="
     left-3.5
     top-3.5
     text-slate-400
-    text-xs
-">
+    text-xs">
 </i>
 
 
@@ -1663,8 +1679,7 @@ class="
     object-cover
     rounded-lg
     border-2
-    border-dcf-green
-">
+    border-dcf-green">
 
 
 </div>
@@ -1956,6 +1971,205 @@ Submit Registration Request
 
 
 <!-- =========================================================
+     EMAIL OTP CONFIRMATION MODAL (NEW)
+========================================================= -->
+
+<div
+id="otpModal"
+class="
+    fixed
+    inset-0
+    bg-slate-900/60
+    backdrop-blur-sm
+    z-[9999]
+    hidden
+    items-center
+    justify-center
+    p-4
+"
+>
+
+
+<div
+class="
+    bg-white
+    rounded-2xl
+    max-w-sm
+    w-full
+    p-6
+    md:p-8
+    shadow-2xl
+    relative
+    modal-animate
+"
+>
+
+
+<button
+type="button"
+id="otpCloseBtn"
+class="
+    absolute
+    top-4
+    right-4
+    text-slate-400
+    hover:text-slate-600
+    text-lg">
+
+<i class="fas fa-times"></i>
+
+</button>
+
+
+<div
+class="
+    mb-4
+    text-center
+"
+>
+
+
+<div
+class="
+    w-14
+    h-14
+    bg-emerald-50
+    text-dcf-green
+    rounded-full
+    flex
+    items-center
+    justify-center
+    mx-auto
+    mb-3
+    text-2xl
+">
+
+<i class="fas fa-envelope-open-text"></i>
+
+</div>
+
+
+<h3
+class="
+    text-lg
+    font-bold
+    text-slate-800
+    uppercase
+">
+
+Confirm Your Email
+
+</h3>
+
+
+<p
+class="
+    text-xs
+    text-slate-500
+    mt-1.5
+    leading-relaxed
+">
+
+We sent a 6-digit verification code to
+<br>
+<strong id="otpTargetEmail" class="text-dcf-green">-</strong>.
+<br>
+Enter it below to activate your account.
+
+</p>
+
+
+</div>
+
+
+<!-- OTP ALERT -->
+<div
+id="otpAlert"
+class="
+    hidden
+    mb-3
+    p-3
+    rounded-xl
+    text-xs
+    font-medium
+    border
+"
+></div>
+
+
+<form id="otpForm" onsubmit="handleOtpVerify(event)">
+
+<div class="otp-inputs" id="otpInputsWrap">
+    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit" data-index="0" autocomplete="one-time-code">
+    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit" data-index="1">
+    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit" data-index="2">
+    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit" data-index="3">
+    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit" data-index="4">
+    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="otp-digit" data-index="5">
+</div>
+
+<button
+type="submit"
+id="otpVerifyBtn"
+class="
+    w-full
+    bg-dcf-green
+    hover:bg-dcf-dark-green
+    text-white
+    font-bold
+    py-3
+    rounded-xl
+    text-xs
+    uppercase
+    shadow-md
+    transition
+">
+
+Confirm & Continue
+
+</button>
+
+</form>
+
+
+<div
+class="
+    text-center
+    mt-4
+    text-xs
+    text-slate-500
+"
+>
+
+Didn't get the code?
+
+<button
+type="button"
+id="otpResendBtn"
+onclick="handleOtpResend()"
+class="
+    text-dcf-green
+    font-bold
+    hover:underline
+    ml-1
+    disabled:opacity-50
+    disabled:no-underline
+    disabled:cursor-not-allowed
+">
+
+Resend Code
+
+</button>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
      FORGOT PASSWORD MODAL
 ========================================================= -->
 
@@ -2173,10 +2387,9 @@ Send Reset Instructions
    DCF LOGIN SYSTEM
    ENGLISH UI
    PERFORMANCE-OPTIMIZED VERSION
-   (Fixed: missing initializeCountrySelectors function
-    which previously blocked page initialization, causing
-    Turnstile widgets, registration nationality logic and
-    photo preview to never be wired up.)
+   (Includes: in-page OTP email confirmation, fixed
+   Turnstile init retry loop, fixed missing
+   initializeCountrySelectors dependency.)
 ========================================================= */
 
 
@@ -2338,6 +2551,63 @@ function registerMessage(
     box.innerHTML =
         message;
 
+
+    box.classList.remove(
+        'hidden'
+    );
+
+}
+
+
+/* =========================================================
+   OTP ALERT (NEW)
+========================================================= */
+
+function otpMessage(
+    message,
+    type = 'danger'
+){
+
+    const box =
+        getElement('otpAlert');
+
+    if(!box){
+
+        return;
+
+    }
+
+    box.className =
+        'mb-3 p-3 rounded-xl text-xs font-medium border';
+
+    if(type === 'success'){
+
+        box.classList.add(
+            'bg-emerald-50',
+            'text-emerald-700',
+            'border-emerald-200'
+        );
+
+    }else if(type === 'warning'){
+
+        box.classList.add(
+            'bg-amber-50',
+            'text-amber-700',
+            'border-amber-200'
+        );
+
+    }else{
+
+        box.classList.add(
+            'bg-red-50',
+            'text-red-700',
+            'border-red-200'
+        );
+
+    }
+
+    box.innerHTML =
+        message;
 
     box.classList.remove(
         'hidden'
@@ -2553,11 +2823,13 @@ function escapeRegistrationHTML(
 
 
 /* =========================================================
-   TURNSTILE + FORM VALIDATION HELPERS
+   TURNSTILE + FORM VALIDATION HELPERS (FIXED)
 ========================================================= */
 const turnstileWidgets = Object.create(null);
 const turnstileTokens = Object.create(null);
 const TURNSTILE_SITE_KEY = '0x4AAAAAAEpfJyTywShfS4Mk';
+const TURNSTILE_MAX_RETRIES = 40; // ~10s at 250ms interval
+let turnstileRetryCount = 0;
 
 function isValidEmailFormat(email){
     return /^[A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?(?:\.[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?)+$/i.test(
@@ -2567,6 +2839,7 @@ function isValidEmailFormat(email){
 
 function setCaptchaToken(widgetKey, token){
     turnstileTokens[widgetKey] = String(token || '');
+    updateTurnstileStatus(widgetKey, token ? 'ok' : 'idle');
 }
 
 function getCaptchaToken(widgetKey){
@@ -2609,8 +2882,76 @@ function resetCaptcha(widgetKey){
     }
 }
 
+function ensureTurnstileStatusEl(widgetKey){
+    const container = getElement(widgetKey);
+    if(!container || !container.parentElement){
+        return null;
+    }
+
+    let statusEl = container.parentElement.querySelector(
+        '.turnstile-status[data-for="' + widgetKey + '"]'
+    );
+
+    if(!statusEl){
+        statusEl = document.createElement('p');
+        statusEl.className = 'turnstile-status text-[10px] mt-1';
+        statusEl.setAttribute('data-for', widgetKey);
+        container.insertAdjacentElement('afterend', statusEl);
+    }
+
+    return statusEl;
+}
+
+function updateTurnstileStatus(widgetKey, state){
+    const statusEl = ensureTurnstileStatusEl(widgetKey);
+    if(!statusEl){
+        return;
+    }
+
+    if(state === 'loading'){
+        statusEl.textContent = 'Loading human verification...';
+        statusEl.className = 'turnstile-status text-[10px] mt-1 text-slate-400';
+    } else if(state === 'ok'){
+        statusEl.textContent = '✓ Verified';
+        statusEl.className = 'turnstile-status text-[10px] mt-1 text-emerald-600 font-semibold';
+    } else if(state === 'error'){
+        statusEl.innerHTML =
+            '⚠️ Verification failed to load. ' +
+            '<button type="button" class="underline font-semibold" onclick="window.location.reload()">Reload page</button>';
+        statusEl.className = 'turnstile-status text-[10px] mt-1 text-red-500';
+    } else {
+        statusEl.textContent = '';
+    }
+}
+
 function initializeTurnstileWidgets(){
+
     if(!window.turnstile || typeof window.turnstile.render !== 'function'){
+
+        turnstileRetryCount++;
+
+        if(turnstileRetryCount === 1){
+            ['loginTurnstile','registerTurnstile','forgotTurnstile'].forEach(function(key){
+                if(getElement(key)){
+                    updateTurnstileStatus(key, 'loading');
+                }
+            });
+        }
+
+        if(turnstileRetryCount > TURNSTILE_MAX_RETRIES){
+            ['loginTurnstile','registerTurnstile','forgotTurnstile'].forEach(function(key){
+                if(getElement(key)){
+                    updateTurnstileStatus(key, 'error');
+                }
+            });
+            console.error(
+                'Turnstile script failed to load after ' + TURNSTILE_MAX_RETRIES +
+                ' attempts. Check network access to challenges.cloudflare.com ' +
+                '(ad-blocker, firewall, or offline connection are the usual causes).'
+            );
+            return;
+        }
+
         setTimeout(initializeTurnstileWidgets, 250);
         return;
     }
@@ -2641,10 +2982,13 @@ function initializeTurnstileWidgets(){
                 },
                 'error-callback': function(errorCode){
                     setCaptchaToken(widgetKey, '');
+                    updateTurnstileStatus(widgetKey, 'error');
                     console.error('Turnstile error [' + widgetKey + ']:', errorCode);
                 }
             });
+            updateTurnstileStatus(widgetKey, 'idle');
         }catch(error){
+            updateTurnstileStatus(widgetKey, 'error');
             console.error('Turnstile render failed [' + widgetKey + ']:', error);
         }
     });
@@ -2653,12 +2997,6 @@ function initializeTurnstileWidgets(){
 
 /* =========================================================
    COUNTRY SELECTORS
-   (Previously called but never defined — this caused a
-   ReferenceError that stopped initializeLoginPage() from
-   running any of the functions after it, including
-   initializeTurnstileWidgets(). That is why Turnstile never
-   rendered and Login/Register/Forgot submits appeared to do
-   nothing.)
 ========================================================= */
 
 const DCF_COUNTRY_LIST = [
@@ -2679,10 +3017,6 @@ function populateCountrySelect(selectElement, defaultValue){
 
     }
 
-    // Don't wipe out a select that already has real options
-    // (e.g. #regCountry which intentionally starts with just
-    // Tanzania hardcoded in the HTML and is managed by
-    // setupRegistrationNationality()).
     if(selectElement.options.length > 0){
 
         return;
@@ -2722,17 +3056,434 @@ function populateCountrySelect(selectElement, defaultValue){
 
 function initializeCountrySelectors(){
 
-    // #regCountry already ships with Tanzania hardcoded in
-    // the markup and is fully managed by
-    // setupRegistrationNationality(), so it is left alone here.
-
-    // #completionCountry (inside the dynamically-created
-    // Member Completion modal) ships empty, so fill it in
-    // whenever that modal exists in the DOM.
     populateCountrySelect(
         getElement('completionCountry'),
         'Tanzania'
     );
+
+}
+
+
+/* =========================================================
+   OTP EMAIL CONFIRMATION (NEW)
+========================================================= */
+
+let otpPendingEmail = null;
+let otpResendCooldownTimer = null;
+
+function setupOtpInputs(){
+
+    const inputs =
+        Array.from(
+            document.querySelectorAll('#otpInputsWrap .otp-digit')
+        );
+
+    if(!inputs.length){
+
+        return;
+
+    }
+
+    inputs.forEach(function(input, idx){
+
+        input.addEventListener('input', function(){
+
+            this.value =
+                this.value.replace(/[^0-9]/g,'').slice(0,1);
+
+            if(this.value){
+
+                this.classList.add('filled');
+
+                if(inputs[idx + 1]){
+
+                    inputs[idx + 1].focus();
+
+                }
+
+            }else{
+
+                this.classList.remove('filled');
+
+            }
+
+        });
+
+        input.addEventListener('keydown', function(event){
+
+            if(
+                event.key === 'Backspace' &&
+                !this.value &&
+                inputs[idx - 1]
+            ){
+
+                inputs[idx - 1].focus();
+
+            }
+
+        });
+
+        input.addEventListener('paste', function(event){
+
+            const pasted =
+                (event.clipboardData || window.clipboardData)
+                .getData('text')
+                .replace(/[^0-9]/g,'')
+                .slice(0,6);
+
+            if(!pasted){
+
+                return;
+
+            }
+
+            event.preventDefault();
+
+            pasted.split('').forEach(function(digit, i){
+
+                if(inputs[i]){
+
+                    inputs[i].value = digit;
+                    inputs[i].classList.add('filled');
+
+                }
+
+            });
+
+            const lastIndex =
+                Math.min(pasted.length, inputs.length) - 1;
+
+            if(inputs[lastIndex]){
+
+                inputs[lastIndex].focus();
+
+            }
+
+        });
+
+    });
+
+}
+
+function getOtpCode(){
+
+    const inputs =
+        Array.from(
+            document.querySelectorAll('#otpInputsWrap .otp-digit')
+        );
+
+    return inputs
+        .map(function(input){ return input.value; })
+        .join('');
+
+}
+
+function clearOtpInputs(){
+
+    document
+        .querySelectorAll('#otpInputsWrap .otp-digit')
+        .forEach(function(input){
+
+            input.value = '';
+            input.classList.remove('filled');
+
+        });
+
+}
+
+function openOtpModal(email){
+
+    otpPendingEmail = email;
+
+    const target =
+        getElement('otpTargetEmail');
+
+    if(target){
+
+        target.textContent = email;
+
+    }
+
+    clearOtpInputs();
+
+    const otpAlert =
+        getElement('otpAlert');
+
+    if(otpAlert){
+
+        otpAlert.classList.add('hidden');
+
+    }
+
+    openModal('otpModal');
+
+    setTimeout(function(){
+
+        const firstInput =
+            document.querySelector('#otpInputsWrap .otp-digit');
+
+        if(firstInput){
+
+            firstInput.focus();
+
+        }
+
+    }, 150);
+
+}
+
+async function handleOtpVerify(event){
+
+    event.preventDefault();
+
+    const code =
+        getOtpCode();
+
+    if(!otpPendingEmail){
+
+        otpMessage('⚠️ Missing email context. Please register or login again.');
+
+        return;
+
+    }
+
+    if(code.length !== 6){
+
+        otpMessage('⚠️ Please enter the full 6-digit code.','warning');
+
+        return;
+
+    }
+
+    const btn =
+        getElement('otpVerifyBtn');
+
+    btn.disabled = true;
+
+    btn.innerHTML =
+        '<i class="fas fa-spinner fa-spin mr-2"></i>Confirming...';
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+            .auth
+            .verifyOtp({
+
+                email: otpPendingEmail,
+                token: code,
+                type: 'signup'
+
+            });
+
+        if(error){
+
+            throw error;
+
+        }
+
+        otpMessage(
+            '🎉 Email confirmed successfully! Signing you in...',
+            'success'
+        );
+
+        localStorage.removeItem('pendingRegistrationEmail');
+
+        setTimeout(function(){
+
+            closeModal('otpModal');
+
+            // If Supabase already returned a session from verifyOtp,
+            // the user is signed in — send them straight into the
+            // normal post-login flow instead of back to the login form.
+            if(data && data.session && data.user){
+
+                showAlert(
+                    `🎉 <strong>Account activated!</strong><br>` +
+                    `Welcome to DCF. Redirecting...`,
+                    'success'
+                );
+
+                continuePostLoginFlow(data.user);
+
+            }else{
+
+                const usernameField = getElement('username');
+
+                if(usernameField){
+
+                    usernameField.value = otpPendingEmail;
+
+                }
+
+                showAlert(
+                    '✅ Email confirmed. You can now log in with your email and password.',
+                    'success'
+                );
+
+            }
+
+        }, 500);
+
+    }catch(error){
+
+        console.error('OTP VERIFY ERROR:', error);
+
+        let message =
+            '❌ Invalid or expired code. Please try again.';
+
+        const errorText =
+            String(error.message || '');
+
+        if(/expired/i.test(errorText)){
+
+            message =
+                '❌ This code has expired. Please request a new one.';
+
+        }else if(/already confirmed|already registered/i.test(errorText)){
+
+            message =
+                '✅ This email is already confirmed. You can log in directly.';
+
+        }
+
+        otpMessage(message);
+
+    }finally{
+
+        btn.disabled = false;
+
+        btn.innerHTML = 'Confirm & Continue';
+
+    }
+
+}
+
+async function handleOtpResend(){
+
+    if(!otpPendingEmail){
+
+        return;
+
+    }
+
+    const resendBtn =
+        getElement('otpResendBtn');
+
+    if(resendBtn && resendBtn.disabled){
+
+        return;
+
+    }
+
+    if(resendBtn){
+
+        resendBtn.disabled = true;
+
+    }
+
+    try{
+
+        const {
+            error
+        } =
+        await supabaseClient
+            .auth
+            .resend({
+
+                type: 'signup',
+                email: otpPendingEmail
+
+            });
+
+        if(error){
+
+            throw error;
+
+        }
+
+        otpMessage(
+            '📩 A new code has been sent to your email.',
+            'success'
+        );
+
+        clearOtpInputs();
+
+        let seconds = 30;
+
+        if(resendBtn){
+
+            resendBtn.textContent =
+                'Resend Code (' + seconds + 's)';
+
+        }
+
+        clearInterval(otpResendCooldownTimer);
+
+        otpResendCooldownTimer =
+            setInterval(function(){
+
+                seconds--;
+
+                if(resendBtn){
+
+                    resendBtn.textContent =
+                        seconds > 0
+                        ? 'Resend Code (' + seconds + 's)'
+                        : 'Resend Code';
+
+                }
+
+                if(seconds <= 0){
+
+                    clearInterval(otpResendCooldownTimer);
+
+                    if(resendBtn){
+
+                        resendBtn.disabled = false;
+
+                    }
+
+                }
+
+            }, 1000);
+
+    }catch(error){
+
+        console.error('OTP RESEND ERROR:', error);
+
+        otpMessage(
+            '⚠️ Could not resend code. Please try again shortly.',
+            'warning'
+        );
+
+        if(resendBtn){
+
+            resendBtn.disabled = false;
+
+        }
+
+    }
+
+}
+
+function setupOtpModalClose(){
+
+    const closeBtn =
+        getElement('otpCloseBtn');
+
+    if(closeBtn){
+
+        closeBtn.addEventListener('click', function(){
+
+            closeModal('otpModal');
+
+        });
+
+    }
 
 }
 
@@ -2884,11 +3635,6 @@ function createMemberCompletionModal(){
 
     document.body.appendChild(modal);
 
-    // The #completionCountry <select> only exists once this
-    // modal has been injected into the DOM, so populate it
-    // right here as well (in addition to the page-load call)
-    // to cover the case where the modal is created after
-    // initial page load (e.g. right after login).
     initializeCountrySelectors();
 }
 
@@ -3506,7 +4252,8 @@ async function uploadPendingRegistrationPhoto(photo){
 }
 
 /* =========================================================
-   REGISTRATION
+   REGISTRATION (UPDATED: opens in-page OTP modal instead
+   of telling the user to check their inbox)
 ========================================================= */
 
 async function handleRegistration(
@@ -3861,6 +4608,10 @@ async function handleRegistration(
 
         /*
          * CREATE SUPABASE AUTH USER
+         * NOTE: emailRedirectTo is kept for compatibility with
+         * mail clients that still render the link in the
+         * template, but the primary flow now uses the OTP
+         * code ({{ .Token }}) shown in-page via the modal below.
          */
 
         const {
@@ -4028,17 +4779,16 @@ async function handleRegistration(
         );
 
 
+        /*
+         * =====================================================
+         * OPEN IN-PAGE OTP CONFIRMATION INSTEAD OF TELLING
+         * THE USER TO CHECK THEIR INBOX
+         * =====================================================
+         */
+
         if(!data.session){
 
-            showAlert(
-                `📩 <strong>Registration successful!</strong><br>` +
-                `A confirmation email has been sent to ` +
-                `<strong>${escapeHTML(
-                    email
-                )}</strong>.<br><br>` +
-                `Please confirm your email address first, then return to Login.`,
-                'success'
-            );
+            openOtpModal(email);
 
         }
 
@@ -4063,8 +4813,7 @@ async function handleRegistration(
 
             showAlert(
                 `🎉 <strong>Account created successfully!</strong><br>` +
-                `You can now log in with your email and password.<br>` +
-                `After Login, you will be asked to complete your member profile.`,
+                `You can now log in with your email and password.`,
                 'success'
             );
 
@@ -4486,6 +5235,276 @@ async function recordLoginAudit(
 
 
 /* =========================================================
+   SHARED POST-LOGIN / POST-OTP-VERIFY FLOW (NEW)
+   Extracted from handleLogin() so both a normal password
+   login AND a fresh OTP verification (which also returns a
+   session) can route the user to the correct destination.
+========================================================= */
+
+async function continuePostLoginFlow(user){
+
+    try{
+
+        const userId =
+            user.id;
+
+
+        const {
+            data:
+                profile,
+            error:
+                profileError
+        } =
+        await supabaseClient
+            .from('profiles')
+            .select(
+                'id, full_name, role'
+            )
+            .eq(
+                'id',
+                userId
+            )
+            .maybeSingle();
+
+
+        if(profileError){
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+
+            throw new Error(
+                'Failed to retrieve profile: ' +
+                profileError.message
+            );
+
+        }
+
+
+        if(!profile){
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+
+            throw new Error(
+                'Account profile was not found.'
+            );
+
+        }
+
+
+        if(!profile.role){
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+
+            throw new Error(
+                'Your account has no assigned role.'
+            );
+
+        }
+
+
+        const role =
+            String(
+                profile.role
+            )
+            .trim()
+            .toLowerCase();
+
+
+        sessionStorage.setItem(
+            'userLoggedIn',
+            'true'
+        );
+
+
+        sessionStorage.setItem(
+            'userRole',
+            role
+        );
+
+
+        sessionStorage.setItem(
+            'username',
+            user.email
+        );
+
+
+        sessionStorage.setItem(
+            'userId',
+            userId
+        );
+
+
+        sessionStorage.setItem(
+            'fullName',
+            profile.full_name ||
+            user.user_metadata?.full_name ||
+            ''
+        );
+
+
+        recordLoginAudit(
+            user,
+            profile,
+            user.email,
+            role
+        ).catch(
+            error =>
+                console.error(
+                    'AUDIT BACKGROUND ERROR:',
+                    error
+                )
+        );
+
+
+        if(
+            role === 'admin' ||
+            role === 'staff' ||
+            role === 'auditor'
+        ){
+
+            requestAnimationFrame(
+                function(){
+
+                    setTimeout(
+                        function(){
+
+                            window.location.replace(
+                                'dashboard.html'
+                            );
+
+                        },
+                        350
+                    );
+
+                }
+            );
+
+
+            return;
+
+        }
+
+
+        if(
+            role ===
+            'member'
+        ){
+
+            const member =
+                await findMemberForUser(
+                    user
+                );
+
+
+            if(!member){
+
+                await openMemberCompletion(
+                    user,
+                    null
+                );
+
+
+                return;
+
+            }
+
+
+            if(
+                !isMemberComplete(
+                    member
+                )
+            ){
+
+                await openMemberCompletion(
+                    user,
+                    member
+                );
+
+
+                return;
+
+            }
+
+
+            sessionStorage.setItem(
+                'memberProfileComplete',
+                'true'
+            );
+
+
+            sessionStorage.setItem(
+                'memberId',
+                member.member_id ||
+                ''
+            );
+
+
+            requestAnimationFrame(
+                function(){
+
+                    setTimeout(
+                        function(){
+
+                            window.location.replace(
+                                'pages/member-portal.html'
+                            );
+
+                        },
+                        250
+                    );
+
+                }
+            );
+
+
+            return;
+
+        }
+
+
+        await supabaseClient
+            .auth
+            .signOut();
+
+
+        throw new Error(
+            'Unrecognized account role: ' +
+            role
+        );
+
+    }
+
+    catch(error){
+
+        console.error(
+            'POST-LOGIN FLOW ERROR:',
+            error
+        );
+
+
+        showAlert(
+            `⚠️ <strong>Something went wrong.</strong><br>` +
+            `<small>${escapeHTML(
+                error.message ||
+                'Please try again.'
+            )}</small>`,
+            'danger'
+        );
+
+    }
+
+}
+
+
+/* =========================================================
    LOGIN
 ========================================================= */
 
@@ -4620,6 +5639,30 @@ async function handleLogin(
 
             resetCaptcha('loginTurnstile');
 
+            /*
+             * If the account exists but the email has not been
+             * confirmed yet, Supabase returns an auth error here
+             * (it will not sign the user in). Detect that case
+             * and re-open the in-page OTP modal instead of just
+             * showing "incorrect email or password".
+             */
+
+            const errorText =
+                String(authError.message || '');
+
+            if(/email not confirmed/i.test(errorText)){
+
+                showAlert(
+                    '📩 Your email is not confirmed yet. Enter the code we sent you below.',
+                    'warning'
+                );
+
+                openOtpModal(email);
+
+                return;
+
+            }
+
             showAlert(
                 '❌ Incorrect email address or password.',
                 'danger'
@@ -4653,98 +5696,19 @@ async function handleLogin(
             await supabaseClient.auth.signOut();
 
             showAlert(
-                '📩 Please confirm your email address from the email we sent before logging in.',
+                '📩 Please confirm your email address using the code we sent you.',
                 'warning'
             );
+
+            openOtpModal(email);
 
             return;
 
         }
 
 
-        const userId =
-            user.id;
-
-
         /*
-         * =====================================================
-         * GET PROFILE
-         * =====================================================
-         */
-
-        const {
-            data:
-                profile,
-            error:
-                profileError
-        } =
-        await supabaseClient
-            .from('profiles')
-            .select(
-                'id, full_name, role'
-            )
-            .eq(
-                'id',
-                userId
-            )
-            .maybeSingle();
-
-
-        if(profileError){
-
-            await supabaseClient
-                .auth
-                .signOut();
-
-
-            throw new Error(
-                'Failed to retrieve profile: ' +
-                profileError.message
-            );
-
-        }
-
-
-        if(!profile){
-
-            await supabaseClient
-                .auth
-                .signOut();
-
-
-            throw new Error(
-                'Account profile was not found.'
-            );
-
-        }
-
-
-        if(!profile.role){
-
-            await supabaseClient
-                .auth
-                .signOut();
-
-
-            throw new Error(
-                'Your account has no assigned role.'
-            );
-
-        }
-
-
-        const role =
-            String(
-                profile.role
-            )
-            .trim()
-            .toLowerCase();
-
-
-        /*
-         * =====================================================
          * REMEMBER EMAIL
-         * =====================================================
          */
 
         const rememberMe =
@@ -4774,231 +5738,18 @@ async function handleLogin(
         }
 
 
-        /*
-         * =====================================================
-         * SESSION
-         * =====================================================
-         */
-
-        sessionStorage.setItem(
-            'userLoggedIn',
-            'true'
+        showAlert(
+            `🎉 <strong>Login successful!</strong><br>` +
+            `Welcome <strong>${escapeHTML(
+                user.user_metadata?.full_name ||
+                user.email
+            )}</strong>.<br>` +
+            `Redirecting...`,
+            'success'
         );
 
 
-        sessionStorage.setItem(
-            'userRole',
-            role
-        );
-
-
-        sessionStorage.setItem(
-            'username',
-            email
-        );
-
-
-        sessionStorage.setItem(
-            'userId',
-            userId
-        );
-
-
-        sessionStorage.setItem(
-            'fullName',
-            profile.full_name ||
-            user.user_metadata?.full_name ||
-            ''
-        );
-
-
-        /*
-         * =====================================================
-         * AUDIT IN BACKGROUND
-         * =====================================================
-         */
-
-        recordLoginAudit(
-            user,
-            profile,
-            email,
-            role
-        ).catch(
-            error =>
-                console.error(
-                    'AUDIT BACKGROUND ERROR:',
-                    error
-                )
-        );
-
-
-        /*
-         * =====================================================
-         * ADMIN / STAFF / AUDITOR
-         * =====================================================
-         */
-
-        if(
-            role === 'admin' ||
-            role === 'staff' ||
-            role === 'auditor'
-        ){
-
-            showAlert(
-                `🎉 <strong>Login successful!</strong><br>` +
-                `Welcome <strong>${escapeHTML(
-                    profile.full_name ||
-                    user.email
-                )}</strong>.<br>` +
-                `Redirecting to Dashboard...`,
-                'success'
-            );
-
-
-            requestAnimationFrame(
-                function(){
-
-                    setTimeout(
-                        function(){
-
-                            window.location.replace(
-                                'dashboard.html'
-                            );
-
-                        },
-                        350
-                    );
-
-                }
-            );
-
-
-            return;
-
-        }
-
-
-        /*
-         * =====================================================
-         * MEMBER
-         * =====================================================
-         */
-
-        if(
-            role ===
-            'member'
-        ){
-
-            showAlert(
-                `🔐 <strong>Login successful.</strong><br>` +
-                `Checking your membership information...`,
-                'success'
-            );
-
-
-            /*
-             * ONE MEMBER LOOKUP
-             */
-
-            const member =
-                await findMemberForUser(
-                    user
-                );
-
-
-            /*
-             * NO MEMBER
-             */
-
-            if(!member){
-
-                await openMemberCompletion(
-                    user,
-                    null
-                );
-
-
-                return;
-
-            }
-
-
-            /*
-             * INCOMPLETE MEMBER
-             */
-
-            if(
-                !isMemberComplete(
-                    member
-                )
-            ){
-
-                await openMemberCompletion(
-                    user,
-                    member
-                );
-
-
-                return;
-
-            }
-
-
-            /*
-             * COMPLETE MEMBER
-             */
-
-            sessionStorage.setItem(
-                'memberProfileComplete',
-                'true'
-            );
-
-
-            sessionStorage.setItem(
-                'memberId',
-                member.member_id ||
-                ''
-            );
-
-
-            requestAnimationFrame(
-                function(){
-
-                    setTimeout(
-                        function(){
-
-                            window.location.replace(
-                                'pages/member-portal.html'
-                            );
-
-                        },
-                        250
-                    );
-
-                }
-            );
-
-
-            return;
-
-        }
-
-
-        /*
-         * =====================================================
-         * UNKNOWN ROLE
-         * =====================================================
-         */
-
-        await supabaseClient
-            .auth
-            .signOut();
-
-
-        throw new Error(
-            'Unrecognized account role: ' +
-            role
-        );
+        await continuePostLoginFlow(user);
 
     }
 
@@ -5348,11 +6099,6 @@ if(
             event,
             session
         ){
-
-            /*
-             * User is not redirected automatically.
-             * Login button controls navigation.
-             */
 
             if(
                 event ===
@@ -6151,7 +6897,9 @@ if(
 
 
 /* =========================================================
-   VERIFIED EMAIL
+   VERIFIED EMAIL (link-based fallback — kept in case a
+   user clicks the link version of the email instead of
+   using the OTP code)
 ========================================================= */
 
 function restoreVerifiedEmail(){
@@ -6225,8 +6973,21 @@ function restorePendingRegistrationEmail(){
         const username =
             getElement('username');
 
-        if(pending && username && !username.value){
-            username.value = pending;
+        /*
+         * If a registration is still pending confirmation and
+         * the user reloaded the page (instead of using the
+         * modal that was already open), re-open the OTP modal
+         * automatically so they are not stuck.
+         */
+
+        if(pending){
+
+            if(username && !username.value){
+                username.value = pending;
+            }
+
+            openOtpModal(pending);
+
         }
 
     }
@@ -6245,15 +7006,22 @@ function initializeLoginPage(){
 
     restoreRememberedEmail();
 
-    restorePendingRegistrationEmail();
-
     restoreVerifiedEmail();
 
     setupRegistrationNationality();
 
     setupRegistrationPhoto();
 
+    setupOtpInputs();
+
+    setupOtpModalClose();
+
     initializeTurnstileWidgets();
+
+    // Run after restoreVerifiedEmail so a successful link-based
+    // confirmation (which clears the pending flag) is not
+    // immediately followed by the OTP modal re-opening.
+    restorePendingRegistrationEmail();
 
 }
 
