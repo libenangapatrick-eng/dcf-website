@@ -47,7 +47,7 @@
 
 <script src="https://cdn.tailwindcss.com"></script>
 
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 
 <script>
 
@@ -718,7 +718,7 @@ class="
 <!-- HUMAN VERIFICATION / CAPTCHA -->
 <div class="captcha-wrap mt-2">
     <div
-        class="cf-turnstile"
+        class="turnstile-container"
         id="loginTurnstile"
         data-sitekey="0x4AAAAAAEpfJyTywShfS4Mk"
         data-theme="light"
@@ -1913,7 +1913,7 @@ to log in to the DCF system after registration is completed.
 <!-- HUMAN VERIFICATION / CAPTCHA -->
 <div class="captcha-wrap mt-2">
     <div
-        class="cf-turnstile"
+        class="turnstile-container"
         id="registerTurnstile"
         data-sitekey="0x4AAAAAAEpfJyTywShfS4Mk"
         data-theme="light"
@@ -2123,7 +2123,7 @@ class="
 <!-- HUMAN VERIFICATION / CAPTCHA -->
 <div class="captcha-wrap mt-2">
     <div
-        class="cf-turnstile"
+        class="turnstile-container"
         id="forgotTurnstile"
         data-sitekey="0x4AAAAAAEpfJyTywShfS4Mk"
         data-theme="light"
@@ -2543,6 +2543,105 @@ function escapeRegistrationHTML(
 
 }
 
+
+
+/* =========================================================
+   TURNSTILE + FORM VALIDATION HELPERS
+========================================================= */
+const turnstileWidgets = Object.create(null);
+const turnstileTokens = Object.create(null);
+const TURNSTILE_SITE_KEY = '0x4AAAAAAEpfJyTywShfS4Mk';
+
+function isValidEmailFormat(email){
+    return /^[A-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?(?:\.[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?)+$/i.test(
+        String(email || '').trim()
+    );
+}
+
+function setCaptchaToken(widgetKey, token){
+    turnstileTokens[widgetKey] = String(token || '');
+}
+
+function getCaptchaToken(widgetKey){
+    const saved = turnstileTokens[widgetKey];
+    if(saved){
+        return saved;
+    }
+
+    const widget = getElement(widgetKey);
+    if(widget){
+        const responseField = widget.querySelector('input[name="cf-turnstile-response"]');
+        if(responseField && responseField.value){
+            turnstileTokens[widgetKey] = responseField.value;
+            return responseField.value;
+        }
+    }
+
+    return '';
+}
+
+function resetCaptcha(widgetKey){
+    turnstileTokens[widgetKey] = '';
+
+    try{
+        const widgetId = turnstileWidgets[widgetKey];
+        if(window.turnstile && widgetId !== undefined){
+            window.turnstile.reset(widgetId);
+            return;
+        }
+    }catch(error){
+        console.warn('Turnstile reset failed:', error);
+    }
+
+    const widget = getElement(widgetKey);
+    if(widget){
+        const responseField = widget.querySelector('input[name="cf-turnstile-response"]');
+        if(responseField){
+            responseField.value = '';
+        }
+    }
+}
+
+function initializeTurnstileWidgets(){
+    if(!window.turnstile || typeof window.turnstile.render !== 'function'){
+        setTimeout(initializeTurnstileWidgets, 250);
+        return;
+    }
+
+    [
+        ['loginTurnstile','login'],
+        ['registerTurnstile','register'],
+        ['forgotTurnstile','forgot']
+    ].forEach(function(pair){
+        const widgetKey = pair[0];
+        const element = getElement(widgetKey);
+        if(!element || turnstileWidgets[widgetKey] !== undefined){
+            return;
+        }
+
+        try{
+            turnstileWidgets[widgetKey] = turnstile.render('#' + widgetKey, {
+                sitekey: TURNSTILE_SITE_KEY,
+                theme: 'light',
+                size: 'flexible',
+                retry: 'auto',
+                'refresh-expired': 'auto',
+                callback: function(token){
+                    setCaptchaToken(widgetKey, token);
+                },
+                'expired-callback': function(){
+                    setCaptchaToken(widgetKey, '');
+                },
+                'error-callback': function(errorCode){
+                    setCaptchaToken(widgetKey, '');
+                    console.error('Turnstile error [' + widgetKey + ']:', errorCode);
+                }
+            });
+        }catch(error){
+            console.error('Turnstile render failed [' + widgetKey + ']:', error);
+        }
+    });
+}
 
 /* =========================================================
    MEMBER COMPLETION MODAL
@@ -5724,6 +5823,8 @@ function initializeLoginPage(){
     setupRegistrationNationality();
 
     setupRegistrationPhoto();
+
+    initializeTurnstileWidgets();
 
 }
 
