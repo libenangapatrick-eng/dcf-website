@@ -3503,130 +3503,545 @@ function createMemberCompletionModal(){
     modal.className = 'fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[99999] flex items-center justify-center p-4';
 
     modal.innerHTML = `
-        <div class="bg-white rounded-2xl max-w-4xl w-full shadow-2xl max-h-[94vh] overflow-y-auto modal-animate">
+        <div class="bg-white rounded-2xl max-w-5xl w-full shadow-2xl max-h-[96vh] overflow-y-auto modal-animate">
+
             <div class="completion-member-form">
+
                 <div class="completion-member-header">
-                    <div class="completion-member-brand">
-                        <div class="completion-member-brand-logo">
-                            <img src="images/dcf-logo.png" alt="Development Charity Foundation Logo">
+                    <div class="header-top">
+
+                        <button type="button"
+                                class="back-btn"
+                                id="completionBackBtn">
+                            ← Back
+                        </button>
+
+                        <div class="header-tools">
+                            <div class="role-badge">
+                                MEMBER
+                            </div>
                         </div>
-                        <div>
-                            <div class="completion-member-title">Member Registration Form</div>
-                            <div class="completion-member-subtitle">Development Charity Foundation (DCF)</div>
+
+                    </div>
+
+                    <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
+                        <div style="width:62px;height:62px;border:1px solid #dbe5e0;border-radius:50%;background:#fff;padding:5px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;">
+                            <img src="images/dcf-logo.png"
+                                 alt="Development Charity Foundation Logo"
+                                 loading="lazy"
+                                 style="width:100%;height:100%;object-fit:contain;">
+                        </div>
+
+                        <div style="min-width:0;">
+                            <div class="form-title" style="margin-bottom:3px;">
+                                Fomu ya Usajili wa Mwanachama
+                            </div>
+
+                            <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#6b7280;">
+                                Development Charity Foundation (DCF)
+                            </div>
                         </div>
                     </div>
-                    <div class="completion-member-subtitle">Complete the missing member information before continuing to the Member Portal.</div>
+
+                    <div class="form-subtitle">
+                        Kamilisha taarifa za mwanachama zilizokosekana kabla ya kuendelea kwenye Member Portal.
+                        Taarifa ulizoweka wakati wa registration zitajazwa moja kwa moja.
+                    </div>
                 </div>
 
                 <div class="completion-member-body">
-                    <div id="completionAlert" class="hidden mb-5 p-3.5 rounded-xl text-xs font-medium border"></div>
 
-                    <form id="memberCompletionForm" class="space-y-5">
-                        <div class="completion-section-title">Basic Member Information</div>
+                    <div id="completionAlert"
+                         class="hidden mb-5 p-3.5 rounded-xl text-xs font-medium border"></div>
 
-                        <div class="completion-grid">
-                            <div class="completion-group">
-                                <label for="completionMemberId">Membership Number</label>
-                                <input type="text" id="completionMemberId" readonly value="Generating...">
+                    <form id="memberForm" class="space-y-5">
+
+                        <div class="section-title">
+                            Taarifa za Msingi za Mwanachama
+                        </div>
+
+                        <div class="form-grid">
+
+                            <div class="form-group">
+                                <label>
+                                    Namba ya Uanachama
+                                </label>
+
+                                <input type="text"
+                                       id="member_id"
+                                       readonly
+                                       value="Itatolewa na mfumo">
                             </div>
 
-                            <div class="completion-group">
-                                <label for="completionFullName">Full Name *</label>
-                                <input type="text" id="completionFullName" maxlength="120" required placeholder="Enter full name">
+                            <div class="form-group">
+                                <label>
+                                    Majina Kamili *
+                                </label>
+
+                                <input type="text"
+                                       id="full_name"
+                                       maxlength="120"
+                                       required
+                                       placeholder="Ingiza majina yote">
                             </div>
 
-                            <div class="completion-group">
-                                <label for="completionGender">Gender *</label>
-                                <select id="completionGender" required>
-                                    <option value="">-- Select Gender --</option>
+                            <div class="form-group">
+                                <label>
+                                    Jinsia *
+                                </label>
+
+                                <select id="gender" required>
+                                    <option value="">-- Chagua Jinsia --</option>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                 </select>
                             </div>
 
-                            <div class="completion-group">
-                                <label for="completionDob">Date of Birth *</label>
-                                <input type="date" id="completionDob" required>
+                            <div class="form-group">
+                                <label>
+                                    Tarehe ya Kuzaliwa *
+                                </label>
+
+                                <input type="date"
+                                       id="dob"
+                                       required>
                             </div>
 
-                            <div class="completion-group">
-                                <label for="completionPhone">Phone Number *</label>
-                                <input type="tel" id="completionPhone" maxlength="30" inputmode="tel" autocomplete="tel" required placeholder="Example: 0712345678">
+                            <div class="form-group">
+                                <label>
+                                    Namba ya NIDA
+                                </label>
+
+                                <input type="text"
+                                       id="nida_no"
+                                       maxlength="30"
+                                       placeholder="Namba ya NIDA">
                             </div>
 
-                            <div class="completion-group">
-                                <label for="completionEmail">Email Address *</label>
-                                <input type="email" id="completionEmail" readonly autocomplete="email">
+                            <div class="form-group">
+                                <label>
+                                    Namba ya Passport
+                            </label>
+
+                                <input type="text"
+                                       id="passport_no"
+                                       maxlength="50"
+                                       placeholder="Kama anayo">
                             </div>
 
-                            <div class="completion-group">
-                                <label for="completionOccupation">Occupation / Activity</label>
-                                <input type="text" id="completionOccupation" maxlength="120" placeholder="Example: Farmer, Teacher">
+                            <div class="form-group">
+                                <label>
+                                    Namba ya Simu *
+                                </label>
+
+                                <input type="text"
+                                       id="phone"
+                                       maxlength="30"
+                                       inputmode="tel"
+                                       autocomplete="tel"
+                                       placeholder="Mfano: 0712345678"
+                                       required>
                             </div>
 
-                            <div class="completion-group">
-                                <label for="completionMemberType">Membership Type *</label>
-                                <select id="completionMemberType" required>
-                                    <option value="">-- Select membership type --</option>
-                                    <option value="kawaida">Regular Member</option>
-                                    <option value="mchangiaji">Donor Member</option>
-                                    <option value="mwanzilishi">Participant / Volunteer</option>
-                                    <option value="Ordinary Member">Ordinary Member</option>
-                                    <option value="Associate Member">Associate Member</option>
-                                    <option value="Volunteer Member">Volunteer Member</option>
-                                    <option value="Youth Member">Youth Member</option>
-                                    <option value="International / Diaspora Member">International / Diaspora Member</option>
-                                </select>
+                            <div class="form-group">
+                                <label>
+                                    Barua Pepe
+                                </label>
+
+                                <input type="email"
+                                       id="email"
+                                       readonly
+                                       placeholder="mfano@gmail.com">
                             </div>
 
-                            <div class="completion-group">
-                                <label for="completionNationality">Nationality *</label>
-                                <select id="completionNationality" required>
-                                    <option value="Tanzanian">Tanzanian</option>
-                                    <option value="Non-Tanzanian">Non-Tanzanian</option>
-                                </select>
+                            <div class="form-group">
+                                <label>
+                                    Kazi / Shughuli
+                                </label>
+
+                                <input type="text"
+                                       id="occupation"
+                                       maxlength="120"
+                                       placeholder="Mfano: Mkulima, Mwalimu">
                             </div>
 
-                            <div class="completion-group">
-                                <label for="completionCountry">Country *</label>
-                                <select id="completionCountry" required></select>
+                            <div class="form-group">
+                                <label>
+                                    Utaifa *
+                                </label>
+
+                                <input type="text"
+                                       id="nationality"
+                                       value="Tanzanian"
+                                       required>
                             </div>
 
-                            <div class="completion-group" id="completionNidaGroup">
-                                <label for="completionNida">NIDA Number *</label>
-                                <input type="text" id="completionNida" maxlength="30" placeholder="NIDA number">
+                            <div class="form-group">
+                                <label>
+                                    Nchi *
+                                </label>
+
+                                <input type="text"
+                                       id="country"
+                                       value="Tanzania"
+                                       required>
                             </div>
 
-                            <div class="completion-group hidden" id="completionPassportGroup">
-                                <label for="completionPassport">Passport Number *</label>
-                                <input type="text" id="completionPassport" maxlength="50" placeholder="Passport number">
+                            <div class="form-group">
+                                <label>
+                                    Picha ya Mwanachama
+                                </label>
+
+                                <div class="image-upload-box">
+
+                                    <input type="file"
+                                           id="passport_image"
+                                           accept="image/jpeg,image/png,image/webp">
+
+                                    <div id="completionPhotoNote"
+                                         class="photo-required-note">
+                                        Picha ya registration itatumika kama ipo.
+                                        Chagua picha mpya kama unataka kuibadilisha.
+                                        JPG, PNG au WEBP; hadi 5MB.
+                                    </div>
+
+                                    <div class="preview-container">
+                                        <img id="image_preview"
+                                             src="#"
+                                             alt="Muonekano wa Picha"
+                                             class="hidden">
+                                    </div>
+
+                                </div>
                             </div>
 
-                            <div class="completion-group full">
-                                <label for="completionAddress">Address / Place of Residence *</label>
-                                <textarea id="completionAddress" maxlength="500" required placeholder="Street, Ward, District, Region"></textarea>
+                            <div class="form-group full-width">
+                                <label>
+                                    Anwani / Mahali Anapoishi *
+                                </label>
+
+                                <textarea id="address"
+                                          rows="2"
+                                          maxlength="500"
+                                          required
+                                          placeholder="Mtaa, Kata, Wilaya, Mkoa"></textarea>
                             </div>
 
-                            <div class="completion-group full">
-                                <label>Member Photo *</label>
-                                <div class="completion-photo-box">
-                                    <input type="file" id="completionPhoto" accept="image/jpeg,image/png,image/webp" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white">
-                                    <p id="completionPhotoRequiredNote" class="completion-required-note">Member photo is required. JPG, PNG or WEBP; maximum 5MB.</p>
-                                    <div class="completion-photo-preview-wrap">
-                                        <img id="completionPhotoPreview" src="#" alt="Member Photo Preview" class="hidden">
+                        </div>
+
+                        <section class="membership-enhancement"
+                                 aria-labelledby="membershipProfileTitle">
+
+                            <div class="membership-section-head">
+                                <div>
+                                    <h3 id="membershipProfileTitle">
+                                        Membership Application
+                                    </h3>
+
+                                    <p>
+                                        Kamilisha taarifa za ziada za uanachama
+                                        kama zilivyo kwenye Add Member form.
+                                    </p>
+                                </div>
+
+                                <span class="membership-badge">
+                                    <i class="fas fa-globe"></i>
+                                    International Application
+                                </span>
+                            </div>
+
+                            <div class="membership-step"
+                                 id="stepMembership">
+
+                                <div class="membership-step-head">
+                                    <div>
+                                        <div class="membership-step-title">
+                                            1. Membership Profile
+                                        </div>
+
+                                        <div class="membership-step-subtitle">
+                                            Motivation, community interests, skills and participation.
+                                        </div>
+                                    </div>
+
+                                    <button type="button"
+                                            class="read-more-btn"
+                                            data-target="stepMembership"
+                                            aria-expanded="false">
+                                        Read more
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </div>
+
+                                <div class="membership-step-body">
+
+                                    <div class="required-note">
+                                        Fields marked <strong>*</strong> are required.
+                                    </div>
+
+                                    <div class="form-grid">
+
+                                        <div class="form-group">
+                                            <label for="membership_type">
+                                                Membership Type *
+                                            </label>
+
+                                            <select id="membership_type" required>
+                                                <option value="">
+                                                    -- Select membership type --
+                                                </option>
+
+                                                <option value="Ordinary Member">
+                                                    Ordinary Member
+                                                </option>
+
+                                                <option value="Associate Member">
+                                                    Associate Member
+                                                </option>
+
+                                                <option value="Volunteer Member">
+                                                    Volunteer Member
+                                                </option>
+
+                                                <option value="Youth Member">
+                                                    Youth Member
+                                                </option>
+
+                                                <option value="International / Diaspora Member">
+                                                    International / Diaspora Member
+                                                </option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="how_heard_about_dcf">
+                                                How did you hear about DCF? *
+                                            </label>
+
+                                            <select id="how_heard_about_dcf" required>
+                                                <option value="">
+                                                    -- Select one --
+                                                </option>
+
+                                                <option>DCF website</option>
+                                                <option>Social media</option>
+                                                <option>Friend / family / member</option>
+                                                <option>Community activity</option>
+                                                <option>Partner organisation</option>
+                                                <option>Event / conference</option>
+                                                <option>Referral</option>
+                                                <option>Other</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group full-width">
+                                            <label for="why_join">
+                                                Why do you want to join DCF? *
+                                            </label>
+
+                                            <textarea id="why_join"
+                                                      required
+                                                      maxlength="2000"
+                                                      placeholder="What motivates you to become part of DCF?"></textarea>
+                                        </div>
+
+                                        <div class="form-group full-width">
+                                            <label for="community_interest">
+                                                Which community issues or areas would you like to support? *
+                                            </label>
+
+                                            <textarea id="community_interest"
+                                                      required
+                                                      maxlength="2000"
+                                                      placeholder="Education, health, livelihoods, youth, women, disability inclusion, humanitarian response, community development, etc."></textarea>
+                                        </div>
+
+                                        <div class="form-group full-width">
+                                            <label for="skills_experience">
+                                                What skills, knowledge or professional experience can you contribute? *
+                                            </label>
+
+                                            <textarea id="skills_experience"
+                                                      required
+                                                      maxlength="2000"
+                                                      placeholder="Professional, technical, community, leadership or other useful skills."></textarea>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="volunteer_availability">
+                                                How would you like to participate? *
+                                            </label>
+
+                                            <select id="volunteer_availability" required>
+                                                <option value="">
+                                                    -- Select participation --
+                                                </option>
+
+                                                <option>Regular volunteering</option>
+                                                <option>Occasional volunteering</option>
+                                                <option>Project activities</option>
+                                                <option>Professional / technical support</option>
+                                                <option>Community mobilisation</option>
+                                                <option>Research / knowledge sharing</option>
+                                                <option>Advocacy / awareness</option>
+                                                <option>Other</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="expected_contribution">
+                                                What contribution can you realistically make? *
+                                            </label>
+
+                                            <select id="expected_contribution" required>
+                                                <option value="">
+                                                    -- Select one --
+                                                </option>
+
+                                                <option>Time / volunteering</option>
+                                                <option>Professional skills</option>
+                                                <option>Community networks</option>
+                                                <option>Fundraising / resource mobilisation</option>
+                                                <option>Financial contribution where appropriate</option>
+                                                <option>Equipment / materials</option>
+                                                <option>A combination of the above</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group full-width">
+                                            <label for="membership_expectations">
+                                                What do you expect from DCF as a member? *
+                                            </label>
+
+                                            <textarea id="membership_expectations"
+                                                      required
+                                                      maxlength="2000"
+                                                      placeholder="Participation, communication, learning, networking or community impact."></textarea>
+                                        </div>
+
+                                        <div class="form-group full-width">
+                                            <label for="previous_membership">
+                                                Previous NGO, community or volunteer experience *
+                                            </label>
+
+                                            <textarea id="previous_membership"
+                                                      required
+                                                      maxlength="2000"
+                                                      placeholder="If none, write: None."></textarea>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="membership-step"
+                                 id="stepRules">
+
+                                <div class="membership-step-head">
+                                    <div>
+                                        <div class="membership-step-title">
+                                            2. Rules, Rights & Responsibilities
+                                        </div>
+
+                                        <div class="membership-step-subtitle">
+                                            Read the key membership requirements before confirmation.
+                                        </div>
+                                    </div>
+
+                                    <button type="button"
+                                            class="read-more-btn"
+                                            data-target="stepRules"
+                                            aria-expanded="false">
+                                        Read more
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </div>
+
+                                <div class="membership-step-body">
+
+                                    <div class="rules-box">
+                                        <ol>
+                                            <li>Membership is open to a person aged <strong>18 years or above</strong> who accepts DCF's objectives, vision, mission, values and Constitution.</li>
+                                            <li>DCF does not discriminate on the grounds stated in its Constitution, subject to applicable law.</li>
+                                            <li>An applicant must complete the official application, provide legally recognised identification, accept the Constitution, Rules and Ethics, pay approved joining fees where applicable, and attend orientation when required.</li>
+                                            <li>Membership rights begin after formal approval, entry in the membership register and fulfilment of the applicable basic requirements.</li>
+                                            <li>Members are expected to respect the Constitution and lawful decisions, protect DCF's name and property, keep institutional information confidential, participate in activities, pay approved dues on time, avoid corruption, discrimination, harassment and abuse of authority, and provide truthful information.</li>
+                                            <li>A member may be suspended for serious disciplinary investigation, prolonged failure to perform duties without valid reason, or breach of the Constitution/Rules; no suspension should occur without an opportunity to be heard.</li>
+                                            <li>Membership may end by written resignation, lawful expulsion, death, loss of eligibility, or a serious offence that damages the Foundation's reputation, subject to the Constitution.</li>
+                                            <li>A member affected by suspension or expulsion has a right of appeal to the General Meeting within <strong>30 days</strong> of receiving the decision.</li>
+                                            <li>Disciplinary procedures provide for notice, adequate time to prepare a defence, an opportunity to present evidence, and a fair hearing. Sanctions depend on the seriousness of the offence.</li>
+                                            <li>Members and leaders must disclose conflicts of interest and withdraw from decisions where they have a personal or close-family interest.</li>
+                                        </ol>
+                                    </div>
+
+                                    <div class="membership-resources">
+                                        <a class="membership-resource-btn secondary"
+                                           href="documents/DCF-Constitution-2026.pdf"
+                                           download>
+                                            <i class="fas fa-book-open"></i>
+                                            Download DCF Constitution
+                                        </a>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="membership-final">
+
+                                <div class="membership-check">
+
+                                    <input type="checkbox"
+                                           id="confirm_membership"
+                                           required>
+
+                                    <label for="confirm_membership">
+                                        I confirm that the information provided is true and complete.
+                                        I wish to apply for DCF membership and agree to respect the
+                                        Foundation's objectives, values, Constitution, Rules and Ethics.
+                                        I understand that membership is subject to the applicable approval process. *
+                                    </label>
+
+                                </div>
+
+                                <div class="membership-resources">
+
+                                    <button type="button"
+                                            id="previewMembershipFormBtn"
+                                            class="membership-resource-btn secondary">
+                                        <i class="fas fa-eye"></i>
+                                        Preview Application
+                                    </button>
+
+                                    <button type="button"
+                                            id="downloadMembershipFormBtn"
+                                            class="membership-resource-btn secondary">
+                                        <i class="fas fa-file-pdf"></i>
+                                        Download Membership Form
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </section>
+
+                        <div class="form-actions">
+
+                            <button type="submit"
+                                    class="btn-submit membership-confirm-btn"
+                                    id="saveBtn">
+                                CONFIRM MEMBERSHIP
+                            </button>
+
+                            <button type="button"
+                                    class="btn-submit"
+                                    id="completionLogoutBtn"
+                                    style="background:#64748b;">
+                                LOGOUT
+                            </button>
+
                         </div>
 
-                        <div class="completion-action-row space-y-3">
-                            <button type="submit" id="completionSaveBtn" class="w-full bg-dcf-green hover:bg-dcf-dark-green text-white font-bold py-3.5 rounded-xl text-xs uppercase shadow-lg">
-                                SAVE INFORMATION & CONTINUE
-                            </button>
-                            <button type="button" id="completionLogoutBtn" class="w-full border border-slate-300 text-slate-600 font-semibold py-3 rounded-xl text-xs hover:bg-slate-50">
-                                LOG OUT
-                            </button>
-                        </div>
                     </form>
                 </div>
             </div>
@@ -3635,100 +4050,861 @@ function createMemberCompletionModal(){
 
     document.body.appendChild(modal);
 
-    initializeCountrySelectors();
+    const backBtn = getElement('completionBackBtn');
+    if(backBtn){
+        backBtn.addEventListener('click', function(){
+            modal.remove();
+        });
+    }
 }
 
-function showCompletionAlert(
-    message,
-    type = 'danger'
-){
+/* =========================================================
+   OPEN MEMBER COMPLETION
+========================================================= */
+async function openMemberCompletion(user, existingMember){
 
-    const box =
-        getElement('completionAlert');
+    if(!user){
+        user = await getCurrentUser();
+    }
 
-    if(!box){
+    if(!user){
+        showAlert('Your session has expired. Please log in again.');
+        return;
+    }
+
+    createMemberCompletionModal();
+    setupMemberCompletionForm();
+
+    const meta = user.user_metadata || {};
+
+    const source = {
+        full_name: existingMember?.full_name || meta.full_name || '',
+        gender: existingMember?.gender || meta.gender || '',
+        dob: existingMember?.dob || meta.dob || '',
+        phone: existingMember?.phone || meta.phone || '',
+        occupation: existingMember?.occupation || meta.occupation || '',
+        nationality: existingMember?.nationality || meta.nationality || 'Tanzanian',
+        country: existingMember?.country || meta.country || 'Tanzania',
+        nida_no: existingMember?.nida_no || meta.nida_no || '',
+        passport_no: existingMember?.passport_no || meta.passport_no || '',
+        address: existingMember?.address || meta.address || '',
+
+        membership_type:
+            existingMember?.membership_type ||
+            meta.membership_type ||
+            existingMember?.member_type ||
+            meta.member_type ||
+            '',
+
+        how_heard_about_dcf:
+            existingMember?.how_heard_about_dcf ||
+            meta.how_heard_about_dcf ||
+            '',
+
+        why_join:
+            existingMember?.why_join ||
+            meta.why_join ||
+            '',
+
+        community_interest:
+            existingMember?.community_interest ||
+            meta.community_interest ||
+            '',
+
+        skills_experience:
+            existingMember?.skills_experience ||
+            meta.skills_experience ||
+            '',
+
+        volunteer_availability:
+            existingMember?.volunteer_availability ||
+            meta.volunteer_availability ||
+            '',
+
+        expected_contribution:
+            existingMember?.expected_contribution ||
+            meta.expected_contribution ||
+            '',
+
+        membership_expectations:
+            existingMember?.membership_expectations ||
+            meta.membership_expectations ||
+            '',
+
+        previous_membership:
+            existingMember?.previous_membership ||
+            meta.previous_membership ||
+            '',
+
+        member_photo_url:
+            existingMember?.passport_image_url ||
+            meta.member_photo_url ||
+            ''
+    };
+
+    const memberMap = {
+        kawaida: 'Ordinary Member',
+        mchangiaji: 'Associate Member',
+        mwanzilishi: 'Volunteer Member'
+    };
+
+    const membershipType =
+        memberMap[source.membership_type] ||
+        source.membership_type;
+
+    const memberIdField = getElement('member_id');
+
+    if(memberIdField){
+
+        if(existingMember?.member_id){
+            memberIdField.value = existingMember.member_id;
+        }else{
+            memberIdField.value = await generateMemberId();
+        }
+    }
+
+    const setVal = function(id, value){
+
+        const el = getElement(id);
+
+        if(el && value !== undefined && value !== null){
+            el.value = value;
+        }
+    };
+
+    setVal('full_name', source.full_name);
+    setVal('gender', source.gender);
+    setVal('dob', source.dob);
+    setVal('nida_no', source.nida_no);
+    setVal('passport_no', source.passport_no);
+    setVal('phone', source.phone);
+    setVal('email', user.email || '');
+    setVal('occupation', source.occupation);
+    setVal('nationality', source.nationality);
+    setVal('country', source.country);
+    setVal('address', source.address);
+
+    setVal('membership_type', membershipType);
+    setVal('how_heard_about_dcf', source.how_heard_about_dcf);
+    setVal('why_join', source.why_join);
+    setVal('community_interest', source.community_interest);
+    setVal('skills_experience', source.skills_experience);
+    setVal('volunteer_availability', source.volunteer_availability);
+    setVal('expected_contribution', source.expected_contribution);
+    setVal('membership_expectations', source.membership_expectations);
+    setVal('previous_membership', source.previous_membership);
+
+    updateNationalityFields();
+
+    const preview = getElement('image_preview');
+    const note = getElement('completionPhotoNote');
+
+    if(source.member_photo_url && preview){
+
+        preview.src = source.member_photo_url;
+        preview.classList.remove('hidden');
+
+        if(note){
+            note.textContent =
+                'Picha iliyowekwa wakati wa registration imetumika. Chagua picha mpya tu kama unataka kuibadilisha.';
+        }
+    }
+}
+
+/* =========================================================
+   SETUP COMPLETION FORM
+========================================================= */
+function setupMemberCompletionForm(){
+
+    const nationality = getElement('nationality');
+
+    if(nationality){
+        nationality.addEventListener('change', updateNationalityFields);
+    }
+
+    updateNationalityFields();
+
+    const photo = getElement('passport_image');
+    const preview = getElement('image_preview');
+
+    if(photo && preview){
+
+        photo.addEventListener('change', function(){
+
+            const file = photo.files?.[0];
+
+            if(!file){
+                return;
+            }
+
+            const allowed = [
+                'image/jpeg',
+                'image/png',
+                'image/webp'
+            ];
+
+            if(!allowed.includes(file.type)){
+
+                photo.value = '';
+
+                showCompletionAlert(
+                    '⚠️ Photo must be JPG, PNG or WEBP.'
+                );
+
+                return;
+            }
+
+            if(file.size > 5 * 1024 * 1024){
+
+                photo.value = '';
+
+                showCompletionAlert(
+                    '⚠️ Photo size must not exceed 5MB.'
+                );
+
+                return;
+            }
+
+            const objectUrl =
+                URL.createObjectURL(file);
+
+            preview.src = objectUrl;
+            preview.classList.remove('hidden');
+
+            const note =
+                getElement('completionPhotoNote');
+
+            if(note){
+                note.textContent =
+                    'Picha mpya imechaguliwa. Itachukua nafasi ya picha ya sasa.';
+            }
+
+            preview.onload = function(){
+                URL.revokeObjectURL(objectUrl);
+            };
+        });
+    }
+
+    const logoutBtn =
+        getElement('completionLogoutBtn');
+
+    if(logoutBtn){
+
+        logoutBtn.addEventListener(
+            'click',
+            async function(){
+                await logoutUser();
+            }
+        );
+    }
+
+    const form =
+        getElement('memberForm');
+
+    if(form){
+
+        form.addEventListener(
+            'submit',
+            handleMemberCompletionSubmit
+        );
+    }
+}
+
+/* =========================================================
+   SAVE MEMBER COMPLETION
+========================================================= */
+async function handleMemberCompletionSubmit(event){
+
+    event.preventDefault();
+
+    const button =
+        getElement('saveBtn');
+
+    const user =
+        await getCurrentUser();
+
+    if(!user){
+
+        showCompletionAlert(
+            '❌ Your session has expired. Please log in again.'
+        );
 
         return;
-
     }
 
-    box.className =
-        'mb-5 p-3.5 rounded-xl text-xs font-medium border';
+    const val = function(id){
 
-    if(type === 'success'){
+        const el =
+            getElement(id);
 
-        box.classList.add(
-            'bg-emerald-50',
-            'text-emerald-700',
-            'border-emerald-200'
+        return el
+            ? String(el.value || '').trim()
+            : '';
+    };
+
+    const memberId = val('member_id');
+    const fullName = val('full_name');
+    const gender = val('gender');
+    const dob = val('dob');
+    const nida = val('nida_no');
+    const passport = val('passport_no');
+    const phone = val('phone');
+    const email = val('email') || user.email || '';
+    const occupation = val('occupation');
+    const nationality = val('nationality');
+    const country = val('country');
+    const address = val('address');
+
+    const membershipType = val('membership_type');
+    const howHeard = val('how_heard_about_dcf');
+    const whyJoin = val('why_join');
+    const communityInterest = val('community_interest');
+    const skillsExperience = val('skills_experience');
+    const volunteerAvailability = val('volunteer_availability');
+    const expectedContribution = val('expected_contribution');
+    const membershipExpectations = val('membership_expectations');
+    const previousMembership = val('previous_membership');
+
+    const confirmed =
+        getElement('confirm_membership')?.checked === true;
+
+    const photoInput =
+        getElement('passport_image');
+
+    const photo =
+        photoInput?.files?.[0] || null;
+
+    if(
+        !memberId ||
+        memberId === 'Itatolewa na mfumo' ||
+        memberId === 'Generating...' ||
+        memberId === 'Unavailable'
+    ){
+
+        showCompletionAlert(
+            '⚠️ Member ID is unavailable. Please try again.'
         );
 
-    }else if(type === 'warning'){
-
-        box.classList.add(
-            'bg-amber-50',
-            'text-amber-700',
-            'border-amber-200'
-        );
-
-    }else{
-
-        box.classList.add(
-            'bg-red-50',
-            'text-red-700',
-            'border-red-200'
-        );
-
+        return;
     }
 
-    box.innerHTML =
-        message;
+    if(
+        !fullName ||
+        !gender ||
+        !dob ||
+        !phone ||
+        !nationality ||
+        !country ||
+        !address
+    ){
 
-    box.classList.remove(
-        'hidden'
-    );
+        showCompletionAlert(
+            '⚠️ Please complete all required member information.'
+        );
 
+        return;
+    }
+
+    if(nationality === 'Tanzanian' && !nida){
+
+        showCompletionAlert(
+            '⚠️ NIDA number is required for Tanzanian members.'
+        );
+
+        return;
+    }
+
+    if(nationality !== 'Tanzanian' && !passport){
+
+        showCompletionAlert(
+            '⚠️ Passport number is required for non-Tanzanian members.'
+        );
+
+        return;
+    }
+
+    const membershipRequired = [
+        ['membership_type','Tafadhali chagua aina ya uanachama.'],
+        ['how_heard_about_dcf','Tafadhali chagua ulivyofahamu DCF.'],
+        ['why_join','Tafadhali eleza kwa nini unataka kujiunga na DCF.'],
+        ['community_interest','Tafadhali eleza maeneo ya jamii unayotaka kusaidia.'],
+        ['skills_experience','Tafadhali eleza ujuzi au uzoefu unaoweza kuchangia.'],
+        ['volunteer_availability','Tafadhali chagua namna unayotaka kushiriki.'],
+        ['expected_contribution','Tafadhali chagua aina ya mchango unaoweza kutoa.'],
+        ['membership_expectations','Tafadhali eleza matarajio yako kama mwanachama.'],
+        ['previous_membership','Tafadhali eleza uzoefu wa awali au andika None.']
+    ];
+
+    for(const [id, message] of membershipRequired){
+
+        if(!val(id)){
+
+            showCompletionAlert(
+                '⚠️ ' + message
+            );
+
+            return;
+        }
+    }
+
+    if(!confirmed){
+
+        showCompletionAlert(
+            '⚠️ Tafadhali thibitisha maombi ya uanachama.'
+        );
+
+        return;
+    }
+
+    if(photo){
+
+        const allowed = [
+            'image/jpeg',
+            'image/png',
+            'image/webp'
+        ];
+
+        if(!allowed.includes(photo.type)){
+
+            showCompletionAlert(
+                '⚠️ Photo must be JPG, PNG or WEBP.'
+            );
+
+            return;
+        }
+
+        if(photo.size > 5 * 1024 * 1024){
+
+            showCompletionAlert(
+                '⚠️ Photo size must not exceed 5MB.'
+            );
+
+            return;
+        }
+    }
+
+    if(button){
+
+        button.disabled = true;
+
+        button.innerHTML =
+            '<i class="fas fa-spinner fa-spin mr-2"></i>SAVING...';
+    }
+
+    try{
+
+        const existingMember =
+            await findMemberForUser(user);
+
+        let imageUrl =
+            existingMember?.passport_image_url ||
+            user.user_metadata?.member_photo_url ||
+            null;
+
+        if(photo){
+
+            const extension =
+                photo.name
+                    .split('.')
+                    .pop()
+                    .toLowerCase();
+
+            const safeMemberId =
+                memberId.replace(
+                    /[^a-zA-Z0-9-_]/g,
+                    ''
+                );
+
+            const fileName =
+                'members/' +
+                user.id +
+                '/' +
+                safeMemberId +
+                '_' +
+                Date.now() +
+                '.' +
+                extension;
+
+            const {
+                error: uploadError
+            } =
+            await supabaseClient
+                .storage
+                .from('member-photos')
+                .upload(
+                    fileName,
+                    photo,
+                    {
+                        upsert:false,
+                        contentType:photo.type
+                    }
+                );
+
+            if(uploadError){
+
+                throw new Error(
+                    'Photo upload failed: ' +
+                    uploadError.message
+                );
+            }
+
+            const {
+                data: publicUrlData
+            } =
+            supabaseClient
+                .storage
+                .from('member-photos')
+                .getPublicUrl(fileName);
+
+            imageUrl =
+                publicUrlData?.publicUrl || null;
+        }
+
+        if(!imageUrl){
+
+            showCompletionAlert(
+                '⚠️ Member photo is required before you can continue.'
+            );
+
+            return;
+        }
+
+        const payload = {
+
+            user_id:
+                user.id,
+
+            member_id:
+                existingMember?.member_id ||
+                memberId,
+
+            full_name:
+                fullName,
+
+            gender:
+                gender,
+
+            dob:
+                dob,
+
+            nida_no:
+                nationality === 'Tanzanian'
+                ? nida
+                : null,
+
+            passport_no:
+                nationality !== 'Tanzanian'
+                ? passport
+                : null,
+
+            passport_image_url:
+                imageUrl,
+
+            phone:
+                phone,
+
+            email:
+                email || user.email || null,
+
+            occupation:
+                occupation || null,
+
+            nationality:
+                nationality,
+
+            country:
+                country,
+
+            address:
+                address,
+
+            membership_type:
+                membershipType,
+
+            how_heard_about_dcf:
+                howHeard,
+
+            why_join:
+                whyJoin,
+
+            community_interest:
+                communityInterest,
+
+            skills_experience:
+                skillsExperience,
+
+            volunteer_availability:
+                volunteerAvailability,
+
+            expected_contribution:
+                expectedContribution,
+
+            membership_expectations:
+                membershipExpectations,
+
+            previous_membership:
+                previousMembership,
+
+            confirm_membership:
+                confirmed,
+
+            membership_rules_accepted:
+                confirmed,
+
+            membership_rules_version:
+                'DCF Constitution 2026 - Membership Rules Summary',
+
+            membership_confirmed_at:
+                new Date().toISOString(),
+
+            membership_application_status:
+                'Pending',
+
+            joining_date:
+                existingMember?.joining_date ||
+                new Date().toISOString().slice(0,10),
+
+            status:
+                existingMember?.status ||
+                'active',
+
+            /* Keep legacy compatibility if this column exists. */
+            member_type:
+                membershipType
+        };
+
+        let dbError = null;
+
+        if(existingMember){
+
+            const result =
+                await supabaseClient
+                    .from('members')
+                    .update(payload)
+                    .eq('id', existingMember.id);
+
+            dbError =
+                result.error;
+
+        }else{
+
+            const result =
+                await supabaseClient
+                    .from('members')
+                    .insert(payload);
+
+            dbError =
+                result.error;
+        }
+
+        if(dbError){
+
+            console.error(
+                'MEMBER COMPLETION DATABASE ERROR:',
+                dbError
+            );
+
+            if(dbError.code === '23505'){
+
+                throw new Error(
+                    'These member details already exist in the system.'
+                );
+            }
+
+            if(dbError.code === '42501'){
+
+                throw new Error(
+                    'RLS prevented the operation. Check the members table policies.'
+                );
+            }
+
+            throw dbError;
+        }
+
+        await supabaseClient.auth.updateUser({
+
+            data:{
+
+                full_name:
+                    fullName,
+
+                phone:
+                    phone,
+
+                gender:
+                    gender,
+
+                dob:
+                    dob,
+
+                nida_no:
+                    nationality === 'Tanzanian'
+                    ? nida
+                    : null,
+
+                passport_no:
+                    nationality !== 'Tanzanian'
+                    ? passport
+                    : null,
+
+                occupation:
+                    occupation || null,
+
+                nationality:
+                    nationality,
+
+                country:
+                    country,
+
+                address:
+                    address,
+
+                member_photo_url:
+                    imageUrl,
+
+                member_type:
+                    membershipType,
+
+                membership_type:
+                    membershipType,
+
+                how_heard_about_dcf:
+                    howHeard,
+
+                why_join:
+                    whyJoin,
+
+                community_interest:
+                    communityInterest,
+
+                skills_experience:
+                    skillsExperience,
+
+                volunteer_availability:
+                    volunteerAvailability,
+
+                expected_contribution:
+                    expectedContribution,
+
+                membership_expectations:
+                    membershipExpectations,
+
+                previous_membership:
+                    previousMembership,
+
+                membership_rules_accepted:
+                    confirmed
+            }
+        });
+
+        showCompletionAlert(
+            '🎉 Your member information has been saved successfully. Opening Member Portal...',
+            'success'
+        );
+
+        sessionStorage.setItem(
+            'memberProfileComplete',
+            'true'
+        );
+
+        sessionStorage.setItem(
+            'memberId',
+            payload.member_id
+        );
+
+        setTimeout(function(){
+
+            const modal =
+                getElement('memberCompletionModal');
+
+            if(modal){
+                modal.remove();
+            }
+
+            window.location.replace(
+                'pages/member-portal.html'
+            );
+
+        },650);
+
+    }catch(error){
+
+        console.error(
+            'MEMBER COMPLETION ERROR:',
+            error
+        );
+
+        showCompletionAlert(
+            '❌ Failed to save member information.<br><small>' +
+            escapeHTML(
+                error.message ||
+                'Please try again.'
+            ) +
+            '</small>'
+        );
+
+    }finally{
+
+        if(button){
+
+            button.disabled = false;
+
+            button.innerHTML =
+                'CONFIRM MEMBERSHIP';
+        }
+    }
 }
 
+/* =========================================================
+   NATIONALITY FIELDS
+========================================================= */
 function updateNationalityFields(){
 
     const nationality =
-        getElement('completionNationality');
-
-    const nidaGroup =
-        getElement('completionNidaGroup');
-
-    const passportGroup =
-        getElement('completionPassportGroup');
+        getElement('nationality');
 
     const nidaInput =
-        getElement('completionNida');
+        getElement('nida_no');
 
     const passportInput =
-        getElement('completionPassport');
+        getElement('passport_no');
 
     if(!nationality){
-
         return;
-
     }
 
-    if(nationality.value === 'Tanzanian'){
+    const value =
+        String(nationality.value || '').trim();
 
-        if(nidaGroup){ nidaGroup.classList.remove('hidden'); }
-        if(passportGroup){ passportGroup.classList.add('hidden'); }
-        if(passportInput){ passportInput.value = ''; }
+    if(value === 'Tanzanian'){
+
+        if(passportInput){
+            passportInput.value = '';
+        }
+
+        if(nidaInput){
+            nidaInput.required = true;
+        }
+
+        if(passportInput){
+            passportInput.required = false;
+        }
 
     }else{
 
-        if(passportGroup){ passportGroup.classList.remove('hidden'); }
-        if(nidaGroup){ nidaGroup.classList.add('hidden'); }
-        if(nidaInput){ nidaInput.value = ''; }
+        if(nidaInput){
+            nidaInput.value = '';
+        }
 
+        if(nidaInput){
+            nidaInput.required = false;
+        }
+
+        if(passportInput){
+            passportInput.required = true;
+        }
     }
-
 }
-
 
 /* =========================================================
    MEMBER LOOKUP HELPERS
@@ -3806,7 +4982,7 @@ function isMemberComplete(member){
 
     const requiredFields = [
         'full_name','gender','dob','phone',
-        'nationality','country','address','member_type'
+        'nationality','country','address'
     ];
 
     for(const field of requiredFields){
@@ -3816,6 +4992,12 @@ function isMemberComplete(member){
             return false;
 
         }
+
+    }
+
+    if(!member.member_type && !member.membership_type){
+
+        return false;
 
     }
 
@@ -3887,85 +5069,74 @@ async function openMemberCompletion(user, existingMember){
     createMemberCompletionModal();
     setupMemberCompletionForm();
 
-    const emailField =
-        getElement('completionEmail');
-
+    const emailField = getElement('completionEmail');
     if(emailField){
-
-        emailField.value =
-            user.email || '';
-
+        emailField.value = user.email || '';
     }
 
-    const memberIdField =
-        getElement('completionMemberId');
+    // Chanzo cha data: members row ikiwa ipo, la sivyo user_metadata
+    const meta = user.user_metadata || {};
+    const source = existingMember || {
+        full_name: meta.full_name,
+        gender: meta.gender,
+        dob: meta.dob,
+        phone: meta.phone,
+        occupation: meta.occupation,
+        member_type: meta.member_type,
+        nationality: meta.nationality,
+        country: meta.country,
+        nida_no: meta.nida_no,
+        passport_no: meta.passport_no,
+        address: meta.address,
+        passport_image_url: meta.member_photo_url,
+        member_id: null,
+        status: null
+    };
 
+    const memberIdField = getElement('completionMemberId');
     if(memberIdField){
-
         if(existingMember && existingMember.member_id){
-
-            memberIdField.value =
-                existingMember.member_id;
-
-        }else{
-
-            memberIdField.value =
-                await generateMemberId();
-
+            memberIdField.value = existingMember.member_id;
+        } else {
+            memberIdField.value = await generateMemberId();
         }
-
     }
 
-    if(existingMember){
-
-        const setVal = (id, value) => {
-            const el = getElement(id);
-            if(el && value !== undefined && value !== null){
-                el.value = value;
-            }
-        };
-
-        setVal('completionFullName', existingMember.full_name);
-        setVal('completionGender', existingMember.gender);
-        setVal('completionDob', existingMember.dob);
-        setVal('completionPhone', existingMember.phone);
-        setVal('completionOccupation', existingMember.occupation);
-        setVal('completionMemberType', existingMember.member_type);
-        setVal('completionNationality', existingMember.nationality);
-        setVal('completionCountry', existingMember.country);
-        setVal('completionNida', existingMember.nida_no);
-        setVal('completionPassport', existingMember.passport_no);
-        setVal('completionAddress', existingMember.address);
-
-        updateNationalityFields();
-
-        const preview =
-            getElement('completionPhotoPreview');
-
-        const note =
-            getElement('completionPhotoRequiredNote');
-
-        if(existingMember.passport_image_url && preview){
-
-            preview.src =
-                existingMember.passport_image_url;
-
-            preview.classList.remove('hidden');
-
-            if(note){
-
-                note.textContent =
-                    'A photo is already on file. Choose a new one only if you want to replace it.';
-
-            }
-
+    const setVal = (id, value) => {
+        const el = getElement(id);
+        if(el && value !== undefined && value !== null){
+            el.value = value;
         }
+    };
 
+    setVal('completionFullName', source.full_name);
+    setVal('completionGender', source.gender);
+    setVal('completionDob', source.dob);
+    setVal('completionPhone', source.phone);
+    setVal('completionOccupation', source.occupation);
+    setVal('completionMemberType', source.member_type);
+    setVal('completionNationality', source.nationality);
+    setVal('completionCountry', source.country);
+    setVal('completionNida', source.nida_no);
+    setVal('completionPassport', source.passport_no);
+    setVal('completionAddress', source.address);
+
+    updateNationalityFields();
+
+    const preview = getElement('completionPhotoPreview');
+    const note = getElement('completionPhotoRequiredNote');
+
+    if(source.passport_image_url && preview){
+        preview.src = source.passport_image_url;
+        preview.classList.remove('hidden');
+        if(note){
+            note.textContent =
+                existingMember
+                ? 'A photo is already on file. Choose a new one only if you want to replace it.'
+                : 'This is the photo you uploaded during registration. Choose a new one only if you want to replace it.';
+        }
     }
-
 }
-
-
 /* =========================================================
    SETUP COMPLETION FORM
 ========================================================= */
@@ -7062,6 +8233,2256 @@ else{
     defer
 ></script>
 
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="sw">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Members - DCF Online System</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7f6;
+            color: #1f2937;
+            min-height: 100vh;
+            padding: 30px 15px;
+        }
+
+        .page-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 900px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+
+        .form-header {
+            padding: 24px 30px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #ffffff;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 18px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #174a35;
+            border: 1px solid #174a35;
+            padding: 9px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            background: #fff;
+            transition: 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: #174a35;
+            color: #ffffff;
+        }
+
+        .role-badge {
+            background: #eef5f1;
+            color: #174a35;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .form-title {
+            font-size: 23px;
+            color: #174a35;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .form-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .form-body {
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #174a35;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #111827;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease,
+                        box-shadow 0.2s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #174a35;
+            box-shadow: 0 0 0 2px rgba(23, 74, 53, 0.08);
+        }
+
+        input[readonly] {
+            background: #f3f4f6;
+            color: #174a35;
+            font-weight: 700;
+            cursor: not-allowed;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .image-upload-box {
+            border: 1px dashed #b8c8bf;
+            padding: 15px;
+            border-radius: 7px;
+            background: #fafcfb;
+        }
+
+        .preview-container {
+            margin-top: 12px;
+            text-align: center;
+        }
+
+        #image_preview {
+            width: 120px;
+            height: 140px;
+            border-radius: 6px;
+            border: 2px solid #174a35;
+            padding: 3px;
+            display: none;
+            margin: 0 auto;
+            object-fit: cover;
+        }
+
+        .form-actions {
+            margin-top: 28px;
+            padding-top: 22px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn-submit {
+            width: 100%;
+            border: none;
+            border-radius: 6px;
+            background: #174a35;
+            color: #ffffff;
+            padding: 13px 18px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background: #0d3022;
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        #msg {
+            display: none;
+            margin-top: 20px;
+            padding: 14px 16px;
+            border-radius: 7px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .success {
+            display: block !important;
+            background: #ecfdf3;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .error {
+            display: block !important;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .warning {
+            display: block !important;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
+
+        .existing-member {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fffaf0;
+            border: 1px solid #f3d58a;
+            border-radius: 7px;
+            display: none;
+        }
+
+        .existing-member-title {
+            font-weight: bold;
+            color: #92400e;
+            margin-bottom: 8px;
+        }
+
+        .existing-member-info {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #4b5563;
+        }
+
+        .edit-member-btn {
+            margin-top: 12px;
+            display: inline-block;
+            padding: 9px 14px;
+            background: #174a35;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .edit-member-btn:hover {
+            background: #0d3022;
+        }
+
+
+        .header-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+        .language-wrap{display:flex;align-items:center;gap:7px}
+        .language-wrap label{margin:0;font-size:11px;color:#64756d;font-weight:700}
+        #languageSelector{width:auto;min-width:145px;padding:8px 10px;border-radius:6px;font-size:12px;background:#fff}
+        .membership-enhancement{margin-top:28px;padding-top:24px;border-top:1px solid #e5e7eb}
+        .membership-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+        .membership-section-head h3{font-size:15px;color:#174a35;font-weight:800}
+        .membership-section-head p{font-size:12px;color:#6b7280;line-height:1.6;margin-top:4px}
+        .membership-badge{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid #b8c8bf;border-radius:999px;background:#f7faf8;color:#174a35;font-size:10px;font-weight:800;white-space:nowrap}
+        .membership-help{padding:13px 14px;border-left:3px solid #174a35;background:#f6faf8;color:#405249;font-size:12px;line-height:1.65;border-radius:5px;margin-bottom:18px}
+        .membership-enhancement textarea{min-height:105px}
+        .membership-check{display:flex;align-items:flex-start;gap:10px;padding:13px 14px;border:1px solid #d8e2dd;background:#fbfdfc;border-radius:7px;margin-top:18px}
+        .membership-check input{width:18px;height:18px;margin-top:1px;flex:0 0 auto;accent-color:#174a35}
+        .membership-check label{margin:0;font-size:12px;line-height:1.55;font-weight:600;color:#374151}
+        .membership-resources{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+        .membership-resource-btn,.membership-confirm-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:10px 14px;border:1px solid #174a35;border-radius:7px;background:transparent;color:#174a35;text-decoration:none;font-size:12px;font-weight:800;cursor:pointer;transition:.2s ease}
+        .membership-resource-btn:hover,.membership-confirm-btn:hover{background:#174a35;color:#fff}
+        .membership-resource-btn.secondary{border-color:#b8c8bf;color:#365347}
+        .membership-resource-btn.secondary:hover{background:#eef5f1;color:#174a35}
+        .membership-confirm-btn{border-color:#174a35}
+
+        .btn-submit.membership-confirm-btn{background:transparent!important;color:#174a35!important;border:1px solid #174a35!important;box-shadow:none!important}
+        .btn-submit.membership-confirm-btn:hover{background:#174a35!important;color:#fff!important}
+        .membership-step{margin-top:18px;border:1px solid #dbe5e0;border-radius:10px;background:#fff;overflow:hidden}
+        .membership-step-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;background:#f8fbf9}
+        .membership-step-title{font-size:13px;font-weight:800;color:#174a35}
+        .membership-step-subtitle{font-size:11px;color:#6b7280;margin-top:3px;line-height:1.5}
+        .read-more-btn{display:inline-flex;align-items:center;gap:7px;border:1px solid #174a35;background:transparent;color:#174a35;border-radius:999px;padding:7px 11px;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap}
+        .read-more-btn:hover{background:#174a35;color:#fff}
+        .membership-step-body{display:none;padding:16px;border-top:1px solid #e5e7eb}
+        .membership-step.open .membership-step-body{display:block}
+        .membership-step.open .read-more-btn i{transform:rotate(180deg)}
+        .required-note{font-size:11px;color:#64756d;line-height:1.55;margin-bottom:12px}
+        .rules-box{font-size:11px;line-height:1.65;color:#374151;background:#fbfdfc;border:1px solid #dfe9e4;border-radius:8px;padding:13px}
+        .rules-box ol{margin:0;padding-left:18px}.rules-box li{margin:4px 0}
+        .photo-required-note{font-size:10px;color:#92400e;margin-top:6px;line-height:1.45}
+        .photo-required input[type=file]{border-color:#174a35}
+        .membership-final{margin-top:18px;padding:15px;border:1px solid #dbe5e0;border-radius:10px;background:#fbfdfc}
+        .membership-final .membership-check{margin-top:0;background:#fff}
+        .btn-submit.membership-confirm-btn{min-height:46px;margin-top:14px}
+        @media(max-width:700px){.membership-step-head{align-items:flex-start}.membership-step-head .read-more-btn{flex:0 0 auto}.membership-step-body{padding:13px}.membership-step-head{padding:12px}}
+
+        @media(max-width:700px){.header-tools{width:100%;justify-content:space-between}.language-wrap{width:100%}#languageSelector{flex:1;min-width:0}.membership-section-head{flex-direction:column}.membership-badge{align-self:flex-start}.membership-resources{display:grid;grid-template-columns:1fr}.membership-resource-btn,.membership-confirm-btn{width:100%}}
+
+        @media (max-width: 700px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .form-header,
+            .form-body {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .full-width {
+                grid-column: auto;
+            }
+
+            .header-top {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .form-title {
+                font-size: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body data-allowed-roles="admin,staff,auditor">
+
+<div class="page-wrapper">
+
+    <div class="form-container">
+
+        <div class="form-header">
+
+            <div class="header-top">
+
+                <a href="../dashboard.html"
+                   class="back-btn">
+
+                    ← Rudi Dashboard
+
+                </a>
+
+                <div class="header-tools">
+                    <div class="language-wrap">
+                        <label for="languageSelector">Language</label>
+                        <select id="languageSelector" aria-label="Language selector">
+                            <option value="sw">Kiswahili</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="pt">Português</option><option value="ar">العربية</option><option value="zh">中文</option><option value="ru">Русский</option><option value="de">Deutsch</option><option value="hi">हिन्दी</option>
+                        </select>
+                    </div>
+                    <div class="role-badge" id="roleBadge">STAFF</div>
+                </div>
+
+            </div>
+
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
+                <div style="width:62px;height:62px;border:1px solid #dbe5e0;border-radius:50%;background:#fff;padding:5px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;">
+                    <img src="../images/dcf-logo.png" alt="Development Charity Foundation Logo" loading="lazy" style="width:100%;height:100%;object-fit:contain;">
+                </div>
+                <div style="min-width:0;">
+                    <div class="form-title" style="margin-bottom:3px;">Fomu ya Usajili wa Mwanachama</div>
+                    <div style="font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:#6b7280;">Development Charity Foundation (DCF)</div>
+                </div>
+            </div>
+
+            <div class="form-subtitle">
+
+                Jaza taarifa za mwanachama kwa usahihi.
+                Mwanachama aliyepo tayari hawezi kusajiliwa mara mbili.
+
+            </div>
+
+        </div>
+
+        <div class="form-body">
+
+            <div class="section-title">
+
+                Taarifa za Msingi za Mwanachama
+
+            </div>
+
+            <form id="memberForm">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label>
+                            Namba ya Uanachama
+                        </label>
+<input
+    type="text"
+    id="member_id"
+    readonly
+    value="Itatolewa na mfumo"
+>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            Majina Kamili *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="full_name"
+                            placeholder="Ingiza majina yote"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            Jinsia *
+                        </label>
+
+                        <select id="gender"
+                                required>
+
+                            <option value="">
+                                -- Chagua Jinsia --
+                            </option>
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            Tarehe ya Kuzaliwa *
+                        </label>
+
+                        <input
+                            type="date"
+                            id="dob"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            Namba ya NIDA
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nida_no"
+                            placeholder="Namba ya NIDA"
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            Namba ya Passport
+                        </label>
+
+                        <input
+                            type="text"
+                            id="passport_no"
+                            placeholder="Kama anayo"
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            Namba ya Simu *
+                        </label>
+
+                        <input
+                            type="text"
+                            id="phone"
+                            placeholder="Mfano: 0712345678"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            Barua Pepe
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="mfano@gmail.com"
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            Kazi / Shughuli
+                        </label>
+
+                        <input
+                            type="text"
+                            id="occupation"
+                            placeholder="Mfano: Mkulima, Mwalimu"
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            Utaifa
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nationality"
+                            value="Tanzanian"
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            Nchi
+                        </label>
+
+                        <input
+                            type="text"
+                            id="country"
+                            value="Tanzania"
+                        >
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label>
+                            Picha ya Mwanachama
+                        </label>
+
+                        <div class="image-upload-box">
+
+                            <input
+                                type="file"
+                                id="passport_image"
+                                accept="image/*"
+                                required
+                            >
+
+                            <div class="photo-required-note">Picha ya mwanachama ni lazima kwa maombi haya. JPG, PNG au WEBP; hadi 5MB.</div>
+
+                            <div class="preview-container">
+
+                                <img
+                                    id="image_preview"
+                                    src="#"
+                                    alt="Muonekano wa Picha"
+                                >
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-group full-width">
+
+                        <label>
+                            Anwani / Mahali Anapoishi
+                        </label>
+
+                        <textarea
+                            id="address"
+                            placeholder="Mtaa, Kata, Wilaya, Mkoa"
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+                <section class="membership-enhancement" aria-labelledby="membershipProfileTitle">
+                    <div class="membership-section-head">
+                        <div>
+                            <h3 id="membershipProfileTitle">Membership Application</h3>
+                            <p>Complete the additional membership information in the sections below. Only the section you open is expanded.</p>
+                        </div>
+                        <span class="membership-badge"><i class="fas fa-globe"></i> International Application</span>
+                    </div>
+
+                    <div class="membership-step" id="stepMembership">
+                        <div class="membership-step-head">
+                            <div>
+                                <div class="membership-step-title">1. Membership Profile</div>
+                                <div class="membership-step-subtitle">Motivation, community interests, skills and participation.</div>
+                            </div>
+                            <button type="button" class="read-more-btn" data-target="stepMembership" aria-expanded="false">Read more <i class="fas fa-chevron-down"></i></button>
+                        </div>
+                        <div class="membership-step-body">
+                            <div class="required-note">Fields marked <strong>*</strong> are required.</div>
+                            <div class="form-grid">
+                                <div class="form-group"><label for="membership_type">Membership Type *</label><select id="membership_type" required><option value="">-- Select membership type --</option><option>Ordinary Member</option><option>Associate Member</option><option>Volunteer Member</option><option>Youth Member</option><option>International / Diaspora Member</option></select></div>
+                                <div class="form-group"><label for="how_heard_about_dcf">How did you hear about DCF? *</label><select id="how_heard_about_dcf" required><option value="">-- Select one --</option><option>DCF website</option><option>Social media</option><option>Friend / family / member</option><option>Community activity</option><option>Partner organisation</option><option>Event / conference</option><option>Referral</option><option>Other</option></select></div>
+                                <div class="form-group full-width"><label for="why_join">Why do you want to join DCF? *</label><textarea id="why_join" required maxlength="2000" placeholder="What motivates you to become part of DCF?"></textarea></div>
+                                <div class="form-group full-width"><label for="community_interest">Which community issues or areas would you like to support? *</label><textarea id="community_interest" required maxlength="2000" placeholder="Education, health, livelihoods, youth, women, disability inclusion, humanitarian response, community development, etc."></textarea></div>
+                                <div class="form-group full-width"><label for="skills_experience">What skills, knowledge or professional experience can you contribute? *</label><textarea id="skills_experience" required maxlength="2000" placeholder="Professional, technical, community, leadership or other useful skills."></textarea></div>
+                                <div class="form-group"><label for="volunteer_availability">How would you like to participate? *</label><select id="volunteer_availability" required><option value="">-- Select participation --</option><option>Regular volunteering</option><option>Occasional volunteering</option><option>Project activities</option><option>Professional / technical support</option><option>Community mobilisation</option><option>Research / knowledge sharing</option><option>Advocacy / awareness</option><option>Other</option></select></div>
+                                <div class="form-group"><label for="expected_contribution">What contribution can you realistically make? *</label><select id="expected_contribution" required><option value="">-- Select one --</option><option>Time / volunteering</option><option>Professional skills</option><option>Community networks</option><option>Fundraising / resource mobilisation</option><option>Financial contribution where appropriate</option><option>Equipment / materials</option><option>A combination of the above</option></select></div>
+                                <div class="form-group full-width"><label for="membership_expectations">What do you expect from DCF as a member? *</label><textarea id="membership_expectations" required maxlength="2000" placeholder="Participation, communication, learning, networking or community impact. "></textarea></div>
+                                <div class="form-group full-width"><label for="previous_membership">Previous NGO, community or volunteer experience *</label><textarea id="previous_membership" required maxlength="2000" placeholder="If none, write: None."></textarea></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="membership-step" id="stepRules">
+                        <div class="membership-step-head">
+                            <div>
+                                <div class="membership-step-title">2. Rules, Rights & Responsibilities</div>
+                                <div class="membership-step-subtitle">Read the key membership requirements before confirmation.</div>
+                            </div>
+                            <button type="button" class="read-more-btn" data-target="stepRules" aria-expanded="false">Read more <i class="fas fa-chevron-down"></i></button>
+                        </div>
+                        <div class="membership-step-body">
+                            <div class="rules-box">
+                                <ol>
+                                    <li>Membership is open to a person aged <strong>18 years or above</strong> who accepts DCF's objectives, vision, mission, values and Constitution.</li>
+                                    <li>DCF does not discriminate on the grounds stated in its Constitution, subject to applicable law.</li>
+                                    <li>An applicant must complete the official application, provide legally recognised identification, accept the Constitution, Rules and Ethics, pay approved joining fees where applicable, and attend orientation when required.</li>
+                                    <li>Membership rights begin after formal approval, entry in the membership register and fulfilment of the applicable basic requirements.</li>
+                                    <li>Members are expected to respect the Constitution and lawful decisions, protect DCF's name and property, keep institutional information confidential, participate in activities, pay approved dues on time, avoid corruption, discrimination, harassment and abuse of authority, and provide truthful information.</li>
+                                    <li>A member may be suspended for serious disciplinary investigation, prolonged failure to perform duties without valid reason, or breach of the Constitution/Rules; no suspension should occur without an opportunity to be heard.</li>
+                                    <li>Membership may end by written resignation, lawful expulsion, death, loss of eligibility, or a serious offence that damages the Foundation's reputation, subject to the Constitution.</li>
+                                    <li>A member affected by suspension or expulsion has a right of appeal to the General Meeting within <strong>30 days</strong> of receiving the decision.</li>
+                                    <li>Disciplinary procedures provide for notice, adequate time to prepare a defence, an opportunity to present evidence, and a fair hearing. Sanctions depend on the seriousness of the offence.</li>
+                                    <li>Members and leaders must disclose conflicts of interest and withdraw from decisions where they have a personal or close-family interest.</li>
+                                </ol>
+                            </div>
+                            <div class="membership-resources">
+                                <a class="membership-resource-btn secondary" href="../documents/DCF-Constitution-2026.pdf" download><i class="fas fa-book-open"></i> Download DCF Constitution</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="membership-final">
+                        <div class="membership-check">
+                            <input type="checkbox" id="confirm_membership" required>
+                            <label for="confirm_membership">I confirm that the information provided is true and complete. I wish to apply for DCF membership and agree to respect the Foundation's objectives, values, Constitution, Rules and Ethics. I understand that membership is subject to the applicable approval process. *</label>
+                        </div>
+                        <div class="membership-resources">
+                            <button type="button" id="previewMembershipFormBtn" class="membership-resource-btn secondary"><i class="fas fa-eye"></i> Preview Application</button>
+                            <button type="button" id="downloadMembershipFormBtn" class="membership-resource-btn secondary"><i class="fas fa-file-pdf"></i> Download Membership Form</button>
+                        </div>
+                    </div>
+                </section>
+
+                <div id="existingMember" class="existing-member">
+
+                    <div class="existing-member-title">
+
+                        Mwanachama huyu tayari yupo kwenye mfumo
+
+                    </div>
+
+                    <div
+                        id="existingMemberInfo"
+                        class="existing-member-info"
+                    ></div>
+
+                    <a
+                        href="#"
+                        id="editMemberBtn"
+                        class="edit-member-btn"
+                    >
+
+                        Fungua Taarifa kwa ajili ya Edit
+
+                    </a>
+
+                </div>
+
+                <div id="msg"></div>
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="btn-submit membership-confirm-btn"
+                        id="saveBtn"
+                    >
+
+                        CONFIRM MEMBERSHIP
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="../js/supabase.js"></script>
+<script src="../js/role-guard.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+
+<script>
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+const form =
+    document.getElementById('memberForm');
+
+const saveBtn =
+    document.getElementById('saveBtn');
+
+const msgDiv =
+    document.getElementById('msg');
+
+const existingMemberBox =
+    document.getElementById('existingMember');
+
+const existingMemberInfo =
+    document.getElementById('existingMemberInfo');
+
+const editMemberBtn =
+    document.getElementById('editMemberBtn');
+
+const passportInput =
+    document.getElementById('passport_image');
+
+const imagePreview =
+    document.getElementById('image_preview');
+
+const roleBadge =
+    document.getElementById('roleBadge');
+
+let currentExistingMember = null;
+
+/* =========================================================
+   AUTHENTICATION
+========================================================= */
+
+async function checkPageAccess() {
+
+    try {
+
+        if (
+            typeof _supabase === 'undefined' ||
+            !_supabase
+        ) {
+
+            window.location.replace(
+                '../login.html'
+            );
+
+            return false;
+
+        }
+
+        const {
+            data,
+            error
+        } =
+            await _supabase.auth.getSession();
+
+        if (error) {
+
+            console.error(
+                'SESSION ERROR:',
+                error
+            );
+
+            window.location.replace(
+                '../login.html'
+            );
+
+            return false;
+
+        }
+
+        const session =
+            data.session;
+
+        if (
+            !session ||
+            !session.user
+        ) {
+
+            window.location.replace(
+                '../login.html'
+            );
+
+            return false;
+
+        }
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+            await _supabase
+                .from('profiles')
+                .select(
+                    'id, full_name, role'
+                )
+                .eq(
+                    'id',
+                    session.user.id
+                )
+                .maybeSingle();
+
+        if (
+            profileError ||
+            !profile
+        ) {
+
+            console.error(
+                'PROFILE ERROR:',
+                profileError
+            );
+
+            alert(
+                'Profile ya mtumiaji haijapatikana.'
+            );
+
+            window.location.replace(
+                '../login.html'
+            );
+
+            return false;
+
+        }
+
+        const role =
+            String(
+                profile.role || ''
+            )
+            .trim()
+            .toLowerCase();
+
+        if (
+            role !== 'admin' &&
+            role !== 'staff'
+        ) {
+
+            alert(
+                'Huna ruhusa ya kutumia ukurasa huu.'
+            );
+
+            window.location.replace(
+                '../dashboard.html'
+            );
+
+            return false;
+
+        }
+
+        sessionStorage.setItem(
+            'userLoggedIn',
+            'true'
+        );
+
+        sessionStorage.setItem(
+            'userRole',
+            role
+        );
+
+        sessionStorage.setItem(
+            'userId',
+            session.user.id
+        );
+
+        sessionStorage.setItem(
+            'username',
+            session.user.email || ''
+        );
+
+        sessionStorage.setItem(
+            'fullName',
+            profile.full_name || ''
+        );
+
+        roleBadge.textContent =
+            role.toUpperCase();
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            'AUTH CHECK ERROR:',
+            error
+        );
+
+        window.location.replace(
+            '../login.html'
+        );
+
+        return false;
+
+    }
+
+}
+
+/* =========================================================
+   PAGE START
+========================================================= */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    async function () {
+
+        const allowed =
+            await checkPageAccess();
+
+        if (!allowed) {
+            return;
+        }
+
+        await generateMemberID();
+
+    }
+);
+
+/* =========================================================
+   IMAGE PREVIEW
+========================================================= */
+
+passportInput.addEventListener(
+    'change',
+    function (event) {
+
+        const file =
+            event.target.files[0];
+
+        if (!file) {
+
+            imagePreview.style.display =
+                'none';
+
+            imagePreview.src =
+                '#';
+
+            return;
+
+        }
+
+        if (
+            !file.type.startsWith(
+                'image/'
+            )
+        ) {
+
+            passportInput.value =
+                '';
+
+            showMessage(
+                'error',
+                'Tafadhali chagua picha halali.'
+            );
+
+            return;
+
+        }
+
+        const maxSize =
+            5 * 1024 * 1024;
+
+        if (
+            file.size > maxSize
+        ) {
+
+            passportInput.value =
+                '';
+
+            showMessage(
+                'error',
+                'Picha haipaswi kuzidi 5MB.'
+            );
+
+            return;
+
+        }
+
+        const reader =
+            new FileReader();
+
+        reader.onload =
+            function (e) {
+
+                imagePreview.src =
+                    e.target.result;
+
+                imagePreview.style.display =
+                    'block';
+
+            };
+
+        reader.readAsDataURL(file);
+
+    }
+);
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function showMessage(
+    type,
+    text
+) {
+
+    msgDiv.className =
+        '';
+
+    msgDiv.classList.add(
+        type
+    );
+
+    msgDiv.textContent =
+        text;
+
+    msgDiv.style.display =
+        'block';
+
+}
+
+function clearMessage() {
+
+    msgDiv.className =
+        '';
+
+    msgDiv.textContent =
+        '';
+
+    msgDiv.style.display =
+        'none';
+
+}
+
+/* =========================================================
+   GENERATE MEMBER ID
+========================================================= */
+
+async function generateMemberID() {
+
+    const memberInput =
+        document.getElementById(
+            'member_id'
+        );
+
+    memberInput.value =
+        'Inazalishwa...';
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await _supabase
+                .from('members')
+                .select(
+                    'member_id'
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false
+                    }
+                )
+                .limit(1);
+
+        if (error) {
+
+            console.error(
+                'MEMBER ID ERROR:',
+                error
+            );
+
+            memberInput.value =
+                'DCF-' +
+                Date.now()
+                    .toString()
+                    .slice(-6);
+
+            return;
+
+        }
+
+        let nextNumber =
+            1;
+
+        if (
+            data &&
+            data.length > 0
+        ) {
+
+            const lastID =
+                data[0].member_id;
+
+            if (lastID) {
+
+                const match =
+                    String(lastID)
+                        .match(
+                            /\d+$/
+                        );
+
+                if (match) {
+
+                    nextNumber =
+                        parseInt(
+                            match[0],
+                            10
+                        ) + 1;
+
+                }
+
+            }
+
+        }
+
+        memberInput.value =
+            'DCF-' +
+            String(nextNumber)
+                .padStart(
+                    4,
+                    '0'
+                );
+
+    } catch (error) {
+
+        console.error(
+            'GENERATE ID ERROR:',
+            error
+        );
+
+        memberInput.value =
+            'DCF-' +
+            Date.now()
+                .toString()
+                .slice(-6);
+
+    }
+
+}
+
+/* =========================================================
+   CLEAN VALUE
+========================================================= */
+
+function cleanValue(value) {
+
+    return String(
+        value || ''
+    )
+    .trim()
+    .toLowerCase();
+
+}
+
+/* =========================================================
+   FIND EXISTING MEMBER
+========================================================= */
+
+async function findExistingMember() {
+
+    const nida =
+        cleanValue(
+            document.getElementById(
+                'nida_no'
+            ).value
+        );
+
+    const passport =
+        cleanValue(
+            document.getElementById(
+                'passport_no'
+            ).value
+        );
+
+    const phone =
+        cleanValue(
+            document.getElementById(
+                'phone'
+            ).value
+        );
+
+    const email =
+        cleanValue(
+            document.getElementById(
+                'email'
+            ).value
+        );
+
+    if (
+        !nida &&
+        !passport &&
+        !phone &&
+        !email
+    ) {
+
+        hideExistingMember();
+
+        return null;
+
+    }
+
+    try {
+
+        let found = null;
+
+        /* NIDA */
+
+        if (nida) {
+
+            const {
+                data,
+                error
+            } =
+                await _supabase
+                    .from('members')
+                    .select('*')
+                    .ilike(
+                        'nida_no',
+                        nida
+                    )
+                    .limit(1);
+
+            if (!error && data?.length) {
+
+                found =
+                    data[0];
+
+            }
+
+        }
+
+        /* PASSPORT */
+
+        if (
+            !found &&
+            passport
+        ) {
+
+            const {
+                data,
+                error
+            } =
+                await _supabase
+                    .from('members')
+                    .select('*')
+                    .ilike(
+                        'passport_no',
+                        passport
+                    )
+                    .limit(1);
+
+            if (!error && data?.length) {
+
+                found =
+                    data[0];
+
+            }
+
+        }
+
+        /* PHONE */
+
+        if (
+            !found &&
+            phone
+        ) {
+
+            const {
+                data,
+                error
+            } =
+                await _supabase
+                    .from('members')
+                    .select('*')
+                    .ilike(
+                        'phone',
+                        phone
+                    )
+                    .limit(1);
+
+            if (!error && data?.length) {
+
+                found =
+                    data[0];
+
+            }
+
+        }
+
+        /* EMAIL */
+
+        if (
+            !found &&
+            email
+        ) {
+
+            const {
+                data,
+                error
+            } =
+            await _supabase
+                .from('members')
+                .select('*')
+                .ilike(
+                    'email',
+                    email
+                )
+                .limit(1);
+
+            if (!error && data?.length) {
+
+                found =
+                    data[0];
+
+            }
+
+        }
+
+        if (found) {
+
+            showExistingMember(
+                found
+            );
+
+            return found;
+
+        }
+
+        hideExistingMember();
+
+        return null;
+
+    } catch (error) {
+
+        console.error(
+            'DUPLICATE CHECK ERROR:',
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+/* =========================================================
+   SHOW EXISTING MEMBER
+========================================================= */
+
+function showExistingMember(
+    member
+) {
+
+    currentExistingMember =
+        member;
+
+    existingMemberBox.style.display =
+        'block';
+
+    existingMemberInfo.innerHTML =
+
+        '<strong>Jina:</strong> ' +
+        escapeHTML(
+            member.full_name || '-'
+        ) +
+
+        '<br>' +
+
+        '<strong>Member ID:</strong> ' +
+        escapeHTML(
+            member.member_id || '-'
+        ) +
+
+        '<br>' +
+
+        '<strong>Simu:</strong> ' +
+        escapeHTML(
+            member.phone || '-'
+        ) +
+
+        '<br>' +
+
+        '<strong>NIDA:</strong> ' +
+        escapeHTML(
+            member.nida_no || '-'
+        ) +
+
+        '<br>' +
+
+        '<strong>Email:</strong> ' +
+        escapeHTML(
+            member.email || '-'
+        );
+
+    editMemberBtn.style.display =
+        'inline-block';
+
+    if (member.id) {
+
+        editMemberBtn.href =
+            './edit-member.html?id=' +
+            encodeURIComponent(
+                member.id
+            );
+
+    } else if (
+        member.member_id
+    ) {
+
+        editMemberBtn.href =
+            './edit-member.html?member_id=' +
+            encodeURIComponent(
+                member.member_id
+            );
+
+    } else {
+
+        editMemberBtn.style.display =
+            'none';
+
+    }
+
+}
+
+/* =========================================================
+   HIDE EXISTING MEMBER
+========================================================= */
+
+function hideExistingMember() {
+
+    currentExistingMember =
+        null;
+
+    existingMemberBox.style.display =
+        'none';
+
+    existingMemberInfo.innerHTML =
+        '';
+
+    editMemberBtn.href =
+        '#';
+
+}
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(
+    value
+) {
+
+    return String(
+        value || ''
+    )
+    .replace(
+        /&/g,
+        '&amp;'
+    )
+    .replace(
+        /</g,
+        '&lt;'
+    )
+    .replace(
+        />/g,
+        '&gt;'
+    )
+    .replace(
+        /"/g,
+        '&quot;'
+    )
+    .replace(
+        /'/g,
+        '&#039;'
+    );
+
+}
+
+/* =========================================================
+   DUPLICATE CHECK ON BLUR
+========================================================= */
+
+[
+    'nida_no',
+    'passport_no',
+    'phone',
+    'email'
+].forEach(
+    function (id) {
+
+        const input =
+            document.getElementById(
+                id
+            );
+
+        input.addEventListener(
+            'blur',
+            async function () {
+
+                await findExistingMember();
+
+            }
+        );
+
+    }
+);
+
+/* =========================================================
+   FORM SUBMIT
+========================================================= */
+
+form.addEventListener(
+    'submit',
+    async function (e) {
+
+        e.preventDefault();
+
+        clearMessage();
+
+        saveBtn.disabled =
+            true;
+
+        saveBtn.textContent =
+            'Inahifadhi...';
+
+        try {
+
+            /* =================================================
+               AUTH
+            ================================================= */
+
+            const {
+                data,
+                error: sessionError
+            } =
+                await _supabase.auth.getSession();
+
+            if (sessionError) {
+
+                throw new Error(
+                    'Session haikupatikana.'
+                );
+
+            }
+
+            const session =
+                data.session;
+
+            if (
+                !session ||
+                !session.user
+            ) {
+
+                window.location.replace(
+                    '../login.html'
+                );
+
+                return;
+
+            }
+
+            /* =================================================
+               PROFILE / ROLE
+            ================================================= */
+
+            const {
+                data: profile,
+                error: profileError
+            } =
+                await _supabase
+                    .from('profiles')
+                    .select(
+                        'id, full_name, role'
+                    )
+                    .eq(
+                        'id',
+                        session.user.id
+                    )
+                    .maybeSingle();
+
+            if (
+                profileError ||
+                !profile
+            ) {
+
+                throw new Error(
+                    'Taarifa za mtumiaji hazijapatikana.'
+                );
+
+            }
+
+            const role =
+                String(
+                    profile.role || ''
+                )
+                .trim()
+                .toLowerCase();
+
+            if (
+                role !== 'admin' &&
+                role !== 'staff'
+            ) {
+
+                throw new Error(
+                    'Huna ruhusa ya kusajili mwanachama.'
+                );
+
+            }
+
+            /* =================================================
+               GET FORM VALUES
+            ================================================= */
+
+            const member_id =
+                document
+                    .getElementById(
+                        'member_id'
+                    )
+                    .value
+                    .trim();
+
+            const full_name =
+                document
+                    .getElementById(
+                        'full_name'
+                    )
+                    .value
+                    .trim();
+
+            const gender =
+                document
+                    .getElementById(
+                        'gender'
+                    )
+                    .value;
+
+            const dob =
+                document
+                    .getElementById(
+                        'dob'
+                    )
+                    .value;
+
+            const nida_no =
+                document
+                    .getElementById(
+                        'nida_no'
+                    )
+                    .value
+                    .trim();
+
+            const passport_no =
+                document
+                    .getElementById(
+                        'passport_no'
+                    )
+                    .value
+                    .trim();
+
+            const phone =
+                document
+                    .getElementById(
+                        'phone'
+                    )
+                    .value
+                    .trim();
+
+            const email =
+                document
+                    .getElementById(
+                        'email'
+                    )
+                    .value
+                    .trim();
+
+            const occupation =
+                document
+                    .getElementById(
+                        'occupation'
+                    )
+                    .value
+                    .trim();
+
+            const nationality =
+                document
+                    .getElementById(
+                        'nationality'
+                    )
+                    .value
+                    .trim();
+
+            const country =
+                document
+                    .getElementById(
+                        'country'
+                    )
+                    .value
+                    .trim();
+
+            const address =
+                document
+                    .getElementById(
+                        'address'
+                    )
+                    .value
+                    .trim();
+
+            /* =================================================
+               BASIC VALIDATION
+            ================================================= */
+
+            if (!full_name) {
+
+                throw new Error(
+                    'Tafadhali ingiza majina kamili.'
+                );
+
+            }
+
+            if (!gender) {
+
+                throw new Error(
+                    'Tafadhali chagua jinsia.'
+                );
+
+            }
+
+            if (!dob) {
+
+                throw new Error(
+                    'Tafadhali weka tarehe ya kuzaliwa.'
+                );
+
+            }
+
+            if (!phone) {
+
+                throw new Error(
+                    'Tafadhali weka namba ya simu.'
+                );
+
+            }
+
+            const membershipRequired = [
+                ['membership_type','Tafadhali chagua aina ya uanachama.'],
+                ['how_heard_about_dcf','Tafadhali chagua ulivyofahamu DCF.'],
+                ['why_join','Tafadhali eleza kwa nini unataka kujiunga na DCF.'],
+                ['community_interest','Tafadhali eleza maeneo ya jamii unayotaka kusaidia.'],
+                ['skills_experience','Tafadhali eleza ujuzi au uzoefu unaoweza kuchangia.'],
+                ['volunteer_availability','Tafadhali chagua namna unayotaka kushiriki.'],
+                ['expected_contribution','Tafadhali chagua aina ya mchango unaoweza kutoa.'],
+                ['membership_expectations','Tafadhali eleza matarajio yako kama mwanachama.'],
+                ['previous_membership','Tafadhali eleza uzoefu wa awali au andika None.']
+            ];
+            for (const [id,msg] of membershipRequired) {
+                const el=document.getElementById(id);
+                if(!el || !String(el.value || '').trim()) throw new Error(msg);
+            }
+            if(!document.getElementById('confirm_membership')?.checked) throw new Error('Tafadhali thibitisha maombi ya uanachama.');
+
+            /* =================================================
+               DUPLICATE CHECK
+            ================================================= */
+
+            const existing =
+                await findExistingMember();
+
+            if (existing) {
+
+                throw new Error(
+                    'Mwanachama huyu tayari yupo kwenye mfumo. Tumia "Fungua Taarifa kwa ajili ya Edit".'
+                );
+
+            }
+
+            /* =================================================
+               IMAGE UPLOAD — REQUIRED
+            ================================================= */
+
+            let imageUrl =
+                null;
+
+            const file =
+                passportInput.files[0];
+
+            if (!file) {
+                throw new Error(
+                    'Picha ya mwanachama ni lazima kabla ya Confirm Membership.'
+                );
+            }
+
+            if (file) {
+
+                const extension =
+                    file.name
+                        .split('.')
+                        .pop()
+                        .toLowerCase();
+
+                const allowedExtensions = [
+                    'jpg',
+                    'jpeg',
+                    'png',
+                    'webp'
+                ];
+
+                if (
+                    !allowedExtensions.includes(
+                        extension
+                    )
+                ) {
+
+                    throw new Error(
+                        'Aina ya picha hairuhusiwi. Tumia JPG, JPEG, PNG au WEBP.'
+                    );
+
+                }
+
+                const safeName =
+                    member_id.replace(
+                        /[^a-zA-Z0-9-_]/g,
+                        ''
+                    );
+
+                const fileName =
+                    safeName +
+                    '_' +
+                    Date.now() +
+                    '.' +
+                    extension;
+
+                const {
+                    error: uploadError
+                } =
+                    await _supabase
+                        .storage
+                        .from('passports')
+                        .upload(
+                            fileName,
+                            file,
+                            {
+                                upsert: false,
+                                contentType:
+                                    file.type
+                            }
+                        );
+
+                if (uploadError) {
+
+                    throw new Error(
+                        'Picha haikupakiwa: ' +
+                        uploadError.message
+                    );
+
+                }
+
+                const {
+                    data: publicUrlData
+                } =
+                    _supabase
+                        .storage
+                        .from('passports')
+                        .getPublicUrl(
+                            fileName
+                        );
+
+                imageUrl =
+                    publicUrlData.publicUrl;
+
+            }
+
+            /* =================================================
+               PAYLOAD
+            ================================================= */
+
+            const payload = {
+
+                member_id:
+                    member_id,
+
+                full_name:
+                    full_name,
+
+                gender:
+                    gender,
+
+                dob:
+                    dob,
+
+                nida_no:
+                    nida_no || null,
+
+                passport_no:
+                    passport_no || null,
+
+                passport_image_url:
+                    imageUrl,
+
+                phone:
+                    phone,
+
+                email:
+                    email || null,
+
+                occupation:
+                    occupation || null,
+
+                nationality:
+                    nationality || null,
+
+                country:
+                    country || null,
+
+                address:
+                    address || null,
+
+                membership_type:
+                    document.getElementById('membership_type')?.value || null,
+                how_heard_about_dcf:
+                    document.getElementById('how_heard_about_dcf')?.value || null,
+                why_join:
+                    document.getElementById('why_join')?.value.trim() || null,
+                community_interest:
+                    document.getElementById('community_interest')?.value.trim() || null,
+                skills_experience:
+                    document.getElementById('skills_experience')?.value.trim() || null,
+                volunteer_availability:
+                    document.getElementById('volunteer_availability')?.value || null,
+                expected_contribution:
+                    document.getElementById('expected_contribution')?.value || null,
+                membership_expectations:
+                    document.getElementById('membership_expectations')?.value.trim() || null,
+                previous_membership:
+                    document.getElementById('previous_membership')?.value.trim() || null,
+                confirm_membership:
+                    document.getElementById('confirm_membership')?.checked === true,
+                membership_rules_accepted:
+                    document.getElementById('confirm_membership')?.checked === true,
+                membership_rules_version:
+                    'DCF Constitution 2026 - Membership Rules Summary',
+                membership_confirmed_at:
+                    new Date().toISOString(),
+                membership_application_status:
+                    'Pending'
+
+            };
+
+            /* =================================================
+               INSERT
+            ================================================= */
+
+            const {
+                data: insertedData,
+                error: insertError
+            } =
+                await _supabase
+                    .from('members')
+                    .upsert(
+                        payload
+                    )
+                    .select()
+                    .single();
+
+            if (insertError) {
+
+                console.error(
+                    'SUPABASE INSERT ERROR:',
+                    insertError
+                );
+
+                if (
+                    insertError.code ===
+                    '23505'
+                ) {
+
+                    throw new Error(
+                        'Mwanachama huyu tayari yupo kwenye mfumo.'
+                    );
+
+                }
+
+                if (
+                    insertError.code ===
+                    '42501'
+                ) {
+
+                    throw new Error(
+                        'Huna ruhusa ya kuhifadhi mwanachama. Hakikisha RLS policy za members zinaruhusu Admin/Staff.'
+                    );
+
+                }
+
+                throw new Error(
+                    insertError.message
+                );
+
+            }
+
+            /* =================================================
+               SUCCESS
+            ================================================= */
+
+            showMessage(
+                'success',
+                'Mwanachama amesajiliwa kikamilifu.'
+            );
+
+            form.reset();
+
+            document
+                .getElementById(
+                    'nationality'
+                )
+                .value =
+                'Tanzanian';
+
+            document
+                .getElementById(
+                    'country'
+                )
+                .value =
+                'Tanzania';
+
+            imagePreview.src =
+                '#';
+
+            imagePreview.style.display =
+                'none';
+
+            hideExistingMember();
+
+            await generateMemberID();
+
+            setTimeout(
+                function () {
+
+                    window.location.replace(
+                        '../dashboard.html'
+                    );
+
+                },
+                900
+            );
+
+        } catch (error) {
+
+            console.error(
+                'SAVE MEMBER ERROR:',
+                error
+            );
+
+            showMessage(
+                'error',
+                'Kosa limetokea: ' +
+                (
+                    error.message ||
+                    'Haikuwezekana kuhifadhi mwanachama.'
+                )
+            );
+
+        } finally {
+
+            saveBtn.disabled =
+                false;
+
+            saveBtn.textContent =
+                'CONFIRM MEMBERSHIP';
+
+        }
+
+    }
+);
+
+/* =========================================================
+   DCF MEMBERSHIP UX — LANGUAGE / PREVIEW / PDF
+   Additive layer; existing member CRUD logic remains unchanged.
+========================================================= */
+(function(){
+    const lang=document.getElementById('languageSelector');
+    const saved=localStorage.getItem('dcf_membership_language')||'sw';
+    if(lang){lang.value=saved;lang.addEventListener('change',function(){localStorage.setItem('dcf_membership_language',this.value);const d={sw:['Fomu ya Usajili wa Mwanachama','Jaza taarifa za mwanachama kwa usahihi. Mwanachama aliyepo tayari hawezi kusajiliwa mara mbili.'],en:['Membership Registration Form','Please complete the member information accurately. Existing members cannot be registered twice.'],fr:["Formulaire d'adhésion",'Veuillez renseigner correctement les informations du membre.'],es:['Formulario de Registro de Membresía','Complete correctamente la información del miembro.'],pt:['Formulário de Inscrição de Membro','Preencha corretamente os dados do membro.'],ar:['استمارة تسجيل العضوية','يرجى إدخال معلومات العضو بدقة.'],zh:['会员注册表','请准确填写会员信息。'],ru:['Форма регистрации члена','Пожалуйста, корректно заполните данные участника.'],de:['Mitgliedschaftsantrag','Bitte füllen Sie die Mitgliedsdaten korrekt aus.'],hi:['सदस्यता पंजीकरण फॉर्म','कृपया सदस्य की जानकारी सही-सही भरें।']}[this.value]||null;if(d){document.querySelector('.form-title').textContent=d[0];document.querySelector('.form-subtitle').textContent=d[1];}});}
+    const val=id=>String(document.getElementById(id)?.value||'').trim();
+    const esc=v=>String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+    async function toDataURL(url){try{const r=await fetch(url,{cache:'force-cache'});const b=await r.blob();return await new Promise((res,rej)=>{const f=new FileReader();f.onload=()=>res(f.result);f.onerror=rej;f.readAsDataURL(b);});}catch(e){return null;}}
+    async function photoData(){const f=document.getElementById('passport_image')?.files?.[0];if(!f)return null;return await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>res(null);r.readAsDataURL(f);});}
+    function validateApplicationForOutput(){
+        const requiredIds=['full_name','gender','dob','phone','membership_type','how_heard_about_dcf','why_join','community_interest','skills_experience','volunteer_availability','expected_contribution','membership_expectations','previous_membership'];
+        for(const id of requiredIds){
+            const el=document.getElementById(id);
+            if(!el || !String(el.value||'').trim()){
+                const label=el?.closest('.form-group')?.querySelector('label')?.textContent?.replace('*','').trim()||id;
+                alert('Tafadhali jaza: '+label);
+                el?.focus();
+                return false;
+            }
+        }
+        if(!document.getElementById('passport_image')?.files?.[0]){ alert('Picha ya mwanachama ni lazima.'); document.getElementById('passport_image')?.focus(); return false; }
+        if(!document.getElementById('confirm_membership')?.checked){ alert('Tafadhali soma Rules, Rights & Responsibilities kisha uthibitishe maombi.'); document.getElementById('confirm_membership')?.focus(); return false; }
+        return true;
+    }
+    async function downloadPDF(){if(!validateApplicationForOutput())return;if(!window.jspdf?.jsPDF){alert('PDF engine haijapatikana. Hakikisha internet/CDN inapatikana.');return;}const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),W=210,M=15,CW=180;let y=15;const logo=await toDataURL('../images/dcf-logo.png'),photo=await photoData();if(logo)doc.addImage(logo,'PNG',M,y,24,24);doc.setTextColor(23,74,53);doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text('DEVELOPMENT CHARITY FOUNDATION (DCF)',M+30,y+8);doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(80,96,88);doc.text('OFFICIAL MEMBERSHIP APPLICATION',M+30,y+15);if(photo){const pf=document.getElementById('passport_image')?.files?.[0];const ptype=pf?.type==='image/png'?'PNG':(pf?.type==='image/webp'?'WEBP':'JPEG');doc.addImage(photo,ptype,W-M-28,y,28,34);}y+=42;doc.setDrawColor(23,74,53);doc.line(M,y,W-M,y);y+=8;const sections=[['A. PERSONAL INFORMATION',[['Membership No.',val('member_id')],['Full Name',val('full_name')],['Gender',val('gender')],['Date of Birth',val('dob')],['NIDA No.',val('nida_no')],['Passport No.',val('passport_no')],['Phone',val('phone')],['Email',val('email')],['Occupation',val('occupation')],['Nationality',val('nationality')],['Country',val('country')],['Address',val('address')]]],['B. MEMBERSHIP PROFILE',[['Membership Type',val('membership_type')],['How did you hear about DCF?',val('how_heard_about_dcf')],['Why do you want to join DCF?',val('why_join')],['Community interests',val('community_interest')],['Skills / experience',val('skills_experience')],['Participation preference',val('volunteer_availability')],['Expected contribution',val('expected_contribution')],['Membership expectations',val('membership_expectations')],['Previous experience',val('previous_membership')]]]];function page(h){if(y+h>278){doc.addPage();y=16;}}sections.forEach(s=>{page(15);doc.setFillColor(238,245,241);doc.rect(M,y,CW,8,'F');doc.setTextColor(23,74,53);doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text(s[0],M+3,y+5.5);y+=13;s[1].forEach(r=>{const lines=doc.splitTextToSize(r[1]||'—',CW-55),h=Math.max(7,lines.length*4.2);page(h+4);doc.setFontSize(7.5);doc.setFont('helvetica','bold');doc.setTextColor(55,65,81);doc.text(r[0],M,y);doc.setFont('helvetica','normal');doc.setTextColor(31,41,55);doc.text(lines,M+50,y);y+=h+2;doc.setDrawColor(229,231,235);doc.line(M,y-1,W-M,y-1);});y+=5;});page(32);doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(23,74,53);doc.text('C. DECLARATION & CONFIRMATION',M,y);y+=7;doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(31,41,55);doc.text(doc.splitTextToSize('I confirm that the information in this application is true and complete. I wish to apply for DCF membership and agree to respect the Foundation objectives, values and Constitution. I understand that membership is subject to the applicable approval process.',CW),M,y);y+=18;doc.text('Applicant confirmation: YES',M,y);doc.text('Date: '+new Date().toLocaleDateString(),M+95,y);y+=10;doc.line(M,y,M+65,y);doc.text('Applicant Signature',M,y+5);doc.line(W-M-65,y,W-M,y);doc.text('DCF Officer / Approval',W-M-65,y+5);y+=16;page(62);doc.setFillColor(238,245,241);doc.rect(M,y,CW,8,'F');doc.setTextColor(23,74,53);doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text('D. KEY MEMBERSHIP RULES & RESPONSIBILITIES',M+3,y+5.5);y+=13;doc.setFont('helvetica','normal');doc.setFontSize(7.2);doc.setTextColor(31,41,55);const rulesText='The applicant confirms that they have read and accepted the key DCF membership requirements: eligibility from age 18; respect for DCF objectives, values and Constitution; truthful information and legally recognised identification; payment of approved fees where applicable; participation in activities; protection of DCF name, property and confidential information; avoidance of corruption, discrimination, harassment and abuse of authority; fair hearing in disciplinary matters; and the right of appeal within 30 days against suspension or expulsion decisions, in accordance with the DCF Constitution 2026.';const rl=doc.splitTextToSize(rulesText,CW);doc.text(rl,M,y);y+=rl.length*4.1+8;doc.setFont('helvetica','bold');doc.text('Rules accepted: YES',M,y);doc.setFont('helvetica','normal');doc.text('Version: DCF Constitution 2026',M+75,y);doc.save('DCF-Membership-Application-'+(val('member_id')||'Application')+'.pdf');}
+    function preview(){if(!validateApplicationForOutput())return;const old=document.getElementById('membershipPreviewModal');if(old)old.remove();const rows=[['Membership No.',val('member_id')],['Full Name',val('full_name')],['Gender',val('gender')],['Date of Birth',val('dob')],['NIDA',val('nida_no')],['Passport',val('passport_no')],['Phone',val('phone')],['Email',val('email')],['Occupation',val('occupation')],['Nationality',val('nationality')],['Country',val('country')],['Address',val('address')],['Membership Type',val('membership_type')],['How heard about DCF',val('how_heard_about_dcf')],['Why join DCF',val('why_join')],['Community interests',val('community_interest')],['Skills / experience',val('skills_experience')],['Participation',val('volunteer_availability')],['Expected contribution',val('expected_contribution')],['Membership expectations',val('membership_expectations')],['Previous experience',val('previous_membership')]];const m=document.createElement('div');m.id='membershipPreviewModal';m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:15px';m.innerHTML='<div style="background:#fff;width:100%;max-width:800px;max-height:92vh;overflow:auto;border-radius:12px;padding:22px"><div style="display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #e5e7eb;padding-bottom:12px"><strong style="color:#174a35">DCF MEMBERSHIP APPLICATION PREVIEW</strong><button type="button" id="closeMembershipPreview" style="border:0;background:transparent;font-size:24px;cursor:pointer">&times;</button></div><div style="margin-top:12px">'+rows.map(r=>'<div style="padding:9px 0;border-bottom:1px solid #edf1ef"><div style="font-size:10px;font-weight:800;color:#64756d;text-transform:uppercase">'+esc(r[0])+'</div><div style="font-size:13px;color:#1f2937;white-space:pre-wrap;margin-top:3px">'+esc(r[1]||'—')+'</div></div>').join('')+'</div></div>';document.body.appendChild(m);document.getElementById('closeMembershipPreview').onclick=()=>m.remove();m.addEventListener('click',e=>{if(e.target===m)m.remove();});}
+    document.getElementById('downloadMembershipFormBtn')?.addEventListener('click',downloadPDF);document.getElementById('previewMembershipFormBtn')?.addEventListener('click',preview);
+})();
+
+/* =========================================================
+   COMPACT MEMBERSHIP SECTIONS — READ MORE
+========================================================= */
+document.querySelectorAll('.read-more-btn').forEach(function(button){
+    button.addEventListener('click', function(){
+        const target=document.getElementById(button.getAttribute('data-target'));
+        if(!target) return;
+        const open=target.classList.toggle('open');
+        button.setAttribute('aria-expanded', open ? 'true' : 'false');
+        button.innerHTML=open ? 'Read less <i class="fas fa-chevron-up"></i>' : 'Read more <i class="fas fa-chevron-down"></i>';
+    });
+});
+
+/* =========================================================
+   AUTH STATE LISTENER
+========================================================= */
+
+if (
+    typeof _supabase !== 'undefined'
+) {
+
+    _supabase.auth.onAuthStateChange(
+        function (
+            event,
+            session
+        ) {
+
+            if (
+                !session ||
+                !session.user
+            ) {
+
+                /*
+                 * Hatufanyi redirect moja kwa moja
+                 * hapa ili INITIAL_SESSION isivuruge
+                 * page loading.
+                 */
+
+                return;
+
+            }
+
+            sessionStorage.setItem(
+                'userLoggedIn',
+                'true'
+            );
+
+            sessionStorage.setItem(
+                'userId',
+                session.user.id
+            );
+
+        }
+    );
+
+}
+
+</script>
 
 </body>
 
