@@ -703,8 +703,7 @@ id="eyeIcon"
 class="
     fas
     fa-eye
-    text-xs
-">
+    text-xs">
 </i>
 
 </button>
@@ -828,8 +827,7 @@ class="
 class="
     fas
     fa-arrow-right
-    text-xs
-">
+    text-xs">
 </i>
 
 </button>
@@ -945,8 +943,7 @@ class="
     right-4
     text-slate-400
     hover:text-slate-600
-    text-lg
-">
+    text-lg">
 
 <i class="fas fa-times"></i>
 
@@ -1009,6 +1006,21 @@ then use your email and password to log in.
 
 
 </div>
+
+<!-- REGISTRATION ALERT -->
+<div
+id="registerAlert"
+class="
+    hidden
+    mb-4
+    p-3.5
+    rounded-xl
+    text-xs
+    font-medium
+    border
+    shadow-sm
+"
+></div>
 
 
 <form
@@ -1615,8 +1627,7 @@ class="
     border
     border-slate-300
     rounded-lg
-    bg-white
-">
+    bg-white">
 
 
 <p
@@ -1653,8 +1664,7 @@ class="
     rounded-lg
     border-2
     border-dcf-green
-"
->
+">
 
 
 </div>
@@ -1693,8 +1703,7 @@ class="
     left-3.5
     top-3
     text-slate-400
-    text-xs
-">
+    text-xs">
 </i>
 
 
@@ -1743,8 +1752,7 @@ id="regPasswordEye"
 class="
     fas
     fa-eye
-    text-xs
-">
+    text-xs">
 </i>
 
 </button>
@@ -1799,8 +1807,7 @@ class="
     left-3.5
     top-3
     text-slate-400
-    text-xs
-">
+    text-xs">
 </i>
 
 
@@ -1849,8 +1856,7 @@ id="regConfirmPasswordEye"
 class="
     fas
     fa-eye
-    text-xs
-">
+    text-xs">
 </i>
 
 </button>
@@ -1886,8 +1892,7 @@ class="
 class="
     fas
     fa-info-circle
-    text-dcf-green
-">
+    text-dcf-green">
 </i>
 
 Instructions:
@@ -1936,8 +1941,7 @@ class="
     text-xs
     uppercase
     shadow-md
-    transition
-">
+    transition">
 
 Submit Registration Request
 
@@ -2005,8 +2009,7 @@ class="
     right-4
     text-slate-400
     hover:text-slate-600
-    text-lg
-">
+    text-lg">
 
 <i class="fas fa-times"></i>
 
@@ -2170,6 +2173,10 @@ Send Reset Instructions
    DCF LOGIN SYSTEM
    ENGLISH UI
    PERFORMANCE-OPTIMIZED VERSION
+   (Fixed: missing initializeCountrySelectors function
+    which previously blocked page initialization, causing
+    Turnstile widgets, registration nationality logic and
+    photo preview to never be wired up.)
 ========================================================= */
 
 
@@ -2643,6 +2650,93 @@ function initializeTurnstileWidgets(){
     });
 }
 
+
+/* =========================================================
+   COUNTRY SELECTORS
+   (Previously called but never defined — this caused a
+   ReferenceError that stopped initializeLoginPage() from
+   running any of the functions after it, including
+   initializeTurnstileWidgets(). That is why Turnstile never
+   rendered and Login/Register/Forgot submits appeared to do
+   nothing.)
+========================================================= */
+
+const DCF_COUNTRY_LIST = [
+    "Tanzania","Kenya","Uganda","Rwanda","Burundi","DR Congo",
+    "Zambia","Malawi","Mozambique","South Africa","Zimbabwe",
+    "Botswana","Namibia","Angola","Nigeria","Ghana","Ethiopia",
+    "Somalia","Sudan","South Sudan","Egypt","Morocco","Algeria",
+    "Tunisia","Senegal","Cameroon","Ivory Coast","Madagascar",
+    "United Kingdom","United States","Canada","India","China",
+    "United Arab Emirates","Saudi Arabia","Other"
+];
+
+function populateCountrySelect(selectElement, defaultValue){
+
+    if(!selectElement){
+
+        return;
+
+    }
+
+    // Don't wipe out a select that already has real options
+    // (e.g. #regCountry which intentionally starts with just
+    // Tanzania hardcoded in the HTML and is managed by
+    // setupRegistrationNationality()).
+    if(selectElement.options.length > 0){
+
+        return;
+
+    }
+
+    DCF_COUNTRY_LIST.forEach(function(country){
+
+        const option =
+            document.createElement('option');
+
+        option.value =
+            country;
+
+        option.textContent =
+            country;
+
+        selectElement.appendChild(
+            option
+        );
+
+    });
+
+    if(
+        defaultValue &&
+        selectElement.querySelector(
+            'option[value="' + defaultValue + '"]'
+        )
+    ){
+
+        selectElement.value =
+            defaultValue;
+
+    }
+
+}
+
+function initializeCountrySelectors(){
+
+    // #regCountry already ships with Tanzania hardcoded in
+    // the markup and is fully managed by
+    // setupRegistrationNationality(), so it is left alone here.
+
+    // #completionCountry (inside the dynamically-created
+    // Member Completion modal) ships empty, so fill it in
+    // whenever that modal exists in the DOM.
+    populateCountrySelect(
+        getElement('completionCountry'),
+        'Tanzania'
+    );
+
+}
+
+
 /* =========================================================
    MEMBER COMPLETION MODAL
 ========================================================= */
@@ -2789,7 +2883,342 @@ function createMemberCompletionModal(){
     `;
 
     document.body.appendChild(modal);
+
+    // The #completionCountry <select> only exists once this
+    // modal has been injected into the DOM, so populate it
+    // right here as well (in addition to the page-load call)
+    // to cover the case where the modal is created after
+    // initial page load (e.g. right after login).
+    initializeCountrySelectors();
 }
+
+function showCompletionAlert(
+    message,
+    type = 'danger'
+){
+
+    const box =
+        getElement('completionAlert');
+
+    if(!box){
+
+        return;
+
+    }
+
+    box.className =
+        'mb-5 p-3.5 rounded-xl text-xs font-medium border';
+
+    if(type === 'success'){
+
+        box.classList.add(
+            'bg-emerald-50',
+            'text-emerald-700',
+            'border-emerald-200'
+        );
+
+    }else if(type === 'warning'){
+
+        box.classList.add(
+            'bg-amber-50',
+            'text-amber-700',
+            'border-amber-200'
+        );
+
+    }else{
+
+        box.classList.add(
+            'bg-red-50',
+            'text-red-700',
+            'border-red-200'
+        );
+
+    }
+
+    box.innerHTML =
+        message;
+
+    box.classList.remove(
+        'hidden'
+    );
+
+}
+
+function updateNationalityFields(){
+
+    const nationality =
+        getElement('completionNationality');
+
+    const nidaGroup =
+        getElement('completionNidaGroup');
+
+    const passportGroup =
+        getElement('completionPassportGroup');
+
+    const nidaInput =
+        getElement('completionNida');
+
+    const passportInput =
+        getElement('completionPassport');
+
+    if(!nationality){
+
+        return;
+
+    }
+
+    if(nationality.value === 'Tanzanian'){
+
+        if(nidaGroup){ nidaGroup.classList.remove('hidden'); }
+        if(passportGroup){ passportGroup.classList.add('hidden'); }
+        if(passportInput){ passportInput.value = ''; }
+
+    }else{
+
+        if(passportGroup){ passportGroup.classList.remove('hidden'); }
+        if(nidaGroup){ nidaGroup.classList.add('hidden'); }
+        if(nidaInput){ nidaInput.value = ''; }
+
+    }
+
+}
+
+
+/* =========================================================
+   MEMBER LOOKUP HELPERS
+========================================================= */
+
+async function getCurrentUser(){
+
+    try{
+
+        const {
+            data:
+                { user }
+        } =
+        await supabaseClient.auth.getUser();
+
+        return user || null;
+
+    }catch(error){
+
+        console.error('GET USER ERROR:', error);
+
+        return null;
+
+    }
+
+}
+
+async function findMemberForUser(user){
+
+    if(!user){
+
+        return null;
+
+    }
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+            .from('members')
+            .select('*')
+            .eq('user_id', user.id)
+            .maybeSingle();
+
+        if(error){
+
+            console.error('FIND MEMBER ERROR:', error);
+
+            return null;
+
+        }
+
+        return data || null;
+
+    }catch(error){
+
+        console.error('FIND MEMBER ERROR:', error);
+
+        return null;
+
+    }
+
+}
+
+function isMemberComplete(member){
+
+    if(!member){
+
+        return false;
+
+    }
+
+    const requiredFields = [
+        'full_name','gender','dob','phone',
+        'nationality','country','address','member_type'
+    ];
+
+    for(const field of requiredFields){
+
+        if(!member[field]){
+
+            return false;
+
+        }
+
+    }
+
+    if(
+        member.nationality === 'Tanzanian' &&
+        !member.nida_no
+    ){
+
+        return false;
+
+    }
+
+    if(
+        member.nationality === 'Non-Tanzanian' &&
+        !member.passport_no
+    ){
+
+        return false;
+
+    }
+
+    if(!member.passport_image_url){
+
+        return false;
+
+    }
+
+    return true;
+
+}
+
+async function generateMemberId(){
+
+    try{
+
+        const {
+            count,
+            error
+        } =
+        await supabaseClient
+            .from('members')
+            .select('id', { count:'exact', head:true });
+
+        if(error){
+
+            console.error('MEMBER ID COUNT ERROR:', error);
+
+            return 'DCF-' + Date.now();
+
+        }
+
+        const nextNumber =
+            (count || 0) + 1;
+
+        return 'DCF-' + String(nextNumber).padStart(5,'0');
+
+    }catch(error){
+
+        console.error('MEMBER ID GENERATION ERROR:', error);
+
+        return 'DCF-' + Date.now();
+
+    }
+
+}
+
+async function openMemberCompletion(user, existingMember){
+
+    createMemberCompletionModal();
+    setupMemberCompletionForm();
+
+    const emailField =
+        getElement('completionEmail');
+
+    if(emailField){
+
+        emailField.value =
+            user.email || '';
+
+    }
+
+    const memberIdField =
+        getElement('completionMemberId');
+
+    if(memberIdField){
+
+        if(existingMember && existingMember.member_id){
+
+            memberIdField.value =
+                existingMember.member_id;
+
+        }else{
+
+            memberIdField.value =
+                await generateMemberId();
+
+        }
+
+    }
+
+    if(existingMember){
+
+        const setVal = (id, value) => {
+            const el = getElement(id);
+            if(el && value !== undefined && value !== null){
+                el.value = value;
+            }
+        };
+
+        setVal('completionFullName', existingMember.full_name);
+        setVal('completionGender', existingMember.gender);
+        setVal('completionDob', existingMember.dob);
+        setVal('completionPhone', existingMember.phone);
+        setVal('completionOccupation', existingMember.occupation);
+        setVal('completionMemberType', existingMember.member_type);
+        setVal('completionNationality', existingMember.nationality);
+        setVal('completionCountry', existingMember.country);
+        setVal('completionNida', existingMember.nida_no);
+        setVal('completionPassport', existingMember.passport_no);
+        setVal('completionAddress', existingMember.address);
+
+        updateNationalityFields();
+
+        const preview =
+            getElement('completionPhotoPreview');
+
+        const note =
+            getElement('completionPhotoRequiredNote');
+
+        if(existingMember.passport_image_url && preview){
+
+            preview.src =
+                existingMember.passport_image_url;
+
+            preview.classList.remove('hidden');
+
+            if(note){
+
+                note.textContent =
+                    'A photo is already on file. Choose a new one only if you want to replace it.';
+
+            }
+
+        }
+
+    }
+
+}
+
 
 /* =========================================================
    SETUP COMPLETION FORM
@@ -5722,7 +6151,7 @@ if(
 
 
 /* =========================================================
-   FAST PAGE INITIALIZATION
+   VERIFIED EMAIL
 ========================================================= */
 
 function restoreVerifiedEmail(){
