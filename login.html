@@ -343,6 +343,167 @@ button{
     .otp-inputs input{width:38px;height:48px;font-size:18px}
 }
 
+/* =========================================================
+   MEMBER COMPLETION — CLEAN ADD-MEMBER STYLE LAYOUT
+   Keeps the original Add Member structure but improves spacing,
+   hierarchy, field grouping, photo presentation and mobile flow.
+========================================================= */
+#memberCompletionModal{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+#memberCompletionModal > div{max-width:1080px!important;width:min(1080px,100%);max-height:94vh!important;border-radius:18px!important}
+#memberCompletionModal .completion-member-form{background:#f6f8f7;border:0;border-radius:18px;overflow:hidden}
+#memberCompletionModal .completion-member-header{padding:22px 28px 18px;background:#fff;border-bottom:1px solid #e4ebe7}
+#memberCompletionModal .completion-member-header .header-top{margin-bottom:16px}
+#memberCompletionModal .completion-member-body{padding:26px 28px 30px;background:#f6f8f7}
+#memberCompletionModal #completionAlert{margin-bottom:20px!important}
+
+#memberCompletionModal form{display:block!important}
+#memberCompletionModal .section-title,
+#memberCompletionModal .completion-section-title{
+  display:flex;align-items:center;gap:9px;
+  margin:0 0 16px;padding:0 0 10px;
+  border-bottom:1px solid #dce6e1;
+  color:#174a35;font-size:15px;font-weight:800;letter-spacing:.01em;
+}
+#memberCompletionModal .section-title::before,
+#memberCompletionModal .completion-section-title::before{
+  content:"";width:4px;height:20px;border-radius:999px;background:#174a35;display:inline-block;
+}
+
+#memberCompletionModal .form-grid,
+#memberCompletionModal .completion-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px 20px!important;
+  align-items:start;
+}
+#memberCompletionModal .form-group,
+#memberCompletionModal .completion-group{
+  min-width:0;display:flex;flex-direction:column;
+}
+#memberCompletionModal .form-group.full-width,
+#memberCompletionModal .completion-group.full{grid-column:1/-1}
+#memberCompletionModal .form-group label,
+#memberCompletionModal .completion-group label{
+  display:block;margin:0 0 7px;
+  color:#334155;font-size:11px;font-weight:800;line-height:1.35;
+  letter-spacing:.035em;text-transform:none;
+}
+#memberCompletionModal .form-group input,
+#memberCompletionModal .form-group select,
+#memberCompletionModal .form-group textarea,
+#memberCompletionModal .completion-group input,
+#memberCompletionModal .completion-group select,
+#memberCompletionModal .completion-group textarea{
+  width:100%;min-width:0;box-sizing:border-box;
+  padding:11px 12px!important;
+  border:1px solid #cfdad4!important;
+  border-radius:9px!important;
+  background:#fff!important;
+  color:#17211d!important;
+  font-size:13px!important;
+  line-height:1.45;
+  outline:none;
+  box-shadow:0 1px 1px rgba(15,23,42,.02);
+  transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
+}
+#memberCompletionModal .form-group input:focus,
+#memberCompletionModal .form-group select:focus,
+#memberCompletionModal .form-group textarea:focus,
+#memberCompletionModal .completion-group input:focus,
+#memberCompletionModal .completion-group select:focus,
+#memberCompletionModal .completion-group textarea:focus{
+  border-color:#174a35!important;
+  box-shadow:0 0 0 3px rgba(23,74,53,.10)!important;
+}
+#memberCompletionModal .form-group input[readonly],
+#memberCompletionModal .completion-group input[readonly]{
+  background:#eef3f0!important;color:#174a35!important;font-weight:700;cursor:not-allowed;
+}
+#memberCompletionModal .form-group textarea,
+#memberCompletionModal .completion-group textarea{min-height:96px;resize:vertical}
+#memberCompletionModal #address{min-height:88px}
+
+/* Photo card */
+#memberCompletionModal .image-upload-box{
+  min-height:178px;padding:14px;
+  border:1px dashed #aebfb6!important;border-radius:10px!important;
+  background:#fbfdfc!important;
+}
+#memberCompletionModal .image-upload-box input[type=file]{
+  width:100%;padding:9px;border:1px solid #d3ddd8;border-radius:8px;background:#fff;font-size:12px;
+}
+#memberCompletionModal .photo-required-note{
+  margin-top:7px;font-size:10px!important;line-height:1.5;color:#64756d!important;
+}
+#memberCompletionModal .preview-container{display:flex;justify-content:center;align-items:center;margin-top:12px;min-height:0}
+#memberCompletionModal #image_preview:not(.hidden){
+  display:block!important;width:118px!important;height:138px!important;
+  border-radius:10px!important;border:2px solid #174a35!important;
+  padding:3px!important;margin:0!important;object-fit:cover!important;background:#fff;
+}
+#memberCompletionModal #image_preview.hidden{display:none!important}
+
+/* Membership application card */
+#memberCompletionModal .membership-enhancement{
+  margin-top:28px;padding:0;border:1px solid #d9e4de;border-radius:14px;
+  background:#fff;overflow:hidden;
+}
+#memberCompletionModal .membership-section-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:18px;
+  padding:19px 20px;background:linear-gradient(180deg,#f8fbf9 0%,#f1f6f3 100%);
+  border-bottom:1px solid #dfe8e3;
+}
+#memberCompletionModal .membership-section-head h3{margin:0;color:#174a35;font-size:17px;font-weight:800}
+#memberCompletionModal .membership-section-head p{margin:4px 0 0;color:#64756d;font-size:11px;line-height:1.5}
+#memberCompletionModal .membership-badge{
+  flex:0 0 auto;padding:7px 10px;border:1px solid #cfe0d7;border-radius:999px;
+  background:#fff;color:#174a35;font-size:10px;font-weight:800;white-space:nowrap;
+}
+#memberCompletionModal .membership-step{border:0;border-bottom:1px solid #e3ebe7;border-radius:0;background:#fff}
+#memberCompletionModal .membership-step:last-of-type{border-bottom:0}
+#memberCompletionModal .membership-step-head{
+  display:flex;align-items:center;justify-content:space-between;gap:15px;padding:16px 20px;
+  background:#fff;
+}
+#memberCompletionModal .membership-step-title{font-size:13px;font-weight:800;color:#263b31}
+#memberCompletionModal .membership-step-subtitle{font-size:10px;color:#718078;margin-top:3px}
+#memberCompletionModal .membership-step-body{padding:0 20px 20px}
+#memberCompletionModal .membership-step-body .form-grid{padding-top:2px}
+#memberCompletionModal .required-note{margin:0 0 14px;padding:8px 10px;border-radius:7px;background:#f7faf8;color:#66756e;font-size:10px}
+#memberCompletionModal .read-more-btn{border:1px solid #d5e0da;border-radius:8px;background:#fff;color:#174a35;padding:7px 10px;font-size:10px;font-weight:800;white-space:nowrap}
+#memberCompletionModal .rules-box{margin-top:2px;padding:15px 18px;border:1px solid #dce6e1;border-radius:10px;background:#fbfdfc}
+#memberCompletionModal .rules-box ol{margin:0;padding-left:20px;color:#42524a;font-size:11px;line-height:1.65}
+#memberCompletionModal .rules-box li+li{margin-top:7px}
+#memberCompletionModal .membership-resources{display:flex;flex-wrap:wrap;gap:9px;margin-top:13px}
+#memberCompletionModal .membership-resource-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:38px;padding:8px 13px;border:1px solid #cfdcd5;border-radius:8px;background:#fff;color:#174a35;font-size:11px;font-weight:800;text-decoration:none}
+#memberCompletionModal .membership-resource-btn:hover{background:#f3f8f5}
+#memberCompletionModal .membership-final{margin-top:18px;padding:16px;border:1px solid #d9e4de;border-radius:12px;background:#fff}
+#memberCompletionModal .membership-check{display:flex;align-items:flex-start;gap:10px;margin:0;padding:12px;border:1px solid #e0e8e4;border-radius:9px;background:#f9fbfa}
+#memberCompletionModal .membership-check input{margin-top:3px;flex:0 0 auto;width:16px;height:16px;accent-color:#174a35}
+#memberCompletionModal .membership-check label{margin:0;color:#3f4f47;font-size:11px;line-height:1.6}
+#memberCompletionModal .form-actions{display:flex;gap:10px;margin-top:20px;padding-top:18px;border-top:1px solid #dce6e1}
+#memberCompletionModal .form-actions .btn-submit{min-height:44px;flex:1;border-radius:9px!important;font-weight:800}
+#memberCompletionModal .form-actions #completionLogoutBtn{flex:0 0 130px}
+
+@media(max-width:760px){
+  #memberCompletionModal{padding:8px!important}
+  #memberCompletionModal > div{max-height:96vh!important;border-radius:14px!important}
+  #memberCompletionModal .completion-member-header{padding:17px 16px 15px}
+  #memberCompletionModal .completion-member-body{padding:18px 16px 22px}
+  #memberCompletionModal .form-grid,
+  #memberCompletionModal .completion-grid{grid-template-columns:1fr!important;gap:14px!important}
+  #memberCompletionModal .form-group.full-width,
+  #memberCompletionModal .completion-group.full{grid-column:auto}
+  #memberCompletionModal .membership-section-head{flex-direction:column;padding:16px}
+  #memberCompletionModal .membership-badge{align-self:flex-start}
+  #memberCompletionModal .membership-step-head{align-items:flex-start;padding:14px 16px}
+  #memberCompletionModal .membership-step-body{padding:0 16px 17px}
+  #memberCompletionModal .membership-resources{display:grid;grid-template-columns:1fr}
+  #memberCompletionModal .membership-resource-btn{width:100%}
+  #memberCompletionModal .form-actions{flex-direction:column}
+  #memberCompletionModal .form-actions #completionLogoutBtn{flex:1;width:100%}
+}
+
 /* Prevent the Add Member page's global #image_preview rule from hiding the completion preview. */
 #memberCompletionModal #image_preview.hidden{display:none !important;}
 #memberCompletionModal #image_preview:not(.hidden){display:block !important;width:120px;height:140px;border-radius:6px;border:2px solid #174a35;padding:3px;margin:0 auto;object-fit:cover;}
@@ -3750,7 +3911,7 @@ function createMemberCompletionModal(){
 
                                 <span class="membership-badge">
                                     <i class="fas fa-globe"></i>
-                                    International Application
+                                    Membership Application
                                 </span>
                             </div>
 
@@ -7919,13 +8080,3 @@ else{
 </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
