@@ -2774,6 +2774,46 @@ section {
 }
 </style>
 
+
+<!-- DCF MEDIA MOBILE PLAY BUTTON FIX — additive only; existing layout preserved -->
+<style>
+/* Keep the existing desktop Media appearance. Make the visible play control
+   actually tappable on touch devices instead of letting the video sit above it. */
+.media-video-wrap{
+  position:relative;
+  overflow:hidden;
+}
+.media-video-overlay{
+  z-index:8 !important;
+  pointer-events:auto !important;
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.media-video-overlay span{
+  position:relative;
+  z-index:9;
+  pointer-events:auto;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-select:none;
+}
+@media (max-width:560px){
+  /* Larger touch target on phones; the rest of the Media card is untouched. */
+  .media-video-overlay span{
+    width:68px !important;
+    height:68px !important;
+  }
+}
+.media-video-wrap.is-playing .media-video-overlay{
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+.media-video-wrap.is-paused .media-video-overlay{
+  opacity:.92 !important;
+  pointer-events:auto !important;
+}
+</style>
 </head>
 
 <body>
@@ -6123,5 +6163,55 @@ document.addEventListener("keydown",(event)=>{
 
 </script>
 
+
+<!-- DCF MEDIA MOBILE PLAY BUTTON FIX — click/tap handler for dynamically loaded videos -->
+<script>
+(function(){
+  function syncMediaPlayState(video, wrap){
+    if(!video || !wrap) return;
+    wrap.classList.toggle('is-playing', !video.paused);
+    wrap.classList.toggle('is-paused', video.paused);
+  }
+
+  document.addEventListener('click', function(event){
+    const overlay = event.target.closest('.media-video-overlay');
+    if(!overlay) return;
+
+    const wrap = overlay.closest('.media-video-wrap');
+    const video = wrap ? wrap.querySelector('video.media-inline-video') : null;
+    if(!video) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if(video.paused){
+      const playPromise = video.play();
+      if(playPromise && typeof playPromise.catch === 'function'){
+        playPromise.catch(function(error){
+          console.warn('DCF Media video play was blocked by the browser:', error);
+          syncMediaPlayState(video, wrap);
+        });
+      }
+    }else{
+      video.pause();
+    }
+  }, true);
+
+  document.addEventListener('play', function(event){
+    const video = event.target.closest ? event.target.closest('video.media-inline-video') : null;
+    if(video) syncMediaPlayState(video, video.closest('.media-video-wrap'));
+  }, true);
+
+  document.addEventListener('pause', function(event){
+    const video = event.target.closest ? event.target.closest('video.media-inline-video') : null;
+    if(video) syncMediaPlayState(video, video.closest('.media-video-wrap'));
+  }, true);
+
+  document.addEventListener('loadedmetadata', function(event){
+    const video = event.target.closest ? event.target.closest('video.media-inline-video') : null;
+    if(video) syncMediaPlayState(video, video.closest('.media-video-wrap'));
+  }, true);
+})();
+</script>
 </body>
 </html>

@@ -4569,170 +4569,136 @@ async function handleMemberCompletionSubmit(event){
 
     event.preventDefault();
 
+    /*
+     * Prevent double-click / repeated submissions while Supabase is saving.
+     * This flag lives on the form itself so reopening the modal starts clean.
+     */
+    const form = event.currentTarget || getElement('memberForm');
+    if(form?.dataset.memberSaveInProgress === 'true'){
+        return;
+    }
+    if(form){
+        form.dataset.memberSaveInProgress = 'true';
+    }
+
     const button =
         getElement('saveBtn');
 
-    const user =
-        await getCurrentUser();
-
-    if(!user){
-
-        showCompletionAlert(
-            '❌ Your session has expired. Please log in again.'
-        );
-
-        return;
-    }
-
-    const val = function(id){
-
-        const el =
-            getElement(id);
-
-        return el
-            ? String(el.value || '').trim()
-            : '';
-    };
-
-    const memberId = val('member_id');
-    const fullName = val('full_name');
-    const gender = val('gender');
-    const dob = val('dob');
-    const nida = val('nida_no');
-    const passport = val('passport_no');
-    const phone = val('phone');
-    const email = val('email') || user.email || '';
-    const occupation = val('occupation');
-    const nationality = val('nationality');
-    const country = val('country');
-    const address = val('address');
-
-    const membershipType = val('membership_type');
-    const howHeard = val('how_heard_about_dcf');
-    const whyJoin = val('why_join');
-    const communityInterest = val('community_interest');
-    const skillsExperience = val('skills_experience');
-    const volunteerAvailability = val('volunteer_availability');
-    const expectedContribution = val('expected_contribution');
-    const membershipExpectations = val('membership_expectations');
-    const previousMembership = val('previous_membership');
-
-    const confirmed =
-        getElement('confirm_membership')?.checked === true;
-
-    const photoInput =
-        getElement('passport_image');
-
-    const photo =
-        photoInput?.files?.[0] || null;
-
-
-    if(
-        !fullName ||
-        !gender ||
-        !dob ||
-        !phone ||
-        !nationality ||
-        !country ||
-        !address
-    ){
-
-        showCompletionAlert(
-            '⚠️ Please complete all required member information.'
-        );
-
-        return;
-    }
-
-    if(nationality === 'Tanzanian' && !nida){
-
-        showCompletionAlert(
-            '⚠️ NIDA number is required for Tanzanian members.'
-        );
-
-        return;
-    }
-
-    if(nationality !== 'Tanzanian' && !passport){
-
-        showCompletionAlert(
-            '⚠️ Passport number is required for non-Tanzanian members.'
-        );
-
-        return;
-    }
-
-    const membershipRequired = [
-        ['membership_type','Tafadhali chagua aina ya uanachama.'],
-        ['how_heard_about_dcf','Tafadhali chagua ulivyofahamu DCF.'],
-        ['why_join','Tafadhali eleza kwa nini unataka kujiunga na DCF.'],
-        ['community_interest','Tafadhali eleza maeneo ya jamii unayotaka kusaidia.'],
-        ['skills_experience','Tafadhali eleza ujuzi au uzoefu unaoweza kuchangia.'],
-        ['volunteer_availability','Tafadhali chagua namna unayotaka kushiriki.'],
-        ['expected_contribution','Tafadhali chagua aina ya mchango unaoweza kutoa.'],
-        ['membership_expectations','Tafadhali eleza matarajio yako kama mwanachama.'],
-        ['previous_membership','Tafadhali eleza uzoefu wa awali au andika None.']
-    ];
-
-    for(const [id, message] of membershipRequired){
-
-        if(!val(id)){
-
-            showCompletionAlert(
-                '⚠️ ' + message
-            );
-
-            return;
-        }
-    }
-
-    if(!confirmed){
-
-        showCompletionAlert(
-            '⚠️ Tafadhali thibitisha maombi ya uanachama.'
-        );
-
-        return;
-    }
-
-    if(photo){
-
-        const allowed = [
-            'image/jpeg',
-            'image/png',
-            'image/webp'
-        ];
-
-        if(!allowed.includes(photo.type)){
-
-            showCompletionAlert(
-                '⚠️ Photo must be JPG, PNG or WEBP.'
-            );
-
-            return;
-        }
-
-        if(photo.size > 5 * 1024 * 1024){
-
-            showCompletionAlert(
-                '⚠️ Photo size must not exceed 5MB.'
-            );
-
-            return;
-        }
-    }
-
     if(button){
-
         button.disabled = true;
-
+        button.setAttribute('aria-busy','true');
         button.innerHTML =
             '<i class="fas fa-spinner fa-spin mr-2"></i>SAVING...';
     }
 
     try{
+        const user =
+            await getCurrentUser();
 
-        const existingMember =
+        if(!user){
+            throw new Error('Your session has expired. Please log in again.');
+        }
+
+        const val = function(id){
+            const el =
+                getElement(id);
+            return el
+                ? String(el.value || '').trim()
+                : '';
+        };
+
+        const memberId = val('member_id');
+        const fullName = val('full_name');
+        const gender = val('gender');
+        const dob = val('dob');
+        const nida = val('nida_no');
+        const passport = val('passport_no');
+        const phone = val('phone');
+        const email = val('email') || user.email || '';
+        const occupation = val('occupation');
+        const nationality = val('nationality');
+        const country = val('country');
+        const address = val('address');
+        const membershipType = val('membership_type');
+        const howHeard = val('how_heard_about_dcf');
+        const whyJoin = val('why_join');
+        const communityInterest = val('community_interest');
+        const skillsExperience = val('skills_experience');
+        const volunteerAvailability = val('volunteer_availability');
+        const expectedContribution = val('expected_contribution');
+        const membershipExpectations = val('membership_expectations');
+        const previousMembership = val('previous_membership');
+        const confirmed =
+            getElement('confirm_membership')?.checked === true;
+        const photoInput =
+            getElement('passport_image');
+        const photo =
+            photoInput?.files?.[0] || null;
+
+        if(
+            !fullName ||
+            !gender ||
+            !dob ||
+            !phone ||
+            !nationality ||
+            !country ||
+            !address
+        ){
+            throw new Error('Please complete all required member information.');
+        }
+
+        if(nationality === 'Tanzanian' && !nida){
+            throw new Error('NIDA number is required for Tanzanian members.');
+        }
+
+        if(nationality !== 'Tanzanian' && !passport){
+            throw new Error('Passport number is required for non-Tanzanian members.');
+        }
+
+        const membershipRequired = [
+            ['membership_type','Tafadhali chagua aina ya uanachama.'],
+            ['how_heard_about_dcf','Tafadhali chagua ulivyofahamu DCF.'],
+            ['why_join','Tafadhali eleza kwa nini unataka kujiunga na DCF.'],
+            ['community_interest','Tafadhali eleza maeneo ya jamii unayotaka kusaidia.'],
+            ['skills_experience','Tafadhali eleza ujuzi au uzoefu unaoweza kuchangia.'],
+            ['volunteer_availability','Tafadhali chagua namna unayotaka kushiriki.'],
+            ['expected_contribution','Tafadhali chagua aina ya mchango unaoweza kutoa.'],
+            ['membership_expectations','Tafadhali eleza matarajio yako kama mwanachama.'],
+            ['previous_membership','Tafadhali eleza uzoefu wa awali au andika None.']
+        ];
+
+        for(const [id, message] of membershipRequired){
+            if(!val(id)){
+                throw new Error(message);
+            }
+        }
+
+        if(!confirmed){
+            throw new Error('Tafadhali thibitisha maombi ya uanachama.');
+        }
+
+        if(photo){
+            const allowed = [
+                'image/jpeg',
+                'image/png',
+                'image/webp'
+            ];
+
+            if(!allowed.includes(photo.type)){
+                throw new Error('Photo must be JPG, PNG or WEBP.');
+            }
+
+            if(photo.size > 5 * 1024 * 1024){
+                throw new Error('Photo size must not exceed 5MB.');
+            }
+        }
+
+        /*
+         * Find the latest member row immediately before saving. This avoids
+         * creating a duplicate member when the login session was opened from
+         * another tab or when the first save attempt already reached Supabase.
+         */
+        let existingMember =
             await findMemberForUser(user);
 
         let imageUrl =
@@ -4741,7 +4707,6 @@ async function handleMemberCompletionSubmit(event){
             null;
 
         if(photo){
-
             const extension =
                 photo.name
                     .split('.')
@@ -4749,10 +4714,8 @@ async function handleMemberCompletionSubmit(event){
                     .toLowerCase();
 
             const safeMemberId =
-                memberId.replace(
-                    /[^a-zA-Z0-9-_]/g,
-                    ''
-                );
+                (memberId || ('DCF-' + Date.now()))
+                    .replace(/[^a-zA-Z0-9-_]/g,'');
 
             const fileName =
                 'members/' +
@@ -4764,141 +4727,107 @@ async function handleMemberCompletionSubmit(event){
                 '.' +
                 extension;
 
-            const {
-                error: uploadError
-            } =
-            await supabaseClient
-                .storage
-                .from('member-photos')
-                .upload(
-                    fileName,
-                    photo,
-                    {
-                        upsert:false,
-                        contentType:photo.type
-                    }
-                );
+            const { error: uploadError } =
+                await supabaseClient
+                    .storage
+                    .from('member-photos')
+                    .upload(
+                        fileName,
+                        photo,
+                        {
+                            upsert:false,
+                            contentType:photo.type
+                        }
+                    );
 
             if(uploadError){
-
                 throw new Error(
-                    'Photo upload failed: ' +
-                    uploadError.message
+                    'Photo upload failed: ' + uploadError.message
                 );
             }
 
-            const {
-                data: publicUrlData
-            } =
-            supabaseClient
-                .storage
-                .from('member-photos')
-                .getPublicUrl(fileName);
+            const { data: publicUrlData } =
+                supabaseClient
+                    .storage
+                    .from('member-photos')
+                    .getPublicUrl(fileName);
 
             imageUrl =
                 publicUrlData?.publicUrl || null;
         }
 
         if(!imageUrl){
-
-            showCompletionAlert(
-                '⚠️ Member photo is required before you can continue.'
+            throw new Error(
+                'Member photo is required before you can continue.'
             );
-
-            return;
         }
 
-        const payload = {
+        const finalMemberId =
+            existingMember?.member_id ||
+            memberId ||
+            ('DCF-' + Date.now());
 
+        const payload = {
             user_id:
                 user.id,
-
-            ...(existingMember?.member_id
-                ? { member_id: existingMember.member_id }
-                : {}),
-
+            member_id:
+                finalMemberId,
             full_name:
                 fullName,
-
             gender:
                 gender,
-
             dob:
                 dob,
-
             nida_no:
                 nationality === 'Tanzanian'
-                ? nida
-                : null,
-
+                    ? nida
+                    : null,
             passport_no:
                 nationality !== 'Tanzanian'
-                ? passport
-                : null,
-
+                    ? passport
+                    : null,
             passport_image_url:
                 imageUrl,
-
             phone:
                 phone,
-
             email:
                 email || user.email || null,
-
             occupation:
                 occupation || null,
-
             nationality:
                 nationality,
-
             country:
                 country,
-
             address:
                 address,
-
             membership_type:
                 membershipType,
-
             how_heard_about_dcf:
                 howHeard,
-
             why_join:
                 whyJoin,
-
             community_interest:
                 communityInterest,
-
             skills_experience:
                 skillsExperience,
-
             volunteer_availability:
                 volunteerAvailability,
-
             expected_contribution:
                 expectedContribution,
-
             membership_expectations:
                 membershipExpectations,
-
             previous_membership:
                 previousMembership,
-
             confirm_membership:
                 confirmed,
-
-
             membership_application_status:
                 'Pending',
-
             joining_date:
                 existingMember?.joining_date ||
                 new Date().toISOString().slice(0,10),
-
             status:
                 existingMember?.status ||
                 'Active',
-
             /* Keep the legacy registration column populated too. */
             member_type:
                 ({
@@ -4910,129 +4839,170 @@ async function handleMemberCompletionSubmit(event){
                 }[membershipType] || membershipType)
         };
 
+        let savedMember = null;
         let dbError = null;
 
-        if(existingMember){
-
+        if(existingMember?.id){
             const result =
                 await supabaseClient
                     .from('members')
                     .update(payload)
-                    .eq('id', existingMember.id);
+                    .eq('id', existingMember.id)
+                    .select('*')
+                    .maybeSingle();
 
-            dbError =
-                result.error;
-
+            savedMember = result.data || null;
+            dbError = result.error || null;
         }else{
-
             const result =
                 await supabaseClient
                     .from('members')
-                    .insert(payload);
+                    .insert(payload)
+                    .select('*')
+                    .maybeSingle();
 
-            dbError =
-                result.error;
+            savedMember = result.data || null;
+            dbError = result.error || null;
+
+            /*
+             * If another tab/request created the member between the lookup
+             * and insert, recover by loading that row and updating it instead
+             * of leaving the user stuck on the completion form.
+             */
+            if(dbError?.code === '23505'){
+                const recoveredMember =
+                    await findMemberForUser(user);
+
+                if(recoveredMember?.id){
+                    const retry =
+                        await supabaseClient
+                            .from('members')
+                            .update(payload)
+                            .eq('id', recoveredMember.id)
+                            .select('*')
+                            .maybeSingle();
+
+                    savedMember = retry.data || null;
+                    dbError = retry.error || null;
+                    existingMember = recoveredMember;
+                }
+            }
         }
 
         if(dbError){
-
             console.error(
                 'MEMBER COMPLETION DATABASE ERROR:',
                 dbError
             );
 
             if(dbError.code === '23505'){
-
                 throw new Error(
-                    'These member details already exist in the system.'
+                    'These member details already exist in the system. Please refresh the form and try again.'
                 );
             }
 
             if(dbError.code === '42501'){
-
                 throw new Error(
-                    'RLS prevented the operation. Check the members table policies.'
+                    'RLS prevented the operation. Check the members table policies in Supabase.'
                 );
             }
 
-            throw dbError;
+            throw new Error(
+                dbError.message || 'The membership information could not be saved.'
+            );
         }
 
-        await supabaseClient.auth.updateUser({
+        /*
+         * Supabase can acknowledge an update without returning a row in some
+         * configurations. Re-read the member and verify that the saved data
+         * is actually complete before redirecting to the portal.
+         */
+        const verifiedMember =
+            savedMember ||
+            await findMemberForUser(user);
 
-            data:{
+        if(!verifiedMember){
+            throw new Error(
+                'The information was submitted, but the saved member record could not be verified. Please try again.'
+            );
+        }
 
-                full_name:
-                    fullName,
+        if(!isMemberComplete(verifiedMember)){
+            console.error(
+                'MEMBER COMPLETION VERIFICATION FAILED:',
+                verifiedMember
+            );
+            throw new Error(
+                'The member record was saved but is still incomplete. Please review the required fields and try again.'
+            );
+        }
 
-                phone:
-                    phone,
+        /*
+         * Keep the authenticated profile synchronized. Unlike the previous
+         * version, the auth update result is checked so a profile-sync error
+         * cannot silently interrupt the save flow.
+         */
+        const { error: authUpdateError } =
+            await supabaseClient.auth.updateUser({
+                data:{
+                    full_name:
+                        fullName,
+                    phone:
+                        phone,
+                    gender:
+                        gender,
+                    dob:
+                        dob,
+                    nida_no:
+                        nationality === 'Tanzanian'
+                            ? nida
+                            : null,
+                    passport_no:
+                        nationality !== 'Tanzanian'
+                            ? passport
+                            : null,
+                    occupation:
+                        occupation || null,
+                    nationality:
+                        nationality,
+                    country:
+                        country,
+                    address:
+                        address,
+                    member_photo_url:
+                        imageUrl,
+                    member_type:
+                        membershipType,
+                    membership_type:
+                        membershipType,
+                    how_heard_about_dcf:
+                        howHeard,
+                    why_join:
+                        whyJoin,
+                    community_interest:
+                        communityInterest,
+                    skills_experience:
+                        skillsExperience,
+                    volunteer_availability:
+                        volunteerAvailability,
+                    expected_contribution:
+                        expectedContribution,
+                    membership_expectations:
+                        membershipExpectations,
+                    previous_membership:
+                        previousMembership,
+                    membership_rules_accepted:
+                        confirmed
+                }
+            });
 
-                gender:
-                    gender,
-
-                dob:
-                    dob,
-
-                nida_no:
-                    nationality === 'Tanzanian'
-                    ? nida
-                    : null,
-
-                passport_no:
-                    nationality !== 'Tanzanian'
-                    ? passport
-                    : null,
-
-                occupation:
-                    occupation || null,
-
-                nationality:
-                    nationality,
-
-                country:
-                    country,
-
-                address:
-                    address,
-
-                member_photo_url:
-                    imageUrl,
-
-                member_type:
-                    membershipType,
-
-                membership_type:
-                    membershipType,
-
-                how_heard_about_dcf:
-                    howHeard,
-
-                why_join:
-                    whyJoin,
-
-                community_interest:
-                    communityInterest,
-
-                skills_experience:
-                    skillsExperience,
-
-                volunteer_availability:
-                    volunteerAvailability,
-
-                expected_contribution:
-                    expectedContribution,
-
-                membership_expectations:
-                    membershipExpectations,
-
-                previous_membership:
-                    previousMembership,
-
-                membership_rules_accepted:
-                    confirmed
-            }
-        });
+        if(authUpdateError){
+            console.warn(
+                'MEMBER AUTH PROFILE UPDATE WARNING:',
+                authUpdateError
+            );
+            /* Database save is already verified, so do not block the portal. */
+        }
 
         showCompletionAlert(
             '🎉 Your member information has been saved successfully. Opening Member Portal...',
@@ -5043,14 +5013,17 @@ async function handleMemberCompletionSubmit(event){
             'memberProfileComplete',
             'true'
         );
-
         sessionStorage.setItem(
             'memberId',
-            payload.member_id
+            verifiedMember.member_id || finalMemberId
         );
 
+        /*
+         * Redirect only after the database record has been verified. This is
+         * the important fix for the previous "SAVING... then back to the same
+         * form" behaviour.
+         */
         setTimeout(function(){
-
             const modal =
                 getElement('memberCompletionModal');
 
@@ -5058,10 +5031,8 @@ async function handleMemberCompletionSubmit(event){
                 modal.remove();
             }
 
-            window.location.replace(
-                'pages/member-portal.html'
-            );
-
+            window.location.href =
+                'pages/member-portal.html';
         },650);
 
     }catch(error){
@@ -5082,15 +5053,44 @@ async function handleMemberCompletionSubmit(event){
 
     }finally{
 
+        if(form){
+            form.dataset.memberSaveInProgress = 'false';
+        }
+
         if(button){
-
             button.disabled = false;
-
+            button.removeAttribute('aria-busy');
             button.innerHTML =
                 'CONFIRM MEMBERSHIP';
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* =========================================================
    NATIONALITY FIELDS
