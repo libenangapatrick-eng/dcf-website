@@ -1,76 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Development Charity Foundation | DCF Tanzania</title>
+  
+  <!-- SEO & Social Media Meta Tags -->
+  <meta name="description" content="Official platform for Development Charity Foundation (DCF) Tanzania. Empowering communities and driving sustainable social change.">
+  <meta name="keywords" content="DCF, Development Charity Foundation, Tanzania, NGO, Charity Tanzania">
+  <meta name="author" content="Development Charity Foundation">
+  <meta name="theme-color" content="#063b25">
+  <meta name="robots" content="index, follow">
+  <meta name="google-site-verification" content="7MWEm8wcKcKLeGjZgOAHm5VkIf7RFQHSophK-YD1KAw">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:title" content="Development Charity Foundation (DCF) Tanzania">
+  <meta property="og:description" content="Building stronger communities and creating sustainable opportunities in Tanzania.">
+  <meta property="og:image" content="https://dcf-website.dcf-org.workers.dev/logo.png">
+  <meta property="og:url" content="https://dcf-website.dcf-org.workers.dev">
+  <meta property="og:type" content="website">
 
-<meta name="description"
-      content="Development Charity Foundation (DCF) is a Tanzanian non-profit, non-religious and non-political organization committed to sustainable community development, humanitarian support, youth empowerment, health, environmental protection and economic empowerment.">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Development Charity Foundation (DCF) Tanzania">
+  <meta name="twitter:description" content="Official platform for Development Charity Foundation (DCF) Tanzania.">
+  <meta name="twitter:image" content="https://dcf-website.dcf-org.workers.dev/logo.png">
 
-<meta name="author"
-      content="Development Charity Foundation">
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-<meta name="theme-color"
-      content="#063b25">
-
-<meta name="robots"
-      content="index, follow">
-
-<meta property="og:title"
-      content="Development Charity Foundation | DCF Tanzania">
-
-<meta property="og:description"
-      content="Development Charity Foundation - Building stronger communities and creating sustainable opportunities.">
-
-<meta property="og:type"
-      content="website">
-
-<title>Development Charity Foundation | DCF Tanzania — Stories, Impact &amp; Community</title>
-
-<!-- =====================================================
-     DCF SEO + SOCIAL MEDIA SHARING
-     Added without changing the existing system
-     ===================================================== -->
-<meta name="keywords" content="DCF, Development Charity Foundation, Tanzania, NGO, Charity Tanzania">
-<meta property="og:title" content="Development Charity Foundation (DCF) Tanzania">
-<meta property="og:description" content="Official platform for Development Charity Foundation (DCF) Tanzania. Empowering communities and driving sustainable social change.">
-<meta property="og:image" content="https://dcf-website.dcf-org.workers.dev/logo.png">
-<meta property="og:url" content="https://dcf-website.dcf-org.workers.dev">
-<meta property="og:type" content="website">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Development Charity Foundation (DCF) Tanzania">
-<meta name="twitter:description" content="Official platform for Development Charity Foundation (DCF) Tanzania.">
-<meta name="twitter:image" content="https://dcf-website.dcf-org.workers.dev/logo.png">
-    <title>Development Charity Foundation | DCF</title>
-    <!-- Google Search Console Verification Tag -->
-<meta name="google-site-verification" content="7MWEm8wcKcKLeGjZgOAHm5VkIf7RFQHSophK-YD1KAw" />
-
-<!-- =========================================================
-     FONTS
-     ========================================================= -->
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link
-  href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap"
-  rel="stylesheet">
-
-<!-- =========================================================
-     FONT AWESOME
-     ========================================================= -->
-
-<link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-<!-- =========================================================
-     SUPABASE
-     ========================================================= -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 
@@ -2203,7 +2166,614 @@ section {
   .media-lightbox-close{top:8px;right:8px}
 }
 
+
+/* =========================================================
+   DCF RESPONSIVE MEDIA PLAYBACK + UN-STYLE LEADERSHIP
+   Additive overrides: existing structure and visual language retained.
+   ========================================================= */
+
+/* Real inline video playback inside every published video card. */
+.media-video-wrap{
+  position:relative;
+  min-height:210px;
+  background:#000;
+}
+.media-inline-video{
+  display:block;
+  width:100%;
+  height:100%;
+  min-height:210px;
+  aspect-ratio:16/10;
+  object-fit:cover;
+  background:#000;
+}
+.media-video-overlay{
+  pointer-events:none;
+  transition:opacity .2s ease;
+}
+.media-video-wrap:has(video[controls]) .media-video-overlay{
+  opacity:.88;
+}
+.media-video-wrap:hover .media-video-overlay{
+  opacity:.15;
+}
+.media-card[data-media-type="video"]{
+  cursor:default;
+}
+.media-card[data-media-type="video"] .media-body{
+  position:relative;
+}
+.media-card[data-media-type="audio"] .media-thumb{
+  min-height:210px;
+}
+.media-audio audio{
+  display:block;
+  width:100%;
+  min-width:0;
+}
+
+/* Founder-led leadership composition: founder is large on the left,
+   the remaining profiles form a compact institutional grid on the right. */
+.team-layout{
+  display:grid;
+  grid-template-columns:minmax(300px,.82fr) minmax(0,1.58fr);
+  gap:22px;
+  align-items:start;
+}
+.team-founder{
+  position:sticky;
+  top:104px;
+}
+.team-founder .team-photo{
+  aspect-ratio:4/5.45;
+}
+.team-founder .team-info{
+  padding:22px;
+}
+.team-founder .team-info h3{
+  font-size:23px;
+}
+.team-featured-badge{
+  position:absolute;
+  top:14px;
+  left:14px;
+  z-index:5;
+  padding:7px 10px;
+  border-radius:5px;
+  background:var(--gold);
+  color:#183000;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+.team-side{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+.team-side .team-photo{
+  aspect-ratio:4/4.7;
+}
+.team-photo-placeholder{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100%;
+  background:linear-gradient(135deg,var(--green-950),var(--green-700));
+  color:#fff;
+}
+.team-photo-placeholder span{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:76px;
+  height:76px;
+  border:2px solid var(--gold);
+  border-radius:50%;
+  font-family:"Manrope",sans-serif;
+  font-size:25px;
+  font-weight:800;
+  color:var(--gold);
+  background:rgba(255,255,255,.06);
+}
+.team-spokesperson{
+  border-color:rgba(216,177,63,.65);
+}
+.team-spokesperson .team-role{
+  color:#9b7617;
+}
+
+/* Keep the founder-first composition usable on tablets. */
+@media(max-width:1120px){
+  .team-layout{
+    grid-template-columns:minmax(270px,.75fr) minmax(0,1.45fr);
+  }
+  .team-side{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+@media(max-width:850px){
+  .team-layout{
+    grid-template-columns:1fr;
+    gap:24px;
+  }
+  .team-founder{
+    position:relative;
+    top:auto;
+  }
+  .team-founder .team-photo{
+    aspect-ratio:4/4.9;
+  }
+  .team-side{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .media-inline-video,
+  .media-video-wrap{
+    min-height:190px;
+  }
+}
+@media(max-width:560px){
+  .team-side{
+    grid-template-columns:1fr;
+  }
+  .team-founder .team-photo{
+    aspect-ratio:4/5;
+  }
+  .team-founder .team-info h3{
+    font-size:21px;
+  }
+  .media-inline-video,
+  .media-video-wrap{
+    min-height:220px;
+  }
+}
+
+/* Browsers without :has() still retain fully functional video controls. */
+@supports not selector(.media-video-wrap:has(video)){
+  .media-video-overlay{
+    opacity:.75;
+  }
+}
+
+
+/* =========================================================
+   DCF DONATION MODAL — additive improvement
+   Existing Donate button styling is retained.
+   ========================================================= */
+.donate-modal{
+  position:fixed;
+  inset:0;
+  z-index:20000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(1,24,14,.72);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:.22s var(--ease);
+}
+.donate-modal.open{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+.donate-modal-card{
+  width:min(470px,100%);
+  overflow:hidden;
+  border:1px solid rgba(216,177,63,.42);
+  border-radius:22px;
+  background:#fff;
+  box-shadow:var(--shadow-lg);
+  transform:translateY(12px) scale(.98);
+  transition:.25s var(--ease);
+}
+.donate-modal.open .donate-modal-card{
+  transform:translateY(0) scale(1);
+}
+.donate-modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  padding:20px 22px;
+  background:linear-gradient(135deg,var(--green-950),var(--green-800));
+  color:#fff;
+}
+.donate-modal-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-family:"Manrope",sans-serif;
+  font-size:20px;
+  font-weight:800;
+}
+.donate-modal-title i{color:var(--gold);}
+.donate-modal-close{
+  width:38px;
+  height:38px;
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  background:rgba(255,255,255,.10);
+  color:#fff;
+  cursor:pointer;
+}
+.donate-modal-body{padding:24px 22px 22px;}
+.donate-modal-intro{
+  margin-bottom:18px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.7;
+}
+.donate-method{
+  padding:17px;
+  border:1px solid var(--border);
+  border-radius:15px;
+  background:var(--surface);
+}
+.donate-method-label{
+  display:block;
+  margin-bottom:6px;
+  color:var(--green-700);
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.donate-number{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  color:var(--green-950);
+  font-family:"Manrope",sans-serif;
+  font-size:24px;
+  font-weight:800;
+}
+.donate-name{
+  margin-top:5px;
+  color:var(--muted);
+  font-size:11px;
+}
+.donate-call{
+  margin-top:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  min-height:45px;
+  padding:10px 14px;
+  border-radius:8px;
+  background:var(--green-800);
+  color:#fff;
+  font-size:11px;
+  font-weight:800;
+}
+.donate-copy{
+  margin-top:10px;
+  width:100%;
+  min-height:42px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:#fff;
+  color:var(--green-700);
+  font-size:10px;
+  font-weight:800;
+  cursor:pointer;
+}
+.donate-note{
+  margin-top:14px;
+  color:var(--muted);
+  font-size:10px;
+  text-align:center;
+}
+@media(max-width:560px){
+  .donate-modal{padding:12px;}
+  .donate-modal-card{border-radius:18px;}
+  .donate-modal-body{padding:20px 16px 18px;}
+  .donate-number{font-size:21px;}
+}
+
+/* =========================================================
+   LEADERSHIP FLOW — explicit governance order
+   Founder → Board Chair → Board Members → Chairperson → Team
+   ========================================================= */
+.team-layout{
+  align-items:start;
+}
+.team-side{
+  align-content:start;
+}
+.team-side .team-card:first-child{
+  border-color:rgba(216,177,63,.72);
+  box-shadow:0 10px 28px rgba(3,39,25,.09);
+}
+
+
+/* =========================================================
+   DCF PREMIUM NGO LEADERSHIP — GOVERNANCE HIERARCHY
+   Additive override: existing site functionality is preserved.
+   ========================================================= */
+.dcf-leadership{
+  --lh-deep:#0d3022;
+  --lh-green:#174a35;
+  --lh-green-2:#28723E;
+  --lh-accent:#4C9A2A;
+  --lh-line:rgba(23,74,53,.20);
+  --lh-soft:#f7faf8;
+  background:#fff;
+  position:relative;
+  overflow:hidden;
+}
+.dcf-leadership .container{max-width:1180px;}
+.dcf-leadership .section-heading{max-width:760px;margin-left:auto;margin-right:auto;text-align:center;margin-bottom:58px;}
+.dcf-leadership .section-label{color:var(--lh-green-2);letter-spacing:2px;font-weight:800;}
+.dcf-leadership .section-heading h2{color:var(--lh-deep);margin-bottom:14px;}
+.dcf-leadership .section-heading p{max-width:680px;margin:0 auto;color:#617067;}
+
+.dcf-governance{position:relative;display:flex;flex-direction:column;align-items:center;}
+.dcf-level{width:100%;display:flex;justify-content:center;position:relative;}
+.dcf-level-label{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  margin:0 auto 22px;color:var(--lh-green);font-size:11px;font-weight:800;
+  letter-spacing:1.8px;text-transform:uppercase;
+}
+.dcf-level-label::before,.dcf-level-label::after{content:"";height:1px;width:44px;background:var(--lh-line);}
+
+.dcf-leader-card{
+  background:#fff;border:1px solid rgba(13,48,34,.11);border-radius:20px;
+  box-shadow:0 8px 24px rgba(13,48,34,.055);overflow:hidden;
+  text-align:center;position:relative;
+  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+}
+.dcf-leader-card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(13,48,34,.10);border-color:rgba(76,154,42,.34);}
+.dcf-leader-photo{position:relative;background:#eef4ef;overflow:hidden;}
+.dcf-leader-photo img{display:block;width:100%;height:100%;object-fit:cover;}
+.dcf-leader-info{padding:18px 18px 20px;}
+.dcf-leader-info h3{margin:0 0 7px;color:var(--lh-deep);font-family:"Manrope",sans-serif;font-size:18px;line-height:1.2;}
+.dcf-leader-role{display:inline-block;color:var(--lh-green-2);font-size:12px;font-weight:800;line-height:1.35;}
+
+/* Level 1 — Board Chairperson is the visual apex. */
+.dcf-board-chair{max-width:360px;width:100%;border:1px solid rgba(23,74,53,.20);box-shadow:0 14px 38px rgba(13,48,34,.10);}
+.dcf-board-chair .dcf-leader-photo{height:280px;padding:14px;background:linear-gradient(145deg,#edf5ef,#fff);}
+.dcf-board-chair .dcf-leader-photo img{border-radius:50%;border:5px solid #fff;box-shadow:0 5px 18px rgba(13,48,34,.10);}
+.dcf-board-chair .dcf-leader-info{padding:21px 22px 24px;}
+.dcf-board-chair .dcf-leader-info h3{font-size:24px;}
+.dcf-apex-badge{position:absolute;top:18px;left:18px;padding:7px 11px;border-radius:999px;background:var(--lh-deep);color:#fff;font-size:9px;font-weight:900;letter-spacing:1.3px;z-index:2;}
+
+/* Elegant thin governance connector between levels. */
+.dcf-connector{width:1px;height:42px;background:linear-gradient(to bottom,rgba(23,74,53,.55),var(--lh-line));position:relative;}
+.dcf-connector::after{content:"";position:absolute;left:50%;bottom:-1px;width:7px;height:7px;border-right:1px solid var(--lh-green);border-bottom:1px solid var(--lh-green);transform:translateX(-50%) rotate(45deg);background:#fff;}
+
+/* Level 2 — Executive Director / Founder. */
+.dcf-executive{max-width:410px;width:100%;}
+.dcf-executive .dcf-leader-photo{height:300px;padding:14px;background:linear-gradient(145deg,#f0f6f1,#fff);}
+.dcf-executive .dcf-leader-photo img{border-radius:50%;border:6px solid #fff;box-shadow:0 7px 20px rgba(13,48,34,.12);}
+.dcf-executive .dcf-leader-info{padding:22px 24px 25px;}
+.dcf-executive .dcf-leader-info h3{font-size:25px;}
+.dcf-executive .dcf-leader-role{font-size:13px;}
+
+/* Level 3 — Board Members, deliberately separated from operations. */
+.dcf-board-level{width:100%;}
+.dcf-board-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;max-width:900px;margin:0 auto;position:relative;}
+.dcf-board-grid::before{content:"";position:absolute;top:-21px;left:16.666%;right:16.666%;height:1px;background:var(--lh-line);}
+.dcf-board-card{max-width:280px;width:100%;margin:0 auto;}
+.dcf-board-card .dcf-leader-photo{height:220px;padding:11px;background:#f3f7f4;}
+.dcf-board-card .dcf-leader-photo img{border-radius:50%;border:4px solid #fff;box-shadow:0 4px 14px rgba(13,48,34,.09);}
+.dcf-board-card .dcf-leader-info{padding:17px 14px 19px;}
+.dcf-board-card .dcf-leader-info h3{font-size:17px;}
+
+/* Level 4 — Secretariat & Management. */
+.dcf-management-level{width:100%;margin-top:4px;}
+.dcf-management-wrap{position:relative;padding-top:28px;}
+.dcf-management-wrap::before{content:"";position:absolute;top:0;left:8.33%;right:8.33%;height:1px;background:var(--lh-line);}
+.dcf-management-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;}
+.dcf-management-card{min-width:0;}
+.dcf-management-card .dcf-leader-photo{height:205px;padding:10px;background:#f4f7f5;}
+.dcf-management-card .dcf-leader-photo img{border-radius:18px;}
+.dcf-management-card .dcf-leader-info{padding:16px 13px 18px;}
+.dcf-management-card .dcf-leader-info h3{font-size:16px;}
+.dcf-management-card .dcf-leader-role{font-size:11px;}
+
+.dcf-leadership-note{margin:40px auto 0;max-width:720px;text-align:center;color:#718077;font-size:12px;line-height:1.7;}
+
+@media (max-width:900px){
+  .dcf-board-grid{gap:16px;}
+  .dcf-management-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (max-width:640px){
+  .dcf-leadership .section-heading{margin-bottom:42px;}
+  .dcf-board-chair{max-width:320px;}
+  .dcf-board-chair .dcf-leader-photo{height:245px;}
+  .dcf-executive{max-width:350px;}
+  .dcf-executive .dcf-leader-photo{height:260px;}
+  .dcf-board-grid{grid-template-columns:1fr;max-width:300px;gap:16px;}
+  .dcf-board-grid::before{display:none;}
+  .dcf-board-card{max-width:300px;}
+  .dcf-management-wrap{padding-top:0;}
+  .dcf-management-wrap::before{display:none;}
+  .dcf-management-grid{grid-template-columns:1fr;max-width:330px;margin:0 auto;gap:16px;}
+  .dcf-management-card .dcf-leader-photo{height:230px;}
+  .dcf-level-label{margin-bottom:17px;font-size:10px;}
+  .dcf-level-label::before,.dcf-level-label::after{width:25px;}
+  .dcf-connector{height:32px;}
+}
+
 </style>
+
+<style>
+/* =========================================================
+   DCF LEADERSHIP — FINAL PHOTO + TEAM LAYOUT FIX
+   Keeps the existing leadership content and functionality.
+   Only improves the requested team arrangement and portrait visibility.
+   ========================================================= */
+.dcf-leadership .section-heading{margin-bottom:52px;}
+.dcf-governance{width:100%;}
+
+/* Board Chairperson + Founder: compact horizontal institutional cards. */
+.dcf-level > div{width:100%;display:flex;flex-direction:column;align-items:center;}
+.dcf-board-chair,
+.dcf-executive{
+  width:min(520px,100%);
+  max-width:520px;
+  display:grid;
+  grid-template-columns:150px minmax(0,1fr);
+  align-items:center;
+  text-align:left;
+  padding:16px;
+  gap:20px;
+  overflow:visible;
+  background:linear-gradient(135deg,#f8fbf9,#fff);
+}
+.dcf-board-chair .dcf-leader-photo,
+.dcf-executive .dcf-leader-photo{
+  width:150px;
+  height:150px;
+  min-width:150px;
+  padding:0;
+  border-radius:50%;
+  overflow:hidden;
+  background:#eef4ef;
+}
+.dcf-board-chair .dcf-leader-photo img,
+.dcf-executive .dcf-leader-photo img{
+  width:100%;
+  height:100%;
+  border:4px solid #fff;
+  border-radius:50%;
+  object-fit:cover;
+  object-position:center top;
+  box-shadow:0 4px 14px rgba(13,48,34,.10);
+}
+.dcf-board-chair .dcf-leader-info,
+.dcf-executive .dcf-leader-info{
+  padding:4px 8px 4px 0;
+  min-width:0;
+}
+.dcf-board-chair .dcf-leader-info h3,
+.dcf-executive .dcf-leader-info h3{
+  margin-bottom:7px;
+  font-size:22px;
+}
+.dcf-board-chair .dcf-leader-role,
+.dcf-executive .dcf-leader-role{font-size:12px;}
+.dcf-apex-badge{top:10px;left:10px;transform:translate(-2px,-2px);font-size:8px;padding:6px 9px;}
+
+/* Board Members: three equal cards with clean circular portraits. */
+.dcf-board-grid{
+  width:100%;
+  max-width:900px;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:22px;
+  align-items:stretch;
+}
+.dcf-board-card{
+  max-width:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:20px 16px 18px;
+  overflow:hidden;
+  background:#f8fbf9;
+}
+.dcf-board-card .dcf-leader-photo{
+  width:150px;
+  height:150px;
+  flex:0 0 150px;
+  padding:0;
+  border-radius:50%;
+  overflow:hidden;
+  background:#eef4ef;
+}
+.dcf-board-card .dcf-leader-photo img{
+  width:100%;
+  height:100%;
+  border:4px solid #fff;
+  border-radius:50%;
+  object-fit:cover;
+  object-position:center top;
+}
+.dcf-board-card .dcf-leader-info{padding:15px 4px 0;}
+.dcf-board-card .dcf-leader-info h3{font-size:17px;margin-bottom:6px;}
+
+/* Secretariat & Management: 3 main profiles on row one, 5 on row two. */
+.dcf-management-grid{
+  display:grid;
+  grid-template-columns:repeat(15,minmax(0,1fr));
+  gap:18px;
+  align-items:stretch;
+}
+.dcf-management-card{
+  grid-column:span 5;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  padding:18px 12px 17px;
+  background:#f8fbf9;
+}
+.dcf-management-card:nth-child(n+4){grid-column:span 3;}
+.dcf-management-card .dcf-leader-photo{
+  width:145px;
+  height:145px;
+  flex:0 0 145px;
+  padding:0;
+  border-radius:50%;
+  overflow:hidden;
+  background:#eef4ef;
+}
+.dcf-management-card .dcf-leader-photo img{
+  width:100%;
+  height:100%;
+  border:4px solid #fff;
+  border-radius:50%;
+  object-fit:cover;
+  object-position:center top;
+  box-shadow:0 4px 12px rgba(13,48,34,.08);
+}
+.dcf-management-card .dcf-leader-info{padding:14px 4px 0;}
+.dcf-management-card .dcf-leader-info h3{font-size:16px;margin-bottom:6px;}
+
+/* Prevent any leadership image from stretching or being flattened. */
+.dcf-leadership .dcf-leader-photo img{
+  display:block;
+  max-width:none;
+}
+
+@media(max-width:900px){
+  .dcf-board-chair,.dcf-executive{width:min(500px,100%);grid-template-columns:135px minmax(0,1fr);}
+  .dcf-board-chair .dcf-leader-photo,.dcf-executive .dcf-leader-photo{width:135px;height:135px;min-width:135px;}
+  .dcf-board-grid{gap:16px;}
+  .dcf-board-card .dcf-leader-photo{width:135px;height:135px;flex-basis:135px;}
+  .dcf-management-grid{grid-template-columns:repeat(6,minmax(0,1fr));}
+  .dcf-management-card,.dcf-management-card:nth-child(n+4){grid-column:span 2;}
+  .dcf-management-card:nth-child(n+4):last-child{grid-column:auto;}
+  .dcf-management-card .dcf-leader-photo{width:125px;height:125px;flex-basis:125px;}
+}
+
+@media(max-width:640px){
+  .dcf-board-chair,.dcf-executive{width:min(360px,100%);grid-template-columns:1fr;text-align:center;padding:18px;}
+  .dcf-board-chair .dcf-leader-photo,.dcf-executive .dcf-leader-photo{width:155px;height:155px;min-width:155px;margin:0 auto;}
+  .dcf-board-chair .dcf-leader-info,.dcf-executive .dcf-leader-info{padding:2px 4px 4px;}
+  .dcf-board-chair .dcf-leader-info h3,.dcf-executive .dcf-leader-info h3{font-size:20px;}
+  .dcf-board-grid{grid-template-columns:1fr;max-width:310px;gap:16px;}
+  .dcf-board-card{max-width:310px;margin:0 auto;width:100%;}
+  .dcf-board-card .dcf-leader-photo{width:155px;height:155px;flex-basis:155px;}
+  .dcf-management-grid{grid-template-columns:1fr;max-width:330px;margin:0 auto;gap:16px;}
+  .dcf-management-card,.dcf-management-card:nth-child(n+4){grid-column:auto;}
+  .dcf-management-card .dcf-leader-photo{width:155px;height:155px;flex-basis:155px;}
+}
+</style>
+
 </head>
 
 <body>
@@ -2253,6 +2823,72 @@ section {
 <!-- =========================================================
      NAVIGATION
      ========================================================= -->
+
+
+<!-- =========================================================
+     DONATION INFORMATION
+     ========================================================= -->
+<div class="donate-modal" id="donateModal" aria-hidden="true">
+  <div class="donate-modal-card" role="dialog" aria-modal="true"
+       aria-labelledby="donateModalTitle">
+    <div class="donate-modal-head">
+      <div class="donate-modal-title" id="donateModalTitle">
+        <i class="fa-solid fa-hand-holding-heart"></i>
+        <span data-en="Support DCF" data-sw="Changia DCF">Support DCF</span>
+      </div>
+      <button type="button" class="donate-modal-close" id="donateModalClose"
+              aria-label="Close donation window">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="donate-modal-body">
+      <p class="donate-modal-intro"
+         data-en="You can support Development Charity Foundation through the following Vodacom M-Pesa payment details."
+         data-sw="Unaweza kuunga mkono Development Charity Foundation kupitia taarifa zifuatazo za malipo ya Vodacom M-Pesa.">
+        You can support Development Charity Foundation through the following Vodacom M-Pesa payment details.
+      </p>
+
+      <div class="donate-method">
+        <span class="donate-method-label"
+              data-en="Vodacom Lipa / M-Pesa"
+              data-sw="Vodacom Lipa / M-Pesa">
+          Vodacom Lipa / M-Pesa
+        </span>
+
+        <div class="donate-number">
+          <span id="donatePhone">351604882</span>
+          <i class="fa-solid fa-mobile-screen-button" aria-hidden="true"></i>
+        </div>
+
+        <div class="donate-name">
+          <strong data-en="Name:" data-sw="Jina:">Name:</strong>
+          Development Agro
+        </div>
+
+        <button type="button" class="donate-copy" id="donateCopy">
+          <i class="fa-regular fa-copy"></i>
+          <span data-en="Copy payment number" data-sw="Nakili namba ya malipo">
+            Copy payment number
+          </span>
+        </button>
+
+        <a class="donate-call" href="tel:0741245430">
+          <i class="fa-solid fa-phone"></i>
+          <span data-en="Call 0741245430" data-sw="Piga 0741245430">
+            Call 0741245430
+          </span>
+        </a>
+      </div>
+
+      <p class="donate-note"
+         data-en="Please confirm that the recipient name is Development Agro before completing your payment."
+         data-sw="Tafadhali hakikisha jina la mpokeaji ni Development Agro kabla ya kukamilisha malipo.">
+        Please confirm that the recipient name is Development Agro before completing your payment.
+      </p>
+    </div>
+  </div>
+</div>
 
 <nav class="navbar" id="navbar">
 
@@ -3462,350 +4098,127 @@ section {
 <!-- =========================================================
      LEADERSHIP
      ========================================================= -->
-
-<section
-  class="section team-section"
-  id="team">
-
+<section class="section team-section dcf-leadership" id="team">
   <div class="container">
-
     <div class="section-heading">
-
       <span class="section-label" data-en="LEADERSHIP & GOVERNANCE" data-sw="UONGOZI NA UTAWALA">
-        LEADERSHIP & GOVERNANCE
+        LEADERSHIP &amp; GOVERNANCE
       </span>
-
-      <h2 data-en="Meet Our Team" data-sw="Fahamu Timu Yetu">
-        Meet Our Team
+      <h2 data-en="Leadership &amp; Governance" data-sw="Uongozi na Utawala">
+        Leadership &amp; Governance
       </h2>
-
-      <p data-en="Leadership, governance, administration and professional support working together for impact."
-         data-sw="Uongozi, utawala, usimamizi na msaada wa kitaalamu vikifanya kazi pamoja kwa ajili ya matokeo.">
-        Leadership, governance, administration and
-        professional support working together for impact.
+      <p data-en="A clear governance structure supporting accountable leadership, effective management and sustainable community impact."
+         data-sw="Muundo wa wazi wa uongozi unaosaidia uwajibikaji, usimamizi bora na matokeo endelevu kwa jamii.">
+        A clear governance structure supporting accountable leadership, effective management and sustainable community impact.
       </p>
-
     </div>
 
-
-    <div class="team-grid">
-
-
-      <article class="team-card">
-
-        <div class="team-photo">
-
-          <img
-            src="images/team.jpg"
-            alt="Patrick Libenanga - Founder"
-            loading="lazy">
-
+    <div class="dcf-governance">
+      <!-- LEVEL 1: BOARD CHAIRPERSON -->
+      <div class="dcf-level">
+        <div>
+          <div class="dcf-level-label" data-en="Board Leadership" data-sw="Uongozi wa Bodi">Board Leadership</div>
+          <article class="dcf-leader-card dcf-board-chair">
+            <div class="dcf-leader-photo">
+              <img src="images/team8.jpg" alt="Thomson Zacharia - Board Chairperson" loading="lazy">
+              <span class="dcf-apex-badge" data-en="BOARD CHAIRPERSON" data-sw="MWENYEKITI WA BODI">BOARD CHAIRPERSON</span>
+            </div>
+            <div class="dcf-leader-info">
+              <h3>Thomson Zacharia</h3>
+              <span class="dcf-leader-role" data-en="Board Chairperson" data-sw="Mwenyekiti wa Bodi">Board Chairperson</span>
+            </div>
+          </article>
         </div>
+      </div>
 
-        <div class="team-info">
+      <div class="dcf-connector" aria-hidden="true"></div>
 
-          <h3>
-            Patrick Libenanga
-          </h3>
-
-          <span class="team-role" data-en="Founder" data-sw="Mwanzilishi">
-            Founder
-          </span>
-
+      <!-- LEVEL 2: EXECUTIVE DIRECTOR / FOUNDER -->
+      <div class="dcf-level">
+        <div>
+          <div class="dcf-level-label" data-en="Executive Leadership" data-sw="Uongozi Mtendaji">Executive Leadership</div>
+          <article class="dcf-leader-card dcf-executive">
+            <div class="dcf-leader-photo">
+              <img src="images/team.jpg" alt="Patrick Libenanga - Founder& Executive Director" loading="lazy">
+            </div>
+            <div class="dcf-leader-info">
+              <h3>Patrick Libenanga</h3>
+              <span class="dcf-leader-role" data-en="Founder & Executive Director" data-sw="Mwanzilishi na Mwakilishi wa Uongozi">Founder & Executive Director</span>
+            </div>
+          </article>
         </div>
+      </div>
 
-      </article>
+      <div class="dcf-connector" aria-hidden="true"></div>
 
-
-      <article class="team-card">
-
-        <div class="team-photo">
-
-          <img
-            src="images/team1.jpg"
-            alt="Irene Severine - Chairperson"
-            loading="lazy">
-
+      <!-- LEVEL 3: BOARD MEMBERS -->
+      <div class="dcf-board-level">
+        <div class="dcf-level-label" data-en="Board Members" data-sw="Wajumbe wa Bodi">Board Members</div>
+        <div class="dcf-board-grid">
+          <article class="dcf-leader-card dcf-board-card">
+            <div class="dcf-leader-photo"><img src="images/team10.jpg" alt="Elisha Mkamba - Board Member" loading="lazy"></div>
+            <div class="dcf-leader-info"><h3>Elisha Mkamba</h3><span class="dcf-leader-role" data-en="Board Member" data-sw="Mjumbe wa Bodi">Board Member</span></div>
+          </article>
+          <article class="dcf-leader-card dcf-board-card">
+            <div class="dcf-leader-photo"><img src="images/team9.jpg" alt="Paskali Mayo - Board Member" loading="lazy"></div>
+            <div class="dcf-leader-info"><h3>Paskali Mayo</h3><span class="dcf-leader-role" data-en="Board Member" data-sw="Mjumbe wa Bodi">Board Member</span></div>
+          </article>
+          <article class="dcf-leader-card dcf-board-card">
+            <div class="dcf-leader-photo"><img src="images/team11.jpg" alt="Jamila Ayubu - Board Member" loading="lazy"></div>
+            <div class="dcf-leader-info"><h3>Jamila Ayubu</h3><span class="dcf-leader-role" data-en="Board Member" data-sw="Mjumbe wa Bodi">Board Member</span></div>
+          </article>
         </div>
+      </div>
 
-        <div class="team-info">
+      <div class="dcf-connector" aria-hidden="true"></div>
 
-          <h3>
-            Irene Severine
-          </h3>
-
-          <span class="team-role" data-en="Chairperson" data-sw="Mwenyekiti">
-            Chairperson
-          </span>
-
+      <!-- LEVEL 4: SECRETARIAT & MANAGEMENT -->
+      <div class="dcf-management-level">
+        <div class="dcf-level-label" data-en="Secretariat &amp; Management" data-sw="Sekretarieti na Usimamizi">Secretariat &amp; Management</div>
+        <div class="dcf-management-wrap">
+          <div class="dcf-management-grid">
+            <article class="dcf-leader-card dcf-management-card">
+              <div class="dcf-leader-photo"><img src="images/team1.jpg" alt="Irene Severine - Chairperson" loading="lazy"></div>
+              <div class="dcf-leader-info"><h3>Irene Severine</h3><span class="dcf-leader-role" data-en="Chairperson" data-sw="Mwenyekiti">Chairperson</span></div>
+            </article>
+            <article class="dcf-leader-card dcf-management-card">
+              <div class="dcf-leader-photo"><img src="images/team2.jpg" alt="Moshi Juma - General Secretary" loading="lazy"></div>
+              <div class="dcf-leader-info"><h3>Moshi Juma</h3><span class="dcf-leader-role" data-en="General Secretary" data-sw="Katibu Mkuu">General Secretary</span></div>
+            </article>
+            <article class="dcf-leader-card dcf-management-card">
+              <div class="dcf-leader-photo"><img src="images/team3.jpg" alt="Alicia Kokushubira - Deputy Secretary" loading="lazy"></div>
+              <div class="dcf-leader-info"><h3>Alicia Kokushubira</h3><span class="dcf-leader-role" data-en="Deputy Secretary" data-sw="Naibu Katibu">Deputy Secretary</span></div>
+            </article>
+            <article class="dcf-leader-card dcf-management-card">
+              <div class="dcf-leader-photo"><img src="images/team4.jpg" alt="Winfrida Kavishe - Accountant" loading="lazy"></div>
+              <div class="dcf-leader-info"><h3>Winfrida Kavishe</h3><span class="dcf-leader-role" data-en="Finance / Accounts" data-sw="Fedha / Hesabu">Finance / Accounts</span></div>
+            </article>
+            <article class="dcf-leader-card dcf-management-card">
+              <div class="dcf-leader-photo"><img src="images/team5.jpg" alt="Tegemea Mujunangoma - Coordinator" loading="lazy"></div>
+              <div class="dcf-leader-info"><h3>Tegemea Mujunangoma</h3><span class="dcf-leader-role" data-en="Coordinator" data-sw="Mratibu">Coordinator</span></div>
+            </article>
+            <article class="dcf-leader-card dcf-management-card">
+              <div class="dcf-leader-photo"><img src="images/team6.jpg" alt="Jofrey Respicius - Customer Relations" loading="lazy"></div>
+              <div class="dcf-leader-info"><h3>Jofrey Respicius</h3><span class="dcf-leader-role" data-en="Customer Relations" data-sw="Uhusiano wa Wateja">Customer Relations</span></div>
+            </article>
+            <article class="dcf-leader-card dcf-management-card">
+              <div class="dcf-leader-photo"><img src="images/team7.jpg" alt="Ndunguru Ndunguru - ICT" loading="lazy"></div>
+              <div class="dcf-leader-info"><h3>Ndunguru Ndunguru</h3><span class="dcf-leader-role" data-en="ICT" data-sw="TEHAMA">ICT</span></div>
+            </article>
+            <article class="dcf-leader-card dcf-management-card team-spokesperson">
+              <div class="dcf-leader-photo"><img src="images/team12.jpg" alt="Daniel Festo - DCF Spokesperson" loading="lazy"></div>
+              <div class="dcf-leader-info"><h3>Daniel Festo</h3><span class="dcf-leader-role" data-en="DCF Spokesperson" data-sw="Msemaji wa DCF">DCF Spokesperson</span></div>
+            </article>
+          </div>
         </div>
-
-      </article>
-
-
-      <article class="team-card">
-
-        <div class="team-photo">
-
-          <img
-            src="images/team2.jpg"
-            alt="Moshi Juma - General Secretary"
-            loading="lazy">
-
-        </div>
-
-        <div class="team-info">
-
-          <h3>
-            Moshi Juma
-          </h3>
-
-          <span class="team-role" data-en="General Secretary" data-sw="Katibu Mkuu">
-            General Secretary
-          </span>
-
-        </div>
-
-      </article>
-
-
-      <article class="team-card">
-
-        <div class="team-photo">
-
-          <img
-            src="images/team3.jpg"
-            alt="Alicia Kokushubira - Deputy Secretary"
-            loading="lazy">
-
-        </div>
-
-        <div class="team-info">
-
-          <h3>
-            Alicia Kokushubira
-          </h3>
-
-          <span class="team-role" data-en="Deputy Secretary" data-sw="Naibu Katibu">
-            Deputy Secretary
-          </span>
-
-        </div>
-
-      </article>
-
-
-      <article class="team-card">
-
-        <div class="team-photo">
-
-          <img
-            src="images/team4.jpg"
-            alt="Winfrida Kavishe - Accountant"
-            loading="lazy">
-
-        </div>
-
-        <div class="team-info">
-
-          <h3>
-            Winfrida Kavishe
-          </h3>
-
-          <span class="team-role" data-en="Accountant" data-sw="Mhasibu">
-            Accountant
-          </span>
-
-        </div>
-
-      </article>
-
-
-      <article class="team-card">
-
-        <div class="team-photo">
-
-          <img
-            src="images/team5.jpg"
-            alt="Tegemea Mujunangoma - Coordinator"
-            loading="lazy">
-
-        </div>
-
-        <div class="team-info">
-
-          <h3>
-            Tegemea Mujunangoma
-          </h3>
-
-          <span class="team-role" data-en="Coordinator" data-sw="Mratibu">
-            Coordinator
-          </span>
-
-        </div>
-
-      </article>
-
-
-      <article class="team-card">
-
-        <div class="team-photo">
-
-          <img
-            src="images/team6.jpg"
-            alt="Jofrey Respicius - Customer Relations"
-            loading="lazy">
-
-        </div>
-
-        <div class="team-info">
-
-          <h3>
-            Jofrey Respicius
-          </h3>
-
-          <span class="team-role" data-en="Customer Relations" data-sw="Uhusiano wa Wateja">
-            Customer Relations
-          </span>
-
-        </div>
-
-      </article>
-
-
-      <article class="team-card">
-
-        <div class="team-photo">
-
-          <img
-            src="images/team7.jpg"
-            alt="Ndunguru Ndunguru - ICT"
-            loading="lazy">
-
-        </div>
-
-        <div class="team-info">
-
-          <h3>
-            Ndunguru Ndunguru
-          </h3>
-
-          <span class="team-role">
-            ICT
-          </span>
-
-        </div>
-
-      </article>
-
-
-      <article class="team-card">
-
-        <div class="team-photo">
-
-          <img
-            src="images/team8.jpg"
-            alt="Thomson Zacharia - Board Chairperson"
-            loading="lazy">
-
-        </div>
-
-        <div class="team-info">
-
-          <h3>
-            Thomson Zacharia
-          </h3>
-
-          <span class="team-role" data-en="Board Chairperson" data-sw="Mwenyekiti wa Bodi">
-            Board Chairperson
-          </span>
-
-        </div>
-
-      </article>
-
-
-      <article class="team-card">
-
-        <div class="team-photo">
-
-          <img
-            src="images/team9.jpg"
-            alt="Paskali Mayo - Board Member"
-            loading="lazy">
-
-        </div>
-
-        <div class="team-info">
-
-          <h3>
-            Paskali Mayo
-          </h3>
-
-          <span class="team-role" data-en="Board Member" data-sw="Mjumbe wa Bodi">
-            Board Member
-          </span>
-
-        </div>
-
-      </article>
-
-
-      <article class="team-card">
-
-        <div class="team-photo">
-
-          <img
-            src="images/team10.jpg"
-            alt="Elisha Mkamba - Board Member"
-            loading="lazy">
-
-        </div>
-
-        <div class="team-info">
-
-          <h3>
-            Elisha Mkamba
-          </h3>
-
-          <span class="team-role" data-en="Board Member" data-sw="Mjumbe wa Bodi">
-            Board Member
-          </span>
-
-        </div>
-
-      </article>
-
-
-      <article class="team-card">
-
-        <div class="team-photo">
-
-          <img
-            src="images/team11.jpg"
-            alt="Jamila Ayubu - Board Member"
-            loading="lazy">
-
-        </div>
-
-        <div class="team-info">
-
-          <h3>
-            Jamila Ayubu
-          </h3>
-
-          <span class="team-role" data-en="Board Member" data-sw="Mjumbe wa Bodi">
-            Board Member
-          </span>
-
-        </div>
-
-      </article>
-
+      </div>
+
+      <p class="dcf-leadership-note" data-en="Development Charity Foundation (DCF) — leadership and governance working together for transparent, accountable and sustainable community development."
+         data-sw="Development Charity Foundation (DCF) — uongozi na utawala vikifanya kazi pamoja kwa maendeleo ya jamii yenye uwazi, uwajibikaji na uendelevu.">
+        Development Charity Foundation (DCF) — leadership and governance working together for transparent, accountable and sustainable community development.
+      </p>
     </div>
-
   </div>
-
 </section>
 
 
@@ -4377,83 +4790,79 @@ const $$ = selector =>
    ========================================================= */
 
 const LANG_KEY = "dcf_lang";
+const SUPPORTED_LANGS = ["en", "sw"];
 
 function getSavedLang() {
-
   try {
-
-    return localStorage.getItem(LANG_KEY) || "en";
-
+    const saved = localStorage.getItem(LANG_KEY);
+    return SUPPORTED_LANGS.includes(saved) ? saved : "en";
   } catch (e) {
-
     return "en";
-
   }
-
 }
 
 function saveLang(lang) {
-
   try {
-
     localStorage.setItem(LANG_KEY, lang);
-
   } catch (e) {}
-
 }
 
 function applyLanguage(lang) {
+  if (!SUPPORTED_LANGS.includes(lang)) lang = "en";
 
   document.documentElement.setAttribute("lang", lang);
 
   $$("[data-en]").forEach(el => {
-
-    const text = el.getAttribute(
-      lang === "sw" ? "data-sw" : "data-en"
-    );
-
+    const text = el.getAttribute(lang === "sw" ? "data-sw" : "data-en");
     if (text !== null) {
-
-      el.textContent = text;
-
-    }
-
-  });
-
-  $$(".lang-switch button, .nav-lang button")
-    .forEach(btn => {
-
-      btn.classList.toggle(
-        "active",
-        btn.dataset.lang === lang
+      // Preserve icons/child markup while changing only the text-bearing node.
+      const textNodes = Array.from(el.childNodes).filter(
+        node => node.nodeType === Node.TEXT_NODE && node.textContent.trim()
       );
 
-    });
+      if (textNodes.length === 1) {
+        textNodes[0].textContent = ` ${text} `;
+      } else if (el.children.length === 0) {
+        el.textContent = text;
+      } else {
+        const lastText = textNodes[textNodes.length - 1];
+        if (lastText) lastText.textContent = ` ${text} `;
+      }
+    }
+  });
+
+  $$(".lang-switch button, .nav-lang button").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.lang === lang);
+    btn.setAttribute("aria-pressed", String(btn.dataset.lang === lang));
+  });
 
   saveLang(lang);
-
 }
 
 function bindLangSwitch(container) {
-
   if (!container) return;
 
-  container.querySelectorAll("button")
-    .forEach(btn => {
+  container.querySelectorAll("button[data-lang]").forEach(btn => {
+    btn.addEventListener("click", event => {
+      event.preventDefault();
+      event.stopPropagation();
+      applyLanguage(btn.dataset.lang);
 
-      btn.addEventListener("click", () => {
-
-        applyLanguage(btn.dataset.lang);
-
-      });
-
+      // On mobile, selecting a language should not leave the navigation open.
+      if (navLinks && navLinks.classList.contains("open")) {
+        navLinks.classList.remove("open");
+        document.body.classList.remove("menu-open");
+        menuToggle?.setAttribute("aria-expanded", "false");
+        if (menuToggle) {
+          menuToggle.innerHTML = '<i class="fa-solid fa-bars"></i>';
+        }
+      }
     });
-
+  });
 }
 
 bindLangSwitch($("#topLangSwitch"));
 bindLangSwitch($("#navLangSwitch"));
-
 applyLanguage(getSavedLang());
 
 
@@ -4938,31 +5347,42 @@ function renderMedia(items) {
 
       if (type === "video") {
 
+        const videoMime =
+          item.mime_type ||
+          (String(url).toLowerCase().includes(".webm") ? "video/webm" :
+           String(url).toLowerCase().includes(".ogg") ||
+           String(url).toLowerCase().includes(".ogv") ? "video/ogg" :
+           "video/mp4");
+
         return `
 
           <article
             class="media-card"
             data-media-type="video">
 
-            <div class="media-thumb">
+            <div class="media-thumb media-video-wrap">
 
-              <img
-                src="${escapeHTML(thumb)}"
-                alt="${title}"
-                loading="lazy">
+              <video
+                class="media-inline-video"
+                controls
+                playsinline
+                preload="metadata"
+                poster="${escapeHTML(thumb || "")}"
+                aria-label="${title}">
+                <source
+                  src="${escapeHTML(url)}"
+                  type="${escapeHTML(videoMime)}">
+                Your browser does not support HTML5 video playback.
+              </video>
 
               <span class="media-type">
                 Video
               </span>
 
-              <div class="media-play">
-
+              <div class="media-play media-video-overlay" aria-hidden="true">
                 <span>
-
                   <i class="fa-solid fa-play"></i>
-
                 </span>
-
               </div>
 
             </div>
@@ -5583,11 +6003,11 @@ function closeMediaLightbox(){
 function bindMediaLightbox(){
   $$("#mediaGrid .media-card").forEach((card,index)=>{
     card.addEventListener("click",(event)=>{
-      if (event.target.closest("audio")) return;
+      if (event.target.closest("audio, video, video *")) return;
       const item = allMedia[index];
       if (!item) return;
       const type = String(item.media_type || item.type || "image").toLowerCase();
-      if (type === "audio") return;
+      if (type === "audio" || type === "video") return;
       lightboxItems = allMedia.filter(item=>{
         const t = String(item.media_type || item.type || "image").toLowerCase();
         return t === "image" || t === "video";
@@ -5632,6 +6052,74 @@ document.addEventListener(
 
   }
 );
+
+/* =========================================================
+   DONATION MODAL
+   ========================================================= */
+const donateButton = $("#donateButton");
+const donateModal = $("#donateModal");
+const donateModalClose = $("#donateModalClose");
+const donateCopy = $("#donateCopy");
+const donatePhone = $("#donatePhone");
+
+function openDonateModal(){
+  if (!donateModal) return;
+  donateModal.classList.add("open");
+  donateModal.setAttribute("aria-hidden","false");
+  document.body.classList.add("menu-open");
+  setTimeout(() => donateModalClose?.focus(), 30);
+}
+
+function closeDonateModal(){
+  if (!donateModal) return;
+  donateModal.classList.remove("open");
+  donateModal.setAttribute("aria-hidden","true");
+  document.body.classList.remove("menu-open");
+}
+
+if (donateButton){
+  donateButton.addEventListener("click",(event)=>{
+    event.preventDefault();
+    openDonateModal();
+  });
+}
+
+if (donateModalClose){
+  donateModalClose.addEventListener("click",closeDonateModal);
+}
+
+if (donateModal){
+  donateModal.addEventListener("click",(event)=>{
+    if (event.target === donateModal) closeDonateModal();
+  });
+}
+
+if (donateCopy){
+  donateCopy.addEventListener("click",async ()=>{
+    const number = donatePhone?.textContent.trim() || "351604882";
+    try{
+      await navigator.clipboard.writeText(number);
+      donateCopy.innerHTML =
+        '<i class="fa-solid fa-check"></i> ' +
+        '<span data-en="Copied" data-sw="Imenakiliwa">Copied</span>';
+      setTimeout(()=>{
+        donateCopy.innerHTML =
+          '<i class="fa-regular fa-copy"></i> ' +
+          '<span data-en="Copy payment number" data-sw="Nakili namba ya malipo">Copy payment number</span>';
+        applyLanguage(getSavedLang());
+      },1800);
+    }catch(error){
+      window.prompt("Copy payment number:",number);
+    }
+  });
+}
+
+document.addEventListener("keydown",(event)=>{
+  if (event.key === "Escape" && donateModal?.classList.contains("open")){
+    closeDonateModal();
+  }
+});
+
 
 </script>
 

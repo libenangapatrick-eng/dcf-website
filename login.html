@@ -509,6 +509,85 @@ button{
 #memberCompletionModal #image_preview:not(.hidden){display:block !important;width:120px;height:140px;border-radius:6px;border:2px solid #174a35;padding:3px;margin:0 auto;object-fit:cover;}
 </style>
 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+
+<style>
+/* =========================================================
+   MEMBER ACTION BUTTONS — POLISHED / CONSISTENT
+   Visual-only enhancement; existing IDs and handlers preserved.
+========================================================= */
+#memberCompletionModal .membership-resources{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px!important;
+  margin-top:14px!important;
+}
+#memberCompletionModal .membership-resource-btn{
+  min-height:46px!important;
+  padding:11px 16px!important;
+  border:1px solid #c9d9d0!important;
+  border-radius:10px!important;
+  background:#fff!important;
+  color:#174a35!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  letter-spacing:.01em;
+  box-shadow:0 2px 7px rgba(23,74,53,.06);
+  cursor:pointer;
+  transition:transform .16s ease,box-shadow .16s ease,background .16s ease,border-color .16s ease;
+}
+#memberCompletionModal .membership-resource-btn:hover{
+  background:#f2f8f5!important;
+  border-color:#8fb5a2!important;
+  transform:translateY(-1px);
+  box-shadow:0 5px 14px rgba(23,74,53,.10);
+}
+#memberCompletionModal .membership-resource-btn:active{transform:translateY(0)}
+#memberCompletionModal .membership-resource-btn i{font-size:13px;width:18px;text-align:center}
+#memberCompletionModal #downloadMembershipFormBtn{
+  background:#174a35!important;color:#fff!important;border-color:#174a35!important;
+}
+#memberCompletionModal #downloadMembershipFormBtn:hover{background:#0d3022!important;border-color:#0d3022!important}
+#memberCompletionModal #previewMembershipFormBtn{background:#f8fbf9!important}
+#memberCompletionModal .form-actions{align-items:stretch!important}
+#memberCompletionModal .form-actions #saveBtn{
+  background:linear-gradient(135deg,#174a35,#28723e)!important;
+  border:1px solid #174a35!important;
+  box-shadow:0 7px 18px rgba(23,74,53,.18);
+  transition:transform .16s ease,box-shadow .16s ease,filter .16s ease;
+}
+#memberCompletionModal .form-actions #saveBtn:hover{filter:brightness(1.04);transform:translateY(-1px);box-shadow:0 9px 22px rgba(23,74,53,.22)}
+#memberCompletionModal .form-actions #completionLogoutBtn{
+  background:#fff!important;color:#64748b!important;border:1px solid #cbd5e1!important;
+  box-shadow:none!important;
+}
+#memberCompletionModal .form-actions #completionLogoutBtn:hover{background:#f8fafc!important;color:#334155!important}
+@media(max-width:760px){
+  #memberCompletionModal .membership-resources{grid-template-columns:1fr!important}
+}
+/* Printable membership preview */
+#dcfPrintPreview{position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.72);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:18px}
+#dcfPrintPreview .dcf-print-card{width:min(900px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:14px;box-shadow:0 25px 70px rgba(0,0,0,.25);padding:28px}
+#dcfPrintPreview .dcf-print-toolbar{display:flex;gap:10px;justify-content:flex-end;margin-bottom:16px;position:sticky;top:0;background:#fff;padding-bottom:12px;border-bottom:1px solid #e5e7eb}
+#dcfPrintPreview .dcf-print-toolbar button{border:0;border-radius:9px;padding:10px 15px;font-weight:800;cursor:pointer}
+#dcfPrintPreview .dcf-print-close{background:#e2e8f0;color:#334155}
+#dcfPrintPreview .dcf-print-download{background:#174a35;color:#fff}
+#dcfPrintPreview .dcf-print-sheet{font-family:Arial,sans-serif;color:#17211d}
+#dcfPrintPreview .dcf-print-head{text-align:center;border-bottom:2px solid #174a35;padding-bottom:12px;margin-bottom:18px}
+#dcfPrintPreview .dcf-print-head img{width:70px;height:70px;object-fit:contain;margin-bottom:7px}
+#dcfPrintPreview .dcf-print-head h1{margin:0;color:#174a35;font-size:20px}
+#dcfPrintPreview .dcf-print-head p{margin:4px 0 0;color:#64748b;font-size:11px}
+#dcfPrintPreview .dcf-print-section{margin:16px 0}
+#dcfPrintPreview .dcf-print-section h2{font-size:13px;color:#174a35;border-bottom:1px solid #dbe5e0;padding-bottom:6px;margin-bottom:9px}
+#dcfPrintPreview .dcf-print-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px 18px;font-size:11px}
+#dcfPrintPreview .dcf-print-grid div{padding:5px 0;border-bottom:1px solid #f1f5f9}
+#dcfPrintPreview .dcf-print-grid strong{color:#475569}
+#dcfPrintPreview .dcf-print-full{font-size:11px;line-height:1.55}
+@media(max-width:650px){#dcfPrintPreview .dcf-print-card{padding:16px}#dcfPrintPreview .dcf-print-grid{grid-template-columns:1fr}}
+@media print{body>*:not(#dcfPrintPreview){display:none!important}#dcfPrintPreview{position:static;background:#fff;padding:0;display:block}#dcfPrintPreview .dcf-print-card{max-height:none;box-shadow:none;border-radius:0;width:100%;padding:0}#dcfPrintPreview .dcf-print-toolbar{display:none!important}}
+</style>
 </head>
 
 
@@ -4215,6 +4294,8 @@ function createMemberCompletionModal(){
 
     document.body.appendChild(modal);
 
+    setupMembershipActionButtons();
+
     const backBtn = getElement('completionBackBtn');
     if(backBtn){
         backBtn.addEventListener('click', function(){
@@ -4310,7 +4391,11 @@ async function openMemberCompletion(user, existingMember){
     const memberMap = {
         kawaida: 'Ordinary Member',
         mchangiaji: 'Associate Member',
-        mwanzilishi: 'Volunteer Member'
+        mwanzilishi: 'Volunteer Member',
+        'Mwanachama wa Kawaida': 'Ordinary Member',
+        'Mwanachama wa kawaida': 'Ordinary Member',
+        'Mchangiaji': 'Associate Member',
+        'Mwanzilishi': 'Volunteer Member'
     };
 
     const membershipType =
@@ -8039,6 +8124,113 @@ function initializeLoginPage(){
 
 }
 
+
+/* =========================================================
+   MEMBER PREVIEW / PDF DOWNLOAD
+   Uses the existing form fields; no database changes.
+========================================================= */
+function dcfMemberFieldValue(id){
+    const el = document.getElementById(id);
+    if(!el) return '';
+    if(el.type === 'checkbox') return el.checked ? 'Yes' : 'No';
+    return String(el.value || '').trim();
+}
+
+function dcfEscapeHtml(value){
+    return String(value || '').replace(/[&<>'"]/g, function(ch){
+        return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch];
+    });
+}
+
+function dcfBuildMembershipPrintHtml(){
+    const rows = [
+        ['Member ID','member_id'],['Full Name','full_name'],['Gender','gender'],['Date of Birth','dob'],
+        ['NIDA Number','nida_no'],['Passport Number','passport_no'],['Phone','phone'],['Email','email'],
+        ['Occupation / Activity','occupation'],['Nationality','nationality'],['Country','country'],['Address','address'],
+        ['Membership Type','membership_type'],['How did you hear about DCF?','how_heard_about_dcf'],
+        ['Why do you want to join?','why_join'],['Community Interest','community_interest'],
+        ['Skills / Experience','skills_experience'],['Volunteer Availability','volunteer_availability'],
+        ['Expected Contribution','expected_contribution'],['Membership Expectations','membership_expectations'],
+        ['Previous Membership','previous_membership']
+    ];
+    const grid = rows.map(function(pair){
+        return '<div><strong>'+dcfEscapeHtml(pair[0])+':</strong> '+dcfEscapeHtml(dcfMemberFieldValue(pair[1]))+'</div>';
+    }).join('');
+    const logo = (document.querySelector('#memberCompletionModal img[src*="dcf-logo"]') || {}).src || 'images/dcf-logo.png';
+    return '<div class="dcf-print-sheet">' +
+        '<div class="dcf-print-head"><img src="'+dcfEscapeHtml(logo)+'" alt="DCF Logo"><h1>Development Charity Foundation</h1><p>MEMBERSHIP REGISTRATION / APPLICATION FORM</p></div>' +
+        '<div class="dcf-print-section"><h2>Member Information</h2><div class="dcf-print-grid">'+grid+'</div></div>' +
+        '<div class="dcf-print-section"><h2>Declaration</h2><div class="dcf-print-full">I confirm that the information provided is true and complete. I wish to apply for DCF membership and agree to respect the Foundation\'s objectives, values, Constitution, Rules and Ethics. Membership is subject to the applicable approval process.</div></div>' +
+        '<div class="dcf-print-section"><div class="dcf-print-full"><strong>Confirmation:</strong> '+dcfEscapeHtml(dcfMemberFieldValue('confirm_membership'))+'</div></div>' +
+        '</div>';
+}
+
+function dcfOpenMembershipPreview(){
+    const old = document.getElementById('dcfPrintPreview');
+    if(old) old.remove();
+    const wrap = document.createElement('div');
+    wrap.id = 'dcfPrintPreview';
+    wrap.innerHTML = '<div class="dcf-print-card"><div class="dcf-print-toolbar">' +
+        '<button type="button" class="dcf-print-close" id="dcfPrintClose">Close</button>' +
+        '<button type="button" class="dcf-print-download" id="dcfPrintDownload"><i class="fas fa-file-pdf"></i> Download PDF</button>' +
+        '</div>' + dcfBuildMembershipPrintHtml() + '</div>';
+    document.body.appendChild(wrap);
+    document.getElementById('dcfPrintClose').onclick = function(){ wrap.remove(); };
+    document.getElementById('dcfPrintDownload').onclick = function(){ dcfDownloadMembershipPdf(); };
+}
+
+async function dcfDownloadMembershipPdf(){
+    const btn = document.getElementById('dcfPrintDownload');
+    const sheet = document.querySelector('#dcfPrintPreview .dcf-print-sheet');
+    if(!sheet){ dcfOpenMembershipPreview(); return; }
+    if(!window.html2canvas || !window.jspdf){
+        window.print();
+        return;
+    }
+    const oldText = btn ? btn.innerHTML : '';
+    if(btn){ btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing PDF...'; }
+    try{
+        const canvas = await html2canvas(sheet, {scale:2, useCORS:true, backgroundColor:'#ffffff'});
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p','mm','a4');
+        const pageWidth = 210, pageHeight = 297, margin = 10;
+        const usableWidth = pageWidth - margin*2;
+        const imgHeight = canvas.height * usableWidth / canvas.width;
+        const imgData = canvas.toDataURL('image/jpeg',0.95);
+        let heightLeft = imgHeight, position = margin;
+        pdf.addImage(imgData,'JPEG',margin,position,usableWidth,imgHeight);
+        heightLeft -= (pageHeight - margin*2);
+        while(heightLeft > 0){
+            position = margin - (imgHeight - heightLeft);
+            pdf.addPage();
+            pdf.addImage(imgData,'JPEG',margin,position,usableWidth,imgHeight);
+            heightLeft -= (pageHeight - margin*2);
+        }
+        const memberId = dcfMemberFieldValue('member_id') || 'DCF-Membership';
+        pdf.save(memberId.replace(/[^a-z0-9_-]/gi,'_') + '-Membership-Form.pdf');
+    }catch(error){
+        console.error('MEMBERSHIP PDF ERROR:', error);
+        alert('PDF haikuweza kutengenezwa. Tutafungua print dialog ili uchague Save as PDF.');
+        window.print();
+    }finally{
+        if(btn){ btn.disabled = false; btn.innerHTML = oldText; }
+    }
+}
+
+function setupMembershipActionButtons(){
+    const previewBtn = document.getElementById('previewMembershipFormBtn');
+    const downloadBtn = document.getElementById('downloadMembershipFormBtn');
+    if(previewBtn && !previewBtn.dataset.bound){
+        previewBtn.addEventListener('click', dcfOpenMembershipPreview);
+        previewBtn.dataset.bound = 'true';
+    }
+    if(downloadBtn && !downloadBtn.dataset.bound){
+        downloadBtn.addEventListener('click', function(){
+            dcfOpenMembershipPreview();
+        });
+        downloadBtn.dataset.bound = 'true';
+    }
+}
 
 /* =========================================================
    DOM READY
