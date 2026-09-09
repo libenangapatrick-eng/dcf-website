@@ -3798,7 +3798,7 @@ function createMemberCompletionModal(){
                     <div id="completionAlert"
                          class="hidden mb-5 p-3.5 rounded-xl text-xs font-medium border"></div>
 
-                    <form id="memberForm" class="space-y-5">
+                    <form id="memberForm" class="space-y-5" novalidate>
 
                         <div class="section-title">
                             Taarifa za Msingi za Mwanachama
@@ -4570,6 +4570,13 @@ async function handleMemberCompletionSubmit(event){
     event.preventDefault();
 
     /*
+     * The completion form contains required fields inside expandable sections.
+     * Native browser validation can stop the submit event silently before our
+     * handler runs. The form therefore uses novalidate and validation is handled
+     * explicitly below so the user always gets a visible message.
+     */
+
+    /*
      * Prevent double-click / repeated submissions while Supabase is saving.
      * This flag lives on the form itself so reopening the modal starts clean.
      */
@@ -4635,8 +4642,39 @@ async function handleMemberCompletionSubmit(event){
         const photo =
             photoInput?.files?.[0] || null;
 
-        if(
-            !fullName ||
+        /*
+         * Explicitly validate every required control. This is intentionally
+         * done in JavaScript because some required membership fields live in
+         * expandable/collapsible sections and native HTML validation can appear
+         * to do nothing to the user.
+         */
+        const requiredControls = [
+            ['full_name','Please enter your full name.'],
+            ['gender','Please select your gender.'],
+            ['dob','Please enter your date of birth.'],
+            ['phone','Please enter your phone number.'],
+            ['nationality','Please enter your nationality.'],
+            ['country','Please enter your country.'],
+            ['address','Please enter your address.'],
+            ['membership_type','Please select your membership type.'],
+            ['how_heard_about_dcf','Please select how you heard about DCF.'],
+            ['why_join','Please explain why you want to join DCF.'],
+            ['community_interest','Please enter your community interest.'],
+            ['skills_experience','Please enter your skills or experience.'],
+            ['volunteer_availability','Please select your volunteer availability.'],
+            ['expected_contribution','Please select your expected contribution.'],
+            ['membership_expectations','Please enter your membership expectations.'],
+            ['previous_membership','Please enter your previous membership information, or None.']
+        ];
+
+        for(const [id, message] of requiredControls){
+            const control = getElement(id);
+            if(!control || !String(control.value || '').trim()){
+                throw new Error(message);
+            }
+        }
+
+        if(!fullName ||
             !gender ||
             !dob ||
             !phone ||
@@ -4674,6 +4712,10 @@ async function handleMemberCompletionSubmit(event){
         }
 
         if(!confirmed){
+            const confirmBox = getElement('confirm_membership');
+            if(confirmBox){
+                confirmBox.focus();
+            }
             throw new Error('Tafadhali thibitisha maombi ya uanachama.');
         }
 
@@ -5031,8 +5073,17 @@ async function handleMemberCompletionSubmit(event){
                 modal.remove();
             }
 
-            window.location.href =
-                'pages/member-portal.html';
+            const portalUrl =
+                new URL(
+                    'pages/member-portal.html',
+                    window.location.href
+                ).href;
+
+            /*
+             * Use an absolute URL so deployment paths on Netlify/static hosting
+             * cannot accidentally resolve the portal relative to the wrong URL.
+             */
+            window.location.replace(portalUrl);
         },650);
 
     }catch(error){
@@ -6552,9 +6603,13 @@ async function continuePostLoginFlow(user){
                     setTimeout(
                         function(){
 
-                            window.location.replace(
-                                'pages/member-portal.html'
-                            );
+                            const portalUrl =
+                                new URL(
+                                    'pages/member-portal.html',
+                                    window.location.href
+                                ).href;
+
+                            window.location.replace(portalUrl);
 
                         },
                         250
