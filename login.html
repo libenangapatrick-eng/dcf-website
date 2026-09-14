@@ -5126,7 +5126,7 @@ async function handleMemberCompletionSubmit(event){
             if(dbError?.code === '23505'){
 
                 setProgress(
-                    'A member record already exists. Recovering it...'
+                    'A duplicate was detected. Checking your existing member record...'
                 );
 
                 const recoveredMember =
@@ -5160,6 +5160,52 @@ async function handleMemberCompletionSubmit(event){
 
                     existingMember =
                         recoveredMember;
+                }else{
+                    /*
+                     * If the duplicate is only the generated member_id,
+                     * never overwrite another member. Generate a fresh ID
+                     * and retry the INSERT once.
+                     */
+                    const duplicateText = [
+                        dbError.constraint,
+                        dbError.message,
+                        dbError.details,
+                        dbError.hint
+                    ]
+                        .filter(Boolean)
+                        .join(' ')
+                        .toLowerCase();
+
+                    if(duplicateText.includes('member_id')){
+                        const freshMemberId =
+                            'DCF-' + Date.now().toString().slice(-8);
+
+                        payload.member_id =
+                            freshMemberId;
+
+                        setProgress(
+                            'The Member ID was already used. Creating a new Member ID...'
+                        );
+
+                        const retryInsert =
+                            await withTimeout(
+                                supabaseClient
+                                    .from('members')
+                                    .insert(payload)
+                                    .select('*')
+                                    .maybeSingle(),
+                                'Member database retry',
+                                30000
+                            );
+
+                        savedMember =
+                            retryInsert?.data ||
+                            null;
+
+                        dbError =
+                            retryInsert?.error ||
+                            null;
+                    }
                 }
             }
         }
@@ -5178,9 +5224,50 @@ async function handleMemberCompletionSubmit(event){
             }
 
             if(dbError.code === '23505'){
-                throw new Error(
-                    'These member details already exist in the system. Please refresh the form and try again.'
+                const duplicateText = [
+                    dbError.constraint,
+                    dbError.message,
+                    dbError.details,
+                    dbError.hint
+                ]
+                    .filter(Boolean)
+                    .join(' ')
+                    .toLowerCase();
+
+                let duplicateMessage =
+                    'Supabase rejected the membership because a unique field already exists.';
+
+                if(duplicateText.includes('phone')){
+                    duplicateMessage =
+                        'This phone number already belongs to another member. Please check the phone number.';
+                }else if(duplicateText.includes('nida')){
+                    duplicateMessage =
+                        'This NIDA number already belongs to another member. Please check the NIDA number.';
+                }else if(duplicateText.includes('passport')){
+                    duplicateMessage =
+                        'This passport number already belongs to another member. Please check the passport number.';
+                }else if(duplicateText.includes('email')){
+                    duplicateMessage =
+                        'This email already belongs to another member. Please use the correct member account.';
+                }else if(duplicateText.includes('user_id')){
+                    duplicateMessage =
+                        'This login account already has a member record, but it could not be recovered. Please check the members table user_id and RLS policy.';
+                }else if(duplicateText.includes('member_id')){
+                    duplicateMessage =
+                        'The generated Member ID is already in use. Please click Confirm Membership again; the system will generate another ID.';
+                }
+
+                console.error(
+                    'MEMBER DUPLICATE DETAILS:',
+                    {
+                        constraint: dbError.constraint || null,
+                        message: dbError.message || null,
+                        details: dbError.details || null,
+                        hint: dbError.hint || null
+                    }
                 );
+
+                throw new Error(duplicateMessage);
             }
 
             throw new Error(
@@ -5713,32 +5800,52 @@ async function generateMemberId(){
 
     try{
 
+        /*
+         * Do not use row count + 1. Deleted rows create gaps and can cause
+         * DCF-00001 / DCF-00002 style IDs to collide with an existing member.
+         * Read existing DCF IDs and use the highest numeric value + 1.
+         */
         const {
-            count,
+            data,
             error
         } =
         await supabaseClient
             .from('members')
-            .select('id', { count:'exact', head:true });
+            .select('member_id')
+            .ilike('member_id','DCF-%')
+            .limit(5000);
 
         if(error){
-
-            console.error('MEMBER ID COUNT ERROR:', error);
-
-            return 'DCF-' + Date.now();
-
+            console.error('MEMBER ID LIST ERROR:', error);
+            return 'DCF-' + Date.now().toString().slice(-8);
         }
 
-        const nextNumber =
-            (count || 0) + 1;
+        let highest = 0;
 
-        return 'DCF-' + String(nextNumber).padStart(5,'0');
+        (data || []).forEach(function(row){
+            const value =
+                String(row?.member_id || '');
+
+            const match =
+                value.match(/^DCF-(\d+)$/i);
+
+            if(match){
+                highest = Math.max(
+                    highest,
+                    Number(match[1]) || 0
+                );
+            }
+        });
+
+        return 'DCF-' +
+            String(highest + 1).padStart(5,'0');
 
     }catch(error){
 
         console.error('MEMBER ID GENERATION ERROR:', error);
 
-        return 'DCF-' + Date.now();
+        return 'DCF-' +
+            Date.now().toString().slice(-8);
 
     }
 
