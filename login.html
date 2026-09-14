@@ -507,6 +507,21 @@ button{
 /* Prevent the Add Member page's global #image_preview rule from hiding the completion preview. */
 #memberCompletionModal #image_preview.hidden{display:none !important;}
 #memberCompletionModal #image_preview:not(.hidden){display:block !important;width:120px;height:140px;border-radius:6px;border:2px solid #174a35;padding:3px;margin:0 auto;object-fit:cover;}
+/* =========================================================
+   MEMBER COMPLETION — DIAGNOSTIC STATUS
+========================================================= */
+#memberCompletionModal #completionAlert{
+    position:relative;
+    z-index:2;
+    line-height:1.55;
+}
+#memberCompletionModal #completionAlert small{
+    display:block;
+    margin-top:4px;
+    line-height:1.6;
+    word-break:break-word;
+}
+
 </style>
 
 
@@ -2804,6 +2819,60 @@ function registerMessage(
 
 
 /* =========================================================
+   MEMBER COMPLETION ALERT / DIAGNOSTICS
+   Fix: the completion flow was calling showCompletionAlert()
+   without defining it, causing a ReferenceError and leaving
+   the user on the completion form after "SAVING...".
+========================================================= */
+function showCompletionAlert(message, type = 'danger'){
+    const box = getElement('completionAlert');
+
+    if(!box){
+        console.error('MEMBER COMPLETION ALERT ELEMENT NOT FOUND:', message);
+        return;
+    }
+
+    box.className =
+        'mb-5 p-3.5 rounded-xl text-xs font-medium border shadow-sm';
+
+    if(type === 'success'){
+        box.classList.add(
+            'bg-emerald-50',
+            'text-emerald-700',
+            'border-emerald-200'
+        );
+    }else if(type === 'warning'){
+        box.classList.add(
+            'bg-amber-50',
+            'text-amber-700',
+            'border-amber-200'
+        );
+    }else{
+        box.classList.add(
+            'bg-red-50',
+            'text-red-700',
+            'border-red-200'
+        );
+    }
+
+    box.innerHTML = message;
+    box.classList.remove('hidden');
+
+    try{
+        box.scrollIntoView({
+            behavior:'smooth',
+            block:'nearest'
+        });
+    }catch(_error){}
+
+    console.log(
+        '[DCF MEMBER COMPLETION]',
+        type.toUpperCase(),
+        message.replace(/<[^>]*>/g,' ')
+    );
+}
+
+/* =========================================================
    OTP ALERT (NEW)
 ========================================================= */
 
@@ -4570,26 +4639,65 @@ async function handleMemberCompletionSubmit(event){
     event.preventDefault();
 
     /*
-     * The completion form contains required fields inside expandable sections.
-     * Native browser validation can stop the submit event silently before our
-     * handler runs. The form therefore uses novalidate and validation is handled
-     * explicitly below so the user always gets a visible message.
+     * IMPORTANT FIX:
+     * The previous version called showCompletionAlert() but the function
+     * did not exist in this file. After a successful Supabase save that
+     * ReferenceError interrupted the flow before redirecting to the portal.
+     *
+     * This version also reports the exact stage being processed, adds
+     * timeouts to network operations, and uses a reliable portal URL.
      */
 
-    /*
-     * Prevent double-click / repeated submissions while Supabase is saving.
-     * This flag lives on the form itself so reopening the modal starts clean.
-     */
-    const form = event.currentTarget || getElement('memberForm');
+    const form =
+        event.currentTarget ||
+        getElement('memberForm');
+
     if(form?.dataset.memberSaveInProgress === 'true'){
         return;
     }
+
     if(form){
         form.dataset.memberSaveInProgress = 'true';
     }
 
     const button =
         getElement('saveBtn');
+
+    const setProgress = function(message){
+        if(button){
+            button.innerHTML =
+                '<i class="fas fa-spinner fa-spin mr-2"></i>' +
+                escapeHTML(message);
+        }
+
+        showCompletionAlert(
+            '<strong>' + escapeHTML(message) + '</strong>',
+            'warning'
+        );
+
+        console.log(
+            '[DCF MEMBER COMPLETION] ' +
+            message
+        );
+    };
+
+    const withTimeout = function(promise, label, ms = 30000){
+        return Promise.race([
+            promise,
+            new Promise(function(_, reject){
+                setTimeout(function(){
+                    reject(
+                        new Error(
+                            label +
+                            ' timed out after ' +
+                            Math.round(ms / 1000) +
+                            ' seconds. Check your internet connection and Supabase.'
+                        )
+                    );
+                }, ms);
+            })
+        ]);
+    };
 
     if(button){
         button.disabled = true;
@@ -4599,16 +4707,26 @@ async function handleMemberCompletionSubmit(event){
     }
 
     try{
+
+        setProgress('Checking your login session...');
+
         const user =
-            await getCurrentUser();
+            await withTimeout(
+                getCurrentUser(),
+                'Login session check',
+                15000
+            );
 
         if(!user){
-            throw new Error('Your session has expired. Please log in again.');
+            throw new Error(
+                'Your session has expired. Please log in again.'
+            );
         }
 
         const val = function(id){
             const el =
                 getElement(id);
+
             return el
                 ? String(el.value || '').trim()
                 : '';
@@ -4621,7 +4739,10 @@ async function handleMemberCompletionSubmit(event){
         const nida = val('nida_no');
         const passport = val('passport_no');
         const phone = val('phone');
-        const email = val('email') || user.email || '';
+        const email =
+            val('email') ||
+            user.email ||
+            '';
         const occupation = val('occupation');
         const nationality = val('nationality');
         const country = val('country');
@@ -4635,19 +4756,17 @@ async function handleMemberCompletionSubmit(event){
         const expectedContribution = val('expected_contribution');
         const membershipExpectations = val('membership_expectations');
         const previousMembership = val('previous_membership');
+
         const confirmed =
             getElement('confirm_membership')?.checked === true;
+
         const photoInput =
             getElement('passport_image');
-        const photo =
-            photoInput?.files?.[0] || null;
 
-        /*
-         * Explicitly validate every required control. This is intentionally
-         * done in JavaScript because some required membership fields live in
-         * expandable/collapsible sections and native HTML validation can appear
-         * to do nothing to the user.
-         */
+        const photo =
+            photoInput?.files?.[0] ||
+            null;
+
         const requiredControls = [
             ['full_name','Please enter your full name.'],
             ['gender','Please select your gender.'],
@@ -4668,13 +4787,19 @@ async function handleMemberCompletionSubmit(event){
         ];
 
         for(const [id, message] of requiredControls){
-            const control = getElement(id);
-            if(!control || !String(control.value || '').trim()){
+            const control =
+                getElement(id);
+
+            if(
+                !control ||
+                !String(control.value || '').trim()
+            ){
                 throw new Error(message);
             }
         }
 
-        if(!fullName ||
+        if(
+            !fullName ||
             !gender ||
             !dob ||
             !phone ||
@@ -4682,15 +4807,27 @@ async function handleMemberCompletionSubmit(event){
             !country ||
             !address
         ){
-            throw new Error('Please complete all required member information.');
+            throw new Error(
+                'Please complete all required member information.'
+            );
         }
 
-        if(nationality === 'Tanzanian' && !nida){
-            throw new Error('NIDA number is required for Tanzanian members.');
+        if(
+            nationality === 'Tanzanian' &&
+            !nida
+        ){
+            throw new Error(
+                'NIDA number is required for Tanzanian members.'
+            );
         }
 
-        if(nationality !== 'Tanzanian' && !passport){
-            throw new Error('Passport number is required for non-Tanzanian members.');
+        if(
+            nationality !== 'Tanzanian' &&
+            !passport
+        ){
+            throw new Error(
+                'Passport number is required for non-Tanzanian members.'
+            );
         }
 
         const membershipRequired = [
@@ -4712,11 +4849,16 @@ async function handleMemberCompletionSubmit(event){
         }
 
         if(!confirmed){
-            const confirmBox = getElement('confirm_membership');
+            const confirmBox =
+                getElement('confirm_membership');
+
             if(confirmBox){
                 confirmBox.focus();
             }
-            throw new Error('Tafadhali thibitisha maombi ya uanachama.');
+
+            throw new Error(
+                'Tafadhali thibitisha maombi ya uanachama.'
+            );
         }
 
         if(photo){
@@ -4727,21 +4869,26 @@ async function handleMemberCompletionSubmit(event){
             ];
 
             if(!allowed.includes(photo.type)){
-                throw new Error('Photo must be JPG, PNG or WEBP.');
+                throw new Error(
+                    'Photo must be JPG, PNG or WEBP.'
+                );
             }
 
             if(photo.size > 5 * 1024 * 1024){
-                throw new Error('Photo size must not exceed 5MB.');
+                throw new Error(
+                    'Photo size must not exceed 5MB.'
+                );
             }
         }
 
-        /*
-         * Find the latest member row immediately before saving. This avoids
-         * creating a duplicate member when the login session was opened from
-         * another tab or when the first save attempt already reached Supabase.
-         */
+        setProgress('Checking your existing member record...');
+
         let existingMember =
-            await findMemberForUser(user);
+            await withTimeout(
+                findMemberForUser(user),
+                'Member record lookup',
+                20000
+            );
 
         let imageUrl =
             existingMember?.passport_image_url ||
@@ -4749,6 +4896,9 @@ async function handleMemberCompletionSubmit(event){
             null;
 
         if(photo){
+
+            setProgress('Uploading member photo...');
+
             const extension =
                 photo.name
                     .split('.')
@@ -4757,7 +4907,10 @@ async function handleMemberCompletionSubmit(event){
 
             const safeMemberId =
                 (memberId || ('DCF-' + Date.now()))
-                    .replace(/[^a-zA-Z0-9-_]/g,'');
+                    .replace(
+                        /[^a-zA-Z0-9-_]/g,
+                        ''
+                    );
 
             const fileName =
                 'members/' +
@@ -4769,33 +4922,43 @@ async function handleMemberCompletionSubmit(event){
                 '.' +
                 extension;
 
-            const { error: uploadError } =
-                await supabaseClient
-                    .storage
-                    .from('member-photos')
-                    .upload(
-                        fileName,
-                        photo,
-                        {
-                            upsert:false,
-                            contentType:photo.type
-                        }
-                    );
+            const uploadResult =
+                await withTimeout(
+                    supabaseClient
+                        .storage
+                        .from('member-photos')
+                        .upload(
+                            fileName,
+                            photo,
+                            {
+                                upsert:false,
+                                contentType:photo.type
+                            }
+                        ),
+                    'Member photo upload',
+                    45000
+                );
+
+            const uploadError =
+                uploadResult?.error ||
+                null;
 
             if(uploadError){
                 throw new Error(
-                    'Photo upload failed: ' + uploadError.message
+                    'Photo upload failed: ' +
+                    uploadError.message
                 );
             }
 
-            const { data: publicUrlData } =
+            const publicUrlResult =
                 supabaseClient
                     .storage
                     .from('member-photos')
                     .getPublicUrl(fileName);
 
             imageUrl =
-                publicUrlData?.publicUrl || null;
+                publicUrlResult?.data?.publicUrl ||
+                null;
         }
 
         if(!imageUrl){
@@ -4812,65 +4975,96 @@ async function handleMemberCompletionSubmit(event){
         const payload = {
             user_id:
                 user.id,
+
             member_id:
                 finalMemberId,
+
             full_name:
                 fullName,
+
             gender:
                 gender,
+
             dob:
                 dob,
+
             nida_no:
                 nationality === 'Tanzanian'
                     ? nida
                     : null,
+
             passport_no:
                 nationality !== 'Tanzanian'
                     ? passport
                     : null,
+
             passport_image_url:
                 imageUrl,
+
             phone:
                 phone,
+
             email:
-                email || user.email || null,
+                email ||
+                user.email ||
+                null,
+
             occupation:
-                occupation || null,
+                occupation ||
+                null,
+
             nationality:
                 nationality,
+
             country:
                 country,
+
             address:
                 address,
+
             membership_type:
                 membershipType,
+
             how_heard_about_dcf:
                 howHeard,
+
             why_join:
                 whyJoin,
+
             community_interest:
                 communityInterest,
+
             skills_experience:
                 skillsExperience,
+
             volunteer_availability:
                 volunteerAvailability,
+
             expected_contribution:
                 expectedContribution,
+
             membership_expectations:
                 membershipExpectations,
+
             previous_membership:
                 previousMembership,
+
             confirm_membership:
                 confirmed,
+
             membership_application_status:
                 'Pending',
+
             joining_date:
                 existingMember?.joining_date ||
-                new Date().toISOString().slice(0,10),
+                new Date()
+                    .toISOString()
+                    .slice(0,10),
+
             status:
                 existingMember?.status ||
                 'Active',
-            /* Keep the legacy registration column populated too. */
+
             member_type:
                 ({
                     'Ordinary Member': 'kawaida',
@@ -4884,64 +5078,98 @@ async function handleMemberCompletionSubmit(event){
         let savedMember = null;
         let dbError = null;
 
+        setProgress('Saving member information to Supabase...');
+
         if(existingMember?.id){
-            const result =
-                await supabaseClient
-                    .from('members')
-                    .update(payload)
-                    .eq('id', existingMember.id)
-                    .select('*')
-                    .maybeSingle();
 
-            savedMember = result.data || null;
-            dbError = result.error || null;
+            const result =
+                await withTimeout(
+                    supabaseClient
+                        .from('members')
+                        .update(payload)
+                        .eq('id', existingMember.id)
+                        .select('*')
+                        .maybeSingle(),
+                    'Member database update',
+                    30000
+                );
+
+            savedMember =
+                result?.data ||
+                null;
+
+            dbError =
+                result?.error ||
+                null;
+
         }else{
+
             const result =
-                await supabaseClient
-                    .from('members')
-                    .insert(payload)
-                    .select('*')
-                    .maybeSingle();
+                await withTimeout(
+                    supabaseClient
+                        .from('members')
+                        .insert(payload)
+                        .select('*')
+                        .maybeSingle(),
+                    'Member database insert',
+                    30000
+                );
 
-            savedMember = result.data || null;
-            dbError = result.error || null;
+            savedMember =
+                result?.data ||
+                null;
 
-            /*
-             * If another tab/request created the member between the lookup
-             * and insert, recover by loading that row and updating it instead
-             * of leaving the user stuck on the completion form.
-             */
+            dbError =
+                result?.error ||
+                null;
+
             if(dbError?.code === '23505'){
+
+                setProgress(
+                    'A member record already exists. Recovering it...'
+                );
+
                 const recoveredMember =
-                    await findMemberForUser(user);
+                    await withTimeout(
+                        findMemberForUser(user),
+                        'Existing member recovery',
+                        20000
+                    );
 
                 if(recoveredMember?.id){
-                    const retry =
-                        await supabaseClient
-                            .from('members')
-                            .update(payload)
-                            .eq('id', recoveredMember.id)
-                            .select('*')
-                            .maybeSingle();
 
-                    savedMember = retry.data || null;
-                    dbError = retry.error || null;
-                    existingMember = recoveredMember;
+                    const retry =
+                        await withTimeout(
+                            supabaseClient
+                                .from('members')
+                                .update(payload)
+                                .eq('id', recoveredMember.id)
+                                .select('*')
+                                .maybeSingle(),
+                            'Recovered member update',
+                            30000
+                        );
+
+                    savedMember =
+                        retry?.data ||
+                        null;
+
+                    dbError =
+                        retry?.error ||
+                        null;
+
+                    existingMember =
+                        recoveredMember;
                 }
             }
         }
 
         if(dbError){
+
             console.error(
                 'MEMBER COMPLETION DATABASE ERROR:',
                 dbError
             );
-
-            if(dbError.code === '23505'){
-                throw new Error(
-                    'These member details already exist in the system. Please refresh the form and try again.'
-                );
-            }
 
             if(dbError.code === '42501'){
                 throw new Error(
@@ -4949,142 +5177,305 @@ async function handleMemberCompletionSubmit(event){
                 );
             }
 
+            if(dbError.code === '23505'){
+                throw new Error(
+                    'These member details already exist in the system. Please refresh the form and try again.'
+                );
+            }
+
             throw new Error(
-                dbError.message || 'The membership information could not be saved.'
+                dbError.message ||
+                'The membership information could not be saved.'
             );
         }
 
         /*
-         * Supabase can acknowledge an update without returning a row in some
-         * configurations. Re-read the member and verify that the saved data
-         * is actually complete before redirecting to the portal.
+         * Always re-read the row after save instead of trusting the returned
+         * object alone. This makes the redirect decision based on the actual
+         * current database record.
          */
+        setProgress(
+            'Verifying the saved member record...'
+        );
+
         const verifiedMember =
-            savedMember ||
-            await findMemberForUser(user);
+            await withTimeout(
+                findMemberForUser(user),
+                'Saved member verification',
+                20000
+            );
 
         if(!verifiedMember){
+
+            console.error(
+                'MEMBER COMPLETION VERIFICATION FAILED: no member row returned.'
+            );
+
             throw new Error(
                 'The information was submitted, but the saved member record could not be verified. Please try again.'
             );
         }
 
         if(!isMemberComplete(verifiedMember)){
+
             console.error(
                 'MEMBER COMPLETION VERIFICATION FAILED:',
                 verifiedMember
             );
+
+            const missing = [];
+
+            const check = function(field, label){
+                if(!verifiedMember[field]){
+                    missing.push(label);
+                }
+            };
+
+            check('full_name','Full name');
+            check('gender','Gender');
+            check('dob','Date of birth');
+            check('phone','Phone');
+            check('nationality','Nationality');
+            check('country','Country');
+            check('address','Address');
+            check(
+                verifiedMember.member_type ||
+                verifiedMember.membership_type
+                    ? '__ok__'
+                    : '',
+                'Membership type'
+            );
+            check('passport_image_url','Member photo');
+
+            if(
+                verifiedMember.nationality ===
+                'Tanzanian'
+            ){
+                check('nida_no','NIDA number');
+            }
+
+            if(
+                verifiedMember.nationality ===
+                'Non-Tanzanian'
+            ){
+                check('passport_no','Passport number');
+            }
+
             throw new Error(
-                'The member record was saved but is still incomplete. Please review the required fields and try again.'
+                'The member record was saved but is still incomplete.' +
+                (
+                    missing.length
+                        ? ' Missing: ' + missing.join(', ') + '.'
+                        : ' Please review the required fields and try again.'
+                )
             );
         }
 
         /*
-         * Keep the authenticated profile synchronized. Unlike the previous
-         * version, the auth update result is checked so a profile-sync error
-         * cannot silently interrupt the save flow.
+         * Auth metadata synchronization is useful but must never block a
+         * verified database save from reaching the member portal.
          */
-        const { error: authUpdateError } =
-            await supabaseClient.auth.updateUser({
-                data:{
-                    full_name:
-                        fullName,
-                    phone:
-                        phone,
-                    gender:
-                        gender,
-                    dob:
-                        dob,
-                    nida_no:
-                        nationality === 'Tanzanian'
-                            ? nida
-                            : null,
-                    passport_no:
-                        nationality !== 'Tanzanian'
-                            ? passport
-                            : null,
-                    occupation:
-                        occupation || null,
-                    nationality:
-                        nationality,
-                    country:
-                        country,
-                    address:
-                        address,
-                    member_photo_url:
-                        imageUrl,
-                    member_type:
-                        membershipType,
-                    membership_type:
-                        membershipType,
-                    how_heard_about_dcf:
-                        howHeard,
-                    why_join:
-                        whyJoin,
-                    community_interest:
-                        communityInterest,
-                    skills_experience:
-                        skillsExperience,
-                    volunteer_availability:
-                        volunteerAvailability,
-                    expected_contribution:
-                        expectedContribution,
-                    membership_expectations:
-                        membershipExpectations,
-                    previous_membership:
-                        previousMembership,
-                    membership_rules_accepted:
-                        confirmed
-                }
-            });
+        setProgress(
+            'Finalizing your member profile...'
+        );
 
-        if(authUpdateError){
+        try{
+
+            const authResult =
+                await withTimeout(
+                    supabaseClient.auth.updateUser({
+                        data:{
+                            full_name:
+                                fullName,
+
+                            phone:
+                                phone,
+
+                            gender:
+                                gender,
+
+                            dob:
+                                dob,
+
+                            nida_no:
+                                nationality === 'Tanzanian'
+                                    ? nida
+                                    : null,
+
+                            passport_no:
+                                nationality !== 'Tanzanian'
+                                    ? passport
+                                    : null,
+
+                            occupation:
+                                occupation ||
+                                null,
+
+                            nationality:
+                                nationality,
+
+                            country:
+                                country,
+
+                            address:
+                                address,
+
+                            member_photo_url:
+                                imageUrl,
+
+                            member_type:
+                                membershipType,
+
+                            membership_type:
+                                membershipType,
+
+                            how_heard_about_dcf:
+                                howHeard,
+
+                            why_join:
+                                whyJoin,
+
+                            community_interest:
+                                communityInterest,
+
+                            skills_experience:
+                                skillsExperience,
+
+                            volunteer_availability:
+                                volunteerAvailability,
+
+                            expected_contribution:
+                                expectedContribution,
+
+                            membership_expectations:
+                                membershipExpectations,
+
+                            previous_membership:
+                                previousMembership,
+
+                            membership_rules_accepted:
+                                confirmed
+                        }
+                    }),
+                    'Auth profile synchronization',
+                    20000
+                );
+
+            if(authResult?.error){
+                console.warn(
+                    'MEMBER AUTH PROFILE UPDATE WARNING:',
+                    authResult.error
+                );
+            }
+
+        }catch(authError){
+
+            /*
+             * Do NOT block the portal because the database record has already
+             * been verified successfully.
+             */
             console.warn(
                 'MEMBER AUTH PROFILE UPDATE WARNING:',
-                authUpdateError
+                authError
             );
-            /* Database save is already verified, so do not block the portal. */
         }
-
-        showCompletionAlert(
-            '🎉 Your member information has been saved successfully. Opening Member Portal...',
-            'success'
-        );
 
         sessionStorage.setItem(
             'memberProfileComplete',
             'true'
         );
+
         sessionStorage.setItem(
             'memberId',
-            verifiedMember.member_id || finalMemberId
+            verifiedMember.member_id ||
+            finalMemberId
+        );
+
+        showCompletionAlert(
+            '🎉 <strong>Membership confirmed successfully.</strong><br>' +
+            '<span>Saved to the database. Opening Member Portal...</span>',
+            'success'
+        );
+
+        console.log(
+            '[DCF MEMBER COMPLETION] SUCCESS:',
+            {
+                user_id:user.id,
+                member_id:
+                    verifiedMember.member_id ||
+                    finalMemberId
+            }
         );
 
         /*
-         * Redirect only after the database record has been verified. This is
-         * the important fix for the previous "SAVING... then back to the same
-         * form" behaviour.
+         * IMPORTANT:
+         * Redirect from the site root to /pages/member-portal.html.
+         * This avoids accidentally generating /pages/pages/member-portal.html
+         * when login.html itself is hosted inside a pages directory.
          */
         setTimeout(function(){
-            const modal =
-                getElement('memberCompletionModal');
 
-            if(modal){
-                modal.remove();
+            try{
+
+                const modal =
+                    getElement(
+                        'memberCompletionModal'
+                    );
+
+                if(modal){
+                    modal.remove();
+                }
+
+                const portalUrl =
+                    new URL(
+                        '/pages/member-portal.html',
+                        window.location.origin
+                    ).href;
+
+                console.log(
+                    '[DCF MEMBER COMPLETION] REDIRECT:',
+                    portalUrl
+                );
+
+                window.location.assign(
+                    portalUrl
+                );
+
+            }catch(redirectError){
+
+                console.error(
+                    'MEMBER PORTAL REDIRECT ERROR:',
+                    redirectError
+                );
+
+                showCompletionAlert(
+                    '⚠️ Membership was saved successfully, but automatic redirection failed.<br>' +
+                    '<small>' +
+                    escapeHTML(
+                        redirectError.message ||
+                        'Please open Member Portal manually.'
+                    ) +
+                    '</small>',
+                    'warning'
+                );
+
+                if(button){
+                    button.disabled = false;
+                    button.removeAttribute('aria-busy');
+                    button.innerHTML =
+                        '<i class="fas fa-arrow-right mr-2"></i>OPEN MEMBER PORTAL';
+
+                    button.onclick =
+                        function(){
+                            window.location.assign(
+                                '/pages/member-portal.html'
+                            );
+                        };
+                }
+
             }
 
-            const portalUrl =
-                new URL(
-                    'pages/member-portal.html',
-                    window.location.href
-                ).href;
-
-            /*
-             * Use an absolute URL so deployment paths on Netlify/static hosting
-             * cannot accidentally resolve the portal relative to the wrong URL.
-             */
-            window.location.replace(portalUrl);
-        },650);
+        },700);
 
     }catch(error){
 
@@ -5094,54 +5485,49 @@ async function handleMemberCompletionSubmit(event){
         );
 
         showCompletionAlert(
-            '❌ Failed to save member information.<br><small>' +
+            '❌ <strong>Membership could not be completed.</strong><br>' +
+            '<small>' +
             escapeHTML(
                 error.message ||
-                'Please try again.'
+                'Unknown error. Please check the browser console for details.'
             ) +
-            '</small>'
+            '</small>',
+            'danger'
         );
 
     }finally{
 
         if(form){
-            form.dataset.memberSaveInProgress = 'false';
+            form.dataset.memberSaveInProgress =
+                'false';
         }
 
+        /*
+         * Do not reset the button during the successful redirect window.
+         * The redirect timer will take the user to the portal.
+         */
         if(button){
+
             button.disabled = false;
-            button.removeAttribute('aria-busy');
-            button.innerHTML =
-                'CONFIRM MEMBERSHIP';
+
+            button.removeAttribute(
+                'aria-busy'
+            );
+
+            if(
+                !sessionStorage.getItem(
+                    'memberProfileComplete'
+                )
+            ){
+                button.innerHTML =
+                    'CONFIRM MEMBERSHIP';
+            }
+
         }
+
     }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* =========================================================
    NATIONALITY FIELDS
@@ -5223,9 +5609,7 @@ async function getCurrentUser(){
 async function findMemberForUser(user){
 
     if(!user){
-
         return null;
-
     }
 
     try{
@@ -5238,24 +5622,32 @@ async function findMemberForUser(user){
             .from('members')
             .select('*')
             .eq('user_id', user.id)
+            .order('id', {
+                ascending:false
+            })
+            .limit(1)
             .maybeSingle();
 
         if(error){
 
-            console.error('FIND MEMBER ERROR:', error);
+            console.error(
+                'FIND MEMBER ERROR:',
+                error
+            );
 
             return null;
-
         }
 
         return data || null;
 
     }catch(error){
 
-        console.error('FIND MEMBER ERROR:', error);
+        console.error(
+            'FIND MEMBER ERROR:',
+            error
+        );
 
         return null;
-
     }
 
 }
