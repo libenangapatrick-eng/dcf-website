@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="sw">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DCF — Mfumo wa Uchaguzi</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="../js/role-guard.js"></script>
+<style>
+*{box-sizing:border-box;font-family:"Inter","Roboto",Arial,sans-serif}
+body{background:#f4f7f5;color:#17221c}.card{background:#fff;border:1px solid #dfe7e2;box-shadow:0 8px 25px rgba(16,52,35,.05)}
+.btn{min-height:44px;border-radius:10px;padding:0 15px;font-weight:800;font-size:12px}
+input,select,textarea{outline:none;border:1px solid #cfdad4;border-radius:9px;padding:10px 12px;width:100%;font-size:13px;background:#fff}
+input:focus,select:focus,textarea:focus{border-color:#174a35;box-shadow:0 0 0 3px rgba(23,74,53,.08)}
+.badge{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:900}
+.candidate img{width:62px;height:62px;object-fit:cover;border-radius:12px;background:#edf3ef}
+</style>
+</head>
+<body class="min-h-screen">
+<header class="bg-[#174a35] text-white sticky top-0 z-20">
+ <div class="max-w-[1500px] mx-auto px-4 md:px-7 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+  <div><div class="text-xl font-black"><i class="fas fa-vote-yea mr-2"></i>DCF Election System</div><div class="text-[11px] text-emerald-100">Usimamizi wa nafasi, wagombea, kura na washindi</div></div>
+  <a href="../dashboard.html" class="btn bg-white/10 hover:bg-white/20 inline-flex items-center justify-center"><i class="fas fa-arrow-left mr-2"></i> Dashboard</a>
+ </div>
+</header>
+<main class="max-w-[1500px] mx-auto p-4 md:p-7 space-y-6">
+ <div id="notice" class="hidden rounded-xl p-4 text-sm font-bold"></div>
+
+ <section class="card rounded-2xl p-5">
+  <div class="flex flex-col lg:flex-row lg:items-end gap-4">
+   <div class="flex-1"><label class="text-[11px] font-black uppercase text-gray-500">Chaguzi</label><select id="electionSelect"></select></div>
+   <button id="newElectionBtn" class="btn bg-[#174a35] text-white"><i class="fas fa-plus mr-2"></i>Unda Uchaguzi</button>
+   <button id="publishBtn" class="btn bg-emerald-600 text-white"><i class="fas fa-bullhorn mr-2"></i>Publish Vote System</button>
+   <button id="closeBtn" class="btn bg-red-600 text-white"><i class="fas fa-lock mr-2"></i>Funga Sasa</button>
+  </div>
+  <div id="electionMeta" class="mt-4 text-xs text-gray-600"></div>
+ </section>
+
+ <div class="grid lg:grid-cols-[420px,1fr] gap-6">
+  <section class="card rounded-2xl p-5">
+   <h2 class="font-black text-lg mb-1">Ongeza Mgombea</h2>
+   <p class="text-xs text-gray-500 mb-4">Ingiza passport number ya member. Mfumo utavuta jina, simu na picha yake.</p>
+   <div class="space-y-3">
+    <div><label class="text-[11px] font-black">Passport Number</label><div class="flex gap-2"><input id="passport" placeholder="Mfano: AB123456"><button id="lookupBtn" class="btn bg-gray-900 text-white">Tafuta</button></div></div>
+    <div id="memberPreview" class="hidden rounded-xl bg-gray-50 p-3 flex gap-3 items-center"><img id="memberPhoto" class="w-16 h-16 rounded-xl object-cover bg-white"><div><div id="memberName" class="font-black text-sm"></div><div id="memberPhone" class="text-xs text-gray-500"></div><div id="memberPassport" class="text-[10px] text-gray-400"></div></div></div>
+    <div><label class="text-[11px] font-black">Nafasi</label><select id="position"></select></div>
+    <div><label class="text-[11px] font-black">Namba ya Mgombea</label><input id="candidateNumber" placeholder="Mfano: 01"></div>
+    <button id="addCandidateBtn" class="btn w-full bg-[#174a35] text-white"><i class="fas fa-user-plus mr-2"></i>Hifadhi Mgombea</button>
+   </div>
+  </section>
+
+  <section class="card rounded-2xl p-5">
+   <div class="flex items-center justify-between mb-4"><div><h2 class="font-black text-lg">Wagombea</h2><p class="text-xs text-gray-500">Picha, nafasi, namba na kura.</p></div><button id="refreshBtn" class="btn border border-gray-200"><i class="fas fa-sync mr-2"></i>Refresh</button></div>
+   <div id="candidates" class="grid sm:grid-cols-2 xl:grid-cols-3 gap-3"></div>
+  </section>
+ </div>
+
+ <section class="card rounded-2xl p-5">
+  <div class="flex items-center justify-between mb-4"><div><h2 class="font-black text-lg">Matokeo / Graph</h2><p class="text-xs text-gray-500">Matokeo hujipanga kwa kura nyingi. Washindi wataonyeshwa kwa kila nafasi.</p></div></div>
+  <div id="results" class="space-y-5"></div>
+ </section>
+</main>
+
+<div id="electionModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
+ <div class="bg-white rounded-2xl max-w-lg w-full p-6">
+  <h2 class="font-black text-lg mb-4">Unda Uchaguzi Mpya</h2>
+  <div class="space-y-3">
+   <input id="title" placeholder="Mfano: Uchaguzi wa Viongozi 2026">
+   <textarea id="description" placeholder="Maelezo ya uchaguzi"></textarea>
+   <div><label class="text-[11px] font-black">Muda wa kuanza</label><input id="startsAt" type="datetime-local"></div>
+   <div><label class="text-[11px] font-black">Muda wa kuisha</label><input id="endsAt" type="datetime-local"></div>
+  </div>
+  <div class="flex justify-end gap-2 mt-5"><button id="cancelModal" class="btn border">Ghairi</button><button id="saveElection" class="btn bg-[#174a35] text-white">Hifadhi</button></div>
+ </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+const c=window.supabaseClient; let elections=[],positions=[],selected=null,member=null;
+const $=id=>document.getElementById(id);
+function note(msg,type="ok"){const n=$("notice");n.className="rounded-xl p-4 text-sm font-bold "+(type==="err"?"bg-red-50 text-red-700":"bg-emerald-50 text-emerald-700");n.textContent=msg;n.classList.remove("hidden");setTimeout(()=>n.classList.add("hidden"),4500)}
+function fmt(v){try{return new Date(v).toLocaleString("sw-TZ",{dateStyle:"medium",timeStyle:"short"})}catch(_){return v}}
+async function load(){
+ const [{data:e,error:ee},{data:p,error:pe}]=await Promise.all([
+  c.from("elections").select("*").order("created_at",{ascending:false}),
+  c.from("election_positions").select("*").eq("active",true).order("display_order")
+ ]);
+ if(ee) return note(ee.message,"err"); if(pe) return note(pe.message,"err");
+ elections=e||[];positions=p||[];
+ $("position").innerHTML=positions.map(x=>`<option value="${x.id}">${x.name}</option>`).join("");
+ $("electionSelect").innerHTML=elections.length?elections.map(x=>`<option value="${x.id}">${x.title} — ${x.status}</option>`).join(""):"<option value=''>Hakuna uchaguzi</option>";
+ if(elections.length){selected=elections[0];$("electionSelect").value=selected.id}else selected=null;
+ await render();
+}
+async function render(){
+ if(!selected){$("electionMeta").textContent="Unda uchaguzi kwanza.";$("candidates").innerHTML="";$("results").innerHTML="";return}
+ $("electionMeta").innerHTML=`<b>${selected.title}</b> · <span class="badge ${selected.status==="published"?"bg-emerald-100 text-emerald-700":selected.status==="closed"?"bg-gray-200 text-gray-700":"bg-amber-100 text-amber-700"}">${selected.status}</span> · ${fmt(selected.starts_at)} → ${fmt(selected.ends_at)}`;
+ const {data:cs,error}=await c.from("election_candidates").select("*, election_positions(name,display_order)").eq("election_id",selected.id).order("created_at");
+ if(error)return note(error.message,"err");
+ const {data:rs}=await c.rpc("get_election_results",{p_election_id:selected.id});
+ $("candidates").innerHTML=(cs||[]).map(x=>`<div class="candidate border rounded-xl p-3 flex gap-3 items-center"><img src="${x.photo_url||'../images/dcf-logo.png'}" onerror="this.src='../images/dcf-logo.png'"><div class="min-w-0"><div class="font-black text-sm truncate">${x.full_name}</div><div class="text-[11px] text-[#174a35] font-bold">${x.election_positions?.name||''} · #${x.candidate_number}</div><div class="text-[10px] text-gray-500">${x.passport_no}</div></div></div>`).join("")||"<div class='text-sm text-gray-500'>Hakuna wagombea.</div>";
+ renderResults(rs||[]);
+}
+function renderResults(rows){
+ const groups={};rows.forEach(r=>(groups[r.position_id]??=[]).push(r));
+ $("results").innerHTML=Object.values(groups).map(g=>{
+   const top=Math.max(...g.map(x=>Number(x.vote_count||0))); const winner=g.filter(x=>Number(x.vote_count||0)===top && top>0);
+   return `<div><div class="flex justify-between items-center mb-2"><h3 class="font-black">${g[0].position_name}</h3><span class="text-[10px] text-gray-500">${winner.length===1?`Mshindi: ${winner[0].full_name}`:top===0?"Hakuna kura":`Tie: ${winner.map(x=>x.full_name).join(", ")}`}</span></div><div class="space-y-2">${g.map(x=>{const pct=top?Math.round(Number(x.vote_count||0)/top*100):0;return `<div><div class="flex justify-between text-xs font-bold"><span>#${x.candidate_number} ${x.full_name}</span><span>${x.vote_count||0}</span></div><div class="h-3 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-[#174a35]" style="width:${pct}%"></div></div></div>`}).join("")}</div></div>`
+ }).join("")||"<div class='text-sm text-gray-500'>Hakuna matokeo bado.</div>";
+}
+$("electionSelect").onchange=async()=>{selected=elections.find(x=>x.id===$("electionSelect").value)||null;await render()};
+$("refreshBtn").onclick=load;
+$("newElectionBtn").onclick=()=>{$("electionModal").classList.remove("hidden");$("electionModal").classList.add("flex")};
+$("cancelModal").onclick=()=>{$("electionModal").classList.add("hidden");$("electionModal").classList.remove("flex")};
+$("saveElection").onclick=async()=>{
+ const title=$("title").value.trim(),s=$("startsAt").value,e=$("endsAt").value;
+ if(!title||!s||!e)return note("Jaza jina na muda wote.","err");
+ if(new Date(e)<=new Date(s))return note("Muda wa kuisha lazima uwe baada ya kuanza.","err");
+ const {data:user}=await c.auth.getUser();
+ const {data,error}=await c.from("elections").insert({title,description:$("description").value.trim(),starts_at:new Date(s).toISOString(),ends_at:new Date(e).toISOString(),created_by:user.user?.id||null}).select().single();
+ if(error)return note(error.message,"err");
+ $("electionModal").classList.add("hidden");$("electionModal").classList.remove("flex");await load();$("electionSelect").value=data.id;selected=data;await render();note("Uchaguzi umeundwa.");
+};
+$("lookupBtn").onclick=async()=>{
+ const p=$("passport").value.trim(); if(!p)return note("Ingiza passport number.","err");
+ const {data,error}=await c.rpc("dcf_member_by_passport",{p_passport:p});
+ if(error)return note(error.message,"err"); member=data?.[0]||null;
+ if(!member){$("memberPreview").classList.add("hidden");return note("Member mwenye passport hiyo hakupatikana.","err")}
+ $("memberPreview").classList.remove("hidden");$("memberName").textContent=member.full_name||"";$("memberPhone").textContent=member.phone||"—";$("memberPassport").textContent=member.passport_no||p;$("memberPhoto").src=member.photo_url||"../images/dcf-logo.png";
+};
+$("addCandidateBtn").onclick=async()=>{
+ if(!selected)return note("Chagua uchaguzi.","err");if(!member)return note("Tafuta member kwa passport kwanza.","err");
+ const number=$("candidateNumber").value.trim();if(!number)return note("Ingiza namba ya mgombea.","err");
+ const {error}=await c.from("election_candidates").insert({election_id:selected.id,position_id:$("position").value,member_id:member.member_id,passport_no:member.passport_no||$("passport").value.trim(),full_name:member.full_name,phone:member.phone,photo_url:member.photo_url,candidate_number:number});
+ if(error)return note(error.message,"err");
+ note("Mgombea ameongezwa.");$("passport").value="";$("candidateNumber").value="";member=null;$("memberPreview").classList.add("hidden");await render();
+};
+$("publishBtn").onclick=async()=>{
+ if(!selected)return note("Chagua uchaguzi.","err");
+ if(selected.status==="published")return note("Uchaguzi tayari ume-publish.","err");
+ const raw=prompt("Uchaguzi uwe wazi kwa dakika ngapi? Mfano 30, 60, 120",String(Math.max(1,Math.ceil((new Date(selected.ends_at)-Date.now())/60000))));
+ const minutes=Number(raw);
+ if(!Number.isFinite(minutes)||minutes<=0)return note("Dakika si sahihi.","err");
+ const now=new Date(),end=new Date(now.getTime()+minutes*60000);
+ const {data,error}=await c.from("elections").update({status:"published",starts_at:now.toISOString(),ends_at:end.toISOString(),published_at:now.toISOString(),closed_at:null}).eq("id",selected.id).select().single();
+ if(error)return note(error.message,"err");selected=data;await render();note(`VOTE SYSTEM IMEPUBLISH kwa dakika ${minutes}. Itajifunga yenyewe saa ${end.toLocaleString("sw-TZ")}.`);
+};
+$("closeBtn").onclick=async()=>{
+ if(!selected)return;
+ if(!confirm("Funga uchaguzi sasa?"))return;
+ const {data,error}=await c.from("elections").update({status:"closed",closed_at:new Date().toISOString()}).eq("id",selected.id).select().single();
+ if(error)return note(error.message,"err");selected=data;await render();note("Uchaguzi umefungwa. Matokeo na washindi vinaendelea kuonekana.");
+};
+load();
+setInterval(async()=>{if(selected&&selected.status==="published"&&new Date(selected.ends_at)<=new Date()){await c.rpc("auto_close_dcf_elections");await load()}},30000);
+})();
+</script>
+</body>
+</html>
