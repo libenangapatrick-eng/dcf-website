@@ -42,10 +42,24 @@ input:focus,select:focus,textarea:focus{border-color:#174a35;box-shadow:0 0 0 3p
  <div class="grid lg:grid-cols-[420px,1fr] gap-6">
   <section class="card rounded-2xl p-5">
    <h2 class="font-black text-lg mb-1">Ongeza Mgombea</h2>
-   <p class="text-xs text-gray-500 mb-4">Ingiza passport number ya member. Mfumo utavuta jina, simu na picha yake.</p>
+   <p class="text-xs text-gray-500 mb-4">Chagua member moja kwa moja kutoka Supabase. Tafuta kwa jina, passport au simu.</p>
    <div class="space-y-3">
-    <div><label class="text-[11px] font-black">Passport Number</label><div class="flex gap-2"><input id="passport" placeholder="Mfano: AB123456"><button id="lookupBtn" class="btn bg-gray-900 text-white">Tafuta</button></div></div>
-    <div id="memberPreview" class="hidden rounded-xl bg-gray-50 p-3 flex gap-3 items-center"><img id="memberPhoto" class="w-16 h-16 rounded-xl object-cover bg-white"><div><div id="memberName" class="font-black text-sm"></div><div id="memberPhone" class="text-xs text-gray-500"></div><div id="memberPassport" class="text-[10px] text-gray-400"></div></div></div>
+    <div>
+     <label class="text-[11px] font-black">Tafuta Member / Passport</label>
+     <input id="memberSearch" placeholder="Mfano: John, AB123456 au 0712..." autocomplete="off">
+    </div>
+    <div id="memberList" class="border rounded-xl bg-white max-h-72 overflow-y-auto">
+     <div class="p-4 text-xs text-gray-500 text-center">Inapakia members...</div>
+    </div>
+    <div id="memberPreview" class="hidden rounded-xl bg-blue-50 border border-blue-100 p-3 flex gap-3 items-center">
+     <img id="memberPhoto" class="w-16 h-16 rounded-xl object-cover bg-white" src="../images/dcf-logo.png" onerror="this.src='../images/dcf-logo.png'">
+     <div class="min-w-0 flex-1">
+      <div id="memberName" class="font-black text-sm"></div>
+      <div id="memberPhone" class="text-xs text-gray-500"></div>
+      <div id="memberPassport" class="text-[10px] text-gray-400"></div>
+     </div>
+     <button id="clearMemberBtn" type="button" class="btn border bg-white">Ondoa</button>
+    </div>
     <div><label class="text-[11px] font-black">Nafasi</label><select id="position"></select></div>
     <div><label class="text-[11px] font-black">Namba ya Mgombea</label><input id="candidateNumber" placeholder="Mfano: 01"></div>
     <button id="addCandidateBtn" class="btn w-full bg-[#174a35] text-white"><i class="fas fa-user-plus mr-2"></i>Hifadhi Mgombea</button>
@@ -80,10 +94,37 @@ input:focus,select:focus,textarea:focus{border-color:#174a35;box-shadow:0 0 0 3p
 <script>
 (function(){
 "use strict";
-const c=window.supabaseClient; let elections=[],positions=[],selected=null,member=null;
+const c=window.supabaseClient; let elections=[],positions=[],selected=null,member=null,members=[],filteredMembers=[];
 const $=id=>document.getElementById(id);
 function note(msg,type="ok"){const n=$("notice");n.className="rounded-xl p-4 text-sm font-bold "+(type==="err"?"bg-red-50 text-red-700":"bg-emerald-50 text-emerald-700");n.textContent=msg;n.classList.remove("hidden");setTimeout(()=>n.classList.add("hidden"),4500)}
 function fmt(v){try{return new Date(v).toLocaleString("sw-TZ",{dateStyle:"medium",timeStyle:"short"})}catch(_){return v}}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function renderMembers(){
+ const box=$("memberList");
+ if(!filteredMembers.length){box.innerHTML="<div class='p-4 text-xs text-gray-500 text-center'>Hakuna member aliyepatikana.</div>";return}
+ box.innerHTML=filteredMembers.map(m=>`<div class="memberRow border-b p-3 flex gap-3 items-center cursor-pointer hover:bg-blue-50" data-id="${esc(m.member_id)}">
+  <img src="${esc(m.passport_image_url||"../images/dcf-logo.png")}" onerror="this.src='../images/dcf-logo.png'" class="w-12 h-12 rounded-xl object-cover bg-gray-100">
+  <div class="min-w-0 flex-1"><div class="font-black text-sm truncate">${esc(m.full_name||"Member")}</div><div class="text-[10px] text-gray-500 truncate">Passport: ${esc(m.passport_no||"-")}</div><div class="text-[10px] text-gray-400 truncate">Simu: ${esc(m.phone||"-")}</div></div>
+  <div class="text-[10px] font-black text-[#174a35]">CHAGUA</div>
+ </div>`).join("");
+ box.querySelectorAll(".memberRow").forEach(row=>row.onclick=()=>{member=members.find(m=>String(m.member_id)===String(row.dataset.id))||null;showMember()});
+}
+function showMember(){
+ if(!member){$("memberPreview").classList.add("hidden");renderMembers();return}
+ $("memberPreview").classList.remove("hidden");
+ $("memberName").textContent=member.full_name||"";
+ $("memberPhone").textContent=member.phone||"—";
+ $("memberPassport").textContent=member.passport_no||"—";
+ $("memberPhoto").src=member.passport_image_url||"../images/dcf-logo.png";
+ renderMembers();
+}
+async function loadElectionMembers(){
+ const {data,error}=await c.rpc("dcf_election_members_admin");
+ if(error){$("memberList").innerHTML=`<div class="p-4 text-xs text-red-600">${esc(error.message)}</div>`;return}
+ members=data||[];filteredMembers=[...members];renderMembers();
+}
+$("memberSearch").oninput=()=>{const q=$("memberSearch").value.trim().toLowerCase();filteredMembers=q?members.filter(m=>[m.full_name,m.passport_no,m.phone,m.email].some(v=>String(v||"").toLowerCase().includes(q))):[...members];renderMembers()};
+$("clearMemberBtn").onclick=()=>{member=null;showMember()};
 async function load(){
  const [{data:e,error:ee},{data:p,error:pe}]=await Promise.all([
   c.from("elections").select("*").order("created_at",{ascending:false}),
@@ -95,6 +136,7 @@ async function load(){
  $("electionSelect").innerHTML=elections.length?elections.map(x=>`<option value="${x.id}">${x.title} — ${x.status}</option>`).join(""):"<option value=''>Hakuna uchaguzi</option>";
  if(elections.length){selected=elections[0];$("electionSelect").value=selected.id}else selected=null;
  await render();
+ await loadElectionMembers();
 }
 async function render(){
  if(!selected){$("electionMeta").textContent="Unda uchaguzi kwanza.";$("candidates").innerHTML="";$("results").innerHTML="";return}
@@ -125,19 +167,15 @@ $("saveElection").onclick=async()=>{
  if(error)return note(error.message,"err");
  $("electionModal").classList.add("hidden");$("electionModal").classList.remove("flex");await load();$("electionSelect").value=data.id;selected=data;await render();note("Uchaguzi umeundwa.");
 };
-$("lookupBtn").onclick=async()=>{
- const p=$("passport").value.trim(); if(!p)return note("Ingiza passport number.","err");
- const {data,error}=await c.rpc("dcf_member_by_passport",{p_passport:p});
- if(error)return note(error.message,"err"); member=data?.[0]||null;
- if(!member){$("memberPreview").classList.add("hidden");return note("Member mwenye passport hiyo hakupatikana.","err")}
- $("memberPreview").classList.remove("hidden");$("memberName").textContent=member.full_name||"";$("memberPhone").textContent=member.phone||"—";$("memberPassport").textContent=member.passport_no||p;$("memberPhoto").src=member.photo_url||"../images/dcf-logo.png";
-};
 $("addCandidateBtn").onclick=async()=>{
- if(!selected)return note("Chagua uchaguzi.","err");if(!member)return note("Tafuta member kwa passport kwanza.","err");
- const number=$("candidateNumber").value.trim();if(!number)return note("Ingiza namba ya mgombea.","err");
- const {error}=await c.from("election_candidates").insert({election_id:selected.id,position_id:$("position").value,member_id:member.member_id,passport_no:member.passport_no||$("passport").value.trim(),full_name:member.full_name,phone:member.phone,photo_url:member.photo_url,candidate_number:number});
+ if(!selected)return note("Chagua uchaguzi.","err");if(!member)return note("Chagua member kwanza.","err");
+ const positionId=$("position").value,number=$("candidateNumber").value.trim();
+ if(!positionId)return note("Chagua nafasi.","err");if(!number)return note("Ingiza namba ya mgombea.","err");
+ const {data:dup}=await c.from("election_candidates").select("id").eq("election_id",selected.id).eq("member_id",member.member_id).limit(1);
+ if(dup?.length)return note("Member huyu tayari ni mgombea kwenye uchaguzi huu.","err");
+ const {error}=await c.from("election_candidates").insert({election_id:selected.id,position_id:positionId,member_id:member.member_id,passport_no:member.passport_no||"",full_name:member.full_name||"",phone:member.phone||"",photo_url:member.passport_image_url||"",candidate_number:number});
  if(error)return note(error.message,"err");
- note("Mgombea ameongezwa.");$("passport").value="";$("candidateNumber").value="";member=null;$("memberPreview").classList.add("hidden");await render();
+ note("Mgombea ameongezwa.");$("candidateNumber").value="";member=null;showMember();await render();
 };
 $("publishBtn").onclick=async()=>{
  if(!selected)return note("Chagua uchaguzi.","err");

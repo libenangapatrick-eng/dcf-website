@@ -1,0 +1,2165 @@
+﻿<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>DCF Election System</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background: #f8fafc;
+        }
+
+        .glass {
+            background: rgba(255,255,255,.96);
+            backdrop-filter: blur(10px);
+        }
+
+        .candidate-card {
+            transition: all .2s ease;
+        }
+
+        .candidate-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0,0,0,.08);
+        }
+
+        .member-row {
+            transition: all .15s ease;
+            cursor: pointer;
+        }
+
+        .member-row:hover {
+            background: #eff6ff;
+        }
+
+        .member-row.selected {
+            background: #dbeafe;
+            border-color: #2563eb;
+        }
+
+        .scroll-list {
+            max-height: 330px;
+            overflow-y: auto;
+        }
+
+        .scroll-list::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        .scroll-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 20px;
+        }
+
+        .winner-card {
+            border: 2px solid #f59e0b;
+            background: linear-gradient(135deg,#fffbeb,#ffffff);
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen text-slate-800">
+
+<div class="max-w-7xl mx-auto px-4 py-6">
+
+    <!-- HEADER -->
+    <div class="bg-slate-900 text-white rounded-3xl p-6 shadow-xl mb-6">
+
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+
+            <div>
+                <div class="text-xs font-bold text-blue-300 uppercase tracking-widest">
+                    DCF Online System
+                </div>
+
+                <h1 class="text-2xl md:text-3xl font-black mt-1">
+                    Election Management
+                </h1>
+
+                <p class="text-slate-300 text-sm mt-2">
+                    Tengeneza uchaguzi, ongeza wagombea, chapisha kura na angalia matokeo.
+                </p>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+
+                <button
+                    id="refreshBtn"
+                    class="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 font-bold text-sm">
+                    ↻ Refresh
+                </button>
+
+                <button
+                    id="createElectionBtn"
+                    class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 font-bold text-sm">
+                    + Tengeneza Uchaguzi
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ALERT -->
+    <div
+        id="message"
+        class="hidden mb-5 rounded-2xl px-4 py-3 text-sm font-bold">
+    </div>
+
+
+    <!-- ELECTION CONTROL -->
+    <div class="glass rounded-3xl shadow-sm border border-slate-200 p-5 mb-6">
+
+        <div class="grid lg:grid-cols-4 gap-4 items-end">
+
+            <div class="lg:col-span-2">
+
+                <label class="text-xs font-black text-slate-500 uppercase">
+                    Chagua Uchaguzi
+                </label>
+
+                <select
+                    id="electionSelect"
+                    class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 bg-white font-bold outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">
+                        Inapakia uchaguzi...
+                    </option>
+                </select>
+
+            </div>
+
+
+            <div>
+
+                <div class="text-xs font-black text-slate-500 uppercase">
+                    Status
+                </div>
+
+                <div
+                    id="electionStatus"
+                    class="mt-2 px-4 py-3 rounded-xl bg-slate-100 font-black text-sm">
+                    -
+                </div>
+
+            </div>
+
+
+            <div class="flex gap-2">
+
+                <button
+                    id="publishBtn"
+                    class="flex-1 px-3 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm">
+                    Publish
+                </button>
+
+                <button
+                    id="closeBtn"
+                    class="flex-1 px-3 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-black text-sm">
+                    Close
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="electionInfo"
+            class="hidden mt-4 grid md:grid-cols-3 gap-3 text-sm">
+        </div>
+
+    </div>
+
+
+    <!-- MAIN GRID -->
+    <div class="grid xl:grid-cols-2 gap-6">
+
+
+        <!-- ADD CANDIDATE -->
+        <div class="glass rounded-3xl shadow-sm border border-slate-200 p-5">
+
+            <div class="flex items-center justify-between mb-5">
+
+                <div>
+                    <h2 class="text-xl font-black">
+                        Ongeza Mgombea
+                    </h2>
+
+                    <p class="text-xs text-slate-500 mt-1">
+                        Chagua member kutoka Supabase.
+                    </p>
+                </div>
+
+                <div class="bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full text-xs font-black">
+                    ADMIN
+                </div>
+
+            </div>
+
+
+            <!-- MEMBER SEARCH -->
+            <div>
+
+                <label class="text-[11px] font-black text-slate-500 uppercase">
+                    Tafuta Member
+                </label>
+
+                <input
+                    id="memberSearch"
+                    type="text"
+                    autocomplete="off"
+                    placeholder="Tafuta kwa jina, passport au simu..."
+                    class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+                >
+
+            </div>
+
+
+            <!-- MEMBER LIST -->
+            <div
+                id="memberList"
+                class="scroll-list mt-3 border border-slate-200 rounded-2xl bg-white">
+
+                <div class="p-5 text-sm text-slate-500 text-center">
+                    Inapakia members...
+                </div>
+
+            </div>
+
+
+            <!-- SELECTED MEMBER -->
+            <div
+                id="memberPreview"
+                class="hidden mt-4 rounded-2xl border border-blue-200 bg-blue-50 p-4">
+
+                <div class="flex gap-4 items-center">
+
+                    <img
+                        id="memberPhoto"
+                        src="../images/dcf-logo.png"
+                        class="w-20 h-20 rounded-2xl object-cover bg-white border border-slate-200"
+                        onerror="this.src='../images/dcf-logo.png';"
+                    >
+
+                    <div class="min-w-0 flex-1">
+
+                        <div
+                            id="memberName"
+                            class="font-black text-lg truncate">
+                        </div>
+
+                        <div
+                            id="memberPhone"
+                            class="text-sm text-slate-600 mt-1">
+                        </div>
+
+                        <div
+                            id="memberPassport"
+                            class="text-xs text-slate-500 mt-1">
+                        </div>
+
+                    </div>
+
+                    <button
+                        id="clearMemberBtn"
+                        class="px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-black">
+                        Ondoa
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- POSITION -->
+            <div class="mt-5">
+
+                <label class="text-[11px] font-black text-slate-500 uppercase">
+                    Nafasi
+                </label>
+
+                <select
+                    id="position"
+                    class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 bg-white font-bold outline-none focus:ring-2 focus:ring-blue-500">
+
+                    <option value="">
+                        Chagua nafasi
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- NUMBER -->
+            <div class="mt-4">
+
+                <label class="text-[11px] font-black text-slate-500 uppercase">
+                    Namba ya Mgombea
+                </label>
+
+                <input
+                    id="candidateNumber"
+                    type="text"
+                    placeholder="Mfano: 01"
+                    class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+                >
+
+            </div>
+
+
+            <!-- SAVE -->
+            <button
+                id="addCandidateBtn"
+                class="mt-5 w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-4 py-3.5 font-black">
+
+                + Hifadhi Mgombea
+
+            </button>
+
+        </div>
+
+
+        <!-- CANDIDATES -->
+        <div class="glass rounded-3xl shadow-sm border border-slate-200 p-5">
+
+            <div class="flex items-center justify-between mb-5">
+
+                <div>
+                    <h2 class="text-xl font-black">
+                        Wagombea
+                    </h2>
+
+                    <p class="text-xs text-slate-500 mt-1">
+                        Wagombea wa uchaguzi uliochaguliwa.
+                    </p>
+                </div>
+
+                <div
+                    id="candidateCount"
+                    class="px-3 py-1.5 rounded-full bg-slate-100 text-xs font-black">
+                    0
+                </div>
+
+            </div>
+
+
+            <div
+                id="candidateList"
+                class="space-y-3">
+
+                <div class="text-sm text-slate-500 text-center py-10">
+                    Chagua uchaguzi.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- RESULTS -->
+    <div class="glass rounded-3xl shadow-sm border border-slate-200 p-5 mt-6">
+
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
+
+            <div>
+                <h2 class="text-xl font-black">
+                    Matokeo
+                </h2>
+
+                <p class="text-xs text-slate-500">
+                    Matokeo yanaonekana wakati kura zinapoingia na baada ya uchaguzi kufungwa.
+                </p>
+            </div>
+
+            <button
+                id="refreshResultsBtn"
+                class="px-4 py-2 rounded-xl bg-slate-900 text-white text-sm font-black">
+                ↻ Refresh Results
+            </button>
+
+        </div>
+
+
+        <div
+            id="resultsList"
+            class="space-y-6">
+
+            <div class="text-center py-10 text-sm text-slate-500">
+                Chagua uchaguzi kuona matokeo.
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- CREATE ELECTION MODAL -->
+<div
+    id="createModal"
+    class="hidden fixed inset-0 z-50 bg-black/50 p-4 flex items-center justify-center">
+
+    <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl p-6">
+
+        <div class="flex items-center justify-between mb-5">
+
+            <div>
+                <h2 class="text-xl font-black">
+                    Tengeneza Uchaguzi
+                </h2>
+
+                <p class="text-xs text-slate-500 mt-1">
+                    Weka muda ambao mfumo wa kura utakuwa wazi.
+                </p>
+            </div>
+
+            <button
+                id="closeModalBtn"
+                class="w-9 h-9 rounded-full bg-slate-100 font-black">
+                ×
+            </button>
+
+        </div>
+
+
+        <label class="text-xs font-black text-slate-500 uppercase">
+            Jina la Uchaguzi
+        </label>
+
+        <input
+            id="newElectionName"
+            type="text"
+            placeholder="Mfano: DCF General Election 2026"
+            class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+        >
+
+
+        <div class="grid md:grid-cols-2 gap-4 mt-4">
+
+            <div>
+
+                <label class="text-xs font-black text-slate-500 uppercase">
+                    Tarehe ya kuanza
+                </label>
+
+                <input
+                    id="startDate"
+                    type="datetime-local"
+                    class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-3"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label class="text-xs font-black text-slate-500 uppercase">
+                    Tarehe ya kufunga
+                </label>
+
+                <input
+                    id="endDate"
+                    type="datetime-local"
+                    class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-3"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="flex gap-3 mt-6">
+
+            <button
+                id="cancelCreateBtn"
+                class="flex-1 rounded-xl border border-slate-300 px-4 py-3 font-black">
+                Cancel
+            </button>
+
+            <button
+                id="saveElectionBtn"
+                class="flex-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 font-black">
+                Tengenza
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="../js/supabase.js"></script>
+
+
+<script>
+(function () {
+
+    "use strict";
+
+
+    const c = window.supabaseClient;
+
+
+    if (!c) {
+        alert("Supabase client haijapatikana. Hakikisha ../js/supabase.js ipo.");
+        return;
+    }
+
+
+    /* ========================================================
+       STATE
+    ======================================================== */
+
+    let elections = [];
+    let positions = [];
+
+    let selected = null;
+
+    let members = [];
+    let filteredMembers = [];
+
+    let member = null;
+
+
+    /* ========================================================
+       HELPERS
+    ======================================================== */
+
+    function $(id) {
+        return document.getElementById(id);
+    }
+
+
+    function escapeHtml(value) {
+
+        return String(value ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+
+    }
+
+
+    function note(message, type = "ok") {
+
+        const box = $("message");
+
+        box.textContent = message;
+
+        box.className =
+            "mb-5 rounded-2xl px-4 py-3 text-sm font-bold " +
+            (type === "err"
+                ? "bg-red-50 text-red-700 border border-red-200"
+                : "bg-emerald-50 text-emerald-700 border border-emerald-200");
+
+        box.classList.remove("hidden");
+
+
+        setTimeout(() => {
+
+            box.classList.add("hidden");
+
+        }, 5000);
+
+    }
+
+
+    function formatDate(value) {
+
+        if (!value) return "-";
+
+        const d = new Date(value);
+
+        if (Number.isNaN(d.getTime())) return value;
+
+        return d.toLocaleString("sw-TZ", {
+            dateStyle: "medium",
+            timeStyle: "short"
+        });
+
+    }
+
+
+    function statusLabel(status) {
+
+        if (status === "draft") return "DRAFT";
+
+        if (status === "published") return "LIVE";
+
+        if (status === "closed") return "CLOSED";
+
+        return String(status || "-").toUpperCase();
+
+    }
+
+
+    function statusClass(status) {
+
+        if (status === "published") {
+            return "bg-emerald-100 text-emerald-700";
+        }
+
+        if (status === "closed") {
+            return "bg-red-100 text-red-700";
+        }
+
+        return "bg-amber-100 text-amber-700";
+
+    }
+
+
+    /* ========================================================
+       LOAD ALL MEMBERS FROM SUPABASE
+    ======================================================== */
+
+    async function loadElectionMembers() {
+
+        $("memberList").innerHTML = `
+            <div class="p-5 text-sm text-slate-500 text-center">
+                Inapakia members kutoka Supabase...
+            </div>
+        `;
+
+
+        const { data, error } = await c.rpc(
+            "dcf_election_members_admin"
+        );
+
+
+        if (error) {
+
+            console.error(error);
+
+            $("memberList").innerHTML = `
+                <div class="p-5 text-sm text-red-600">
+                    Imeshindikana kupakia members.
+                    <br><br>
+                    ${escapeHtml(error.message)}
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        members = Array.isArray(data) ? data : [];
+
+        filteredMembers = [...members];
+
+        renderMemberList();
+
+    }
+
+
+    /* ========================================================
+       RENDER MEMBER LIST
+    ======================================================== */
+
+    function renderMemberList() {
+
+        const box = $("memberList");
+
+
+        if (!filteredMembers.length) {
+
+            box.innerHTML = `
+                <div class="p-6 text-center text-sm text-slate-500">
+                    Hakuna member aliyepatikana.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        box.innerHTML = filteredMembers.map(m => {
+
+            const selectedClass =
+                member &&
+                String(member.member_id) === String(m.member_id)
+                    ? "selected"
+                    : "";
+
+
+            const photo =
+                m.passport_image_url ||
+                "../images/dcf-logo.png";
+
+
+            return `
+
+                <div
+                    class="member-row ${selectedClass} border-b border-slate-100 p-3 flex gap-3 items-center"
+                    data-member-id="${escapeHtml(m.member_id)}"
+                >
+
+                    <img
+                        src="${escapeHtml(photo)}"
+                        class="w-12 h-12 rounded-xl object-cover bg-slate-100 border border-slate-200"
+                        onerror="this.src='../images/dcf-logo.png';"
+                    >
+
+                    <div class="min-w-0 flex-1">
+
+                        <div class="font-black text-sm truncate">
+                            ${escapeHtml(m.full_name || "Member")}
+                        </div>
+
+                        <div class="text-xs text-slate-500 truncate">
+                            ${escapeHtml(m.passport_no || "Passport haijawekwa")}
+                        </div>
+
+                        <div class="text-xs text-slate-400 truncate">
+                            ${escapeHtml(m.phone || "Simu haijawekwa")}
+                        </div>
+
+                    </div>
+
+                    <div class="text-xs font-black text-blue-600">
+                        CHAGUA
+                    </div>
+
+                </div>
+
+            `;
+
+        }).join("");
+
+
+        box.querySelectorAll(".member-row").forEach(row => {
+
+            row.addEventListener("click", function () {
+
+                const id = this.dataset.memberId;
+
+                const found = members.find(
+                    x => String(x.member_id) === String(id)
+                );
+
+                if (found) {
+                    selectElectionMember(found);
+                }
+
+            });
+
+        });
+
+    }
+
+
+    /* ========================================================
+       SELECT MEMBER
+    ======================================================== */
+
+    function selectElectionMember(m) {
+
+        member = m;
+
+
+        $("memberPhoto").src =
+            m.passport_image_url ||
+            "../images/dcf-logo.png";
+
+
+        $("memberName").textContent =
+            m.full_name || "Member";
+
+
+        $("memberPhone").textContent =
+            m.phone
+                ? "Simu: " + m.phone
+                : "Simu: -";
+
+
+        $("memberPassport").textContent =
+            m.passport_no
+                ? "Passport: " + m.passport_no
+                : "Passport: -";
+
+
+        $("memberPreview").classList.remove("hidden");
+
+
+        renderMemberList();
+
+    }
+
+
+    function clearMember() {
+
+        member = null;
+
+        $("memberPreview").classList.add("hidden");
+
+        renderMemberList();
+
+    }
+
+
+    /* ========================================================
+       SEARCH MEMBER
+    ======================================================== */
+
+    $("memberSearch").addEventListener("input", function () {
+
+        const q = this.value.trim().toLowerCase();
+
+
+        if (!q) {
+
+            filteredMembers = [...members];
+
+        } else {
+
+            filteredMembers = members.filter(m => {
+
+                const name =
+                    String(m.full_name || "").toLowerCase();
+
+                const passport =
+                    String(m.passport_no || "").toLowerCase();
+
+                const phone =
+                    String(m.phone || "").toLowerCase();
+
+                const email =
+                    String(m.email || "").toLowerCase();
+
+
+                return (
+                    name.includes(q) ||
+                    passport.includes(q) ||
+                    phone.includes(q) ||
+                    email.includes(q)
+                );
+
+            });
+
+        }
+
+
+        renderMemberList();
+
+    });
+
+
+    $("clearMemberBtn").onclick = clearMember;
+
+
+    /* ========================================================
+       LOAD ELECTIONS + POSITIONS
+    ======================================================== */
+
+    async function load() {
+
+        const [
+            electionsResult,
+            positionsResult
+        ] = await Promise.all([
+
+            c
+                .from("elections")
+                .select("*")
+                .order("created_at", {
+                    ascending: false
+                }),
+
+            c
+                .from("election_positions")
+                .select("*")
+                .eq("active", true)
+                .order("display_order", {
+                    ascending: true
+                })
+
+        ]);
+
+
+        if (electionsResult.error) {
+
+            console.error(electionsResult.error);
+
+            note(
+                electionsResult.error.message,
+                "err"
+            );
+
+            return;
+
+        }
+
+
+        if (positionsResult.error) {
+
+            console.error(positionsResult.error);
+
+            note(
+                positionsResult.error.message,
+                "err"
+            );
+
+            return;
+
+        }
+
+
+        elections =
+            electionsResult.data || [];
+
+
+        positions =
+            positionsResult.data || [];
+
+
+        renderElectionSelect();
+
+        renderPositionSelect();
+
+        await render();
+
+        await loadElectionMembers();
+
+    }
+
+
+    /* ========================================================
+       ELECTION SELECT
+    ======================================================== */
+
+    function renderElectionSelect() {
+
+        const select = $("electionSelect");
+
+
+        if (!elections.length) {
+
+            select.innerHTML = `
+                <option value="">
+                    Hakuna uchaguzi
+                </option>
+            `;
+
+            selected = null;
+
+            return;
+
+        }
+
+
+        select.innerHTML = elections.map(e => {
+
+            return `
+                <option value="${escapeHtml(e.id)}">
+                    ${escapeHtml(e.name || e.title || "Election")}
+                    — ${escapeHtml(statusLabel(e.status))}
+                </option>
+            `;
+
+        }).join("");
+
+
+        if (
+            selected &&
+            elections.some(
+                e => String(e.id) === String(selected.id)
+            )
+        ) {
+
+            select.value = String(selected.id);
+
+        } else {
+
+            selected = elections[0];
+
+            select.value = String(selected.id);
+
+        }
+
+    }
+
+
+    $("electionSelect").addEventListener(
+        "change",
+        async function () {
+
+            selected =
+                elections.find(
+                    e => String(e.id) === String(this.value)
+                ) || null;
+
+
+            await render();
+
+        }
+    );
+
+
+    /* ========================================================
+       POSITION SELECT
+    ======================================================== */
+
+    function renderPositionSelect() {
+
+        $("position").innerHTML = `
+            <option value="">
+                Chagua nafasi
+            </option>
+        `;
+
+
+        positions.forEach(p => {
+
+            $("position").insertAdjacentHTML(
+                "beforeend",
+                `
+                    <option value="${escapeHtml(p.id)}">
+                        ${escapeHtml(p.name)}
+                    </option>
+                `
+            );
+
+        });
+
+    }
+
+
+    /* ========================================================
+       RENDER MAIN
+    ======================================================== */
+
+    async function render() {
+
+        renderElectionInfo();
+
+        await loadCandidates();
+
+        await loadResults();
+
+    }
+
+
+    /* ========================================================
+       ELECTION INFO
+    ======================================================== */
+
+    function renderElectionInfo() {
+
+        const info = $("electionInfo");
+
+
+        if (!selected) {
+
+            info.classList.add("hidden");
+
+            $("electionStatus").textContent = "-";
+
+            return;
+
+        }
+
+
+        info.classList.remove("hidden");
+
+
+        $("electionStatus").innerHTML = `
+            <span class="status-dot mr-2 ${
+                selected.status === "published"
+                    ? "bg-emerald-500"
+                    : selected.status === "closed"
+                        ? "bg-red-500"
+                        : "bg-amber-500"
+            }"></span>
+
+            ${escapeHtml(statusLabel(selected.status))}
+        `;
+
+
+        info.innerHTML = `
+
+            <div class="bg-slate-50 rounded-xl p-3">
+                <div class="text-[10px] font-black text-slate-400 uppercase">
+                    Uchaguzi
+                </div>
+                <div class="font-black mt-1">
+                    ${escapeHtml(selected.name || selected.title || "-")}
+                </div>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-3">
+                <div class="text-[10px] font-black text-slate-400 uppercase">
+                    Umeanza
+                </div>
+                <div class="font-bold mt-1">
+                    ${formatDate(selected.starts_at || selected.start_at)}
+                </div>
+            </div>
+
+            <div class="bg-slate-50 rounded-xl p-3">
+                <div class="text-[10px] font-black text-slate-400 uppercase">
+                    Unafungwa
+                </div>
+                <div class="font-bold mt-1">
+                    ${formatDate(selected.ends_at || selected.end_at)}
+                </div>
+            </div>
+
+        `;
+
+    }
+
+
+    /* ========================================================
+       LOAD CANDIDATES
+    ======================================================== */
+
+    async function loadCandidates() {
+
+        const box = $("candidateList");
+
+
+        if (!selected) {
+
+            box.innerHTML = `
+                <div class="text-sm text-slate-500 text-center py-10">
+                    Chagua uchaguzi.
+                </div>
+            `;
+
+            $("candidateCount").textContent = "0";
+
+            return;
+
+        }
+
+
+        const { data, error } = await c
+            .from("election_candidates")
+            .select(`
+                id,
+                election_id,
+                position_id,
+                member_id,
+                passport_no,
+                full_name,
+                phone,
+                photo_url,
+                candidate_number,
+                election_positions (
+                    name
+                )
+            `)
+            .eq("election_id", selected.id)
+            .order("candidate_number", {
+                ascending: true
+            });
+
+
+        if (error) {
+
+            console.error(error);
+
+            box.innerHTML = `
+                <div class="p-4 rounded-xl bg-red-50 text-red-700 text-sm">
+                    ${escapeHtml(error.message)}
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        const candidates = data || [];
+
+        $("candidateCount").textContent =
+            String(candidates.length);
+
+
+        if (!candidates.length) {
+
+            box.innerHTML = `
+                <div class="text-center py-10 text-sm text-slate-500">
+                    Hakuna mgombea bado.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        box.innerHTML = candidates.map(candidate => {
+
+            const photo =
+                candidate.photo_url ||
+                "../images/dcf-logo.png";
+
+
+            const position =
+                candidate.election_positions?.name ||
+                "Nafasi";
+
+
+            return `
+
+                <div class="candidate-card border border-slate-200 rounded-2xl p-4 bg-white">
+
+                    <div class="flex gap-4 items-center">
+
+                        <img
+                            src="${escapeHtml(photo)}"
+                            class="w-16 h-16 rounded-2xl object-cover bg-slate-100"
+                            onerror="this.src='../images/dcf-logo.png';"
+                        >
+
+                        <div class="flex-1 min-w-0">
+
+                            <div class="text-xs font-black text-blue-600 uppercase">
+                                ${escapeHtml(position)}
+                            </div>
+
+                            <div class="font-black text-base mt-1 truncate">
+                                ${escapeHtml(candidate.full_name || "-")}
+                            </div>
+
+                            <div class="text-xs text-slate-500 mt-1">
+                                ${escapeHtml(candidate.phone || "-")}
+                            </div>
+
+                            <div class="text-xs text-slate-400 mt-1">
+                                Passport:
+                                ${escapeHtml(candidate.passport_no || "-")}
+                            </div>
+
+                        </div>
+
+
+                        <div class="text-center">
+
+                            <div class="text-[10px] font-black text-slate-400">
+                                NAMBA
+                            </div>
+
+                            <div class="text-2xl font-black text-slate-900">
+                                ${escapeHtml(candidate.candidate_number || "-")}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="mt-3 flex justify-end">
+
+                        <button
+                            class="deleteCandidateBtn text-xs font-black text-red-600 hover:text-red-800"
+                            data-id="${escapeHtml(candidate.id)}">
+
+                            Ondoa Mgombea
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }).join("");
+
+
+        box.querySelectorAll(".deleteCandidateBtn")
+            .forEach(btn => {
+
+                btn.addEventListener(
+                    "click",
+                    async function () {
+
+                        const id = this.dataset.id;
+
+
+                        if (!confirm(
+                            "Una uhakika unataka kumuondoa mgombea huyu?"
+                        )) {
+                            return;
+                        }
+
+
+                        const { error } = await c
+                            .from("election_candidates")
+                            .delete()
+                            .eq("id", id);
+
+
+                        if (error) {
+
+                            note(error.message, "err");
+
+                            return;
+
+                        }
+
+
+                        note("Mgombea ameondolewa.");
+
+                        await render();
+
+                    }
+                );
+
+            });
+
+    }
+
+
+    /* ========================================================
+       ADD CANDIDATE
+    ======================================================== */
+
+    $("addCandidateBtn").onclick = async function () {
+
+        if (!selected) {
+
+            note(
+                "Chagua uchaguzi kwanza.",
+                "err"
+            );
+
+            return;
+
+        }
+
+
+        if (!member) {
+
+            note(
+                "Chagua member kutoka kwenye list kwanza.",
+                "err"
+            );
+
+            return;
+
+        }
+
+
+        const positionId =
+            $("position").value;
+
+
+        if (!positionId) {
+
+            note(
+                "Chagua nafasi ya mgombea.",
+                "err"
+            );
+
+            return;
+
+        }
+
+
+        const number =
+            $("candidateNumber")
+                .value
+                .trim();
+
+
+        if (!number) {
+
+            note(
+                "Ingiza namba ya mgombea.",
+                "err"
+            );
+
+            return;
+
+        }
+
+
+        /* Prevent duplicate member in same election */
+        const { data: duplicate } = await c
+            .from("election_candidates")
+            .select("id")
+            .eq("election_id", selected.id)
+            .eq("member_id", member.member_id)
+            .limit(1);
+
+
+        if (duplicate && duplicate.length) {
+
+            note(
+                "Member huyu tayari ni mgombea kwenye uchaguzi huu.",
+                "err"
+            );
+
+            return;
+
+        }
+
+
+        /* Prevent duplicate candidate number in same position */
+        const { data: numberExists } = await c
+            .from("election_candidates")
+            .select("id")
+            .eq("election_id", selected.id)
+            .eq("position_id", positionId)
+            .eq("candidate_number", number)
+            .limit(1);
+
+
+        if (numberExists && numberExists.length) {
+
+            note(
+                "Namba hii ya mgombea tayari inatumika kwenye nafasi hii.",
+                "err"
+            );
+
+            return;
+
+        }
+
+
+        this.disabled = true;
+
+        this.textContent = "Inahifadhi...";
+
+
+        const payload = {
+
+            election_id:
+                selected.id,
+
+            position_id:
+                positionId,
+
+            member_id:
+                member.member_id,
+
+            passport_no:
+                member.passport_no || "",
+
+            full_name:
+                member.full_name || "",
+
+            phone:
+                member.phone || "",
+
+            photo_url:
+                member.passport_image_url || "",
+
+            candidate_number:
+                number
+
+        };
+
+
+        const { error } = await c
+            .from("election_candidates")
+            .insert(payload);
+
+
+        this.disabled = false;
+
+        this.textContent =
+            "+ Hifadhi Mgombea";
+
+
+        if (error) {
+
+            console.error(error);
+
+            note(
+                error.message,
+                "err"
+            );
+
+            return;
+
+        }
+
+
+        note(
+            "Mgombea ameongezwa kikamilifu."
+        );
+
+
+        $("candidateNumber").value = "";
+
+        $("position").value = "";
+
+        clearMember();
+
+        await render();
+
+    };
+
+
+    /* ========================================================
+       PUBLISH
+    ======================================================== */
+
+    $("publishBtn").onclick = async function () {
+
+        if (!selected) {
+
+            note(
+                "Chagua uchaguzi kwanza.",
+                "err"
+            );
+
+            return;
+
+        }
+
+
+        if (
+            selected.status === "published"
+        ) {
+
+            note(
+                "Uchaguzi tayari umechapishwa.",
+                "err"
+            );
+
+            return;
+
+        }
+
+
+        const { error } = await c
+            .from("elections")
+            .update({
+                status: "published"
+            })
+            .eq("id", selected.id);
+
+
+        if (error) {
+
+            note(
+                error.message,
+                "err"
+            );
+
+            return;
+
+        }
+
+
+        note(
+            "Uchaguzi umechapishwa."
+        );
+
+
+        await load();
+
+    };
+
+
+    /* ========================================================
+       CLOSE
+    ======================================================== */
+
+    $("closeBtn").onclick = async function () {
+
+        if (!selected) {
+
+            note(
+                "Chagua uchaguzi kwanza.",
+                "err"
+            );
+
+            return;
+
+        }
+
+
+        if (!confirm(
+            "Una uhakika unataka kufunga uchaguzi huu?"
+        )) {
+            return;
+        }
+
+
+        const { error } = await c
+            .from("elections")
+            .update({
+                status: "closed"
+            })
+            .eq("id", selected.id);
+
+
+        if (error) {
+
+            note(
+                error.message,
+                "err"
+            );
+
+            return;
+
+        }
+
+
+        note(
+            "Uchaguzi umefungwa."
+        );
+
+
+        await load();
+
+    };
+
+
+    /* ========================================================
+       AUTO CLOSE
+    ======================================================== */
+
+    async function autoClose() {
+
+        const { error } = await c.rpc(
+            "auto_close_dcf_elections"
+        );
+
+
+        if (error) {
+
+            console.warn(
+                "Auto close:",
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        await load();
+
+    }
+
+
+    /* ========================================================
+       RESULTS
+    ======================================================== */
+
+    async function loadResults() {
+
+        const box = $("resultsList");
+
+
+        if (!selected) {
+
+            box.innerHTML = `
+                <div class="text-center py-10 text-sm text-slate-500">
+                    Chagua uchaguzi kuona matokeo.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        const { data, error } = await c.rpc(
+            "get_election_results",
+            {
+                p_election_id: selected.id
+            }
+        );
+
+
+        if (error) {
+
+            console.error(error);
+
+            box.innerHTML = `
+                <div class="p-4 rounded-xl bg-red-50 text-red-700 text-sm">
+                    ${escapeHtml(error.message)}
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        const rows = data || [];
+
+
+        if (!rows.length) {
+
+            box.innerHTML = `
+                <div class="text-center py-10 text-sm text-slate-500">
+                    Hakuna kura bado.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        const groups = {};
+
+
+        rows.forEach(row => {
+
+            const position =
+                row.position_name ||
+                row.position ||
+                "Nafasi";
+
+
+            if (!groups[position]) {
+                groups[position] = [];
+            }
+
+
+            groups[position].push(row);
+
+        });
+
+
+        box.innerHTML =
+            Object.entries(groups)
+                .map(([position, items]) => {
+
+                    const sorted =
+                        [...items].sort(
+                            (a, b) =>
+                                Number(
+                                    b.total_votes || b.votes || 0
+                                )
+                                -
+                                Number(
+                                    a.total_votes || a.votes || 0
+                                )
+                        );
+
+
+                    const maxVotes =
+                        Math.max(
+                            ...sorted.map(
+                                x => Number(
+                                    x.total_votes ||
+                                    x.votes ||
+                                    0
+                                )
+                            ),
+                            1
+                        );
+
+
+                    const winner =
+                        sorted[0];
+
+
+                    return `
+
+                        <div class="border border-slate-200 rounded-2xl p-4">
+
+                            <div class="flex items-center justify-between mb-4">
+
+                                <h3 class="font-black text-lg">
+                                    ${escapeHtml(position)}
+                                </h3>
+
+                                <span class="text-xs font-black text-slate-400">
+                                    ${sorted.length} candidates
+                                </span>
+
+                            </div>
+
+
+                            <div class="space-y-3">
+
+                                ${sorted.map((r, index) => {
+
+                                    const votes =
+                                        Number(
+                                            r.total_votes ||
+                                            r.votes ||
+                                            0
+                                        );
+
+
+                                    const percent =
+                                        Math.round(
+                                            (votes / maxVotes) * 100
+                                        );
+
+
+                                    const isWinner =
+                                        winner &&
+                                        String(
+                                            winner.candidate_id ||
+                                            winner.id ||
+                                            ""
+                                        ) ===
+                                        String(
+                                            r.candidate_id ||
+                                            r.id ||
+                                            ""
+                                        );
+
+
+                                    return `
+
+                                        <div class="
+                                            ${isWinner
+                                                ? "winner-card"
+                                                : "bg-slate-50"
+                                            }
+                                            rounded-xl p-3
+                                        ">
+
+                                            <div class="flex items-center justify-between gap-3">
+
+                                                <div class="min-w-0">
+
+                                                    <div class="font-black truncate">
+                                                        ${escapeHtml(
+                                                            r.full_name ||
+                                                            r.candidate_name ||
+                                                            "-"
+                                                        )}
+                                                    </div>
+
+                                                    <div class="text-xs text-slate-500">
+                                                        Namba:
+                                                        ${escapeHtml(
+                                                            r.candidate_number ||
+                                                            "-"
+                                                        )}
+                                                    </div>
+
+                                                </div>
+
+
+                                                <div class="text-right">
+
+                                                    <div class="text-lg font-black">
+                                                        ${votes}
+                                                    </div>
+
+                                                    <div class="text-[10px] text-slate-400 font-bold">
+                                                        KURA
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+
+                                            <div class="mt-2 h-2 rounded-full bg-slate-200 overflow-hidden">
+
+                                                <div
+                                                    class="h-full bg-blue-600 rounded-full"
+                                                    style="width:${percent}%">
+                                                </div>
+
+                                            </div>
+
+
+                                            ${
+                                                isWinner
+                                                    ? `
+                                                        <div class="mt-2 text-xs font-black text-amber-700">
+                                                            ★ WINNER / ANAONGOZA
+                                                        </div>
+                                                      `
+                                                    : ""
+                                            }
+
+                                        </div>
+
+                                    `;
+
+                                }).join("")}
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                })
+                .join("");
+
+    }
+
+
+    $("refreshResultsBtn").onclick =
+        async function () {
+
+            await loadResults();
+
+        };
+
+
+    /* ========================================================
+       CREATE ELECTION MODAL
+    ======================================================== */
+
+    function openCreateModal() {
+
+        $("createModal")
+            .classList
+            .remove("hidden");
+
+    }
+
+
+    function closeCreateModal() {
+
+        $("createModal")
+            .classList
+            .add("hidden");
+
+    }
+
+
+    $("createElectionBtn").onclick =
+        openCreateModal;
+
+
+    $("closeModalBtn").onclick =
+        closeCreateModal;
+
+
+    $("cancelCreateBtn").onclick =
+        closeCreateModal;
+
+
+    $("saveElectionBtn").onclick =
+        async function () {
+
+            const name =
+                $("newElectionName")
+                    .value
+                    .trim();
+
+
+            const start =
+                $("startDate")
+                    .value;
+
+
+            const end =
+                $("endDate")
+                    .value;
+
+
+            if (!name) {
+
+                note(
+                    "Ingiza jina la uchaguzi.",
+                    "err"
+                );
+
+                return;
+
+            }
+
+
+            if (!start || !end) {
+
+                note(
+                    "Weka muda wa kuanza na kufunga.",
+                    "err"
+                );
+
+                return;
+
+            }
+
+
+            const startDate =
+                new Date(start);
+
+
+            const endDate =
+                new Date(end);
+
+
+            if (
+                Number.isNaN(startDate.getTime()) ||
+                Number.isNaN(endDate.getTime())
+            ) {
+
+                note(
+                    "Tarehe si sahihi.",
+                    "err"
+                );
+
+                return;
+
+            }
+
+
+            if (endDate <= startDate) {
+
+                note(
+                    "Muda wa kufunga lazima uwe baada ya kuanza.",
+                    "err"
+                );
+
+                return;
+
+            }
+
+
+            this.disabled = true;
+
+            this.textContent =
+                "Inatengeneza...";
+
+
+            const { data, error } = await c
+                .from("elections")
+                .insert({
+
+                    name: name,
+
+                    status: "draft",
+
+                    starts_at:
+                        startDate.toISOString(),
+
+                    ends_at:
+                        endDate.toISOString()
+
+                })
+                .select()
+                .single();
+
+
+            this.disabled = false;
+
+            this.textContent =
+                "Tengenza";
+
+
+            if (error) {
+
+                console.error(error);
+
+                note(
+                    error.message,
+                    "err"
+                );
+
+                return;
+
+            }
+
+
+            note(
+                "Uchaguzi umetengenezwa."
+            );
+
+
+            closeCreateModal();
+
+
+            $("newElectionName").value = "";
+
+            $("startDate").value = "";
+
+            $("endDate").value = "";
+
+
+            await load();
+
+
+            if (data) {
+
+                selected = data;
+
+                $("electionSelect").value =
+                    String(data.id);
+
+                await render();
+
+            }
+
+        };
+
+
+    /* ========================================================
+       REFRESH
+    ======================================================== */
+
+    $("refreshBtn").onclick =
+        async function () {
+
+            await load();
+
+            note(
+                "Mfumo ume-refresh."
+            );
+
+        };
+
+
+    /* ========================================================
+       AUTO REFRESH RESULTS
+    ======================================================== */
+
+    setInterval(
+        async function () {
+
+            if (!selected) return;
+
+
+            await loadResults();
+
+
+            if (
+                selected.status === "published" &&
+                selected.ends_at &&
+                new Date(selected.ends_at) <= new Date()
+            ) {
+
+                await autoClose();
+
+            }
+
+        },
+        30000
+    );
+
+
+    /* ========================================================
+       START
+    ======================================================== */
+
+    load();
+
+
+})();
+</script>
+
+</body>
+</html>
