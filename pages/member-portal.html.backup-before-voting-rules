@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -601,7 +601,7 @@ a[role="button"],
                 <div
                     class="text-[11px] text-green-200 truncate"
                 >
-                    Development Charity Foundation â€¢ Member Area
+                    Development Charity Foundation • Member Area
                 </div>
 
             </div>
@@ -813,7 +813,7 @@ a[role="button"],
                     mt-1
                 "
             >
-                â€”
+                —
             </div>
 
             <div
@@ -830,7 +830,7 @@ a[role="button"],
                 id="member-status"
                 class="font-bold mt-1"
             >
-                â€”
+                —
             </div>
 
         </div>
@@ -884,7 +884,7 @@ a[role="button"],
             id="lastUpdated"
             class="text-[11px] text-slate-400"
         >
-            â€”
+            —
         </span>
 
     </div>
@@ -946,7 +946,7 @@ a[role="button"],
                             mt-2
                         "
                     >
-                        â€”
+                        —
                     </p>
 
                     <p
@@ -1027,7 +1027,7 @@ a[role="button"],
                             mt-2
                         "
                     >
-                        â€”
+                        —
                     </p>
 
                     <p
@@ -1191,7 +1191,7 @@ a[role="button"],
                             mt-2
                         "
                     >
-                        â€”
+                        —
                     </p>
 
                     <p
@@ -1271,7 +1271,7 @@ a[role="button"],
             <div class="rounded-2xl bg-white border border-slate-100 p-4 sm:p-5">
                 <div class="flex items-center justify-between gap-2"><div class="text-[10px] uppercase font-bold text-slate-400">Mwezi wa Sasa</div><div class="w-8 h-8 rounded-lg bg-slate-50 text-slate-600 flex items-center justify-center text-xs"><i class="fas fa-calendar-day"></i></div></div>
                 <div id="expense-month-total" class="text-xl sm:text-2xl font-extrabold text-slate-800 mt-2">TZS 0</div>
-                <div id="expense-month-label" class="text-[11px] text-slate-400 mt-1">â€”</div>
+                <div id="expense-month-label" class="text-[11px] text-slate-400 mt-1">—</div>
             </div>
         </div>
 
@@ -1288,7 +1288,7 @@ a[role="button"],
                 <h3 class="text-base sm:text-xl font-extrabold text-slate-900 truncate">Orodha ya Manunuzi Yote</h3>
                 <p id="expensesListSummary" class="text-xs text-slate-500 mt-1">Inapakia...</p>
             </div>
-            <button type="button" onclick="closeExpensesList()" class="w-10 h-10 shrink-0 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold">Ã—</button>
+            <button type="button" onclick="closeExpensesList()" class="w-10 h-10 shrink-0 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold">×</button>
         </div>
         <div class="p-3 sm:p-5 border-b border-slate-100 shrink-0">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -1330,7 +1330,7 @@ a[role="button"],
 ========================================================== -->
 <script>
 /* =========================================================
-   MEMBER BOOKING â€” Fixed & Cleaned
+   MEMBER BOOKING — Fixed & Cleaned
 ========================================================== */
 const DCF_TRIP_KEY = "DCF_TRAVEL_TRIPS";
 const DCF_BOOKING_KEY = "DCF_TRAVEL_BOOKINGS";
@@ -1424,7 +1424,7 @@ function dcfRenderPublishedTrips() {
     if (!published.length) {
         container.innerHTML = `
             <div class="md:col-span-2 xl:col-span-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 py-12 px-5 text-center">
-                <div class="text-3xl mb-2">ðŸšŒ</div>
+                <div class="text-3xl mb-2">🚌</div>
                 <h3 class="text-sm font-extrabold text-slate-700">Hakuna Safari Iliyopublishwa</h3>
                 <p class="text-xs text-slate-500 mt-1">Admin hajachapisha safari kwa ajili ya booking kwa sasa.</p>
             </div>`;
@@ -1444,13 +1444,13 @@ function dcfRenderPublishedTrips() {
                     <div class="flex items-start justify-between gap-3">
                         <div>
                             <h3 class="text-base font-extrabold text-slate-900">${dcfBookingEsc(v0?.name || "Safari")}${vehicles.length > 1 ? ` + ${vehicles.length - 1} zaidi` : ""}</h3>
-                            <p class="text-xs text-slate-500 mt-1">ðŸ“ ${dcfBookingEsc(trip.departure || "â€”")} â†’ ${dcfBookingEsc(trip.destination || "â€”")}</p>
+                            <p class="text-xs text-slate-500 mt-1">📍 ${dcfBookingEsc(trip.departure || "—")} → ${dcfBookingEsc(trip.destination || "—")}</p>
                         </div>
                         <span class="inline-flex px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-extrabold">PUBLISHED</span>
                     </div>
                     <div class="grid grid-cols-2 gap-2 mt-4">
-                        <div class="rounded-xl bg-slate-50 p-3"><div class="text-[9px] text-slate-400 font-bold">TAREHE</div><div class="text-xs font-extrabold text-slate-700 mt-1">${dcfBookingEsc(trip.travelDate || "â€”")}</div></div>
-                        <div class="rounded-xl bg-slate-50 p-3"><div class="text-[9px] text-slate-400 font-bold">MUDA</div><div class="text-xs font-extrabold text-slate-700 mt-1">${dcfBookingEsc(trip.departureTime || "â€”")}</div></div>
+                        <div class="rounded-xl bg-slate-50 p-3"><div class="text-[9px] text-slate-400 font-bold">TAREHE</div><div class="text-xs font-extrabold text-slate-700 mt-1">${dcfBookingEsc(trip.travelDate || "—")}</div></div>
+                        <div class="rounded-xl bg-slate-50 p-3"><div class="text-[9px] text-slate-400 font-bold">MUDA</div><div class="text-xs font-extrabold text-slate-700 mt-1">${dcfBookingEsc(trip.departureTime || "—")}</div></div>
                         <div class="rounded-xl bg-slate-50 p-3"><div class="text-[9px] text-slate-400 font-bold">BEI</div><div class="text-xs font-extrabold text-emerald-800 mt-1">TZS ${dcfMoney(trip.ticketPrice)}</div></div>
                         <div class="rounded-xl bg-slate-50 p-3"><div class="text-[9px] text-slate-400 font-bold">SEAT ZILIZOBAKI</div><div class="text-xs font-extrabold text-slate-700 mt-1">${available} / ${totalSeats}</div></div>
                     </div>
@@ -1479,11 +1479,11 @@ function dcfOpenBooking(id) {
     dcfSelectedSeat = null;
     const v0 = vehicles[0];
     if ($("dcfBookingModalTitle")) $("dcfBookingModalTitle").textContent = v0.name || "Safari";
-    if ($("dcfBookingModalRoute")) $("dcfBookingModalRoute").textContent = `${trip.departure || "â€”"} â†’ ${trip.destination || "â€”"}`;
-    if ($("dcfSummaryVehicle")) $("dcfSummaryVehicle").textContent = v0.name || "â€”";
-    if ($("dcfSummaryRoute")) $("dcfSummaryRoute").textContent = `${trip.departure || "â€”"} â†’ ${trip.destination || "â€”"}`;
-    if ($("dcfSummaryDate")) $("dcfSummaryDate").textContent = trip.travelDate || "â€”";
-    if ($("dcfSummaryTime")) $("dcfSummaryTime").textContent = trip.departureTime || "â€”";
+    if ($("dcfBookingModalRoute")) $("dcfBookingModalRoute").textContent = `${trip.departure || "—"} → ${trip.destination || "—"}`;
+    if ($("dcfSummaryVehicle")) $("dcfSummaryVehicle").textContent = v0.name || "—";
+    if ($("dcfSummaryRoute")) $("dcfSummaryRoute").textContent = `${trip.departure || "—"} → ${trip.destination || "—"}`;
+    if ($("dcfSummaryDate")) $("dcfSummaryDate").textContent = trip.travelDate || "—";
+    if ($("dcfSummaryTime")) $("dcfSummaryTime").textContent = trip.departureTime || "—";
     if ($("dcfSummaryPrice")) $("dcfSummaryPrice").textContent = "TZS " + dcfMoney(trip.ticketPrice);
     if ($("dcfSummarySeat")) $("dcfSummarySeat").textContent = "Haijachaguliwa";
 
@@ -1519,7 +1519,7 @@ function dcfRenderVehicleTabs(trip) {
     tabsBox.innerHTML = vehicles.map(v => `
         <button type="button" onclick="dcfSelectVehicle('${dcfBookingEsc(v.id)}')"
             class="px-3 py-2 rounded-lg text-[11px] font-extrabold border ${v.id === dcfSelectedVehicleId ? "bg-emerald-800 text-white border-emerald-800" : "bg-white text-slate-700 border-slate-200"}">
-            ðŸšŒ ${dcfBookingEsc(v.name)} â€¢ ${dcfBookingEsc(v.number)}
+            🚌 ${dcfBookingEsc(v.name)} • ${dcfBookingEsc(v.number)}
         </button>`).join("");
 }
 
@@ -1530,7 +1530,7 @@ function dcfSelectVehicle(vehicleId) {
     dcfSelectedSeat = null;
     if ($("dcfSummarySeat")) $("dcfSummarySeat").textContent = "Haijachaguliwa";
     const v = trip.vehicles.find(x => x.id === vehicleId);
-    if (v && $("dcfSummaryVehicle")) $("dcfSummaryVehicle").textContent = v.name || "â€”";
+    if (v && $("dcfSummaryVehicle")) $("dcfSummaryVehicle").textContent = v.name || "—";
     dcfRenderVehicleTabs(trip);
     dcfRenderSeats(trip, vehicleId);
 }
@@ -1624,7 +1624,7 @@ function dcfConfirmBooking() {
         vehicleId: vehicle.id,
         vehicleName: vehicle.name,
         vehicleNumber: vehicle.number,
-        route: `${trip.departure} â†’ ${trip.destination}`,
+        route: `${trip.departure} → ${trip.destination}`,
         departure: trip.departure,
         destination: trip.destination,
         seat: dcfSelectedSeat,
@@ -1645,7 +1645,7 @@ function dcfConfirmBooking() {
     dcfMemberBookings.push(booking);
     localStorage.setItem(DCF_BOOKING_KEY, JSON.stringify(dcfMemberBookings));
     dcfCloseBookingModal();
-    dcfBookingNotice("success", `Booking imefanikiwa. Reference: ${booking.reference} â€¢ Gari: ${vehicle.name} â€¢ Seat: ${booking.seat}`);
+    dcfBookingNotice("success", `Booking imefanikiwa. Reference: ${booking.reference} • Gari: ${vehicle.name} • Seat: ${booking.seat}`);
     dcfRefreshBookingData();
 }
 
@@ -1693,9 +1693,9 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="bg-emerald-800 text-white px-6 py-4 flex items-center justify-between">
             <div>
                 <h3 id="dcfBookingModalTitle" class="text-base font-extrabold">Safari</h3>
-                <p id="dcfBookingModalRoute" class="text-xs text-emerald-100 mt-0.5">â€”</p>
+                <p id="dcfBookingModalRoute" class="text-xs text-emerald-100 mt-0.5">—</p>
             </div>
-            <button type="button" onclick="dcfCloseBookingModal()" class="text-white hover:opacity-80 text-xl font-bold">âœ•</button>
+            <button type="button" onclick="dcfCloseBookingModal()" class="text-white hover:opacity-80 text-xl font-bold">✕</button>
         </div>
 
         <!-- Modal Body -->
@@ -1723,11 +1723,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             <!-- Summary -->
             <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 space-y-1">
-                <div class="booking-summary-row"><span>Gari:</span><strong id="dcfSummaryVehicle">â€”</strong></div>
-                <div class="booking-summary-row"><span>Njia:</span><strong id="dcfSummaryRoute">â€”</strong></div>
-                <div class="booking-summary-row"><span>Tarehe & Muda:</span><span class="font-bold"><span id="dcfSummaryDate">â€”</span> â€¢ <span id="dcfSummaryTime">â€”</span></span></div>
+                <div class="booking-summary-row"><span>Gari:</span><strong id="dcfSummaryVehicle">—</strong></div>
+                <div class="booking-summary-row"><span>Njia:</span><strong id="dcfSummaryRoute">—</strong></div>
+                <div class="booking-summary-row"><span>Tarehe & Muda:</span><span class="font-bold"><span id="dcfSummaryDate">—</span> • <span id="dcfSummaryTime">—</span></span></div>
                 <div class="booking-summary-row"><span>Seat:</span><strong id="dcfSummarySeat" class="text-emerald-700">Haijachaguliwa</strong></div>
-                <div class="booking-summary-row"><span>Gharama:</span><strong id="dcfSummaryPrice" class="text-emerald-800 text-sm">â€”</strong></div>
+                <div class="booking-summary-row"><span>Gharama:</span><strong id="dcfSummaryPrice" class="text-emerald-800 text-sm">—</strong></div>
             </div>
         </div>
 
@@ -1746,9 +1746,9 @@ document.addEventListener("DOMContentLoaded", () => {
         <!-- Header -->
         <div class="p-4 px-6 flex justify-between items-center border-b border-slate-800 bg-slate-900/50">
             <h3 id="dcfVideoTitle" class="text-white text-sm font-extrabold flex items-center gap-2">
-                <span>ðŸŽ¥</span> Video ya Gari
+                <span>🎥</span> Video ya Gari
             </h3>
-            <button type="button" onclick="dcfCloseVideoModal()" class="text-slate-400 hover:text-white text-xl font-bold transition-colors">âœ•</button>
+            <button type="button" onclick="dcfCloseVideoModal()" class="text-slate-400 hover:text-white text-xl font-bold transition-colors">✕</button>
         </div>
         <!-- Video Player Container -->
         <div class="p-4 bg-black flex justify-center items-center">
@@ -2035,7 +2035,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         mt-1
                     "
                 >
-                    â€”
+                    —
                 </div>
 
             </div>
@@ -2417,12 +2417,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 <div>
                     Member ID:
-                    <strong id="print-member-id">â€”</strong>
+                    <strong id="print-member-id">—</strong>
                 </div>
 
                 <div>
                     Email:
-                    <strong id="print-member-email">â€”</strong>
+                    <strong id="print-member-email">—</strong>
                 </div>
 
             </div>
@@ -2437,7 +2437,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </strong>
 
             <span id="print-member-name">
-                â€”
+                —
             </span>
 
         </div>
@@ -2691,7 +2691,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             mt-1
                         "
                     >
-                        â€”
+                        —
                     </div>
 
 
@@ -2721,7 +2721,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             <i class="fas fa-id-card"></i>
 
                             <span id="profile-member-id">
-                                â€”
+                                —
                             </span>
 
                         </span>
@@ -2744,7 +2744,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             <i class="fas fa-user-check"></i>
 
                             <span id="profile-status">
-                                â€”
+                                —
                             </span>
 
                         </span>
@@ -2790,7 +2790,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         id="profile-phone"
                         class="font-bold mt-1"
                     >
-                        â€”
+                        —
                     </div>
 
                 </div>
@@ -2824,7 +2824,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             break-all
                         "
                     >
-                        â€”
+                        —
                     </div>
 
                 </div>
@@ -2854,7 +2854,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         id="profile-type"
                         class="font-bold mt-1"
                     >
-                        â€”
+                        —
                     </div>
 
                 </div>
@@ -2884,7 +2884,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         id="profile-joining"
                         class="font-bold mt-1"
                     >
-                        â€”
+                        —
                     </div>
 
                 </div>
@@ -2914,7 +2914,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         id="profile-country"
                         class="font-bold mt-1"
                     >
-                        â€”
+                        —
                     </div>
 
                 </div>
@@ -2944,7 +2944,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         id="profile-passport"
                         class="font-bold mt-1"
                     >
-                        â€”
+                        —
                     </div>
 
                 </div>
@@ -2983,7 +2983,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         id="profile-nida"
                         class="font-bold mt-1"
                     >
-                        â€”
+                        —
                     </div>
 
                 </div>
@@ -3021,7 +3021,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         id="profile-dob"
                         class="font-bold mt-1"
                     >
-                        â€”
+                        —
                     </div>
 
                 </div>
@@ -3051,7 +3051,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         id="profile-occupation"
                         class="font-bold mt-1"
                     >
-                        â€”
+                        —
                     </div>
 
                 </div>
@@ -3577,7 +3577,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 hover:underline
             "
         >
-            Tazama zote â†’
+            Tazama zote →
         </a>
 
     </div>
@@ -3751,7 +3751,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 hover:underline
             "
         >
-            Tazama zote â†’
+            Tazama zote →
         </a>
 
     </div>
@@ -3882,7 +3882,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 hover:underline
             "
         >
-            Fungua Certificate â†’
+            Fungua Certificate →
         </a>
 
     </div>
@@ -3945,7 +3945,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         mt-1
                     "
                 >
-                    â€”
+                    —
                 </p>
 
             </div>
@@ -4553,7 +4553,7 @@ document.addEventListener("DOMContentLoaded", () => {
     >
 
         <span>
-            Â© 2026 Development Charity Foundation â€¢ DCF MIS
+            © 2026 Development Charity Foundation • DCF MIS
         </span>
 
 
@@ -5236,7 +5236,7 @@ function formatMoney(value, currency = "TZS") {
 function formatDate(value) {
 
     if (!value) {
-        return "â€”";
+        return "—";
     }
 
     const d = new Date(value);
@@ -5265,7 +5265,7 @@ function formatDate(value) {
 function formatDateTime(value) {
 
     if (!value) {
-        return "â€”";
+        return "—";
     }
 
     const d = new Date(value);
@@ -5585,13 +5585,13 @@ async function ensureMember() {
         const roleNames = {
 
             admin:
-                "ADMIN â€¢ MEMBER VIEW",
+                "ADMIN • MEMBER VIEW",
 
             staff:
-                "STAFF â€¢ MEMBER VIEW",
+                "STAFF • MEMBER VIEW",
 
             auditor:
-                "AUDITOR â€¢ MEMBER VIEW",
+                "AUDITOR • MEMBER VIEW",
 
             member:
                 "MEMBER ACCOUNT"
@@ -5733,7 +5733,7 @@ function renderMember() {
     const email =
         currentMember?.email ||
         currentSession?.user?.email ||
-        "â€”";
+        "—";
 
 
     const memberId =
@@ -5781,7 +5781,7 @@ function renderMember() {
         currentMember?.phone ||
         currentMember?.phone_number ||
         currentMember?.mobile ||
-        "â€”";
+        "—";
 
     $("profile-email").textContent =
         email;
@@ -5800,12 +5800,12 @@ function renderMember() {
     $("profile-country").textContent =
         currentMember?.country ||
         currentMember?.nationality ||
-        "â€”";
+        "—";
 
     $("profile-passport").textContent =
         currentMember?.passport_no ||
         currentMember?.passport_number ||
-        "â€”";
+        "—";
 
 
     /*
@@ -5823,7 +5823,7 @@ function renderMember() {
         nidaEl.textContent =
             currentMember?.nida_no ||
             currentMember?.nida_number ||
-            "â€”";
+            "—";
 
     }
 
@@ -5845,11 +5845,11 @@ function renderMember() {
 
     $("profile-occupation").textContent =
         currentMember?.occupation ||
-        "â€”";
+        "—";
 
 
 
-    /* PHOTO â€” registration/member/profile/auth metadata fallbacks */
+    /* PHOTO — registration/member/profile/auth metadata fallbacks */
 
     const memberMeta =
         currentSession?.user?.user_metadata || {};
@@ -5999,7 +5999,7 @@ function donationName(row) {
         row?.donor_name ||
         row?.donorName ||
         row?.name ||
-        "â€”"
+        "—"
     );
 
 }
@@ -6043,7 +6043,7 @@ function donationType(row) {
     return (
         row?.donation_type ||
         row?.type ||
-        "â€”"
+        "—"
     );
 
 }
@@ -6055,7 +6055,7 @@ function donationPayment(row) {
         row?.payment_method ||
         row?.payment_type ||
         row?.method ||
-        "â€”"
+        "—"
     );
 
 }
@@ -6067,7 +6067,7 @@ function donationReceipt(row) {
         row?.receipt_no ||
         row?.receipt_number ||
         row?.receipt ||
-        "â€”"
+        "—"
     );
 
 }
@@ -6080,7 +6080,7 @@ function donationReference(row) {
         row?.reference_no ||
         row?.reference ||
         row?.transaction_reference ||
-        "â€”"
+        "—"
     );
 
 }
@@ -6121,16 +6121,16 @@ function expenseDate(row) {
 }
 function expenseCurrency(row) { return row?.currency || "TZS"; }
 function expenseBuyer(row) {
-    return row?.buyer_name || row?.buyer || row?.purchaser_name || row?.purchaser || row?.requested_by_name || row?.requested_by || row?.staff_name || row?.staff || row?.user_name || "â€”";
+    return row?.buyer_name || row?.buyer || row?.purchaser_name || row?.purchaser || row?.requested_by_name || row?.requested_by || row?.staff_name || row?.staff || row?.user_name || "—";
 }
 function expenseSupplier(row) {
-    return row?.supplier_name || row?.supplier || row?.vendor_name || row?.vendor || row?.seller_name || row?.seller || row?.payee || row?.recipient || "â€”";
+    return row?.supplier_name || row?.supplier || row?.vendor_name || row?.vendor || row?.seller_name || row?.seller || row?.payee || row?.recipient || "—";
 }
 function expenseDescription(row) {
-    return row?.description || row?.item_name || row?.item || row?.product_name || row?.product || row?.details || row?.purpose || row?.notes || "â€”";
+    return row?.description || row?.item_name || row?.item || row?.product_name || row?.product || row?.details || row?.purpose || row?.notes || "—";
 }
-function expenseCategory(row) { return row?.category || row?.expense_type || row?.type || row?.purchase_type || "â€”"; }
-function expenseReference(row) { return row?.reference || row?.reference_no || row?.transaction_reference || row?.invoice_no || row?.receipt_no || row?.voucher_no || row?.id || "â€”"; }
+function expenseCategory(row) { return row?.category || row?.expense_type || row?.type || row?.purchase_type || "—"; }
+function expenseReference(row) { return row?.reference || row?.reference_no || row?.transaction_reference || row?.invoice_no || row?.receipt_no || row?.voucher_no || row?.id || "—"; }
 
 /* =========================================================
    CHECK IF DONATION BELONGS TO MEMBER
@@ -6468,13 +6468,13 @@ function renderDonationStats() {
     $("print-member-id").textContent =
         getMemberId(
             currentMember
-        ) || "â€”";
+        ) || "—";
 
 
     $("print-member-email").textContent =
         getMemberEmail(
             currentMember
-        ) || "â€”";
+        ) || "—";
 
 
     $("print-member-name").textContent =
@@ -7210,7 +7210,7 @@ function detailItem(
                 "
             >
                 ${escapeHtml(
-                    value || "â€”"
+                    value || "—"
                 )}
             </div>
 
@@ -7506,7 +7506,7 @@ async function loadExpenses() {
         const filter = $("expenseCategoryFilter");
         if (filter) {
             const old = filter.value;
-            const cats = [...new Set(allExpenses.map(expenseCategory).filter(v => v && v !== "â€”"))].sort((a,b)=>String(a).localeCompare(String(b)));
+            const cats = [...new Set(allExpenses.map(expenseCategory).filter(v => v && v !== "—"))].sort((a,b)=>String(a).localeCompare(String(b)));
             filter.innerHTML = `<option value="">Aina zote</option>` + cats.map(c=>`<option value="${escapeHtml(String(c))}">${escapeHtml(String(c))}</option>`).join("");
             if (cats.some(c=>String(c)===old)) filter.value = old;
         }
@@ -7614,17 +7614,17 @@ async function loadSystemMetrics() {
 
     $("total-members").textContent =
         members.count ??
-        "â€”";
+        "—";
 
 
     $("active-projects").textContent =
         projects.count ??
-        "â€”";
+        "—";
 
 
     $("total-beneficiaries").textContent =
         beneficiaries.count ??
-        "â€”";
+        "—";
 
 
     $("lastUpdated").textContent =
@@ -7918,7 +7918,7 @@ async function loadActivities() {
 
                         const status =
                             row.status ||
-                            "â€”";
+                            "—";
 
 
                         let statusClass =
@@ -7969,7 +7969,7 @@ async function loadActivities() {
 
                                     ${escapeHtml(
                                         row.title ||
-                                        "â€”"
+                                        "—"
                                     )}
 
                                 </td>
@@ -8000,7 +8000,7 @@ async function loadActivities() {
 
                                     ${escapeHtml(
                                         row.location ||
-                                        "â€”"
+                                        "—"
                                     )}
 
                                 </td>
@@ -8137,7 +8137,7 @@ function loadCertificate() {
 
 
             text.textContent =
-                `${cert.certificateNumber || "Certificate"} â€¢ ${cert.event || "DCF Event"} â€¢ ${cert.date || ""}`;
+                `${cert.certificateNumber || "Certificate"} • ${cert.event || "DCF Event"} • ${cert.date || ""}`;
 
         } else {
 
@@ -8531,7 +8531,7 @@ function updatePasswordMatch() {
     if (password.value === confirm.value) {
 
         text.textContent =
-            "âœ“ Password zinafanana.";
+            "✓ Password zinafanana.";
 
         text.className =
             "text-[10px] text-green-700 font-semibold mt-1.5";
@@ -8539,7 +8539,7 @@ function updatePasswordMatch() {
     } else {
 
         text.textContent =
-            "âœ• Password hazifanani.";
+            "✕ Password hazifanani.";
 
         text.className =
             "text-[10px] text-red-600 font-semibold mt-1.5";
@@ -8884,7 +8884,7 @@ async function bootMemberPortal() {
 
             $("member-email").textContent =
                 currentSession?.user?.email ||
-                "â€”";
+                "—";
 
 
             $("member-status").textContent =
@@ -9071,7 +9071,7 @@ document.addEventListener(
 
 
 <!-- =========================================================
-     DCF ENHANCEMENTS â€” SUPABASE BOOKINGS + SPEED
+     DCF ENHANCEMENTS — SUPABASE BOOKINGS + SPEED
      Added without changing the existing portal logic.
 ========================================================== -->
 <section id="myBookingsSection" class="mb-8">
@@ -9134,7 +9134,7 @@ document.addEventListener(
     return {
       ...payload,
       id: row?.id || payload.id,
-      reference: row?.reference || payload.reference || "â€”",
+      reference: row?.reference || payload.reference || "—",
       userId: row?.user_id || payload.userId || "",
       memberId: row?.member_id || payload.memberId || "",
       memberEmail: row?.member_email || payload.memberEmail || "",
@@ -9207,23 +9207,23 @@ document.addEventListener(
         <div class="grid grid-cols-2 gap-2 mt-4">
           <div class="rounded-xl bg-slate-50 p-3">
             <div class="text-[9px] uppercase font-bold text-slate-400">Vehicle</div>
-            <div class="text-xs font-extrabold text-slate-700 mt-1">${esc(b.vehicleName || b.tripName || "â€”")}</div>
+            <div class="text-xs font-extrabold text-slate-700 mt-1">${esc(b.vehicleName || b.tripName || "—")}</div>
           </div>
           <div class="rounded-xl bg-slate-50 p-3">
             <div class="text-[9px] uppercase font-bold text-slate-400">Seat</div>
-            <div class="text-xs font-extrabold text-emerald-700 mt-1">${esc(b.seat || "â€”")}</div>
+            <div class="text-xs font-extrabold text-emerald-700 mt-1">${esc(b.seat || "—")}</div>
           </div>
           <div class="rounded-xl bg-slate-50 p-3 col-span-2">
             <div class="text-[9px] uppercase font-bold text-slate-400">Route</div>
-            <div class="text-xs font-extrabold text-slate-700 mt-1">${esc(b.route || `${b.departure || "â€”"} â†’ ${b.destination || "â€”"}`)}</div>
+            <div class="text-xs font-extrabold text-slate-700 mt-1">${esc(b.route || `${b.departure || "—"} → ${b.destination || "—"}`)}</div>
           </div>
           <div class="rounded-xl bg-slate-50 p-3">
             <div class="text-[9px] uppercase font-bold text-slate-400">Travel Date</div>
-            <div class="text-xs font-extrabold text-slate-700 mt-1">${esc(b.travelDate || "â€”")}</div>
+            <div class="text-xs font-extrabold text-slate-700 mt-1">${esc(b.travelDate || "—")}</div>
           </div>
           <div class="rounded-xl bg-slate-50 p-3">
             <div class="text-[9px] uppercase font-bold text-slate-400">Departure</div>
-            <div class="text-xs font-extrabold text-slate-700 mt-1">${esc(b.departureTime || "â€”")}</div>
+            <div class="text-xs font-extrabold text-slate-700 mt-1">${esc(b.departureTime || "—")}</div>
           </div>
         </div>
 
@@ -9284,12 +9284,12 @@ document.addEventListener(
           <div class="muted">Travel Booking Confirmation</div>
           <p><span class="status">CONFIRMED</span></p>
           <div class="row"><span>Reference</span><span class="strong">${esc(b.reference)}</span></div>
-          <div class="row"><span>Passenger</span><span class="strong">${esc(b.passengerName || b.passenger || "â€”")}</span></div>
-          <div class="row"><span>Vehicle</span><span class="strong">${esc(b.vehicleName || b.tripName || "â€”")}</span></div>
-          <div class="row"><span>Route</span><span class="strong">${esc(b.route || "â€”")}</span></div>
-          <div class="row"><span>Seat</span><span class="strong">${esc(b.seat || "â€”")}</span></div>
-          <div class="row"><span>Travel Date</span><span class="strong">${esc(b.travelDate || "â€”")}</span></div>
-          <div class="row"><span>Departure Time</span><span class="strong">${esc(b.departureTime || "â€”")}</span></div>
+          <div class="row"><span>Passenger</span><span class="strong">${esc(b.passengerName || b.passenger || "—")}</span></div>
+          <div class="row"><span>Vehicle</span><span class="strong">${esc(b.vehicleName || b.tripName || "—")}</span></div>
+          <div class="row"><span>Route</span><span class="strong">${esc(b.route || "—")}</span></div>
+          <div class="row"><span>Seat</span><span class="strong">${esc(b.seat || "—")}</span></div>
+          <div class="row"><span>Travel Date</span><span class="strong">${esc(b.travelDate || "—")}</span></div>
+          <div class="row"><span>Departure Time</span><span class="strong">${esc(b.departureTime || "—")}</span></div>
           <div class="row"><span>Amount</span><span class="strong">TZS ${money(b.amount ?? b.ticketPrice)}</span></div>
         </div>
         <script>window.onload=function(){window.print();};<\/script>
@@ -9359,7 +9359,7 @@ function render(results){
        '<img src="' + esc(w.photo_url||'../images/dcf-logo.png') + '" onerror="this.src=\'../images/dcf-logo.png\'" class="w-24 h-24 rounded-2xl object-cover mx-auto mb-3">' +
        '<div class="text-center text-[10px] uppercase font-black text-[#174a35]">' + esc(w.position_name) + '</div>' +
        '<div class="text-center font-black">' + esc(w.full_name) + '</div>' +
-       '<div class="text-center text-xs text-gray-500">#' + esc(w.candidate_number) + ' Â· ' + (w.vote_count||0) + ' kura</div>' +
+       '<div class="text-center text-xs text-gray-500">#' + esc(w.candidate_number) + ' · ' + (w.vote_count||0) + ' kura</div>' +
        '<div class="text-center text-[11px] text-gray-500">' + esc(w.phone||"") + '</div>' +
      '</div>'
    ).join("") || "<div class='text-sm text-gray-500'>Hakuna mshindi aliyepatikana bado.</div>";
@@ -9400,453 +9400,6 @@ setInterval(load,30000);
 })();
 </script>
 
-<!-- ============================================================
-DCF ELECTION BALLOT
-============================================================ -->
-
-<section id="dcfElectionVoting"
-class="max-w-6xl mx-auto my-8 px-4">
-
-<style>
-#dcfElectionVoting *{box-sizing:border-box}
-.dcf-election-card{
- background:#fff;
- border:1px solid #e5e7eb;
- border-radius:18px;
- padding:18px;
- margin-bottom:18px;
- box-shadow:0 5px 20px rgba(0,0,0,.05)
-}
-.dcf-position-title{
- font-size:18px;
- font-weight:900;
- margin-bottom:14px
-}
-.dcf-candidate-grid{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
- gap:14px
-}
-.dcf-candidate{
- position:relative;
- border:2px solid #e5e7eb;
- border-radius:16px;
- padding:12px;
- cursor:pointer;
- background:#fff;
- transition:.2s
-}
-.dcf-candidate:hover{
- border-color:#174a35;
- transform:translateY(-1px)
-}
-.dcf-candidate.selected{
- border-color:#174a35;
- background:#eef8f2
-}
-.dcf-candidate img{
- width:100%;
- height:180px;
- object-fit:cover;
- border-radius:12px;
- background:#f3f4f6
-}
-.dcf-candidate-no{
- position:absolute;
- top:18px;
- left:18px;
- background:#174a35;
- color:#fff;
- border-radius:999px;
- padding:5px 10px;
- font-weight:900;
- font-size:12px
-}
-.dcf-radio{
- position:absolute;
- top:18px;
- right:18px;
- width:22px;
- height:22px
-}
-.dcf-vote-btn{
- width:100%;
- border:0;
- border-radius:12px;
- padding:14px;
- background:#174a35;
- color:#fff;
- font-weight:900;
- cursor:pointer
-}
-.dcf-vote-btn:disabled{
- opacity:.5;
- cursor:not-allowed
-}
-.dcf-election-message{
- padding:14px;
- border-radius:12px;
- margin-bottom:15px;
- font-weight:700
-}
-</style>
-
-<div class="dcf-election-card">
-
- <div class="flex flex-wrap items-center justify-between gap-3">
-  <div>
-   <div class="text-xs font-black uppercase tracking-wider opacity-60">
-    DCF Online Election
-   </div>
-   <h2 id="dcfElectionTitle" class="text-2xl font-black">
-    Uchaguzi
-   </h2>
-   <p id="dcfElectionDescription" class="text-sm opacity-70"></p>
-  </div>
-
-  <div id="dcfElectionStatus"
-       class="px-3 py-2 rounded-full text-xs font-black bg-gray-100">
-   Loading...
-  </div>
- </div>
-
- <div id="dcfElectionMessage" class="mt-4"></div>
-
- <div id="dcfElectionBallot" class="mt-5"></div>
-
- <button id="dcfSubmitElectionVote"
-         class="dcf-vote-btn mt-5">
-   TUMA KURA
- </button>
-
-</div>
-
-<script>
-(function(){
-
- const supabaseClient =
-   window.supabaseClient ||
-   window.supabase ||
-   (typeof client === "function" ? client() : null);
-
- if(!supabaseClient) return;
-
- let election = null;
- let ballot = [];
- let selected = {};
- let alreadyVoted = {};
-
- const $ = id => document.getElementById(id);
-
- function escapeHtml(value){
-   return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
- }
-
- function message(text,type="info"){
-   const el=$("dcfElectionMessage");
-   if(!el)return;
-
-   el.innerHTML =
-     '<div class="dcf-election-message '+(
-       type==="error"
-       ? "bg-red-100 text-red-700"
-       : type==="success"
-       ? "bg-green-100 text-green-700"
-       : "bg-blue-100 text-blue-700"
-     )+'">'+escapeHtml(text)+'</div>';
- }
-
- async function loadElection(){
-
-   const {data,error}=await supabaseClient
-     .rpc("dcf_active_election");
-
-   if(error){
-     console.error(error);
-     message("Election service haipatikani sasa.","error");
-     return;
-   }
-
-   election = Array.isArray(data) ? data[0] : data;
-
-   if(!election){
-     $("dcfElectionStatus").textContent="Hakuna uchaguzi";
-     $("dcfElectionBallot").innerHTML=
-       '<div class="p-5 text-center opacity-60">Hakuna uchaguzi uliofunguliwa.</div>';
-     $("dcfSubmitElectionVote").disabled=true;
-     return;
-   }
-
-   $("dcfElectionTitle").textContent=election.title || "Uchaguzi";
-   $("dcfElectionDescription").textContent=election.description || "";
-
-   if(election.status==="closed"){
-     $("dcfElectionStatus").textContent="IMEFUNGWA";
-     $("dcfElectionStatus").className=
-       "px-3 py-2 rounded-full text-xs font-black bg-red-100 text-red-700";
-   }else{
-     $("dcfElectionStatus").textContent="IKO WAZI";
-     $("dcfElectionStatus").className=
-       "px-3 py-2 rounded-full text-xs font-black bg-green-100 text-green-700";
-   }
-
-   const ballotResult=await supabaseClient
-     .rpc("dcf_election_ballot",{p_election_id:election.id});
-
-   if(ballotResult.error){
-     console.error(ballotResult.error);
-     message(ballotResult.error.message,"error");
-     return;
-   }
-
-   ballot=ballotResult.data || [];
-
-   const votesResult=await supabaseClient
-     .rpc("dcf_my_election_votes",{p_election_id:election.id});
-
-   if(!votesResult.error){
-     alreadyVoted={};
-     (votesResult.data || []).forEach(v=>{
-       alreadyVoted[v.position_id]=v.candidate_id;
-     });
-   }
-
-   renderBallot();
- }
-
- function renderBallot(){
-
-   const root=$("dcfElectionBallot");
-
-   if(!ballot.length){
-     root.innerHTML=
-       '<div class="p-5 text-center opacity-60">Hakuna wagombea waliowekwa.</div>';
-     $("dcfSubmitElectionVote").disabled=true;
-     return;
-   }
-
-   const positions={};
-
-   ballot.forEach(c=>{
-     if(!positions[c.position_id]){
-       positions[c.position_id]={
-         id:c.position_id,
-         name:c.position_name,
-         order:c.position_order,
-         candidates:[]
-       };
-     }
-     positions[c.position_id].candidates.push(c);
-   });
-
-   root.innerHTML=Object.values(positions)
-    .sort((a,b)=>a.order-b.order)
-    .map(position=>{
-
-      const locked=alreadyVoted[position.id];
-
-      return `
-      <div class="dcf-election-card">
-
-       <div class="dcf-position-title">
-        ${escapeHtml(position.name)}
-       </div>
-
-       ${
-        locked
-        ? '<div class="dcf-election-message bg-green-100 text-green-700">Umeshapiga kura kwenye nafasi hii.</div>'
-        : ''
-       }
-
-       <div class="dcf-candidate-grid">
-
-        ${position.candidates.map(candidate=>{
-
-          const isSelected=
-            selected[position.id]===candidate.candidate_id ||
-            locked===candidate.candidate_id;
-
-          const photo=
-            candidate.photo_url ||
-            "../images/dcf-logo.png";
-
-          return `
-          <label
-           class="dcf-candidate ${isSelected ? "selected":""}"
-           data-position="${candidate.position_id}"
-           data-candidate="${candidate.candidate_id}"
-          >
-
-           <span class="dcf-candidate-no">
-            #${escapeHtml(candidate.candidate_number)}
-           </span>
-
-           <input
-             type="radio"
-             name="position_${candidate.position_id}"
-             class="dcf-radio"
-             ${isSelected ? "checked":""}
-             ${locked ? "disabled":""}
-           >
-
-           <img
-             src="${escapeHtml(photo)}"
-             alt="${escapeHtml(candidate.full_name)}"
-             onerror="this.src='../images/dcf-logo.png'"
-           >
-
-           <div class="mt-3 font-black">
-             ${escapeHtml(candidate.full_name)}
-           </div>
-
-           <div class="text-xs opacity-70 mt-1">
-             ${escapeHtml(candidate.phone || "")}
-           </div>
-
-          </label>
-          `;
-
-        }).join("")}
-
-       </div>
-
-      </div>
-      `;
-
-    }).join("");
-
-   root.querySelectorAll(".dcf-candidate").forEach(card=>{
-
-     card.addEventListener("click",function(){
-
-       const position=this.dataset.position;
-
-       if(alreadyVoted[position]) return;
-
-       const candidate=this.dataset.candidate;
-
-       selected[position]=candidate;
-
-       root.querySelectorAll(
-         '.dcf-candidate[data-position="'+position+'"]'
-       ).forEach(x=>x.classList.remove("selected"));
-
-       this.classList.add("selected");
-
-       const radio=this.querySelector("input");
-       if(radio)radio.checked=true;
-     });
-
-   });
-
-   updateButton();
- }
-
- function updateButton(){
-
-   const button=$("dcfSubmitElectionVote");
-
-   if(!button)return;
-
-   const positions=[
-     ...new Set(ballot.map(x=>x.position_id))
-   ];
-
-   const missing=positions.filter(
-     p=>!alreadyVoted[p] && !selected[p]
-   );
-
-   button.disabled=
-     !election ||
-     election.status!=="published" ||
-     missing.length>0;
-
-   button.textContent=
-     missing.length
-     ? "CHAGUA MGOMBEA KWENYE KILA NAFASI"
-     : "TUMA KURA";
- }
-
- $("dcfSubmitElectionVote")?.addEventListener("click",async function(){
-
-   if(!election)return;
-
-   const positions=[
-     ...new Set(ballot.map(x=>x.position_id))
-   ];
-
-   const votes=positions
-     .filter(p=>!alreadyVoted[p])
-     .map(p=>({
-       position_id:p,
-       candidate_id:selected[p]
-     }))
-     .filter(x=>x.candidate_id);
-
-   if(!votes.length){
-     message("Hakuna kura mpya ya kutuma.","error");
-     return;
-   }
-
-   const missing=positions.filter(
-     p=>!alreadyVoted[p] && !selected[p]
-   );
-
-   if(missing.length){
-     message("Chagua mgombea mmoja kwenye kila nafasi.","error");
-     return;
-   }
-
-   if(!confirm(
-     "Uko tayari kutuma kura zako?\n\n" +
-     "Baada ya kutuma, kura haziwezi kubadilishwa."
-   ))return;
-
-   this.disabled=true;
-   this.textContent="INATUMA KURA...";
-
-   const {data,error}=await supabaseClient
-     .rpc("cast_election_votes",{
-       p_election_id:election.id,
-       p_votes:votes
-     });
-
-   if(error){
-     console.error(error);
-     message(error.message || "Kura hazikutumwa.","error");
-     this.disabled=false;
-     updateButton();
-     return;
-   }
-
-   message(
-     "Kura zako zimetumwa kikamilifu. Asante kwa kushiriki.",
-     "success"
-   );
-
-   votes.forEach(v=>{
-     alreadyVoted[v.position_id]=v.candidate_id;
-   });
-
-   selected={};
-
-   renderBallot();
-
- });
-
- loadElection();
-
-})();
-</script>
-
-<!-- ============================================================
-END DCF ELECTION BALLOT
-============================================================ -->
 </body>
       </html>`;
     popup.document.open();
@@ -10026,7 +9579,7 @@ END DCF ELECTION BALLOT
         vehicleId: vehicle.id,
         vehicleName: vehicle.name,
         vehicleNumber: vehicle.number,
-        route: `${trip.departure || ""} â†’ ${trip.destination || ""}`,
+        route: `${trip.departure || ""} → ${trip.destination || ""}`,
         departure: trip.departure,
         destination: trip.destination,
         seat: dcfSelectedSeat,
@@ -10060,7 +9613,7 @@ END DCF ELECTION BALLOT
 
       if (typeof dcfCloseBookingModal === "function") dcfCloseBookingModal();
       if (typeof dcfBookingNotice === "function") {
-        dcfBookingNotice("success", `Booking confirmed. Reference: ${saved.reference} â€¢ Vehicle: ${saved.vehicleName} â€¢ Seat: ${saved.seat}`);
+        dcfBookingNotice("success", `Booking confirmed. Reference: ${saved.reference} • Vehicle: ${saved.vehicleName} • Seat: ${saved.seat}`);
       }
       if (typeof dcfRefreshBookingData === "function") dcfRefreshBookingData();
       render([saved, ...getCached()]);
@@ -10270,7 +9823,7 @@ END DCF ELECTION BALLOT
 
 
 <!-- =========================================================
-     DCF BOOKING DELETE â€” MEMBER OWN BOOKINGS ONLY
+     DCF BOOKING DELETE — MEMBER OWN BOOKINGS ONLY
 ========================================================== -->
 <script id="dcfBookingDeleteScript">
 (function(){
@@ -10302,8 +9855,8 @@ END DCF ELECTION BALLOT
 
     const ok = confirm(
       "Una uhakika unataka kufuta booking hii?\\n\\n" +
-      "Reference: " + (booking.reference || "â€”") + "\\n" +
-      "Seat: " + (booking.seat || "â€”") + "\\n\\n" +
+      "Reference: " + (booking.reference || "—") + "\\n" +
+      "Seat: " + (booking.seat || "—") + "\\n\\n" +
       "Kitendo hiki hakiwezi kutenduliwa."
     );
     if (!ok) return;
@@ -10447,7 +10000,7 @@ function render(results){
      const top=rows.filter(r=>Number(r.vote_count||0)===max&&max>0);
      if(top.length===1) winners.push(top[0]);
    });
-   box.innerHTML=`<div class="dcf-vote-card p-5"><div class="flex items-center justify-between gap-3"><div><div class="text-[10px] uppercase tracking-wider font-black text-[#174a35]">UCHAGUZI UMEMALIZIKA</div><h2 class="text-xl font-black text-gray-900">${esc(activeElection.title)}</h2><p class="text-xs text-gray-500">Mfumo umefunga kura. Washindi pekee wanaonyeshwa hapa.</p></div><span class="px-3 py-2 rounded-full bg-gray-100 text-gray-700 text-[10px] font-black">CLOSED</span></div><div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">${winners.map(w=>`<div class="border rounded-2xl p-4 bg-white"><img src="${esc(w.photo_url||'../images/dcf-logo.png')}" onerror="this.src='../images/dcf-logo.png'" class="w-24 h-24 rounded-2xl object-cover mx-auto mb-3"><div class="text-center text-[10px] uppercase font-black text-[#174a35]">${esc(w.position_name)}</div><div class="text-center font-black">${esc(w.full_name)}</div><div class="text-center text-xs text-gray-500">#${esc(w.candidate_number)} Â· ${w.vote_count||0} kura</div><div class="text-center text-[11px] text-gray-500">${esc(w.phone||"")}</div></div>`).join("")||"<div class='text-sm text-gray-500'>Hakuna mshindi aliyepatikana bado.</div>"}</div></div>`;
+   box.innerHTML=`<div class="dcf-vote-card p-5"><div class="flex items-center justify-between gap-3"><div><div class="text-[10px] uppercase tracking-wider font-black text-[#174a35]">UCHAGUZI UMEMALIZIKA</div><h2 class="text-xl font-black text-gray-900">${esc(activeElection.title)}</h2><p class="text-xs text-gray-500">Mfumo umefunga kura. Washindi pekee wanaonyeshwa hapa.</p></div><span class="px-3 py-2 rounded-full bg-gray-100 text-gray-700 text-[10px] font-black">CLOSED</span></div><div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5">${winners.map(w=>`<div class="border rounded-2xl p-4 bg-white"><img src="${esc(w.photo_url||'../images/dcf-logo.png')}" onerror="this.src='../images/dcf-logo.png'" class="w-24 h-24 rounded-2xl object-cover mx-auto mb-3"><div class="text-center text-[10px] uppercase font-black text-[#174a35]">${esc(w.position_name)}</div><div class="text-center font-black">${esc(w.full_name)}</div><div class="text-center text-xs text-gray-500">#${esc(w.candidate_number)} · ${w.vote_count||0} kura</div><div class="text-center text-[11px] text-gray-500">${esc(w.phone||"")}</div></div>`).join("")||"<div class='text-sm text-gray-500'>Hakuna mshindi aliyepatikana bado.</div>"}</div></div>`;
    return;
  }
  box.innerHTML=`<div class="dcf-vote-card p-5"><div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3"><div><div class="text-[10px] uppercase tracking-wider font-black text-[#174a35]">LIVE VOTING</div><h2 class="text-xl font-black text-gray-900">${esc(activeElection.title)}</h2><p class="text-xs text-gray-500">Chagua mgombea mmoja kwa kila nafasi. Kura yako haiwezi kubadilishwa baada ya kutumwa.</p></div><div class="text-right"><div class="text-[10px] text-gray-500">Inafungwa</div><div class="font-black text-[#174a35]">${new Date(activeElection.ends_at).toLocaleString("sw-TZ",{dateStyle:"medium",timeStyle:"short"})}</div></div></div><div id="dcfVoteNotice" class="hidden"></div><div class="mt-5 space-y-5">${positions.map(p=>{
@@ -10476,452 +10029,5 @@ setInterval(load,30000);
 })();
 </script>
 
-<!-- ============================================================
-DCF ELECTION BALLOT
-============================================================ -->
-
-<section id="dcfElectionVoting"
-class="max-w-6xl mx-auto my-8 px-4">
-
-<style>
-#dcfElectionVoting *{box-sizing:border-box}
-.dcf-election-card{
- background:#fff;
- border:1px solid #e5e7eb;
- border-radius:18px;
- padding:18px;
- margin-bottom:18px;
- box-shadow:0 5px 20px rgba(0,0,0,.05)
-}
-.dcf-position-title{
- font-size:18px;
- font-weight:900;
- margin-bottom:14px
-}
-.dcf-candidate-grid{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
- gap:14px
-}
-.dcf-candidate{
- position:relative;
- border:2px solid #e5e7eb;
- border-radius:16px;
- padding:12px;
- cursor:pointer;
- background:#fff;
- transition:.2s
-}
-.dcf-candidate:hover{
- border-color:#174a35;
- transform:translateY(-1px)
-}
-.dcf-candidate.selected{
- border-color:#174a35;
- background:#eef8f2
-}
-.dcf-candidate img{
- width:100%;
- height:180px;
- object-fit:cover;
- border-radius:12px;
- background:#f3f4f6
-}
-.dcf-candidate-no{
- position:absolute;
- top:18px;
- left:18px;
- background:#174a35;
- color:#fff;
- border-radius:999px;
- padding:5px 10px;
- font-weight:900;
- font-size:12px
-}
-.dcf-radio{
- position:absolute;
- top:18px;
- right:18px;
- width:22px;
- height:22px
-}
-.dcf-vote-btn{
- width:100%;
- border:0;
- border-radius:12px;
- padding:14px;
- background:#174a35;
- color:#fff;
- font-weight:900;
- cursor:pointer
-}
-.dcf-vote-btn:disabled{
- opacity:.5;
- cursor:not-allowed
-}
-.dcf-election-message{
- padding:14px;
- border-radius:12px;
- margin-bottom:15px;
- font-weight:700
-}
-</style>
-
-<div class="dcf-election-card">
-
- <div class="flex flex-wrap items-center justify-between gap-3">
-  <div>
-   <div class="text-xs font-black uppercase tracking-wider opacity-60">
-    DCF Online Election
-   </div>
-   <h2 id="dcfElectionTitle" class="text-2xl font-black">
-    Uchaguzi
-   </h2>
-   <p id="dcfElectionDescription" class="text-sm opacity-70"></p>
-  </div>
-
-  <div id="dcfElectionStatus"
-       class="px-3 py-2 rounded-full text-xs font-black bg-gray-100">
-   Loading...
-  </div>
- </div>
-
- <div id="dcfElectionMessage" class="mt-4"></div>
-
- <div id="dcfElectionBallot" class="mt-5"></div>
-
- <button id="dcfSubmitElectionVote"
-         class="dcf-vote-btn mt-5">
-   TUMA KURA
- </button>
-
-</div>
-
-<script>
-(function(){
-
- const supabaseClient =
-   window.supabaseClient ||
-   window.supabase ||
-   (typeof client === "function" ? client() : null);
-
- if(!supabaseClient) return;
-
- let election = null;
- let ballot = [];
- let selected = {};
- let alreadyVoted = {};
-
- const $ = id => document.getElementById(id);
-
- function escapeHtml(value){
-   return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
- }
-
- function message(text,type="info"){
-   const el=$("dcfElectionMessage");
-   if(!el)return;
-
-   el.innerHTML =
-     '<div class="dcf-election-message '+(
-       type==="error"
-       ? "bg-red-100 text-red-700"
-       : type==="success"
-       ? "bg-green-100 text-green-700"
-       : "bg-blue-100 text-blue-700"
-     )+'">'+escapeHtml(text)+'</div>';
- }
-
- async function loadElection(){
-
-   const {data,error}=await supabaseClient
-     .rpc("dcf_active_election");
-
-   if(error){
-     console.error(error);
-     message("Election service haipatikani sasa.","error");
-     return;
-   }
-
-   election = Array.isArray(data) ? data[0] : data;
-
-   if(!election){
-     $("dcfElectionStatus").textContent="Hakuna uchaguzi";
-     $("dcfElectionBallot").innerHTML=
-       '<div class="p-5 text-center opacity-60">Hakuna uchaguzi uliofunguliwa.</div>';
-     $("dcfSubmitElectionVote").disabled=true;
-     return;
-   }
-
-   $("dcfElectionTitle").textContent=election.title || "Uchaguzi";
-   $("dcfElectionDescription").textContent=election.description || "";
-
-   if(election.status==="closed"){
-     $("dcfElectionStatus").textContent="IMEFUNGWA";
-     $("dcfElectionStatus").className=
-       "px-3 py-2 rounded-full text-xs font-black bg-red-100 text-red-700";
-   }else{
-     $("dcfElectionStatus").textContent="IKO WAZI";
-     $("dcfElectionStatus").className=
-       "px-3 py-2 rounded-full text-xs font-black bg-green-100 text-green-700";
-   }
-
-   const ballotResult=await supabaseClient
-     .rpc("dcf_election_ballot",{p_election_id:election.id});
-
-   if(ballotResult.error){
-     console.error(ballotResult.error);
-     message(ballotResult.error.message,"error");
-     return;
-   }
-
-   ballot=ballotResult.data || [];
-
-   const votesResult=await supabaseClient
-     .rpc("dcf_my_election_votes",{p_election_id:election.id});
-
-   if(!votesResult.error){
-     alreadyVoted={};
-     (votesResult.data || []).forEach(v=>{
-       alreadyVoted[v.position_id]=v.candidate_id;
-     });
-   }
-
-   renderBallot();
- }
-
- function renderBallot(){
-
-   const root=$("dcfElectionBallot");
-
-   if(!ballot.length){
-     root.innerHTML=
-       '<div class="p-5 text-center opacity-60">Hakuna wagombea waliowekwa.</div>';
-     $("dcfSubmitElectionVote").disabled=true;
-     return;
-   }
-
-   const positions={};
-
-   ballot.forEach(c=>{
-     if(!positions[c.position_id]){
-       positions[c.position_id]={
-         id:c.position_id,
-         name:c.position_name,
-         order:c.position_order,
-         candidates:[]
-       };
-     }
-     positions[c.position_id].candidates.push(c);
-   });
-
-   root.innerHTML=Object.values(positions)
-    .sort((a,b)=>a.order-b.order)
-    .map(position=>{
-
-      const locked=alreadyVoted[position.id];
-
-      return `
-      <div class="dcf-election-card">
-
-       <div class="dcf-position-title">
-        ${escapeHtml(position.name)}
-       </div>
-
-       ${
-        locked
-        ? '<div class="dcf-election-message bg-green-100 text-green-700">Umeshapiga kura kwenye nafasi hii.</div>'
-        : ''
-       }
-
-       <div class="dcf-candidate-grid">
-
-        ${position.candidates.map(candidate=>{
-
-          const isSelected=
-            selected[position.id]===candidate.candidate_id ||
-            locked===candidate.candidate_id;
-
-          const photo=
-            candidate.photo_url ||
-            "../images/dcf-logo.png";
-
-          return `
-          <label
-           class="dcf-candidate ${isSelected ? "selected":""}"
-           data-position="${candidate.position_id}"
-           data-candidate="${candidate.candidate_id}"
-          >
-
-           <span class="dcf-candidate-no">
-            #${escapeHtml(candidate.candidate_number)}
-           </span>
-
-           <input
-             type="radio"
-             name="position_${candidate.position_id}"
-             class="dcf-radio"
-             ${isSelected ? "checked":""}
-             ${locked ? "disabled":""}
-           >
-
-           <img
-             src="${escapeHtml(photo)}"
-             alt="${escapeHtml(candidate.full_name)}"
-             onerror="this.src='../images/dcf-logo.png'"
-           >
-
-           <div class="mt-3 font-black">
-             ${escapeHtml(candidate.full_name)}
-           </div>
-
-           <div class="text-xs opacity-70 mt-1">
-             ${escapeHtml(candidate.phone || "")}
-           </div>
-
-          </label>
-          `;
-
-        }).join("")}
-
-       </div>
-
-      </div>
-      `;
-
-    }).join("");
-
-   root.querySelectorAll(".dcf-candidate").forEach(card=>{
-
-     card.addEventListener("click",function(){
-
-       const position=this.dataset.position;
-
-       if(alreadyVoted[position]) return;
-
-       const candidate=this.dataset.candidate;
-
-       selected[position]=candidate;
-
-       root.querySelectorAll(
-         '.dcf-candidate[data-position="'+position+'"]'
-       ).forEach(x=>x.classList.remove("selected"));
-
-       this.classList.add("selected");
-
-       const radio=this.querySelector("input");
-       if(radio)radio.checked=true;
-     });
-
-   });
-
-   updateButton();
- }
-
- function updateButton(){
-
-   const button=$("dcfSubmitElectionVote");
-
-   if(!button)return;
-
-   const positions=[
-     ...new Set(ballot.map(x=>x.position_id))
-   ];
-
-   const missing=positions.filter(
-     p=>!alreadyVoted[p] && !selected[p]
-   );
-
-   button.disabled=
-     !election ||
-     election.status!=="published" ||
-     missing.length>0;
-
-   button.textContent=
-     missing.length
-     ? "CHAGUA MGOMBEA KWENYE KILA NAFASI"
-     : "TUMA KURA";
- }
-
- $("dcfSubmitElectionVote")?.addEventListener("click",async function(){
-
-   if(!election)return;
-
-   const positions=[
-     ...new Set(ballot.map(x=>x.position_id))
-   ];
-
-   const votes=positions
-     .filter(p=>!alreadyVoted[p])
-     .map(p=>({
-       position_id:p,
-       candidate_id:selected[p]
-     }))
-     .filter(x=>x.candidate_id);
-
-   if(!votes.length){
-     message("Hakuna kura mpya ya kutuma.","error");
-     return;
-   }
-
-   const missing=positions.filter(
-     p=>!alreadyVoted[p] && !selected[p]
-   );
-
-   if(missing.length){
-     message("Chagua mgombea mmoja kwenye kila nafasi.","error");
-     return;
-   }
-
-   if(!confirm(
-     "Uko tayari kutuma kura zako?\n\n" +
-     "Baada ya kutuma, kura haziwezi kubadilishwa."
-   ))return;
-
-   this.disabled=true;
-   this.textContent="INATUMA KURA...";
-
-   const {data,error}=await supabaseClient
-     .rpc("cast_election_votes",{
-       p_election_id:election.id,
-       p_votes:votes
-     });
-
-   if(error){
-     console.error(error);
-     message(error.message || "Kura hazikutumwa.","error");
-     this.disabled=false;
-     updateButton();
-     return;
-   }
-
-   message(
-     "Kura zako zimetumwa kikamilifu. Asante kwa kushiriki.",
-     "success"
-   );
-
-   votes.forEach(v=>{
-     alreadyVoted[v.position_id]=v.candidate_id;
-   });
-
-   selected={};
-
-   renderBallot();
-
- });
-
- loadElection();
-
-})();
-</script>
-
-<!-- ============================================================
-END DCF ELECTION BALLOT
-============================================================ -->
 </body>
 </html>

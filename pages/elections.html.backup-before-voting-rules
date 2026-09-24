@@ -19,11 +19,6 @@ input:focus,select:focus,textarea:focus{border-color:#174a35;box-shadow:0 0 0 3p
 .candidate img{width:62px;height:62px;object-fit:cover;border-radius:12px;background:#edf3ef}
 </style>
 </head>
-<div class="rounded-xl bg-blue-50 border border-blue-200 p-3 text-sm font-bold text-blue-800 mb-4">
-  Kila nafasi inaweza kuwa na hadi <strong>wagombea 10</strong>.
-  Member atachagua <strong>mgombea MMOJA tu</strong> kwa kila nafasi.
-  Mshindi ni mwenye kura nyingi zaidi; kura zikilingana, namba kubwa ya mgombea ndiyo tie-breaker.
-</div>
 <body class="min-h-screen">
 <header class="bg-[#174a35] text-white sticky top-0 z-20">
  <div class="max-w-[1500px] mx-auto px-4 md:px-7 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
@@ -559,61 +554,6 @@ load();
 setInterval(async()=>{if(selected&&selected.status==="published"&&new Date(selected.ends_at)<=new Date()){await c.rpc("auto_close_dcf_elections");await load()}},30000);
 })();
 </script>
-
-<script>
-/* DCF ELECTION ADMIN EXTRA CONTROLS */
-
-window.dcfElectionDeleteCandidate = async function(candidateId){
-
-    if(!confirm("Futa mgombea huyu?")) return;
-
-    const db =
-        window.supabaseClient ||
-        window.supabase ||
-        (typeof client === "function" ? client() : null);
-
-    if(!db) return alert("Supabase haipatikani.");
-
-    const {error}=await db
-      .from("election_candidates")
-      .delete()
-      .eq("id",candidateId);
-
-    if(error){
-       alert(error.message);
-       return;
-    }
-
-    alert("Mgombea amefutwa.");
-    location.reload();
-};
-
-window.dcfElectionRemovePhoto = async function(candidateId){
-
-    if(!confirm("Futa picha ya mgombea huyu?")) return;
-
-    const db =
-        window.supabaseClient ||
-        window.supabase ||
-        (typeof client === "function" ? client() : null);
-
-    if(!db) return alert("Supabase haipatikani.");
-
-    const {error}=await db
-      .from("election_candidates")
-      .update({photo_url:null})
-      .eq("id",candidateId);
-
-    if(error){
-       alert(error.message);
-       return;
-    }
-
-    alert("Picha imeondolewa.");
-    location.reload();
-};
-</script>
 </body>
 </html>
-
 
